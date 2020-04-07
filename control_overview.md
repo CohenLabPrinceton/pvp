@@ -44,25 +44,25 @@ Describes the procedure to operate low-cost ventilator under pressure control
 
 **Actuators**
 - Inspiratory valve
-  - Proportional or on/off
-  - Must maintain low flow during expiratory cycle to maintain PEEP
+    - Proportional or on/off
+    - Must maintain low flow during expiratory cycle to maintain PEEP
 - Expiratory valve
-  - On/off in conjunction with PEEP valve probably OK
+    - On/off in conjunction with PEEP valve probably OK
 
 ## Pressure control loop
 1. Begin inhalation
-  - v1 Triggered by program every 1/bpm sec
-  - v2 triggered by momentary drop in pressure when patient initiates inhalation
-  1. ExpValve.close()
-  2. InspValve.set(flow_insp)
+    - v1 Triggered by program every 1/bpm sec
+    - v2 triggered by momentary drop in pressure when patient initiates inhalation
+    1. ExpValve.close()
+    2. InspValve.set(flow_insp)
 2. While PSensor.read() < PIP
-  1. Monitor d(PSensor.read())/dt
-  2. Adjust flow rate for desired slope with controller
+    1. Monitor d(PSensor.read())/dt
+    2. Adjust flow rate for desired slope with controller
 4. Cut flow and hold for t_insp
-  1. InspValve.close()
-  2. Monitor PSensor.read() and average across this time interval to report mean plateau pressure
+    1. InspValve.close()
+    2. Monitor PSensor.read() and average across this time interval to report mean plateau pressure
 5. Begin exhalation and hold for t_exp
-  1. InspValve.set(PEEP_flow_rate) (alt: switch to parallel tube with continuous flow)
-  2. ExpValve.open()
-  3. integrate(FSensor.read()) for t_exhalation to determine V_tidal
+    1. InspValve.set(PEEP_flow_rate) (alt: switch to parallel tube with continuous flow)
+    2. ExpValve.open()
+    3. integrate(FSensor.read()) for t_exhalation to determine V_tidal
 6. Repeat from step 1.

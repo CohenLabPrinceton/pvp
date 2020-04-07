@@ -52,7 +52,7 @@ Describes the procedure to operate low-cost ventilator under pressure control
 ## Pressure control loop
 1. Begin inhalation
     - v1 Triggered by program every 1/bpm sec
-    - v2 triggered by momentary drop in pressure when patient initiates inhalation
+    - v2 triggered by momentary drop in pressure when patient initiates inhalation (technically pressure-assisted control, PAC)
     1. ExpValve.close()
     2. InspValve.set(flow_insp)
 2. While PSensor.read() < PIP

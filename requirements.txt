@@ -1,0 +1,3 @@
+numpy
+PySide2
+pyqtgraph>=0.11.0rc0

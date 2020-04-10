@@ -35,7 +35,9 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="QHLine" href="gui.QHLine.html" />
+    <link rel="prev" title="Display_Value" href="gui.Display_Value.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,10 +86,25 @@
 <li class="toctree-l1"><a class="reference internal" href="../hardware.html">Hardware Placeholder</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../alarms.html">alarms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../controller.html">controller module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../gui.html">GUI</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../gui.html">GUI</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../gui.html#module-gui">gui Module</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../gui.html#classes">Classes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="gui.Display_Value.html">Display_Value</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.QHLine.html">QHLine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.RangeSlider.html">RangeSlider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.TimeAxis.html">TimeAxis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.Vent_Gui.html">Vent_Gui</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../gui_styles.html">gui_styles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../helper.html">helper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../main.html">main</a></li>
@@ -143,6 +160,8 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="../gui.html">gui</a> &raquo;</li>
+        
       <li>Plot</li>
     
     
@@ -168,6 +187,10 @@
 <dt id="gui.Plot">
 <em class="property">class </em><code class="sig-prename descclassname">gui.</code><code class="sig-name descname">Plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">buffer_size</span><span class="o">=</span><span class="default_value">4092</span></em>, <em class="sig-param"><span class="n">plot_duration</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">abs_range</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">safe_range</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.widgets.PlotWidget.PlotWidget</span></code></p>
+<p>When initializing PlotWidget, <em>parent</em> and <em>background</em> are passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">GraphicsWidget.__init__()</span></code>
+and all others are passed
+to <code class="xref py py-func docutils literal notranslate"><span class="pre">PlotItem.__init__()</span></code>.</p>
 <p class="rubric">Attributes Summary</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -175,10 +198,10 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">limits_changed</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../gui.html#id15" title="gui.Plot.limits_changed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">limits_changed</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../gui.html#id18" title="gui.Plot.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -190,13 +213,13 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_duration</span></code>(dur)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../gui.html#id16" title="gui.Plot.set_duration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_duration</span></code></a>(dur)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_safe_limits</span></code>(limits)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../gui.html#id17" title="gui.Plot.set_safe_limits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_safe_limits</span></code></a>(limits)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_value</span></code>(new_value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../gui.html#id19" title="gui.Plot.update_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_value</span></code></a>(new_value)</p></td>
 <td><p>new_value: (timestamp from time.time(), value)</p></td>
 </tr>
 </tbody>
@@ -229,6 +252,37 @@
 <dd><p>new_value: (timestamp from time.time(), value)</p>
 </dd></dl>
 
+<dl class="py method">
+<dt id="gui.Plot._safe_limits_changed">
+<code class="sig-name descname">_safe_limits_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Plot._safe_limits_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="id0">
+<code class="sig-name descname">limits_changed</code><em class="property"> = &lt;PySide2.QtCore.Signal object&gt;</em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id1">
+<code class="sig-name descname">set_duration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dur</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id2">
+<code class="sig-name descname">set_safe_limits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">limits</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="id3">
+<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id4">
+<code class="sig-name descname">update_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dd><p>new_value: (timestamp from time.time(), value)</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -238,6 +292,15 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gui.QHLine.html" class="btn btn-neutral float-right" title="QHLine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gui.Display_Value.html" class="btn btn-neutral float-left" title="Display_Value" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

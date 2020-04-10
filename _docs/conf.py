@@ -33,7 +33,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon',
-    'sphinxcontrib.mockautodoc',
     'recommonmark'
 ]
 
@@ -45,10 +44,7 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-# mock modules that can't be installed
-mockautodock = {
-    'mockimport': ['automationhat']
-}
+
 
 #####
 # Napoleon
@@ -66,6 +62,20 @@ napoleon_include_private_with_doc = True
 # napoleon_use_rtype = True
 # napoleon_use_keyword = True
 # napoleon_custom_sections = None
+
+### 
+# Autodoc
+
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'private-members': True,
+    'memver-order': 'bysource'
+    
+}
+autoclass_content = "both"
+
+# autodoc_mock_imports = ['automationhat']
 
 
 # -- Options for HTML output -------------------------------------------------

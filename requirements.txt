@@ -6,3 +6,4 @@ sphinx_rtd_theme
 sphinx-automodapi
 sphinxcontrib-napoleon
 sphinxcontrib-mockautodoc
+recommonmark

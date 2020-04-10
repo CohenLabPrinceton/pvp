@@ -1,4 +1,4 @@
-sensors module
+sensors
 ==============
 
 .. automodule:: sensors

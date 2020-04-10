@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Search &mdash; ventilator  documentation</title>
+  <title>Building the Docs &mdash; ventilator  documentation</title>
   
 
   
@@ -25,7 +25,6 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script src="_static/searchtools.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -36,7 +35,9 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="h1 Heading 8-)" href="example_markdown.html" />
+    <link rel="prev" title="sensors" href="sensors.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +64,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -96,8 +97,11 @@
 <li class="toctree-l1"><a class="reference internal" href="sensors.html">sensors</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Building the Docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#local-build">Local Build</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
 </ul>
 
@@ -144,12 +148,14 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Search</li>
+      <li>Building the Docs</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
+            <a href="_sources/buildthedocs.rst.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
     
@@ -161,24 +167,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search
-      functionality.
-    </p>
-  </div>
-  </noscript>
+  <div class="section" id="building-the-docs">
+<h1>Building the Docs<a class="headerlink" href="#building-the-docs" title="Permalink to this headline">¶</a></h1>
+<p>A very brief summary…</p>
+<ul class="simple">
+<li><p>Docs are configured to be built from <code class="docutils literal notranslate"><span class="pre">_docs</span></code> into <code class="docutils literal notranslate"><span class="pre">docs</span></code>.</p></li>
+<li><p>The main page is <code class="docutils literal notranslate"><span class="pre">index.rst</span></code> which links to the existing modules</p></li>
+<li><p>To add a new page, you can create a new <code class="docutils literal notranslate"><span class="pre">.rst</span></code> file if you are writing with <a class="reference external" href="https://docutils.sourceforge.io/docs/user/rst/quickref.html">Restructuredtext</a> , or a <cite>.md</cite> file if you are writing with markdown.</p></li>
+</ul>
+<div class="section" id="local-build">
+<h2>Local Build<a class="headerlink" href="#local-build" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">_docs</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code></p></li>
+</ul>
+<p>Documentation will be generated into <code class="docutils literal notranslate"><span class="pre">docs</span></code></p>
+</div>
+</div>
 
-  
-  <div id="search-results">
-  
-  </div>
 
            </div>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_markdown.html" class="btn btn-neutral float-right" title="h1 Heading 8-)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sensors.html" class="btn btn-neutral float-left" title="sensors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
@@ -211,14 +232,7 @@
   
   
     
-  
-  <script type="text/javascript">
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script type="text/javascript" id="searchindexloader"></script>
    
-
 
 </body>
 </html>

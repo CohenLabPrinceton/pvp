@@ -33,7 +33,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon',
-    'sphinxcontrib.mockautodoc'
+    'sphinxcontrib.mockautodoc',
+    'recommonmark'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

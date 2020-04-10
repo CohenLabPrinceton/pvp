@@ -1,4 +1,4 @@
-main\_control module
+main\_control
 ====================
 
 .. automodule:: main_control

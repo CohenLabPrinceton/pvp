@@ -1,4 +1,4 @@
-gui\_styles module
+gui\_styles
 ==================
 
 .. automodule:: gui_styles

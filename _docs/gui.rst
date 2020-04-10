@@ -1,7 +1,8 @@
-gui module
-==========
+gui
+======
+
+.. automodapi:: gui
 
 .. automodule:: gui
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    :members:
+    :undoc-members:

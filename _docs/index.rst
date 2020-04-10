@@ -8,17 +8,31 @@ Welcome to ventilator's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Hardware:
 
-   GUI <ventilator.gui>
+   Hardware Placeholder <hardware>
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Software:
+
+
    alarms
    controller
-   gui
+   GUI <gui>
    gui_styles
    helper
    main
    main_control
    sensors
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Meta:
+
+   Building the Docs <buildthedocs>
+   Markdown Example <example_markdown>
 
 
 

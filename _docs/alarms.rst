@@ -1,4 +1,4 @@
-alarms module
+alarms
 =============
 
 .. automodule:: alarms

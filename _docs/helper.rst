@@ -1,4 +1,4 @@
-helper module
+helper
 =============
 
 .. automodule:: helper

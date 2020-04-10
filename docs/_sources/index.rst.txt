@@ -11,6 +11,14 @@ Welcome to ventilator's documentation!
    :caption: Contents:
 
    GUI <ventilator.gui>
+   alarms
+   controller
+   gui
+   gui_styles
+   helper
+   main
+   main_control
+   sensors
 
 
 

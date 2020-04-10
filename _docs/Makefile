@@ -15,8 +15,9 @@ help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 html:
+	sphinx-apidoc -o "$(SOURCEDIR)" ../
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O) && \
-	mv "$(BUILDDIR)"/html/* ../docs
+	rsync -av $(BUILDDIR)/html/* ../docs --remove-source-files
 
 .PHONY: help Makefile
 
@@ -24,4 +25,4 @@ html:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O) && \
-	mv "$(BUILDDIR)/html/" "$(BUILDDIR)"
+	mv -f "$(BUILDDIR)/html/" "$(BUILDDIR)"

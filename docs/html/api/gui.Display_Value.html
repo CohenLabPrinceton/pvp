@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Display_Value &mdash; ventilator  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Plot" href="gui.Plot.html" />
+    <link rel="prev" title="gui" href="../ventilator.gui.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../ventilator.gui.html">GUI</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../ventilator.gui.html#module-gui">gui Module</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../ventilator.gui.html#classes">Classes</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Display_Value</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.Plot.html">Plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.QHLine.html">QHLine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.RangeSlider.html">RangeSlider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.TimeAxis.html">TimeAxis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.Vent_Gui.html">Vent_Gui</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../ventilator.gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../ventilator.gui.html">gui</a> &raquo;</li>
+        
+      <li>Display_Value</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/gui.Display_Value.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="display-value">
+<h1>Display_Value<a class="headerlink" href="#display-value" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gui.Display_Value">
+<em class="property">class </em><code class="sig-prename descclassname">gui.</code><code class="sig-name descname">Display_Value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">units</span></em>, <em class="sig-param"><span class="n">abs_range</span></em>, <em class="sig-param"><span class="n">safe_range</span></em>, <em class="sig-param"><span class="n">decimals</span></em>, <em class="sig-param"><span class="n">update_period</span><span class="o">=</span><span class="default_value">0.1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Display_Value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
+<p class="rubric">Attributes Summary</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Display_Value.alarm" title="gui.Display_Value.alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alarm</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Display_Value.limits_changed" title="gui.Display_Value.limits_changed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">limits_changed</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Display_Value.staticMetaObject" title="gui.Display_Value.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods Summary</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Display_Value.check_alarm" title="gui.Display_Value.check_alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_alarm</span></code></a>([signal])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Display_Value.init_ui" title="gui.Display_Value.init_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_ui</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Display_Value.timed_update" title="gui.Display_Value.timed_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timed_update</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Display_Value.update_boxes" title="gui.Display_Value.update_boxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_boxes</span></code></a>(new_values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Display_Value.update_limits" title="gui.Display_Value.update_limits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_limits</span></code></a>(new_limits)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Display_Value.update_value" title="gui.Display_Value.update_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_value</span></code></a>(new_value)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes Documentation</p>
+<dl class="py attribute">
+<dt id="gui.Display_Value.alarm">
+<code class="sig-name descname">alarm</code><em class="property"> = &lt;PySide2.QtCore.Signal object&gt;</em><a class="headerlink" href="#gui.Display_Value.alarm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="gui.Display_Value.limits_changed">
+<code class="sig-name descname">limits_changed</code><em class="property"> = &lt;PySide2.QtCore.Signal object&gt;</em><a class="headerlink" href="#gui.Display_Value.limits_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="gui.Display_Value.staticMetaObject">
+<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#gui.Display_Value.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods Documentation</p>
+<dl class="py method">
+<dt id="gui.Display_Value.check_alarm">
+<code class="sig-name descname">check_alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Display_Value.check_alarm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="gui.Display_Value.init_ui">
+<code class="sig-name descname">init_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gui.Display_Value.init_ui" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="gui.Display_Value.timed_update">
+<code class="sig-name descname">timed_update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gui.Display_Value.timed_update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="gui.Display_Value.update_boxes">
+<code class="sig-name descname">update_boxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_values</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Display_Value.update_boxes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="gui.Display_Value.update_limits">
+<code class="sig-name descname">update_limits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_limits</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Display_Value.update_limits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="gui.Display_Value.update_value">
+<code class="sig-name descname">update_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Display_Value.update_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gui.Plot.html" class="btn btn-neutral float-right" title="Plot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../ventilator.gui.html" class="btn btn-neutral float-left" title="gui" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

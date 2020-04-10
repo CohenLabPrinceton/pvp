@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Vent_Gui &mdash; ventilator  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="TimeAxis" href="gui.TimeAxis.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../ventilator.gui.html">GUI</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../ventilator.gui.html#module-gui">gui Module</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../ventilator.gui.html#classes">Classes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="gui.Display_Value.html">Display_Value</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.Plot.html">Plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.QHLine.html">QHLine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.RangeSlider.html">RangeSlider</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.TimeAxis.html">TimeAxis</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Vent_Gui</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../ventilator.gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../ventilator.gui.html">gui</a> &raquo;</li>
+        
+      <li>Vent_Gui</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/gui.Vent_Gui.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="vent-gui">
+<h1>Vent_Gui<a class="headerlink" href="#vent-gui" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gui.Vent_Gui">
+<em class="property">class </em><code class="sig-prename descclassname">gui.</code><code class="sig-name descname">Vent_Gui</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">update_period</span><span class="o">=</span><span class="default_value">0.1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Vent_Gui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QMainWindow</span></code></p>
+<dl>
+<dt>Controls:</dt><dd><ul class="simple">
+<li><p>PIP: peak inhalation pressure (~20 cm H2O)</p></li>
+<li><p>T_insp: inspiratory time to PEEP (~0.5 sec)</p></li>
+<li><p>I/E: inspiratory to expiratory time ratio</p></li>
+<li><p>bpm: breaths per minute (15 bpm -&gt; 1/15 sec cycle time)</p></li>
+<li><p>PIP_time: Target time for PIP. While lungs expand, dP/dt should be PIP/PIP_time</p></li>
+<li><p>flow_insp: nominal flow rate during inspiration</p></li>
+</ul>
+</dd>
+<dt><strong>Set by hardware</strong></dt><dd><ul class="simple">
+<li><p>FiO2: fraction of inspired oxygen, set by blender</p></li>
+<li><p>max_flow: manual valve at output of blender</p></li>
+<li><p>PEEP: positive end-expiratory pressure, set by manual valve</p></li>
+</ul>
+</dd>
+<dt><strong>Derived parameters</strong></dt><dd><ul class="simple">
+<li><p>cycle_time: 1/bpm</p></li>
+<li><p>t_insp: inspiratory time, controlled by cycle_time and I/E</p></li>
+<li><p>t_exp: expiratory time, controlled by cycle_time and I/E</p></li>
+</ul>
+</dd>
+<dt><strong>Monitored variables</strong></dt><dd><ul class="simple">
+<li><p>O2</p></li>
+<li><p>Temperature</p></li>
+<li><p>Humidity</p></li>
+</ul>
+<ul class="simple">
+<li><p>(VTE) End-Tidal volume: the volume of air entering the lung, derived from flow through t_exp</p></li>
+<li><p>PIP: peak inspiratory pressure, set by user in software</p></li>
+<li><p>Mean plateau pressure: derived from pressure sensor during inspiration cycle hold (no flow)</p></li>
+<li><p>PEEP: positive end-expiratory pressure, set by manual valve</p></li>
+</ul>
+<ul class="simple">
+<li><p>fTotal (total respiratory frequency) - breaths delivered by vent &amp; patients natural breaths</p></li>
+</ul>
+</dd>
+<dt><strong>Alarms</strong></dt><dd><ul class="simple">
+<li><p>Oxygen out of range</p></li>
+<li><p>High pressure (tube/airway occlusion)</p></li>
+<li><p>Low-pressure (disconnect)</p></li>
+<li><p>Temperature out of range</p></li>
+<li><p>Low voltage alarm (if using battery power)</p></li>
+<li><p>Tidal volume (expiratory) out of range</p></li>
+</ul>
+</dd>
+<dt>Graphs:</dt><dd><ul class="simple">
+<li><p>Flow</p></li>
+<li><p>Pressure</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Attributes Summary</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Vent_Gui.DISPLAY" title="gui.Vent_Gui.DISPLAY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DISPLAY</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Vent_Gui.PLOTS" title="gui.Vent_Gui.PLOTS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOTS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Vent_Gui.staticMetaObject" title="gui.Vent_Gui.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods Summary</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Vent_Gui.init_ui" title="gui.Vent_Gui.init_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_ui</span></code></a>()</p></td>
+<td><p>Create the UI components for the ventilator screen</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Vent_Gui.set_plot_duration" title="gui.Vent_Gui.set_plot_duration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_plot_duration</span></code></a>(dur)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Vent_Gui.test" title="gui.Vent_Gui.test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.Vent_Gui.update_value" title="gui.Vent_Gui.update_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_value</span></code></a>(value_name, new_value)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes Documentation</p>
+<dl class="py attribute">
+<dt id="gui.Vent_Gui.DISPLAY">
+<code class="sig-name descname">DISPLAY</code><em class="property"> = {'etc': {'abs_range': (0, 100), 'decimals': 1, 'name': 'Other measurements??', 'safe_range': (10, 90), 'units': '???'}, 'humidity': {'abs_range': (0, 100), 'decimals': 1, 'name': 'Humidity', 'safe_range': (20, 75), 'units': '%'}, 'oxygen': {'abs_range': (0, 100), 'decimals': 1, 'name': 'O2 Concentration', 'safe_range': (60, 100), 'units': '%'}, 'temperature': {'abs_range': (0, 50), 'decimals': 1, 'name': 'Temperature', 'safe_range': (20, 30), 'units': '°C'}, 'vte': {'abs_range': (0, 100), 'decimals': 1, 'name': 'VTE', 'safe_range': (20, 80), 'units': '%'}}</em><a class="headerlink" href="#gui.Vent_Gui.DISPLAY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="gui.Vent_Gui.PLOTS">
+<code class="sig-name descname">PLOTS</code><em class="property"> = {'flow': {'abs_range': (0, 100), 'color': '#FCCC0A', 'name': 'Flow (L/s)', 'safe_range': (20, 80)}, 'pressure': {'abs_range': (0, 100), 'color': '#FF6319', 'name': 'Pressure (mmHg)', 'safe_range': (20, 80)}}</em><a class="headerlink" href="#gui.Vent_Gui.PLOTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="gui.Vent_Gui.staticMetaObject">
+<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#gui.Vent_Gui.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods Documentation</p>
+<dl class="py method">
+<dt id="gui.Vent_Gui.init_ui">
+<code class="sig-name descname">init_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gui.Vent_Gui.init_ui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the UI components for the ventilator screen</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gui.Vent_Gui.set_plot_duration">
+<code class="sig-name descname">set_plot_duration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dur</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Vent_Gui.set_plot_duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="gui.Vent_Gui.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gui.Vent_Gui.test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="gui.Vent_Gui.update_value">
+<code class="sig-name descname">update_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value_name</span></em>, <em class="sig-param"><span class="n">new_value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.Vent_Gui.update_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="gui.TimeAxis.html" class="btn btn-neutral float-left" title="TimeAxis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

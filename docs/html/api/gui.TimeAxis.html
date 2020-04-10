@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>TimeAxis &mdash; ventilator  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Vent_Gui" href="gui.Vent_Gui.html" />
+    <link rel="prev" title="RangeSlider" href="gui.RangeSlider.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../ventilator.gui.html">GUI</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../ventilator.gui.html#module-gui">gui Module</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../ventilator.gui.html#classes">Classes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="gui.Display_Value.html">Display_Value</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.Plot.html">Plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.QHLine.html">QHLine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.RangeSlider.html">RangeSlider</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">TimeAxis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui.Vent_Gui.html">Vent_Gui</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../ventilator.gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../ventilator.gui.html">gui</a> &raquo;</li>
+        
+      <li>TimeAxis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/gui.TimeAxis.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="timeaxis">
+<h1>TimeAxis<a class="headerlink" href="#timeaxis" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gui.TimeAxis">
+<em class="property">class </em><code class="sig-prename descclassname">gui.</code><code class="sig-name descname">TimeAxis</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.TimeAxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.graphicsItems.AxisItem.AxisItem</span></code></p>
+<p class="rubric">Attributes Summary</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.TimeAxis.staticMetaObject" title="gui.TimeAxis.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods Summary</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../ventilator.gui.html#gui.TimeAxis.tickStrings" title="gui.TimeAxis.tickStrings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tickStrings</span></code></a>(values, scale, spacing)</p></td>
+<td><p>Return the strings that should be placed next to ticks.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes Documentation</p>
+<dl class="py attribute">
+<dt id="gui.TimeAxis.staticMetaObject">
+<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#gui.TimeAxis.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods Documentation</p>
+<dl class="py method">
+<dt id="gui.TimeAxis.tickStrings">
+<code class="sig-name descname">tickStrings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span></em>, <em class="sig-param"><span class="n">scale</span></em>, <em class="sig-param"><span class="n">spacing</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gui.TimeAxis.tickStrings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the strings that should be placed next to ticks. This method is called
+when redrawing the axis and is a good method to override in subclasses.
+The method is called with a list of tick values, a scaling factor (see below), and the
+spacing between ticks (this is required since, in some instances, there may be only
+one tick and thus no other way to determine the tick spacing)</p>
+<p>The scale argument is used when the axis label is displaying units which may have an SI scaling prefix.
+When determining the text to display, use value*scale to correctly account for this prefix.
+For example, if the axis label’s units are set to ‘V’, then a tick value of 0.001 might
+be accompanied by a scale value of 1000. This indicates that the label is displaying ‘mV’, and
+thus the tick should display 0.001 * 1000 = 1.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gui.Vent_Gui.html" class="btn btn-neutral float-right" title="Vent_Gui" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gui.RangeSlider.html" class="btn btn-neutral float-left" title="RangeSlider" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

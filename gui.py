@@ -8,6 +8,7 @@ import copy
 import sys
 import time
 import threading
+import pdb
 
 
 # other required libraries
@@ -337,7 +338,7 @@ class Display_Value(QtWidgets.QWidget):
 
         #########
         # layout widgets
-        self.layout.addWidget(self.range_slider, 1)
+        self.layout.addWidget(self.range_slider, 2)
 
         box_layout = QtWidgets.QVBoxLayout()
         box_layout.addWidget(QtWidgets.QLabel('Max:'))
@@ -367,6 +368,7 @@ class Display_Value(QtWidgets.QWidget):
         # stash numerical value
         self.value = new_value
         self.check_alarm()
+        self.range_slider.update_indicator(new_value)
 
     @QtCore.Slot(tuple)
     def update_limits(self, new_limits):
@@ -392,8 +394,10 @@ class Display_Value(QtWidgets.QWidget):
             if (self.value >= self.max_safe.value()) or (self.value <= self.min_safe.value()):
                 self.alarm.emit()
                 self.value_label.setStyleSheet(gui_styles.DISPLAY_VALUE_ALARM)
+                self.range_slider.alarm = True
             else:
                 self.value_label.setStyleSheet(gui_styles.DISPLAY_VALUE)
+                self.range_slider.alarm = False
 
 
 
@@ -413,6 +417,9 @@ class RangeSlider(QtWidgets.QSlider):
 
     Adapted from https://bitbucket.org/genuine_/idascope-local/src/master/idascope/widgets/RangeSlider.py
     (Thank you!!!)
+
+    With code from https://stackoverflow.com/a/54819051
+    for labels!
     """
 
     valueChanged = QtCore.Signal(tuple)
@@ -434,12 +441,31 @@ class RangeSlider(QtWidgets.QSlider):
         #self._low = self.minimum()
         #self._high = self.maximum()
 
+        self._alarm = False
+
         self.pressed_control = QtWidgets.QStyle.SC_None
         self.hover_control = QtWidgets.QStyle.SC_None
         self.click_offset = 0
 
         # 0 for the low, 1 for the high, -1 for both
         self.active_slider = 0
+
+        # ticks
+        self.setTickPosition(QtWidgets.QSlider.TicksLeft)
+        # gives some space to print labels
+        self.left_margin=10
+        self.top_margin=10
+        self.right_margin=0
+        self.bottom_margin=10
+        self.setContentsMargins(self.left_margin,
+                                self.top_margin,
+                                self.right_margin,
+                                self.bottom_margin)
+        self.setMinimumWidth(gui_styles.SLIDER_WIDTH)
+
+        # indicator
+        self._indicator = 0
+
 
     @property
     def low(self):
@@ -466,6 +492,20 @@ class RangeSlider(QtWidgets.QSlider):
     def setHigh(self, high):
         self.high = high
 
+    def update_indicator(self, new_val):
+        self._indicator = new_val
+        self.update()
+
+    @property
+    def alarm(self):
+        return self._alarm
+
+    @alarm.setter
+    def alarm(self, alarm):
+        self._alarm = alarm
+        self.update()
+
+
     def paintEvent(self, event):
         # based on http://qt.gitorious.org/qt/qt/blobs/master/src/gui/widgets/qslider.cpp
 
@@ -473,10 +513,38 @@ class RangeSlider(QtWidgets.QSlider):
         #style = QtWidgets.QApplication.style()
         style = self.style()
 
+        ### Draw current value indicator
+        if self._indicator != 0:
+            opt = QtWidgets.QStyleOptionSlider()
+            self.initStyleOption(opt)
+            length = style.pixelMetric(QtWidgets.QStyle.PM_SliderLength, opt, self)
+            available = style.pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, opt, self)
+
+
+            y_loc= QtWidgets.QStyle.sliderPositionFromValue(self.minimum(),
+                    self.maximum(), self._indicator, self.height(), opt.upsideDown)
+
+
+            # draw indicator first, so underneath max and min
+            indicator_color = QtGui.QColor(0,0,0)
+            if not self.alarm:
+                indicator_color.setNamedColor(gui_styles.INDICATOR_COLOR)
+            else:
+                indicator_color.setNamedColor(gui_styles.ALARM_COLOR)
+
+            x_begin = (self.width()-gui_styles.INDICATOR_WIDTH)/2
+
+            painter.setBrush(indicator_color)
+            pen_bak = copy.copy(painter.pen())
+            painter.setPen(painter.pen().setWidth(0))
+            painter.drawRect(x_begin,y_loc,gui_styles.INDICATOR_WIDTH,self.height()-y_loc)
+
+            painter.setPen(pen_bak)
+
         for i, value in enumerate([self._high, self._low]):
             opt = QtWidgets.QStyleOptionSlider()
             self.initStyleOption(opt)
-
+            # pdb.set_trace()
             # Only draw the groove for the first slider so it doesn't get drawn
             # on top of the existing ones every time
             if i == 0:
@@ -495,9 +563,43 @@ class RangeSlider(QtWidgets.QSlider):
             else:
                 opt.activeSubControls = self.hover_control
 
+            # opt.rect.setX(-self.width()/2)
             opt.sliderPosition = value
             opt.sliderValue = value
             style.drawComplexControl(QtWidgets.QStyle.CC_Slider, opt, painter, self)
+
+        # draw ticks
+        opt = QtWidgets.QStyleOptionSlider()
+        self.initStyleOption(opt)
+        length = style.pixelMetric(QtWidgets.QStyle.PM_SliderLength, opt, self)
+        available = style.pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, opt, self)
+        border_offset = 5
+        available -= border_offset
+
+        levels = np.linspace(self.minimum(), self.maximum(), 5)
+
+        painter.setFont(mono_font)
+
+        for v in levels:
+            label_str = str(int(round(v)))
+            # label_str = "{0:d}".format(v)
+            rect = painter.drawText(QtCore.QRect(), QtCore.Qt.TextDontPrint, label_str)
+
+            y_loc= QtWidgets.QStyle.sliderPositionFromValue(self.minimum(),
+                    self.maximum(), v, available, opt.upsideDown)
+
+            bottom=y_loc+length//2+rect.height()//2+(border_offset/2)-3
+            # there is a 3 px offset that I can't attribute to any metric
+            #left = (self.width())-(rect.width())-10
+            left = (self.width()/2)-(gui_styles.INDICATOR_WIDTH/2)-rect.width()-3
+
+            pos=QtCore.QPoint(left, bottom)
+            painter.drawText(pos, label_str)
+
+        self.setTickInterval(levels[1]-levels[0])
+
+
+
 
     def mousePressEvent(self, event):
         event.accept()

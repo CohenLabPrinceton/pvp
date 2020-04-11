@@ -1,45 +1,59 @@
 # library imports:
-import automationhat
+import board
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+from time import sleep
 
 # This is the library for reading sensor values.
+# Much is taken from https://circuitpython.readthedocs.io/projects/ads1x15/en/latest/examples.html
 
-def convert_raw_to_pressure(raw_val):
-    # Convert raw analog signal to pressure value in cm H20. Hysteresis not accounted for.
-    # Source 20 INCH-G-P4V-MINI: http://www.allsensors.com/datasheets/DS-0102_Rev_A.pdf
-    # Two-Point Calibration: 
-    raw_low = 0.28
-    raw_hi = 4.0 # needs calibration
-    raw_range = raw_hi - raw_low
-    ref_low = 0.25
-    ref_hi = 4.0
-    ref_range = ref_hi - ref_low
-    #corrected_val = (((raw_val - raw_low)*ref_range)/raw_range) + ref_low 
-    conv_val_inchh20 = (((raw_val - raw_low)*20.0)/raw_range) + 0.0    
-    conv_val_cmh20 = (2.54)*conv_val_inchh20    
-    return conv_val_cmh20
+class JuliePlease:
+    def __init__(self):
+        self.i2c            = busio.I2C(board.SCL,board.SDA)
+        self.adc            = ADS.ADS1115(self.i2c)
+        sleep(0.1) # short pause after ads1115 class creation recommended
+        self.pressure1      = AnalogIn(self.adc,ADS.P0)
+        #self.pressure2     = AnalogIn(self.adc,ADS.P1)
+        self.o2             = AnalogIn(self.adc,ADS.P2,ADS.P3)
+        
+    def get_pressure1_reading(self):
+        pres_val = self.__convert_raw_to_pressure(self.pressure1.voltage)
+        return pres_val
+        
+    def get_pressure2_reading(self):
+        #pres_val = self.__convert_raw_to_pressure(self.pressure2.voltage)
+        pres_val = -1
+        return pres_val
+        
+    def get_o2_reading(self):
+        o2_raw = self.o2.value
+        return o2_raw
 
-def get_pressure1_reading():
-    retrieve1 = automationhat.analog.one.read() # current pressure raw analog value
-    pres_val = convert_raw_to_pressure(retrieve1)
-    return pres_val
+    def get_flow_reading(self):
+        return -1.0
 
-def get_pressure2_reading():
-    #retrieve2 = automationhat.analog.two.read() # current pressure raw analog value
-    #res_val = convert_raw_to_pressure(retrieve2)
-    pres_val = -1.0
-    return pres_val
+    def get_temp_reading(self):
+        return -1.0
 
-def get_o2_reading():
-    return -1.0
+    def get_humid_reading(self):
+        return -1.0
 
-def get_flow_reading():
-    return -1.0
+    def __convert_raw_to_pressure(self,raw_val):
+        # Convert raw analog signal to pressure value in cm H20. Hysteresis not accounted for.
+        # Source 20 INCH-G-P4V-MINI: http://www.allsensors.com/datasheets/DS-0102_Rev_A.pdf
+        # Two-Point Calibration: 
+        raw_low = 0.28
+        raw_hi = 4.0 # needs calibration
+        raw_range = raw_hi - raw_low
+        ref_low = 0.25
+        ref_hi = 4.0
+        ref_range = ref_hi - ref_low
+        #corrected_val = (((raw_val - raw_low)*ref_range)/raw_range) + ref_low 
+        conv_val_inchh20 = (((raw_val - raw_low)*20.0)/raw_range) + 0.0    
+        conv_val_cmh20 = (2.54)*conv_val_inchh20    
+        return conv_val_cmh20
 
-def get_temp_reading():
-    return -1.0
-
-def get_humid_reading():
-    return -1.0
 
 def update_single_sensor(track, curr_val, track_len):
     # Adds newest sensor reading to end of track.
@@ -55,7 +69,8 @@ def update_single_sensor(track, curr_val, track_len):
    
 class SensorReadings:
     # A class for obtaining sensor readings at a single timepoint. 
-    def __init__(self):
+    def __init__(self,julieplease):
+        self._julieplease = julieplease
         self._pres1 = -1.0
         self._pres2 = -1.0
         self._o2 = -1.0
@@ -65,12 +80,12 @@ class SensorReadings:
         
     def read_all_sensors(self):
         print('Reading sensors: ')
-        self._pres1 = get_pressure1_reading()
-        self._pres2 = get_pressure2_reading()
-        self._o2 = get_o2_reading()
-        self._flow = get_flow_reading()
-        self._temp = get_temp_reading()
-        self._humid = get_humid_reading()
+        self._pres1 = self._julieplease.get_pressure1_reading()
+        self._pres2 = self._julieplease.get_pressure2_reading()
+        self._o2 = self._julieplease.get_o2_reading()
+        self._flow = self._julieplease.get_flow_reading()
+        self._temp = self._julieplease.get_temp_reading()
+        self._humid = self._julieplease.get_humid_reading()
         
     def reset(self):
         self._pres1 = -1.0

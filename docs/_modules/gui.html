@@ -1,0 +1,1071 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gui &mdash; ventilator 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../alarms.html">alarms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../controller.html">controller module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gui_styles.html">gui_styles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../helper.html">helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../main.html">main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../main_control.html">main_control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sensors.html">sensors</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>gui</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gui</h1><div class="highlight"><pre>
+<span></span><span class="c1">#########################</span>
+<span class="c1"># Imports</span>
+
+<span class="c1"># python standard libraries</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
+
+
+<span class="c1"># other required libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Using PySide (Qt) to build GUI</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+
+<span class="c1"># import whole module so pyqtgraph recognizes we&#39;re using it</span>
+<span class="kn">import</span> <span class="nn">PySide2</span>
+<span class="c1"># using pyqtgraph for data visualization</span>
+<span class="kn">import</span> <span class="nn">pyqtgraph</span> <span class="k">as</span> <span class="nn">pg</span>
+
+<span class="c1"># import styles</span>
+<span class="kn">import</span> <span class="nn">gui_styles</span>
+
+<span class="c1">##########################</span>
+<span class="c1"># GUI Class</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">(</span><span class="s1">&#39;Fira Code&#39;</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+    <span class="n">mono_font</span><span class="o">.</span><span class="n">setStyleHint</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Monospace</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Vent_Gui"><a class="viewcode-back" href="../gui.html#gui.Vent_Gui">[docs]</a><span class="k">class</span> <span class="nc">Vent_Gui</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Controls:</span>
+<span class="sd">        - PIP: peak inhalation pressure (~20 cm H2O)</span>
+<span class="sd">        - T_insp: inspiratory time to PEEP (~0.5 sec)</span>
+<span class="sd">        - I/E: inspiratory to expiratory time ratio</span>
+<span class="sd">        - bpm: breaths per minute (15 bpm -&gt; 1/15 sec cycle time)</span>
+<span class="sd">        - PIP_time: Target time for PIP. While lungs expand, dP/dt should be PIP/PIP_time</span>
+<span class="sd">        - flow_insp: nominal flow rate during inspiration</span>
+
+<span class="sd">    **Set by hardware**</span>
+<span class="sd">        - FiO2: fraction of inspired oxygen, set by blender</span>
+<span class="sd">        - max_flow: manual valve at output of blender</span>
+<span class="sd">        - PEEP: positive end-expiratory pressure, set by manual valve</span>
+
+<span class="sd">    **Derived parameters**</span>
+<span class="sd">        - cycle_time: 1/bpm</span>
+<span class="sd">        - t_insp: inspiratory time, controlled by cycle_time and I/E</span>
+<span class="sd">        - t_exp: expiratory time, controlled by cycle_time and I/E</span>
+
+<span class="sd">    **Monitored variables**</span>
+<span class="sd">        * O2</span>
+<span class="sd">        * Temperature</span>
+<span class="sd">        * Humidity</span>
+<span class="sd">        - (VTE) End-Tidal volume: the volume of air entering the lung, derived from flow through t_exp</span>
+<span class="sd">        - PIP: peak inspiratory pressure, set by user in software</span>
+<span class="sd">        - Mean plateau pressure: derived from pressure sensor during inspiration cycle hold (no flow)</span>
+<span class="sd">        - PEEP: positive end-expiratory pressure, set by manual valve</span>
+<span class="sd">        * fTotal (total respiratory frequency) - breaths delivered by vent &amp; patients natural breaths</span>
+
+
+<span class="sd">    **Alarms**</span>
+<span class="sd">        - Oxygen out of range</span>
+<span class="sd">        - High pressure (tube/airway occlusion)</span>
+<span class="sd">        - Low-pressure (disconnect)</span>
+<span class="sd">        - Temperature out of range</span>
+<span class="sd">        - Low voltage alarm (if using battery power)</span>
+<span class="sd">        - Tidal volume (expiratory) out of range</span>
+
+
+<span class="sd">    Graphs:</span>
+<span class="sd">        * Flow</span>
+<span class="sd">        * Pressure</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DISPLAY</span> <span class="o">=</span> <span class="n">odict</span><span class="p">({</span>
+        <span class="s1">&#39;oxygen&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;O2 Concentration&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;%&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;abs_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+            <span class="s1">&#39;safe_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+            <span class="s1">&#39;decimals&#39;</span> <span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Temperature&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\N{DEGREE SIGN}</span><span class="s1">C&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;abs_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+            <span class="s1">&#39;safe_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+            <span class="s1">&#39;decimals&#39;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;humidity&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Humidity&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;%&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;abs_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+            <span class="s1">&#39;safe_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">75</span><span class="p">),</span>
+            <span class="s1">&#39;decimals&#39;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;vte&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;VTE&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;%&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;abs_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+            <span class="s1">&#39;safe_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span>
+            <span class="s1">&#39;decimals&#39;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;etc&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Other measurements??&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;???&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;abs_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+            <span class="s1">&#39;safe_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">90</span><span class="p">),</span>
+            <span class="s1">&#39;decimals&#39;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+
+    <span class="n">PLOTS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;flow&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Flow (L/s)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;abs_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+            <span class="s1">&#39;safe_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span>
+            <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">gui_styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;yellow&#39;</span><span class="p">],</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;pressure&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Pressure (mmHg)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;abs_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+            <span class="s1">&#39;safe_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span>
+            <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">gui_styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_period</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Vent_Gui</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_values</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_period</span> <span class="o">=</span> <span class="n">update_period</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Vent_Gui.test"><a class="viewcode-back" href="../gui.html#gui.Vent_Gui.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">ox</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span><span class="o">+</span><span class="mi">80</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="p">[</span><span class="s1">&#39;oxygen&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">ox</span><span class="p">)</span>
+
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mf">2.5</span><span class="p">)</span><span class="o">+</span><span class="mi">22</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+        <span class="n">humid</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">/</span><span class="mi">50</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span><span class="o">+</span><span class="mi">50</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="p">[</span><span class="s1">&#39;humidity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">humid</span><span class="p">)</span>
+
+        <span class="n">press</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="p">[</span><span class="s1">&#39;vte&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">press</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">press</span><span class="p">))</span>
+        <span class="c1"># for num, widget in enumerate(self.display_values.values()):</span>
+        <span class="c1">#     yval = (np.sin(time.time()+num) + 1) * 50</span>
+        <span class="c1">#     widget.update_value(yval)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;flow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">50</span><span class="p">))</span>
+
+
+        <span class="c1"># if (time.time()-self.start_time) &lt; 60:</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Vent_Gui.update_value"><a class="viewcode-back" href="../gui.html#gui.Vent_Gui.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.init_ui"><a class="viewcode-back" href="../gui.html#gui.Vent_Gui.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the UI components for the ventilator screen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># basic initialization</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span><span class="p">)</span>
+
+        <span class="c1"># layout - three columns</span>
+        <span class="c1"># left: readout values</span>
+        <span class="c1"># left: readout values</span>
+        <span class="c1"># center: plotted values</span>
+        <span class="c1"># right: controls &amp; limits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="c1">#########</span>
+        <span class="c1"># display values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">display_key</span><span class="p">,</span> <span class="n">display_params</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DISPLAY</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="p">[</span><span class="n">display_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Display_Value</span><span class="p">(</span><span class="n">update_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_period</span><span class="p">,</span> <span class="o">**</span><span class="n">display_params</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="p">[</span><span class="n">display_key</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QHLine</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+
+        <span class="c1"># plots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+
+        <span class="c1"># button to set plot history</span>
+        <span class="n">button_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Plot History&quot;</span><span class="p">)</span>
+        <span class="c1">#button_group = QtWidgets.QButtonGroup()</span>
+        <span class="c1">#button_group.exclusive()</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;5s&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;10s&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;30s&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;1m&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;5m&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="o">*</span><span class="mi">5</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;15m&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="o">*</span><span class="mi">15</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;60m&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">button_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">button_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">a_time</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QRadioButton</span><span class="p">(</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c1">#self.time_buttons[a_time[0]].setCheckable(True)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">a_time</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_plot_duration</span><span class="p">)</span>
+            <span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="c1">#button_group.addButton(self.time_buttons[a_time[0]])</span>
+
+        <span class="n">button_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">button_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">button_box</span><span class="p">)</span>
+
+
+        <span class="k">for</span> <span class="n">plot_key</span><span class="p">,</span> <span class="n">plot_params</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLOTS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="o">**</span><span class="n">plot_params</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_key</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+
+        <span class="c1"># connect displays to plots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="p">[</span><span class="s1">&#39;vte&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_safe_limits</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_values</span><span class="p">[</span><span class="s1">&#39;vte&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_limits</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.set_plot_duration"><a class="viewcode-back" href="../gui.html#gui.Vent_Gui.set_plot_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_plot_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dur</span><span class="p">):</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">()</span><span class="o">.</span><span class="n">objectName</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">dur</span><span class="p">)</span></div></div>
+
+
+
+<div class="viewcode-block" id="Display_Value"><a class="viewcode-back" href="../gui.html#gui.Display_Value">[docs]</a><span class="k">class</span> <span class="nc">Display_Value</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="n">alarm</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+    <span class="n">limits_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">abs_range</span><span class="p">,</span> <span class="n">safe_range</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">update_period</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Display_Value</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span> <span class="o">=</span> <span class="n">abs_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span> <span class="o">=</span> <span class="n">safe_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span> <span class="o">=</span> <span class="n">decimals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_period</span> <span class="o">=</span> <span class="n">update_period</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timed_update</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Display_Value.init_ui"><a class="viewcode-back" href="../gui.html#gui.Display_Value.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="c1">#########</span>
+        <span class="c1"># create widgets</span>
+        <span class="c1"># make range slider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span> <span class="o">=</span> <span class="n">RangeSlider</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span><span class="p">)</span>
+
+        <span class="c1"># make comboboxes to display numerical value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decimals</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decimals</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># labels to display values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">DISPLAY_VALUE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">setMargin</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">DISPLAY_NAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">DISPLAY_UNITS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+
+        <span class="c1">#########</span>
+        <span class="c1"># connect widgets</span>
+
+        <span class="c1"># update boxes when slider changed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_boxes</span><span class="p">)</span>
+
+        <span class="c1"># and vice versa</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">setLow</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">setHigh</span><span class="p">)</span>
+
+        <span class="c1"># and connect them all to a general limits_changed method</span>
+        <span class="c1"># that also checks the alarm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_limits_changed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_limits_changed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_limits_changed</span><span class="p">)</span>
+
+        <span class="c1">#########</span>
+        <span class="c1"># layout widgets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">box_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">box_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;Max:&#39;</span><span class="p">))</span>
+        <span class="n">box_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="p">)</span>
+        <span class="n">box_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">box_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;Min:&#39;</span><span class="p">))</span>
+        <span class="n">box_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">box_layout</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">label_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">label_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">label_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_label</span><span class="p">)</span>
+        <span class="n">label_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="p">)</span>
+        <span class="n">label_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="p">)</span>
+        <span class="n">label_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">label_layout</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Display_Value.update_boxes"><a class="viewcode-back" href="../gui.html#gui.Display_Value.update_boxes">[docs]</a>    <span class="k">def</span> <span class="nf">update_boxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_values</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_values</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Display_Value.update_value"><a class="viewcode-back" href="../gui.html#gui.Display_Value.update_value">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+
+        <span class="c1"># stash numerical value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">new_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_alarm</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">update_indicator</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display_Value.update_limits"><a class="viewcode-back" href="../gui.html#gui.Display_Value.update_limits">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">update_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_limits</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="n">new_limits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="n">new_limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_boxes</span><span class="p">(</span><span class="n">new_limits</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display_Value.timed_update"><a class="viewcode-back" href="../gui.html#gui.Display_Value.timed_update">[docs]</a>    <span class="k">def</span> <span class="nf">timed_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># format value based on decimals</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">value_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">value_str</span><span class="p">)</span>
+
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_period</span><span class="o">*</span><span class="mi">1000</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">timed_update</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display_Value._limits_changed"><a class="viewcode-back" href="../gui.html#gui.Display_Value._limits_changed">[docs]</a>    <span class="k">def</span> <span class="nf">_limits_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="c1"># ignore value, just emit changes and check alarm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_alarm</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">value</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="Display_Value.check_alarm"><a class="viewcode-back" href="../gui.html#gui.Display_Value.check_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">check_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">value</span><span class="p">()):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">alarm</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">DISPLAY_VALUE_ALARM</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">alarm</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">DISPLAY_VALUE</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">alarm</span> <span class="o">=</span> <span class="kc">False</span></div></div>
+
+
+
+
+
+
+
+
+<div class="viewcode-block" id="RangeSlider"><a class="viewcode-back" href="../gui.html#gui.RangeSlider">[docs]</a><span class="k">class</span> <span class="nc">RangeSlider</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSlider</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A slider for ranges.</span>
+<span class="sd">    This class provides a dual-slider for ranges, where there is a defined</span>
+<span class="sd">    maximum and minimum, as is a normal slider, but instead of having a</span>
+<span class="sd">    single slider value, there are 2 slider values.</span>
+<span class="sd">    This class emits the same signals as the QSlider base class, with the</span>
+<span class="sd">    exception of valueChanged</span>
+
+<span class="sd">    Adapted from https://bitbucket.org/genuine_/idascope-local/src/master/idascope/widgets/RangeSlider.py</span>
+<span class="sd">    (Thank you!!!)</span>
+
+<span class="sd">    With code from https://stackoverflow.com/a/54819051</span>
+<span class="sd">    for labels!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">valueChanged</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abs_range</span><span class="p">,</span> <span class="n">safe_range</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RangeSlider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">RANGE_SLIDER</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span> <span class="o">=</span> <span class="n">abs_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="c1">#self.setTickInterval(round((abs_range[1]-abs_range[0])/5))</span>
+        <span class="c1">#self.setTickPosition(QtWidgets.QSlider.TicksLeft)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span> <span class="o">=</span> <span class="n">safe_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">safe_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">safe_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1">#self._low = self.minimum()</span>
+        <span class="c1">#self._high = self.maximum()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressed_control</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SC_None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hover_control</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SC_None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">click_offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># 0 for the low, 1 for the high, -1 for both</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_slider</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># ticks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setTickPosition</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSlider</span><span class="o">.</span><span class="n">TicksLeft</span><span class="p">)</span>
+        <span class="c1"># gives some space to print labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left_margin</span><span class="o">=</span><span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_margin</span><span class="o">=</span><span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right_margin</span><span class="o">=</span><span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bottom_margin</span><span class="o">=</span><span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left_margin</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">top_margin</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">right_margin</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">bottom_margin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">SLIDER_WIDTH</span><span class="p">)</span>
+
+        <span class="c1"># indicator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indicator</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">low</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low</span>
+
+    <span class="nd">@low</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">low</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_low</span> <span class="o">=</span> <span class="n">low</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">high</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high</span>
+
+    <span class="nd">@high</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">high</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">high</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_high</span> <span class="o">=</span> <span class="n">high</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+    <span class="c1"># make methods just so the can accept signals</span>
+<div class="viewcode-block" id="RangeSlider.setLow"><a class="viewcode-back" href="../gui.html#gui.RangeSlider.setLow">[docs]</a>    <span class="k">def</span> <span class="nf">setLow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">low</span></div>
+
+<div class="viewcode-block" id="RangeSlider.setHigh"><a class="viewcode-back" href="../gui.html#gui.RangeSlider.setHigh">[docs]</a>    <span class="k">def</span> <span class="nf">setHigh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">high</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">high</span></div>
+
+<div class="viewcode-block" id="RangeSlider.update_indicator"><a class="viewcode-back" href="../gui.html#gui.RangeSlider.update_indicator">[docs]</a>    <span class="k">def</span> <span class="nf">update_indicator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indicator</span> <span class="o">=</span> <span class="n">new_val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span>
+
+    <span class="nd">@alarm</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span> <span class="o">=</span> <span class="n">alarm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="RangeSlider.paintEvent"><a class="viewcode-back" href="../gui.html#gui.RangeSlider.paintEvent">[docs]</a>    <span class="k">def</span> <span class="nf">paintEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># based on http://qt.gitorious.org/qt/qt/blobs/master/src/gui/widgets/qslider.cpp</span>
+
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1">#style = QtWidgets.QApplication.style()</span>
+        <span class="n">style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span>
+
+        <span class="c1">### Draw current value indicator</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indicator</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">opt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyleOptionSlider</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initStyleOption</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">pixelMetric</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PM_SliderLength</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">available</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">pixelMetric</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PM_SliderSpaceAvailable</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+
+            <span class="n">y_loc</span><span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">sliderPositionFromValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">(),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indicator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">(),</span> <span class="n">opt</span><span class="o">.</span><span class="n">upsideDown</span><span class="p">)</span>
+
+
+            <span class="c1"># draw indicator first, so underneath max and min</span>
+            <span class="n">indicator_color</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm</span><span class="p">:</span>
+                <span class="n">indicator_color</span><span class="o">.</span><span class="n">setNamedColor</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">INDICATOR_COLOR</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">indicator_color</span><span class="o">.</span><span class="n">setNamedColor</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">ALARM_COLOR</span><span class="p">)</span>
+
+            <span class="n">x_begin</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">()</span><span class="o">-</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">INDICATOR_WIDTH</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
+            <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">indicator_color</span><span class="p">)</span>
+            <span class="n">pen_bak</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">painter</span><span class="o">.</span><span class="n">pen</span><span class="p">())</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">painter</span><span class="o">.</span><span class="n">pen</span><span class="p">()</span><span class="o">.</span><span class="n">setWidth</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawRect</span><span class="p">(</span><span class="n">x_begin</span><span class="p">,</span><span class="n">y_loc</span><span class="p">,</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">INDICATOR_WIDTH</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">()</span><span class="o">-</span><span class="n">y_loc</span><span class="p">)</span>
+
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pen_bak</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_high</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low</span><span class="p">]):</span>
+            <span class="n">opt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyleOptionSlider</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initStyleOption</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+            <span class="c1"># pdb.set_trace()</span>
+            <span class="c1"># Only draw the groove for the first slider so it doesn&#39;t get drawn</span>
+            <span class="c1"># on top of the existing ones every time</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">opt</span><span class="o">.</span><span class="n">subControls</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">SC_SliderGroove</span> <span class="o">|</span> <span class="n">style</span><span class="o">.</span><span class="n">SC_SliderHandle</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#opt.subControls = QtWidgets.QStyle.SC_SliderHandle</span>
+                <span class="n">opt</span><span class="o">.</span><span class="n">subControls</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">SC_SliderHandle</span>
+
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickPosition</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NoTicks</span><span class="p">:</span>
+                <span class="n">opt</span><span class="o">.</span><span class="n">subControls</span> <span class="o">|=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SC_SliderTickmarks</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressed_control</span><span class="p">:</span>
+                <span class="n">opt</span><span class="o">.</span><span class="n">activeSubControls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressed_control</span>
+                <span class="n">opt</span><span class="o">.</span><span class="n">state</span> <span class="o">|=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">State_Sunken</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">opt</span><span class="o">.</span><span class="n">activeSubControls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hover_control</span>
+
+            <span class="c1"># opt.rect.setX(-self.width()/2)</span>
+            <span class="n">opt</span><span class="o">.</span><span class="n">sliderPosition</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">opt</span><span class="o">.</span><span class="n">sliderValue</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">style</span><span class="o">.</span><span class="n">drawComplexControl</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">CC_Slider</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># draw ticks</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyleOptionSlider</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initStyleOption</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">pixelMetric</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PM_SliderLength</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">pixelMetric</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PM_SliderSpaceAvailable</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">border_offset</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">available</span> <span class="o">-=</span> <span class="n">border_offset</span>
+
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">(),</span> <span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">painter</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">levels</span><span class="p">:</span>
+            <span class="n">label_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+            <span class="c1"># label_str = &quot;{0:d}&quot;.format(v)</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(),</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TextDontPrint</span><span class="p">,</span> <span class="n">label_str</span><span class="p">)</span>
+
+            <span class="n">y_loc</span><span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">sliderPositionFromValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">(),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">(),</span> <span class="n">v</span><span class="p">,</span> <span class="n">available</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">upsideDown</span><span class="p">)</span>
+
+            <span class="n">bottom</span><span class="o">=</span><span class="n">y_loc</span><span class="o">+</span><span class="n">length</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="n">rect</span><span class="o">.</span><span class="n">height</span><span class="p">()</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">border_offset</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mi">3</span>
+            <span class="c1"># there is a 3 px offset that I can&#39;t attribute to any metric</span>
+            <span class="c1">#left = (self.width())-(rect.width())-10</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">()</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">INDICATOR_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">rect</span><span class="o">.</span><span class="n">width</span><span class="p">()</span><span class="o">-</span><span class="mi">3</span>
+
+            <span class="n">pos</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPoint</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">bottom</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">label_str</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setTickInterval</span><span class="p">(</span><span class="n">levels</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+
+
+<div class="viewcode-block" id="RangeSlider.mousePressEvent"><a class="viewcode-back" href="../gui.html#gui.RangeSlider.mousePressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+        <span class="n">style</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">style</span><span class="p">()</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span>
+
+        <span class="c1"># In a normal slider control, when the user clicks on a point in the</span>
+        <span class="c1"># slider&#39;s total range, but not on the slider part of the control the</span>
+        <span class="c1"># control would jump the slider value to where the user clicked.</span>
+        <span class="c1"># For this control, clicks which are not direct hits will slide both</span>
+        <span class="c1"># slider parts</span>
+
+        <span class="k">if</span> <span class="n">button</span><span class="p">:</span>
+            <span class="n">opt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyleOptionSlider</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initStyleOption</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">active_slider</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_low</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high</span><span class="p">]):</span>
+                <span class="n">opt</span><span class="o">.</span><span class="n">sliderPosition</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="n">hit</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">hitTestComplexControl</span><span class="p">(</span><span class="n">style</span><span class="o">.</span><span class="n">CC_Slider</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">(),</span> <span class="bp">self</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">hit</span> <span class="o">==</span> <span class="n">style</span><span class="o">.</span><span class="n">SC_SliderHandle</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">active_slider</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pressed_control</span> <span class="o">=</span> <span class="n">hit</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">triggerAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SliderMove</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setRepeatAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SliderNoAction</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setSliderDown</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_slider</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pressed_control</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SC_SliderHandle</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">click_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pixelPosToRangeValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__pick</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">()))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">triggerAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SliderMove</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setRepeatAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SliderNoAction</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RangeSlider.mouseMoveEvent"><a class="viewcode-back" href="../gui.html#gui.RangeSlider.mouseMoveEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseMoveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressed_control</span> <span class="o">!=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SC_SliderHandle</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="n">event</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+        <span class="c1"># get old values</span>
+        <span class="n">old_low</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_low</span><span class="p">)</span>
+        <span class="n">old_high</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_high</span><span class="p">)</span>
+
+        <span class="n">new_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pixelPosToRangeValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__pick</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">()))</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyleOptionSlider</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initStyleOption</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_slider</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">new_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">click_offset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_high</span> <span class="o">+=</span> <span class="n">offset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_low</span> <span class="o">+=</span> <span class="n">offset</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">():</span>
+                <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_low</span> <span class="o">+=</span> <span class="n">diff</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_high</span> <span class="o">+=</span> <span class="n">diff</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">():</span>
+                <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_low</span> <span class="o">+=</span> <span class="n">diff</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_high</span> <span class="o">+=</span> <span class="n">diff</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_slider</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">new_pos</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high</span><span class="p">:</span>
+                <span class="c1">#new_pos = self._high - 1</span>
+                <span class="n">new_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_low</span> <span class="o">=</span> <span class="n">new_pos</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">new_pos</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low</span><span class="p">:</span>
+                <span class="c1">#new_pos = self._low + 1</span>
+                <span class="n">new_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_high</span> <span class="o">=</span> <span class="n">new_pos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">click_offset</span> <span class="o">=</span> <span class="n">new_pos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">SIGNAL</span><span class="p">(</span><span class="s1">&#39;sliderMoved(int)&#39;</span><span class="p">),</span> <span class="n">new_pos</span><span class="p">)</span>
+
+        <span class="c1"># emit valuechanged signal</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">old_low</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">old_high</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_low</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">__pick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pt</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pt</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__pixelPosToRangeValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyleOptionSlider</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initStyleOption</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+        <span class="n">style</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">style</span><span class="p">()</span>
+
+        <span class="n">gr</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">subControlRect</span><span class="p">(</span><span class="n">style</span><span class="o">.</span><span class="n">CC_Slider</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">style</span><span class="o">.</span><span class="n">SC_SliderGroove</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">sr</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">subControlRect</span><span class="p">(</span><span class="n">style</span><span class="o">.</span><span class="n">CC_Slider</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">style</span><span class="o">.</span><span class="n">SC_SliderHandle</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">:</span>
+            <span class="n">slider_length</span> <span class="o">=</span> <span class="n">sr</span><span class="o">.</span><span class="n">width</span><span class="p">()</span>
+            <span class="n">slider_min</span> <span class="o">=</span> <span class="n">gr</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+            <span class="n">slider_max</span> <span class="o">=</span> <span class="n">gr</span><span class="o">.</span><span class="n">right</span><span class="p">()</span> <span class="o">-</span> <span class="n">slider_length</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">slider_length</span> <span class="o">=</span> <span class="n">sr</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+            <span class="n">slider_min</span> <span class="o">=</span> <span class="n">gr</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+            <span class="n">slider_max</span> <span class="o">=</span> <span class="n">gr</span><span class="o">.</span><span class="n">bottom</span><span class="p">()</span> <span class="o">-</span> <span class="n">slider_length</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">style</span><span class="o">.</span><span class="n">sliderValueFromPosition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">(),</span> <span class="n">pos</span> <span class="o">-</span> <span class="n">slider_min</span><span class="p">,</span> <span class="n">slider_max</span> <span class="o">-</span> \
+            <span class="n">slider_min</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">upsideDown</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Plot"><a class="viewcode-back" href="../gui.html#gui.Plot">[docs]</a><span class="k">class</span> <span class="nc">Plot</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotWidget</span><span class="p">):</span>
+
+    <span class="n">limits_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="mi">4092</span><span class="p">,</span> <span class="n">plot_duration</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">abs_range</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">safe_range</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1">#super(Plot, self).__init__(axisItems={&#39;bottom&#39;:TimeAxis(orientation=&#39;bottom&#39;)})</span>
+        <span class="c1"># construct title html string</span>
+        <span class="n">titlestr</span> <span class="o">=</span> <span class="s2">&quot;&lt;h1 style=</span><span class="se">\&quot;</span><span class="si">{title_style}</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{title_text}</span><span class="s2">&lt;/h1&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title_style</span><span class="o">=</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">TITLE_STYLE</span><span class="p">,</span>
+                                                                      <span class="n">title_text</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Plot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span>
+                                   <span class="n">title</span><span class="o">=</span><span class="n">titlestr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">buffer_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">buffer_size</span><span class="p">)</span>
+        <span class="c1"># TODO: Make @property to update buffer_size, preserving history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_duration</span> <span class="o">=</span> <span class="n">plot_duration</span>
+
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_relative_time</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">abs_range</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span> <span class="o">=</span> <span class="n">abs_range</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setYRange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">safe_range</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span> <span class="o">=</span> <span class="n">safe_range</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot_duration</span><span class="p">)</span>
+
+        <span class="c1"># split plot curve into two so that the endpoint doesn&#39;t get connected to the start point</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">early_curve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">late_curve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_marker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">sigPositionChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_safe_limits_changed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">sigPositionChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_safe_limits_changed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_curve</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">late_curve</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Plot.set_duration"><a class="viewcode-back" href="../gui.html#gui.Plot.set_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dur</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dur</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_duration</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Plot.update_value"><a class="viewcode-back" href="../gui.html#gui.Plot.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        new_value: (timestamp from time.time(), value)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">this_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="c1">#time_diff = this_time-self._last_time</span>
+        <span class="n">limits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">viewRange</span><span class="p">()</span>
+        <span class="n">current_relative_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_time</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_marker</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="n">current_relative_time</span><span class="p">,</span> <span class="n">current_relative_time</span><span class="p">],</span>
+                                 <span class="p">[</span><span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># filter values based on timestamps</span>
+        <span class="n">ts_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="p">)</span>
+        <span class="n">end_ind</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
+        <span class="n">start_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ts_array</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">this_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_duration</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># subtract start time and take modulus of duration to get wrapped timestamps</span>
+        <span class="n">plot_timestamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">ts_array</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">end_ind</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_duration</span><span class="p">)</span>
+        <span class="n">plot_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_ind</span><span class="p">,</span> <span class="n">end_ind</span><span class="p">)])</span>
+
+        <span class="c1"># find the point where the time resets</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">reset_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">plot_timestamps</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># plot early and late</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_curve</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">plot_timestamps</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">reset_ind</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">plot_values</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">reset_ind</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">late_curve</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">plot_timestamps</span><span class="p">[</span><span class="n">reset_ind</span><span class="o">+</span><span class="mi">1</span><span class="p">:],</span> <span class="n">plot_values</span><span class="p">[</span><span class="n">reset_ind</span><span class="o">+</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_curve</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">plot_timestamps</span><span class="p">,</span> <span class="n">plot_values</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">late_curve</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+        <span class="c1">#self._last_time = this_time</span>
+
+<div class="viewcode-block" id="Plot._safe_limits_changed"><a class="viewcode-back" href="../gui.html#gui.Plot._safe_limits_changed">[docs]</a>    <span class="k">def</span> <span class="nf">_safe_limits_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="c1"># ignore input val, just emit the current value of the lines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">value</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="Plot.set_safe_limits"><a class="viewcode-back" href="../gui.html#gui.Plot.set_safe_limits">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">set_safe_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limits</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div></div>
+
+<div class="viewcode-block" id="QHLine"><a class="viewcode-back" href="../gui.html#gui.QHLine">[docs]</a><span class="k">class</span> <span class="nc">QHLine</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    with respct to https://stackoverflow.com/a/51057516</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">DIVIDER_COLOR</span><span class="p">)):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QHLine</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFrameShape</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">HLine</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFrameShadow</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">Plain</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLineWidth</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMidLineWidth</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+
+<div class="viewcode-block" id="QHLine.setColor"><a class="viewcode-back" href="../gui.html#gui.QHLine.setColor">[docs]</a>    <span class="k">def</span> <span class="nf">setColor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="n">pal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">()</span>
+        <span class="n">pal</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">WindowText</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setPalette</span><span class="p">(</span><span class="n">pal</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="TimeAxis"><a class="viewcode-back" href="../gui.html#gui.TimeAxis">[docs]</a><span class="k">class</span> <span class="nc">TimeAxis</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">AxisItem</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLabel</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enableAutoSIPrefix</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TimeAxis.tickStrings"><a class="viewcode-back" href="../gui.html#gui.TimeAxis.tickStrings">[docs]</a>    <span class="k">def</span> <span class="nf">tickStrings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">spacing</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># just for testing, should be run from main</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">gui_styles</span><span class="o">.</span><span class="n">GLOBAL</span><span class="p">)</span>
+    <span class="n">gui</span> <span class="o">=</span> <span class="n">Vent_Gui</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

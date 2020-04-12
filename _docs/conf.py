@@ -21,6 +21,11 @@ project = 'ventilator'
 copyright = '2020, jonny saunders et al'
 author = 'jonny saunders et al'
 
+# the short X.Y version
+version = '0.0'
+# the full version, includeing alpha/beta/rc/rags
+release = '0.0.0'
+
 
 # -- General configuration ---------------------------------------------------
 
@@ -31,8 +36,12 @@ master_doc = "index"
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx_automodapi.automodapi',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    # 'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon',
+    'autodocsumm',
     'recommonmark'
 ]
 
@@ -70,12 +79,19 @@ autodoc_default_options = {
     'members': True,
     'undoc-members': True,
     'private-members': True,
-    'memver-order': 'bysource'
-    
+    'member-order': 'bysource',
+    'autosummary': True
 }
 autoclass_content = "both"
+autosummary_generate = True
 
 # autodoc_mock_imports = ['automationhat']
+
+
+######
+# Todo extension
+
+todo_include_todos = True
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -89,3 +105,4 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_extra_path = ['assets']

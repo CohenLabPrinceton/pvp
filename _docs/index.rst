@@ -28,9 +28,19 @@ Welcome to ventilator's documentation!
    sensors
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Resources:
+
+   Ventilator Requirements <requirements>
+   Datasheets & Manuals <datasheets>
+   Specifications <specs>
+
+
+.. toctree::
    :maxdepth: 1
    :caption: Meta:
 
+   Changelog <changelog/index>
    Building the Docs <buildthedocs>
    Markdown Example <example_markdown>
 

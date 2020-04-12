@@ -1,0 +1,2 @@
+* fade color for older traces
+* buttons to control length of history

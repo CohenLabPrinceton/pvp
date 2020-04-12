@@ -1,0 +1,24 @@
+<map id="inheritancea39c854e1d" name="inheritancea39c854e1d">
+<area shape="rect" id="node1" title="GraphicsItem showing a single plot axis with ticks, values, and label." alt="" coords="486,23,527,37"/>
+<area shape="rect" id="node24" href="#id37" target="_top" title="TimeAxis" alt="" coords="573,23,615,37"/>
+<area shape="rect" id="node3" href="#id0" target="_top" title="Display_Value" alt="" coords="276,117,335,131"/>
+<area shape="rect" id="node4" title="QWidget(self, parent: typing.Union[PySide2.QtWidgets.QWidget, NoneType] = None, f: PySide2.QtCore.Qt.WindowFlags = Default(Qt.WindowFlags))" alt="" coords="181,97,222,110"/>
+<area shape="rect" id="node13" title="QFrame(self, parent: typing.Union[PySide2.QtWidgets.QWidget, NoneType] = None, f: PySide2.QtCore.Qt.WindowFlags = Default(Qt.WindowFlags))" alt="" coords="286,144,326,157"/>
+<area shape="rect" id="node14" title="QAbstractSlider(self, parent: typing.Union[PySide2.QtWidgets.QWidget, NoneType] = None)" alt="" coords="274,63,338,77"/>
+<area shape="rect" id="node20" title="QMainWindow(self, parent: typing.Union[PySide2.QtWidgets.QWidget, NoneType] = None, flags: PySide2.QtCore.Qt.WindowFlags = Default(Qt.WindowFlags))" alt="" coords="276,90,336,104"/>
+<area shape="rect" id="node5" title="**Bases:** :class:`object`" alt="" coords="278,3,334,16"/>
+<area shape="rect" id="node6" title="Re&#45;implementation of QGraphicsView that removes scrollbars and allows unambiguous control of the " alt="" coords="565,157,623,171"/>
+<area shape="rect" id="node7" title="QGraphicsView(self, parent: typing.Union[PySide2.QtWidgets.QWidget, NoneType] = None)" alt="" coords="475,157,538,171"/>
+<area shape="rect" id="node8" title="QGraphicsWidget(self, parent: typing.Union[PySide2.QtWidgets.QGraphicsItem, NoneType] = None, wFlags: PySide2.QtCore.Qt.WindowFlags = Default(Qt.WindowFlags))" alt="" coords="271,30,341,43"/>
+<area shape="rect" id="node15" title="QGraphicsItem(self, parent: typing.Union[PySide2.QtWidgets.QGraphicsItem, NoneType] = None)" alt="" coords="70,50,132,63"/>
+<area shape="rect" id="node16" title="QGraphicsLayoutItem(self, parent: typing.Union[PySide2.QtWidgets.QGraphicsLayoutItem, NoneType] = None, isLayout: bool = False)" alt="" coords="159,23,244,37"/>
+<area shape="rect" id="node18" title="QObject(self, parent: typing.Union[PySide2.QtCore.QObject, NoneType] = None)" alt="" coords="81,77,121,90"/>
+<area shape="rect" id="node21" title="QPaintDevice(self)" alt="" coords="72,104,130,117"/>
+<area shape="rect" id="node10" href="#id13" target="_top" title="Plot" alt="" coords="725,157,765,171"/>
+<area shape="rect" id="node12" title="QAbstractScrollArea(self, parent: typing.Union[PySide2.QtWidgets.QWidget, NoneType] = None)" alt="" coords="368,157,448,171"/>
+<area shape="rect" id="node19" href="#id20" target="_top" title="with respct to https://stackoverflow.com/a/51057516" alt="" coords="388,131,428,144"/>
+<area shape="rect" id="node22" title="QSlider(self, orientation: PySide2.QtCore.Qt.Orientation, parent: typing.Union[PySide2.QtWidgets.QWidget, NoneType] = None)" alt="" coords="388,63,428,77"/>
+<area shape="rect" id="node17" title="QGraphicsObject(self, parent: typing.Union[PySide2.QtWidgets.QGraphicsItem, NoneType] = None)" alt="" coords="167,50,236,63"/>
+<area shape="rect" id="node25" href="#id42" target="_top" title="Controls:" alt="" coords="387,90,429,104"/>
+<area shape="rect" id="node23" href="#id23" target="_top" title="A slider for ranges." alt="" coords="480,63,533,77"/>
+</map>

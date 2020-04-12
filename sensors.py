@@ -3,6 +3,7 @@ import board
 import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
+from adafruit_bus_device.i2c_device import I2CDevice
 from time import sleep
 
 # This is the library for reading sensor values.
@@ -11,18 +12,24 @@ from time import sleep
 class JuliePlease:
     def __init__(self):
         self.i2c            = busio.I2C(board.SCL,board.SDA)
-        self.adc            = ADS.ADS1115(self.i2c)
-        sleep(0.1) # short pause after ads1115 class creation recommended
-        self.pressure1      = AnalogIn(self.adc,ADS.P0)
-        #self.pressure2     = AnalogIn(self.adc,ADS.P1)
-        self.o2             = AnalogIn(self.adc,ADS.P2,ADS.P3)
+        try:
+            self.adc            = ADS.ADS1115(self.i2c)
+            sleep(0.1) # short pause after ads1115 class creation recommended
+            self.pressure1      = AnalogIn(self.adc,ADS.P0)
+            self.pressure2      = AnalogIn(self.adc,ADS.P1)
+            self.o2             = AnalogIn(self.adc,ADS.P2,ADS.P3)
+        except: print('No ADC found.\n')
+        self.flow           = I2CDevice(self.i2c,0x40) 
+        with self.flow:
+            self.flow.write(b"\x10\x00")
+            sleep(0.5)
         
     def get_pressure1_reading(self):
         pres_val = self.__convert_raw_to_pressure(self.pressure1.voltage)
         return pres_val
         
     def get_pressure2_reading(self):
-        #pres_val = self.__convert_raw_to_pressure(self.pressure2.voltage)
+        pres_val = self.__convert_raw_to_pressure(self.pressure2.voltage)
         pres_val = -1
         return pres_val
         
@@ -31,7 +38,10 @@ class JuliePlease:
         return o2_raw
 
     def get_flow_reading(self):
-        return -1.0
+        flowbytes = flowbytes = bytearray(4)
+        self.flow.readinto(flowbytes)
+        flow_val = self.__convert_raw_to_flow(flowbytes)
+        return flow_val
 
     def get_temp_reading(self):
         return -1.0
@@ -53,6 +63,14 @@ class JuliePlease:
         conv_val_inchh20 = (((raw_val - raw_low)*20.0)/raw_range) + 0.0    
         conv_val_cmh20 = (2.54)*conv_val_inchh20    
         return conv_val_cmh20
+    def __convert_raw_to_flow(self,flowbytes):
+        # Convert raw i2c response (4 bytes) to a flow reading represaented by a floating-point
+        # number with units slm.
+        # Source: https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/5_Mass_Flow_Meters/Application_Notes/Sensirion_Mass_Flo_Meters_SFM3xxx_I2C_Functional_Description.pdf
+        flow_offset         = 32768
+        flow_scale_factor   = 120
+        flow = float(int.from_bytes(flowbytes[:2],'big',signed=False)-flow_offset)/flow_scale_factor
+        return flow
 
 
 def update_single_sensor(track, curr_val, track_len):

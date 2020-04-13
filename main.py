@@ -23,6 +23,7 @@ try:
         # UI logic should go into this script. Callbacks needed. 
     
         main_control.take_step(jp, tracker, alarm_bounds, control)
+        
         # Pause until next datapoint capture
         #time.sleep(SAMPLETIME)
 except KeyboardInterrupt:

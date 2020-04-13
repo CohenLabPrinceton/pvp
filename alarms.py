@@ -1,5 +1,4 @@
 # library imports:
-import automationhat
 
 def throw_pres1_alarm(tracker, bounds):
     # Throws alarm for pressure sensor at output of pressure regulator.
@@ -18,22 +17,22 @@ def throw_pres2_alarm(tracker, bounds):
     return do_throw
 
 def throw_o2_alarm(tracker, bounds):
-    # Throws alarm for pressure sensor at WYE port.
+    # Throws alarm for O2 sensor.
     do_throw = 0    
     return do_throw
 
 def throw_flow_alarm(tracker, bounds):
-    # Throws alarm for pressure sensor at WYE port.
+    # Throws alarm for flow sensor.
     do_throw = 0    
     return do_throw
 
 def throw_temp_alarm(tracker, bounds):
-    # Throws alarm for pressure sensor at WYE port.
+    # Throws alarm for temperature sensor.
     do_throw = 0    
     return do_throw
 
 def throw_humid_alarm(tracker, bounds):
-    # Throws alarm for pressure sensor at WYE port.
+    # Throws alarm for humidity sensor (optional).
     do_throw = 0    
     return do_throw
 
@@ -45,58 +44,24 @@ def throw_raw_alarms(tracker, alarm_bounds):
     do_throw = do_throw or throw_pres2_alarm(tracker, alarm_bounds.pres2_bounds)
     # ...
 
-    # Raise alarms: 
-    if (automationhat.is_automation_hat() and do_throw==1):
-        automationhat.light.power.write(1)  # Just turning on a light for now. 
     return
 
 class AlarmBounds:
     # A class for obtaining sensor readings at a single timepoint. 
     def __init__(self):
-        self._pres1_bounds = [-10000, 4.0]
-        self._pres2_bounds = [-10000, 10000]
-        self._o2_bounds = [-10000, 10000]
-        self._flow_bounds = [-10000, 10000]
-        self._temp_bounds = [-10000, 10000]
-        self._humid_bounds = [-10000, 10000]
-        
-    def set_pres1_bounds(self, pres_val):
-        self._pres1_bounds = pres_val
-    def set_pres2_bounds(self, pres_val):
-        self._pres2_bounds = pres_val
-    def set_o2_bounds(self, o2_val):
-        self._o2_bounds = o2_val
-    def set_flow_bounds(self, flow_val):
-        self._flow_bounds = flow_val
-    def set_temp_bounds(self, temp_val):
-        self._temp_bounds = temp_val
-    def set_humid_bounds(self, humid_val):
-        self._humid_bounds = humid_val
+        self.pres1_bounds = [-10000, 4.0]
+        self.pres2_bounds = [-10000, 10000]
+        self.o2_bounds = [-10000, 10000]
+        self.flow_bounds = [-10000, 10000]
+        self.temp_bounds = [-10000, 10000]
+        self.humid_bounds = [-10000, 10000]
         
     def reset(self):
-        self._pres1_bounds = [-10000, 10000]
-        self._pres2_bounds = [-10000, 10000]
-        self._o2_bounds = [-10000, 10000]
-        self._flow_bounds = [-10000, 10000]
-        self._temp_bounds = [-10000, 10000]
-        self._humid_bounds = [-10000, 10000]
+        self.pres1_bounds = [-10000, 10000]
+        self.pres2_bounds = [-10000, 10000]
+        self.o2_bounds = [-10000, 10000]
+        self.flow_bounds = [-10000, 10000]
+        self.temp_bounds = [-10000, 10000]
+        self.humid_bounds = [-10000, 10000]
     
-    @property
-    def pres1_bounds(self):
-        return self._pres1_bounds
-    @property
-    def pres2_bounds(self):
-        return self._pres2_bounds
-    @property
-    def o2_bounds(self):
-        return self._o2_bounds
-    @property
-    def flow_bounds(self):
-        return self._flow_bounds
-    @property
-    def temp_bounds(self):
-        return self._temp_bounds
-    @property
-    def humid_bounds(self):
-        return self._humid_bounds
 

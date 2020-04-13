@@ -120,6 +120,23 @@ class Vent_Gui(QtWidgets.QMainWindow):
         }
     })
 
+    CONTROL = {
+        'oxygen': {
+            'name': 'O2 Concentration',
+            'units': '%',
+            'abs_range': (0, 100),
+            'value': 80,
+            'decimals': 1
+        },
+        'temperature': {
+            'name': 'Temperature',
+            'units': '\N{DEGREE SIGN}C',
+            'abs_range': (0, 50),
+            'value': 23,
+            'decimals': 1
+        },
+    }
+
     PLOTS = {
         'flow': {
             'name': 'Flow (L/s)',
@@ -171,7 +188,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         # if (time.time()-self.start_time) < 60:
-        QtCore.QTimer.singleShot(0.01, self.test)
+        QtCore.QTimer.singleShot(0.02, self.test)
 
 
     def update_value(self, value_name, new_value):
@@ -208,9 +225,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.display_values[display_key] = Display_Value(update_period = self.update_period, **display_params)
             self.display_layout.addWidget(self.display_values[display_key])
             self.display_layout.addWidget(QHLine())
-        self.layout.addLayout(self.display_layout, 1)
+        self.layout.addLayout(self.display_layout, 2)
 
-
+        ###########
         # plots
         self.plot_layout = QtWidgets.QVBoxLayout()
 
@@ -245,12 +262,28 @@ class Vent_Gui(QtWidgets.QMainWindow):
         for plot_key, plot_params in self.PLOTS.items():
             self.plots[plot_key] = Plot(**plot_params)
             self.plot_layout.addWidget(self.plots[plot_key])
-        self.layout.addLayout(self.plot_layout,2)
+
+        self.layout.addLayout(self.plot_layout,5)
 
 
         # connect displays to plots
         self.display_values['vte'].limits_changed.connect(self.plots['pressure'].set_safe_limits)
         self.plots['pressure'].limits_changed.connect(self.display_values['vte'].update_limits)
+
+
+        ####################
+        # Controls
+
+        self.controls_layout = QtWidgets.QVBoxLayout()
+        for control_name, control_params in self.CONTROL.items():
+            self.controls[control_name] = Control(**control_params)
+            self.controls_layout.addWidget(self.controls[control_name])
+            self.controls_layout.addWidget(QHLine())
+
+        self.controls_layout.addStretch()
+
+        self.layout.addLayout(self.controls_layout, 1)
+
 
         self.show()
 
@@ -398,6 +431,132 @@ class Display_Value(QtWidgets.QWidget):
             else:
                 self.value_label.setStyleSheet(gui_styles.DISPLAY_VALUE)
                 self.range_slider.alarm = False
+
+class Control(QtWidgets.QWidget):
+
+    value_changed = QtCore.Signal(float)
+
+    def __init__(self, name, units, abs_range, value, decimals):
+        super(Control, self).__init__()
+
+        self.name = name
+        self.units = units
+        self.abs_range = abs_range
+        self.value = value
+        self.decimals = decimals
+
+        self.init_ui()
+
+
+    def init_ui(self):
+        self.layout = QtWidgets.QGridLayout()
+
+        # Value, Controller
+        #        min,   max
+        # Name
+        # Units
+
+        self.value_label = EditableLabel()
+        self.value_label.setStyleSheet(gui_styles.CONTROL_VALUE)
+        self.value_label.label.setFont(mono_font)
+        self.value_label.lineEdit.setFont(mono_font)
+        self.value_label.label.setAlignment(QtCore.Qt.AlignRight)
+        #self.value_label.setMargin(0)
+        self.value_label.setContentsMargins(0,0,0,0)
+
+        # set max size based on range
+        # FIXME: TEMPORARY HACK - get sizing to work intelligibly with the dial
+        #n_ints = len(str(self.abs_range[1]))
+        n_ints = 3
+        self.value_label.setFixedWidth(n_ints*gui_styles.VALUE_SIZE*.6)
+
+        self.dial = QtWidgets.QDial()
+        self.dial.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.dial.setMinimum(self.abs_range[0])
+        self.dial.setMaximum(self.abs_range[1])
+        self.dial.setNotchesVisible(True)
+        self.dial.setContentsMargins(0,0,0,0)
+        self.dial.setFixedHeight(gui_styles.VALUE_SIZE)
+        self.dial.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
+                                QtWidgets.QSizePolicy.Fixed)
+
+        self.dial_min = QtWidgets.QLabel()
+        self.dial_min.setText(str(np.round(self.abs_range[0], self.decimals)))
+        self.dial_min.setAlignment(QtCore.Qt.AlignLeft)
+        self.dial_min.setFont(mono_font)
+        self.dial_min.setStyleSheet(gui_styles.CONTROL_LABEL)
+        self.dial_min.setMargin(0)
+        self.dial_min.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                    QtWidgets.QSizePolicy.Maximum)
+
+
+        self.dial_max = QtWidgets.QLabel()
+        self.dial_max.setText(str(np.round(self.abs_range[1], self.decimals)))
+        self.dial_max.setAlignment(QtCore.Qt.AlignRight)
+        self.dial_max.setFont(mono_font)
+        self.dial_max.setStyleSheet(gui_styles.CONTROL_LABEL)
+        self.dial_max.setMargin(0)
+        self.dial_max.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                    QtWidgets.QSizePolicy.Maximum)
+
+        self.name_label = QtWidgets.QLabel()
+        self.name_label.setStyleSheet(gui_styles.DISPLAY_NAME)
+        self.name_label.setText(self.name)
+        self.name_label.setAlignment(QtCore.Qt.AlignRight)
+        self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                    QtWidgets.QSizePolicy.Maximum)
+
+        self.units_label = QtWidgets.QLabel()
+        self.units_label.setStyleSheet(gui_styles.DISPLAY_UNITS)
+        self.units_label.setText(self.units)
+        self.units_label.setAlignment(QtCore.Qt.AlignRight)
+        self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                    QtWidgets.QSizePolicy.Maximum)
+
+
+        ###
+        # layout
+        self.layout.addWidget(self.value_label, 0, 0, 3, 1, alignment=QtGui.Qt.AlignVCenter | QtGui.Qt.AlignRight)
+        self.layout.addWidget(self.dial, 0, 1, 2, 2, alignment=QtGui.Qt.AlignVCenter)
+        self.layout.addWidget(self.dial_min, 2, 1, 1, 1)
+        self.layout.addWidget(self.dial_max, 2, 2, 1, 1)
+        self.layout.addWidget(self.name_label, 3, 0, 1, 3, alignment=QtGui.Qt.AlignRight)
+        self.layout.addWidget(self.units_label, 4, 0, 1, 3, alignment=QtGui.Qt.AlignRight)
+
+        self.setLayout(self.layout)
+
+
+        ###
+        # set signals
+        self.value_label.textChanged.connect(self.update_value)
+        self.dial.valueChanged.connect(self.update_value)
+
+
+        self.update_value(self.value)
+
+    def update_value(self, new_value):
+        if isinstance(new_value, str):
+            new_value = float(new_value)
+
+        if (new_value <= self.abs_range[1]) and (new_value >= self.abs_range[0]):
+            self.value = new_value
+
+            self.value_changed.emit(self.value)
+
+        # still draw regardless in case an invalid value was given
+        value_str = str(np.round(self.value, self.decimals))
+        self.value_label.setText(value_str)
+
+        self.dial.setValue(self.value)
+
+
+
+
+
+
+
+
+
 
 
 
@@ -814,6 +973,125 @@ class Plot(pg.PlotWidget):
     def set_safe_limits(self, limits):
         self.max_safe.setPos(limits[1])
         self.min_safe.setPos(limits[0])
+
+
+class KeyPressHandler(QtCore.QObject):
+    """Custom key press handler
+    https://gist.github.com/mfessenden/baa2b87b8addb0b60e54a11c1da48046"""
+    escapePressed = QtCore.Signal(bool)
+    returnPressed = QtCore.Signal(bool)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.KeyPress:
+            event_key = event.key()
+            if event_key == QtCore.Qt.Key_Escape:
+                self.escapePressed.emit(True)
+                return True
+            if event_key == QtCore.Qt.Key_Return or event_key == QtCore.Qt.Key_Enter:
+                self.returnPressed.emit(True)
+                return True
+
+        return QtCore.QObject.eventFilter(self, obj, event)
+
+
+
+class EditableLabel(QtWidgets.QWidget):
+    """Editable label
+    https://gist.github.com/mfessenden/baa2b87b8addb0b60e54a11c1da48046"""
+    textChanged = QtCore.Signal(str)
+
+    def __init__(self, parent=None, **kwargs):
+        super(EditableLabel, self).__init__(parent=parent, **kwargs)
+
+        self.is_editable = kwargs.get("editable", True)
+        self.keyPressHandler = KeyPressHandler(self)
+
+        self.setStyleSheet(gui_styles.CONTROL_VALUE)
+
+        self.mainLayout = QtWidgets.QHBoxLayout(self)
+        self.mainLayout.setContentsMargins(0, 0, 0, 0)
+        self.mainLayout.setObjectName("mainLayout")
+
+        self.label = QtWidgets.QLabel(self)
+        self.label.setObjectName("label")
+        # self.label.setStyleSheet(gui_styles.CONTROL_VALUE)
+        self.label.setMinimumHeight(gui_styles.VALUE_SIZE)
+
+
+        self.mainLayout.addWidget(self.label)
+        self.lineEdit = QtWidgets.QLineEdit(self)
+        # self.lineEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                             QtWidgets.QSizePolicy.Expanding)
+        # self.lineEdit.setMinimumHeight(gui_styles.VALUE_SIZE)
+        self.lineEdit.setObjectName("lineEdit")
+        self.lineEdit.setValidator(QtGui.QDoubleValidator())
+        self.mainLayout.addWidget(self.lineEdit)
+        # hide the line edit initially
+        self.lineEdit.setHidden(True)
+
+
+        # setup signals
+        self.create_signals()
+
+    def create_signals(self):
+        self.lineEdit.installEventFilter(self.keyPressHandler)
+        self.label.mousePressEvent = self.labelPressedEvent
+
+        # give the lineEdit both a `returnPressed` and `escapedPressed` action
+        self.keyPressHandler.escapePressed.connect(self.escapePressedAction)
+        self.keyPressHandler.returnPressed.connect(self.returnPressedAction)
+
+    def text(self):
+        """Standard QLabel text getter"""
+        return self.label.text()
+
+    def setText(self, text):
+        """Standard QLabel text setter"""
+        self.label.blockSignals(True)
+        self.label.setText(text)
+        self.label.blockSignals(False)
+
+    def labelPressedEvent(self, event):
+        """Set editable if the left mouse button is clicked"""
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
+            self.setLabelEditableAction()
+
+    def setLabelEditableAction(self):
+        """Action to make the widget editable"""
+        if not self.is_editable:
+            return
+
+        self.label.setHidden(True)
+        self.label.blockSignals(True)
+        self.lineEdit.setHidden(False)
+        self.lineEdit.setText(self.label.text())
+        self.lineEdit.blockSignals(False)
+        self.lineEdit.setFocus(QtCore.Qt.MouseFocusReason)
+        self.lineEdit.selectAll()
+
+    def labelUpdatedAction(self):
+        """Indicates the widget text has been updated"""
+        text_to_update = self.lineEdit.text()
+
+        if text_to_update != self.label.text():
+            self.label.setText(text_to_update)
+            self.textChanged.emit(text_to_update)
+
+        self.label.setHidden(False)
+        self.lineEdit.setHidden(True)
+        self.lineEdit.blockSignals(True)
+        self.label.blockSignals(False)
+
+    def returnPressedAction(self):
+        """Return/enter event handler"""
+        self.labelUpdatedAction()
+
+    def escapePressedAction(self):
+        """Escape event handler"""
+        self.label.setHidden(False)
+        self.lineEdit.setHidden(True)
+        self.lineEdit.blockSignals(True)
+        self.label.blockSignals(False)
 
 class QHLine(QtWidgets.QFrame):
     """

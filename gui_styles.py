@@ -17,6 +17,7 @@ INDICATOR_WIDTH = SLIDER_WIDTH/3
 SLIDER_COLOR = TEXT_COLOR
 INDICATOR_COLOR = SUBWAY_COLORS['blue']
 ALARM_COLOR = "#FF0000"
+VALUE_SIZE = 72
 
 GLOBAL = """
 QWidget {{
@@ -38,18 +39,20 @@ height: {height}px;
 width: 20px;
 margin: 0px -20px 0px px;
 background-color: {slider_color};
-box-shadow: 1px 1px 1px #000000;
 }}
 
 """.format(slider_width=INDICATOR_WIDTH,
     height=HANDLE_HEIGHT,
            slider_color=SLIDER_COLOR)
 
+
+
 DISPLAY_VALUE =  """
 QLabel {{ 
     color: {textcolor}; 
-    font-size: 72pt;
-}}""".format(textcolor=TEXT_COLOR)
+    font-size: {value_size}pt;
+}}""".format(textcolor=TEXT_COLOR,
+             value_size=VALUE_SIZE)
 
 DISPLAY_VALUE_ALARM =  """
 QLabel { 
@@ -67,6 +70,25 @@ DISPLAY_UNITS = """
 DISPLAY_WIDGET = """
 border-bottom: 2px solid white;
 """
+
+CONTROL_LABEL = """
+QLabel {
+    font-size: 12px;
+}
+"""
+
+CONTROL_VALUE =  """
+QLabel {{ 
+    color: {textcolor}; 
+    font-size: {display_value}pt;
+}}
+QLineEdit {{ 
+    color: {textcolor}; 
+    font-size: {display_value}pt;
+}}
+
+""".format(textcolor=TEXT_COLOR,
+             display_value=VALUE_SIZE)
 
 TITLE_STYLE = """
 font-size: 32pt;

@@ -18,7 +18,7 @@ def take_step(jp, tracker, alarm_bounds, control):
     control.update_controller(jp, tracker)
         
     # Update sensor tracking:
-    tracker.update_all_sensors(curr)
+    tracker.update_all_sensors()
     
     #Throw any alarms that need throwing.
     alarms.throw_raw_alarms(tracker, alarm_bounds)

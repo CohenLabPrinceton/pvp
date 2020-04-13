@@ -30,7 +30,6 @@ class JuliePlease:
         
     def get_pressure2_reading(self):
         pres_val = self.__convert_raw_to_pressure(self.pressure2.voltage)
-        pres_val = -1
         return pres_val
         
     def get_o2_reading(self):
@@ -73,7 +72,7 @@ class JuliePlease:
         return flow
 
 
-def update_single_sensor(track, curr_val, track_len):
+def update_single_sensor(track, val, track_len):
     # Adds newest sensor reading to end of track.
     # Only store most recent [track_len] values.
     
@@ -82,104 +81,40 @@ def update_single_sensor(track, curr_val, track_len):
         # Remove first element
         track.pop(0)
     # Add current sensor reading to track:
-    track.append(curr_val)  
+    track.append(val)  
     return track    
    
-class SensorReadings:
-    # A class for obtaining sensor readings at a single timepoint. 
-    def __init__(self,julieplease):
-        self._julieplease = julieplease
-        self._pres1 = -1.0
-        self._pres2 = -1.0
-        self._o2 = -1.0
-        self._flow = -1.0
-        self._temp = -1.0
-        self._humid = -1.0
-        
-    def read_all_sensors(self):
-        print('Reading sensors: ')
-        self._pres1 = self._julieplease.get_pressure1_reading()
-        self._pres2 = self._julieplease.get_pressure2_reading()
-        self._o2 = self._julieplease.get_o2_reading()
-        self._flow = self._julieplease.get_flow_reading()
-        self._temp = self._julieplease.get_temp_reading()
-        self._humid = self._julieplease.get_humid_reading()
-        
-    def reset(self):
-        self._pres1 = -1.0
-        self._pres2 = -1.0
-        self._o2 = -1.0
-        self._flow = -1.0
-        self._temp = -1.0
-        self._humid = -1.0
-    
-    @property
-    def pres1(self):
-        return self._pres1
-    @property
-    def pres2(self):
-        return self._pres2
-    @property
-    def o2(self):
-        return self._o2
-    @property
-    def flow(self):
-        return self._flow
-    @property
-    def temp(self):
-        return self._temp
-    @property
-    def humid(self):
-        return self._humid
     
 class SensorTracking:
     # A class for keeping track of prior sensor values.
     # These are used by controllers and to sound alarms.
-    def __init__(self):
+    def __init__(self, jp):
+        self.jp = jp
         self._track_len = 50    # Type int: How long to retain sensor data. Could vary this later per sensor. 
-        self._pres1_track = []
-        self._pres2_track = []
-        self._o2_track = []
-        self._flow_track = []
-        self._temp_track = []
-        self._humid_track = []
+        self.pres1_track = []
+        self.pres2_track = []
+        self.o2_track = []
+        self.flow_track = []
+        self.temp_track = []
+        self.humid_track = []
         
-    def update_all_sensors(self, curr):
+    def update_all_sensors(self):
         # Takes in current sensor readings object; updates tracking log for all sensors.
-        print('Updating sensor tracks: ')
-        self._pres1_track = update_single_sensor(self._pres1_track, curr._pres1, self._track_len)
-        self._pres2_track = update_single_sensor(self._pres2_track, curr._pres2, self._track_len)
-        self._o2_track = update_single_sensor(self._o2_track, curr._o2, self._track_len)
-        self._flow_track = update_single_sensor(self._flow_track, curr._flow, self._track_len)
-        self._temp_track = update_single_sensor(self._temp_track, curr._temp, self._track_len)
-        self._humid_track = update_single_sensor(self._humid_track, curr._humid, self._track_len)
+        self.pres1_track = update_single_sensor(self.pres1_track, self.jp.get_pressure1_reading(), self._track_len)
+        self.pres2_track = update_single_sensor(self.pres2_track, self.jp.get_pressure2_reading(), self._track_len)
+        self.o2_track = update_single_sensor(self.o2_track, self.jp.get_o2_reading(), self._track_len)
+        self.flow_track = update_single_sensor(self.flow_track, self.jp.get_flow_reading(), self._track_len)
+        self.temp_track = update_single_sensor(self.temp_track, self.jp.get_temp_reading(), self._track_len)
+        self.humid_track = update_single_sensor(self.humid_track, self.jp.get_humid_reading(), self._track_len)
         
     def reset(self):
-        self._pres1_track = []
-        self._pres2_track = []
-        self._o2_track = []
-        self._flow_track = []
-        self._temp_track = []
-        self._humid_track = []
-    
-    @property
-    def pres1_track(self):
-        return self._pres1_track
-    @property
-    def pres2_track(self):
-        return self._pres2_track
-    @property
-    def o2_track(self):
-        return self._o2_track
-    @property
-    def flow_track(self):
-        return self._flow_track
-    @property
-    def temp_track(self):
-        return self._temp_track
-    @property
-    def humid_track(self):
-        return self._humid_track   
+        self.pres1_track = []
+        self.pres2_track = []
+        self.o2_track = []
+        self.flow_track = []
+        self.temp_track = []
+        self.humid_track = []
+
     
     
     

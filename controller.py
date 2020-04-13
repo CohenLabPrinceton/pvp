@@ -38,7 +38,7 @@ class Controller:
         self.gpio_cleanup()
         return
 
-    def update_controller(self, curr, tracker, jp):
+    def update_controller(self, jp, tracker):
         # Updates valve controller using sensor readings and control settings. 
         # Should also log prior controller commands.
         

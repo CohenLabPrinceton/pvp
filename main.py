@@ -13,7 +13,7 @@ SAMPLETIME = 0.01
 
 # Initialize sensor reading/tracking and UI structures:
 jp               = sensors.JuliePlease()                # Provides a higher-level sensor interface.
-tracker          = sensors.SensorTracking()             # Initialize class for logging sensor readings.
+tracker          = sensors.SensorTracking(jp)             # Initialize class for logging sensor readings.
 alarm_bounds     = alarms.AlarmBounds()                 # Intiialize object for storing alarm trigger bounds.
 control          = controller.Controller()
 

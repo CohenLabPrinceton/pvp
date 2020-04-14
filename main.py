@@ -5,30 +5,38 @@
 import time
 import sensors
 import alarms
-import controller
-import main_control
+import controls
 import helper
-
-SAMPLETIME = 0.01
 
 # Initialize sensor reading/tracking and UI structures:
 jp               = sensors.JuliePlease()                # Provides a higher-level sensor interface.
-tracker          = sensors.SensorTracking(jp)             # Initialize class for logging sensor readings.
 alarm_bounds     = alarms.AlarmBounds()                 # Intiialize object for storing alarm trigger bounds.
-control          = controller.Controller()
+logger           = controls.DataLogger(jp)           # Initialize class for logging sensor readings.
+controller          = controls.Controller(jp,logger)
+
+def take_step(control,alarm_bounds):
+  # Read all the sensors. 
+  # Read inputs from user.
+  # TODO: UI. Will modify alarm bounds.
+  # set alarm_bounds
+
+  # Update sensor tracking:
+  logger.update()
+  
+  # Control loop. Update controller according to tracked sensor values. 
+  controller.update()
+
+  #Throw any alarms that need throwing.
+  alarm_bounds.throw_raw_alarms(tracker, alarm_bounds)
 
 try:
-    while True:
-    
-        # UI logic should go into this script. Callbacks needed. 
-    
-        main_control.take_step(jp, tracker, alarm_bounds, control)
-        
-        # Pause until next datapoint capture
-        #time.sleep(SAMPLETIME)
+  while True:
+    # UI logic should go into this script. Callbacks needed. 
+    take_step(controller, alarm_bounds)
+
+    # Pause until next datapoint capture
+    time.sleep(controller.settings.SAMPLETIME)
+
 except KeyboardInterrupt:
   print("Ctl C pressed - ending program")
   del control
-  
-  
-    

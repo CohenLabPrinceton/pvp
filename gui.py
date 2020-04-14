@@ -843,7 +843,8 @@ class TimeAxis(pg.AxisItem):
         return [datetime.fromtimestamp(value).strftime('%H:%M:%S') for value in values]
 
 
-if __name__ == "__main__":
+
+def main(UIControlModuleComm):
     # just for testing, should be run from main
     app = QtWidgets.QApplication(sys.argv)
     app.setStyleSheet(gui_styles.GLOBAL)
@@ -851,6 +852,8 @@ if __name__ == "__main__":
     sys.exit(app.exec_())
 
 
+if __name__ == "__main__":
+    main()
 
 
 

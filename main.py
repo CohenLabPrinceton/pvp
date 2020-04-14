@@ -3,42 +3,55 @@
 # This is the main script. The UI people can create this for us.
 # It calls to main_control which reads in sensor data and controls the system.
 import time
-import sensors
-import alarms
-import controller
-import main_control
-import helper
 import argparse
+import threading
+import gui
+import main_control
 
-SAMPLETIME = 0.01
 
 
-def _main_loop():
-    # Initialize sensor reading/tracking and UI structures:
-    jp = sensors.JuliePlease()  # Provides a higher-level sensor interface.
-    tracker = sensors.SensorTracking(jp)  # Initialize class for logging sensor readings.
-    alarm_bounds = alarms.AlarmBounds()  # Intiialize object for storing alarm trigger bounds.
-    control = controller.Controller()
+class UIControlModuleComm:
+# Class instantiated by the UI process to communicate with the 
+#  control module. UI will get msgQueues to send/receive data.
+    def __init__(self, runLocal=False):
+        pass
+      # makes msg queues
+      # if runlocal true, starts a controlModule thread
+      # if runlocal false, connects to remote process
+    def fromControlModuleMsgQueue(self): # returns queue
+        pass
+    def toControlModuleMsgQueue(self): # returns queue
+        pass
 
-    try:
-        while True:
-            # UI logic should go into this script. Callbacks needed.
 
-            main_control.take_step(jp, tracker, alarm_bounds, control)
+def _main_loop(args):
+    # TODO, process management thread, communication thread
+    # process_management_thread = threading.Thread(target=process_management_func)
+    # process_management_thread.start()
+    # process_management_thread.join()
+    ui_control_module_comm = UIControlModuleComm(args.simulation)
+    ui_thread = threading.Thread(target=gui.main, args=(ui_control_module_comm, ))
+    ui_thread.start()
 
-            # Pause until next datapoint capture
-            # time.sleep(SAMPLETIME)
-    except KeyboardInterrupt:
-        print("Ctl C pressed - ending program")
-        del control
+    control_main = main_control.MainControlSim()
+    control_main_thread = threading.Thread(target=control_main.main)
+    control_main_thread.start()
+    while True:
+        # TODO: communication with UI based on queue
+        v = control_main.get()
+        control_main.set({})
+        time.sleep(0.01)
+
+    ui_thread.join()
+    control_main_thread.join()
 
 
 def main_loop(args):
     if args.multi_process == True:
-        raise NotImplementedError
+        raise NotImplementedError('Error: multi_process architecture not implemented')
     if args.simulation == False:
-        raise NotImplementedError
-    _main_loop()
+        raise NotImplementedError('Error: real sensor not implemented')
+    _main_loop(args)
 
 
 def parse_cmd_args():

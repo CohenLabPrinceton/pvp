@@ -1,6 +1,5 @@
 # library imports:
 import time # not needed - for testing
-import gpiozero
 #import RPi.GPIO as GPIO   # Import the GPIO library.
 
 class ControlSettings:
@@ -31,6 +30,7 @@ class ControlSettings:
 
 class Controller:
     def __init__(self):
+        import gpiozero
         # Sets up the GPIO interface for valve control.
         self.inlet = gpiozero.DigitalOutputDevice(17, active_high=True, initial_value=True) #starts open
         self.inspir = gpiozero.PWMOutputDevice(22, active_high=True, initial_value=0, frequency = 20) #starts closed

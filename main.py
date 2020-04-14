@@ -27,7 +27,7 @@ def take_step(control,alarm_bounds):
   controller.update()
 
   #Throw any alarms that need throwing.
-  alarm_bounds.throw_raw_alarms(tracker, alarm_bounds)
+  alarms.throw_raw_alarms(logger, alarm_bounds)
 
 try:
   while True:
@@ -39,4 +39,4 @@ try:
 
 except KeyboardInterrupt:
   print("Ctl C pressed - ending program")
-  del control
+  del controller

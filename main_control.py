@@ -16,12 +16,12 @@ class MainControl:
     """
     def __init__(self):
         import sensors
-        import controller
+        import controls
         # Initialize sensor reading/tracking and UI structures:
         self.jp = sensors.JuliePlease()  # Provides a higher-level sensor interface.
-        self.tracker = sensors.SensorTracking(self.jp)  # Initialize class for logging sensor readings.
         self.alarm_bounds = alarms.AlarmBounds()  # Intiialize object for storing alarm trigger bounds.
-        self.control = controller.Controller()
+        self.logger = controls.DataLogger(self.jp)  # Initialize class for logging sensor readings.
+        self.control = controls.Controller(self.jp, self.logger)
 
     def main(self):
         """
@@ -67,7 +67,7 @@ class MainControl:
 
 class MainControlSim(MainControl):
     """
-    Simulation main control 
+    Simulation main control
     """
     def __init__(self):
         # Initialize sensor reading/tracking and UI structures:

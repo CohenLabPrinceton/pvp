@@ -1,12 +1,12 @@
 # library imports:
 import time # not needed - for testing
-import controller
+import controls
 
 
-class ControllerSim(controller.Controller):
+class ControllerSim(controls.Controller):
     def __init__(self):
         # Sets up the GPIO interface for valve control.
-        self.settings = controller.ControlSettings()
+        self.settings = controls.ControlSettings()
         self.start_timer = time.time()
    
     def gpio_cleanup(self):

@@ -11,42 +11,44 @@ class JuliePlease:
         import adafruit_ads1x15.ads1115 as ADS
         from adafruit_ads1x15.analog_in import AnalogIn
         from adafruit_bus_device.i2c_device import I2CDevice
-        self.i2c            = busio.I2C(board.SCL,board.SDA)
+        self._i2c = busio.I2C(board.SCL,board.SDA)
         try:
-            self.adc            = ADS.ADS1115(self.i2c)
+            self._adc                   = ADS.ADS1115(self._i2c)
             sleep(0.1) # short pause after ads1115 class creation recommended
-            self.pressure1      = AnalogIn(self.adc,ADS.P0)
-            self.pressure2      = AnalogIn(self.adc,ADS.P1)
-            self.o2             = AnalogIn(self.adc,ADS.P2,ADS.P3)
+            self._pressure_sensor_0     = AnalogIn(self._adc,ADS.P0)
+            self._pressure_sensor_1     = AnalogIn(self._adc,ADS.P1)
+            self._o2_sensor             = AnalogIn(self._adc,ADS.P2,ADS.P3)
         except: print('No ADC found.\n')
-        self.flow           = I2CDevice(self.i2c,0x40) 
-        with self.flow:
-            self.flow.write(b"\x10\x00")
-            sleep(0.5)
+        try:
+            self._flow_sensor           = I2CDevice(self._i2c,0x40)
+            with self._flow_sensor:
+                self._flow_sensor.write(b"\x10\x00")
+                sleep(0.1)
+        except: print('No flow sensor found.\n')
         
-    def get_pressure1_reading(self):
-        pres_val = self.convert_raw_to_pressure(self.pressure1.voltage)
-        return pres_val
+    def get_pressure(self,sensor_ID):
+        if sensor_ID == 0:
+            return self.__convert_raw_to_pressure(self._pressure_sensor_0.voltage)
+        elif sensor_ID == 1:
+            return self.__convert_raw_to_pressure(self._pressure_sensor_1.voltage)
+        else:
+            # This really should call an alarm! Someone make alarms smarter plz
+            print('Sir; your pressure sensor appears to be malfunctioning.')
+            return 100 # return a large fake pressure to make the system stop pressurizing
         
-    def get_pressure2_reading(self):
-        pres_val = self.convert_raw_to_pressure(self.pressure2.voltage)
-        return pres_val
-        
-    def get_o2_reading(self):
-        o2_raw = self.o2.value
-        return o2_raw
+    def get_o2(self):
+        return self._o2_sensor.value
 
-    def get_flow_reading(self):
+    def get_flow(self):
         flowbytes = flowbytes = bytearray(4)
-        self.flow.readinto(flowbytes)
-        flow_val = self.convert_raw_to_flow(flowbytes)
-        return flow_val
+        self._flow_sensor.readinto(flowbytes)
+        return self.__convert_raw_to_flow(flowbytes)
 
-    def get_temp_reading(self):
-        return -1.0
+    def get_temperature(self):
+        return -100
 
-    def get_humid_reading(self):
-        return -1.0
+    def get_humidity(self):
+        return -100
 
     def convert_raw_to_pressure(self, raw_val):
         # Convert raw analog signal to pressure value in cm H20. Hysteresis not accounted for.

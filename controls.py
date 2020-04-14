@@ -1,7 +1,5 @@
 # library imports:
 import time
-import gpiozero
-from sensors import JuliePlease
 #import RPi.GPIO as GPIO   # Import the GPIO library.
 
 class ControlSettings:
@@ -26,6 +24,7 @@ class ControlSettings:
 class Controller:
     # This is to be the brains of the operation
     def __init__(self,jp,logger):
+        import gpiozero
         # Initlize sensor interface, datalogger, & controller settings
         self.jp     = jp
         self.logger = logger

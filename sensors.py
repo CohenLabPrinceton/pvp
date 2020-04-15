@@ -1,82 +1,166 @@
 # library imports:
-import board
-import busio
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
-from adafruit_bus_device.i2c_device import I2CDevice
-import digitalio         # For reading temperature sensor
-import adafruit_max31865 # Temperature sensor amplifier board
-from time import sleep
+import time
+import gpiozero
+from sensors import JuliePlease
+#import RPi.GPIO as GPIO   # Import the GPIO library.
 
-# This is the library for reading sensor values.
-# Much is taken from https://circuitpython.readthedocs.io/projects/ads1x15/en/latest/examples.html
-
-class JuliePlease:
+class ControlSettings:
+# A class for obtaining sensor readings at a single timepoint. 
     def __init__(self):
-        self._i2c = busio.I2C(board.SCL,board.SDA)
-        try:
-            self._adc                   = ADS.ADS1115(self._i2c)
-            sleep(0.1) # short pause after ads1115 class creation recommended
-            self._pressure_sensor_0     = AnalogIn(self._adc,ADS.P0)
-            self._pressure_sensor_1     = AnalogIn(self._adc,ADS.P1)
-            self._o2_sensor             = AnalogIn(self._adc,ADS.P2,ADS.P3)
-        except: print('No ADC found.\n')
-        try:
-            self._flow_sensor           = I2CDevice(self._i2c,0x40) 
-            with self._flow_sensor:
-                self._flow_sensor.write(b"\x10\x00")
-                sleep(0.1)
-        except: print('No flow sensor found.\n')
+        self.pip = 35.0       # PIP (peak inspiratory pressure) value, in cm H20
+        self.peep = 5.0       # PEEP (positive-end expiratory pressure) value, in cm H20
+        self.insptime = 1.5   # Inspiratory time, in seconds
+        self.breathrate = 20  # Breath rate, in beats per minute
+        self.vt = 500         # Tidal volume, in mL
+        self.SAMPLETIME = 0.01
+
+    def reset(self):
+        self._state = 0
+        self.pip = 35.0       # PIP (peak inspiratory pressure) value, in cm H20
+        self.peep = 5.0       # PEEP (positive-end expiratory pressure) value, in cm H20
+        self.insptime = 1.5   # Inspiratory time, in seconds
+        self.breathrate = 20  # Breath rate, in beats per minute
+        self.vt = 500         # Tidal volume, in mL
+        self.SAMPLETIME = 0.01
+
+class Controller:
+    # This is to be the brains of the operation
+    def __init__(self,jp,logger):
+        # Initlize sensor interface, datalogger, & controller settings
+        self.jp     = jp
+        self.logger = logger
+        self.settings = ControlSettings()
+        # Sets up the GPIO interface for valve control.
+        self.inlet = gpiozero.DigitalOutputDevice(17, active_high=True, initial_value=True) #starts open
+        self.inspir = gpiozero.PWMOutputDevice(22, active_high=True, initial_value=0, frequency = 20) #starts closed
+        self.expir = gpiozero.DigitalOutputDevice(27, active_high=False, initial_value=True) #Starts open
+        # Initialize control state (assume I.C. is inhale) 
+        self._state = 0
+        self.__inhale()
+        # Keep's track of how long each state lasts
+        self.state_time = time.time()
+
+    def gpio_cleanup(self):
+        # Powers off pins and cleans up GPIO after run is terminated. 
+        self.inlet.close()
+        self.inspir.close()
+        self.expir.close()
         
-    def get_pressure(self,sensor_ID):
-        if sensor_ID == 0:
-            return self.__convert_raw_to_pressure(self._pressure_sensor_0.voltage)
-        elif sensor_ID == 1: 
-            return self.__convert_raw_to_pressure(self._pressure_sensor_1.voltage)
-        else: 
-            # This really should call an alarm! Someone make alarms smarter plz
-            print('Sir; your pressure sensor appears to be malfunctioning.')
-            return 100 # return a large fake pressure to make the system stop pressurizing 
+    def get_state(self):
+        return self._state
+    
+    def __inc_state(self):
+        self._state = (self._state + 1) % 4
+    
+    def __del__(self):
+        self.gpio_cleanup()
+
+    def update(self):
+        # Updates valve controller using sensor readings and control settings. 
+        # Should also log prior controller commands (not implemented).
+    # Control scheme assumes the use of a PEEP valve
+        assert(self.inlet.value == True),"Inlet valve should be open!"
+        self.logger.update()
+        self.__print_status()
+        # change the following to grabbing last observations from logger
+        if(self._state==0):
+            # INHALING
+            # Inlet flow is open, expiratory dump valve closed
+            if(self.jp.get_pressure(1) > self.settings.pip):
+                self.__hold_pip()
+        elif(self._state==1):
+            # Maintaining inspiratory plateau.
+            # All valves closed.
+            elapsed = time.time() - self.start_time
+            if(elapsed > self.settings.insptime):
+                self.__exhale()
+        elif(self._state==2):
+            # EXHALING
+            # Open expiratory valve and dump pressure.
+            if(self.jp.get_pressure(1) < self.settings.peep): 
+                self.__hold_peep()
+        elif(self._state==3):
+            # AT REST 
+            # Open inspiratory valve and maintain PEEP level w/PEEP valve.
+            elapsed = time.time() - self.start_time
+            if(elapsed > 60/self.settings.breathrate):
+                self.__inhale()
         
-    def get_o2(self):
-        return self._o2_sensor.value
+    def __inhale(self):
+        self.start_time = time.time()
+        self.inspir.on()
+        self.expir.off()
+        self.__inc_state()
+        
+    def __hold_pip(self):
+        self.inspir.off()
+        self.__inc_state()
+        
+    def __exhale(self):
+        self.expir.on()
+        self.__inc_state()
+        
+    def __hold_peep(self):
+        self.expir.off()
+        #self.inspir.on()
+        self.logger.calculate_last_tv()
+        self.__print_breath(self.logger.tv)
+        self.__inc_state()
+        
+    def __print_status(self):
+        # change this to grabbing last observations from logger
+        print("STATE: %2d pressure_0: %4.1f pressure_1: %4.1f Temp: %4.1f flow: %4.0f"%(self._state,self.jp.get_pressure(1),self.jp.get_pressure(1),self.jp.get_temperature(),self.jp.get_flow()))#,end="\r")
 
-    def get_flow(self):
-        flowbytes = flowbytes = bytearray(4)
-        self._flow_sensor.readinto(flowbytes)
-        return self.__convert_raw_to_flow(flowbytes)
+    def __print_breath(self,tv):
+        return
+        # TODO -------------------------------------------------
+        #print("\n Last breath: %2.1f seconds, %4.0f mL tidal volume"%(0,0))
 
-    def get_temperature(self):
-        # Returns temperature in degrees C
-        spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-        cs = digitalio.DigitalInOut(board.D5)  # Chip select of the MAX31865 board.
-        tsensor = adafruit_max31865.MAX31865(spi, cs, rtd_nominal=1000.0, ref_resistor=4300.0)
-        # Can calculate resistance as: tsensor.resistance in Ohms
-        tempF = (tsensor.temperature*1.8) + 32.0
-        return tempF
+class DataLogger:
+# A class for keeping track of prior sensor values.
+# These are used by controllers and to sound alarms.
+    def __init__(self, jp):
+        self.jp = jp
+        self._track_len = 50    # Type int: How long to retain sensor data. Could vary this later per sensor. 
+        self.pres1_track = []
+        self.pres2_track = []
+        self.o2_track = []
+        self.flow_track = []
+        self.temp_track = []
+        self.humid_track = []
+        self.tv     = []
 
-    def get_humidity(self):
-        return -100
+    def update(self):
+    # Takes in current sensor readings object; updates tracking log for all sensors.
+        self.pres1_track = self.update_single_sensor(self.pres1_track, self.jp.get_pressure(0), self._track_len)
+        self.pres2_track = self.update_single_sensor(self.pres2_track, self.jp.get_pressure(1), self._track_len)
+        self.o2_track = self.update_single_sensor(self.o2_track, self.jp.get_o2(), self._track_len)
+        self.flow_track = self.update_single_sensor(self.flow_track, self.jp.get_flow(), self._track_len)
+        self.temp_track = self.update_single_sensor(self.temp_track, self.jp.get_temperature(), self._track_len)
+        self.humid_track = self.update_single_sensor(self.humid_track, self.jp.get_humidity(), self._track_len)
 
-    def __convert_raw_to_pressure(self,raw_val):
-        # Convert raw analog signal to pressure value in cm H20. Hysteresis not accounted for.
-        # Source 20 INCH-G-P4V-MINI: http://www.allsensors.com/datasheets/DS-0102_Rev_A.pdf
-        # Two-Point Calibration: 
-        raw_low = 0.28
-        raw_hi = 4.0 # needs calibration
-        raw_range = raw_hi - raw_low
-        ref_low = 0.25
-        ref_hi = 4.0
-        ref_range = ref_hi - ref_low
-        #corrected_val = (((raw_val - raw_low)*ref_range)/raw_range) + ref_low 
-        conv_val_inchh20 = (((raw_val - raw_low)*20.0)/raw_range) + 0.0    
-        conv_val_cmh20 = (2.54)*conv_val_inchh20    
-        return conv_val_cmh20
-    def __convert_raw_to_flow(self,flowbytes):
-        # Convert raw i2c response (4 bytes) to a flow reading represaented by a floating-point
-        # number with units slm.
-        # Source: https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/5_Mass_Flow_Meters/Application_Notes/Sensirion_Mass_Flo_Meters_SFM3xxx_I2C_Functional_Description.pdf
-        flow_offset         = 32768
-        flow_scale_factor   = 120
-        flow = float(int.from_bytes(flowbytes[:2],'big',signed=False)-flow_offset)/flow_scale_factor
-        return flow
+    def calculate_last_tv(self):
+        # integrate flow over the last breath
+        # TODO -------------------------------------------------
+        self.tv = -1
+        return self.tv
+    
+    def reset(self):
+        self.pres1_track = []
+        self.pres2_track = []
+        self.o2_track = []
+        self.flow_track = []
+        self.temp_track = []
+        self.humid_track = []
+
+    def update_single_sensor(self, track, val, track_len):
+        # Adds newest sensor reading to end of track.
+        # Only store most recent [track_len] values.
+        
+        # Check if list is already at max track length:
+        if(len(track) >= track_len):
+            # Remove first element
+            track.pop(0)
+        # Add current sensor reading to track:
+        track.append(val)  
+        return track 

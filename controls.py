@@ -109,8 +109,7 @@ class Controller:
         
     def __print_status(self):
         # change this to grabbing last observations from logger
-        print("STATE: %2d pressure_0: %4.1f pressure_1: %4.1f flow: %4.0f"%(self._state,self.jp.get_pressure(1),self.jp.get_pressure(1),self.jp.get_flow()))#,end="\r")
-        print(self.jp.get_temperature())
+        print("STATE: %2d pressure_0: %4.1f pressure_1: %4.1f Temp: %4.1f flow: %4.0f"%(self._state,self.jp.get_pressure(1),self.jp.get_pressure(1),self.jp.get_temperature(),self.jp.get_flow()))#,end="\r")
 
     def __print_breath(self,tv):
         return

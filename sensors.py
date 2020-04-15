@@ -4,6 +4,8 @@ import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from adafruit_bus_device.i2c_device import I2CDevice
+import digitalio         # For reading temperature sensor
+import adafruit_max31865 # Temperature sensor amplifier board
 from time import sleep
 
 # This is the library for reading sensor values.
@@ -45,7 +47,13 @@ class JuliePlease:
         return self.__convert_raw_to_flow(flowbytes)
 
     def get_temperature(self):
-        return -100
+        # Returns temperature in degrees C
+        spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+        cs = digitalio.DigitalInOut(board.D5)  # Chip select of the MAX31865 board.
+        tsensor = adafruit_max31865.MAX31865(spi, cs, rtd_nominal=1000.0, ref_resistor=4300.0)
+        # Can calculate resistance as: tsensor.resistance in Ohms
+        tempF = (tsensor.temperature*1.8) + 32.0
+        return tempF
 
     def get_humidity(self):
         return -100

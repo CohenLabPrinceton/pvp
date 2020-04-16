@@ -34,12 +34,12 @@ except:
 
 
 
-class Display_Value(QtWidgets.QWidget):
+class Monitor_Value(QtWidgets.QWidget):
     alarm = QtCore.Signal()
     limits_changed = QtCore.Signal(tuple)
 
     def __init__(self, name, units, abs_range, safe_range, decimals, update_period=0.1):
-        super(Display_Value, self).__init__()
+        super(Monitor_Value, self).__init__()
 
         self.name = name
         self.units = units

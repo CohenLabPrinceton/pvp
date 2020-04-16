@@ -1,6 +1,15 @@
 gui
 ======
 
+Program Diagram
+----------------
+
+.. figure:: /images/gui_diagram.png
+    :align: center
+    :figwidth: 100%
+    :width: 100%
+
+    Schematic diagram of major UI components and signals
 
 Design Requirements
 -------------------

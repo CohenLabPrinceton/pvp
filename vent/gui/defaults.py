@@ -2,7 +2,7 @@ from collections import OrderedDict as odict
 
 from vent.gui import styles
 
-DISPLAY = odict({
+MONITOR = odict({
         'oxygen': {
             'name': 'O2 Concentration',
             'units': '%',

@@ -209,12 +209,12 @@
 
 
 
-<div class="viewcode-block" id="Display_Value"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Display_Value">[docs]</a><span class="k">class</span> <span class="nc">Display_Value</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value">[docs]</a><span class="k">class</span> <span class="nc">Monitor_Value</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="n">alarm</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
     <span class="n">limits_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">abs_range</span><span class="p">,</span> <span class="n">safe_range</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">update_period</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Display_Value</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Monitor_Value</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
@@ -229,7 +229,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timed_update</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Display_Value.init_ui"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Display_Value.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value.init_ui"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
 
@@ -304,11 +304,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">label_layout</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Display_Value.update_boxes"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Display_Value.update_boxes">[docs]</a>    <span class="k">def</span> <span class="nf">update_boxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_values</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value.update_boxes"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.update_boxes">[docs]</a>    <span class="k">def</span> <span class="nf">update_boxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_values</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_values</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Display_Value.update_value"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Display_Value.update_value">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<div class="viewcode-block" id="Monitor_Value.update_value"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.update_value">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
 
@@ -317,13 +317,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">check_alarm</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">update_indicator</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Display_Value.update_limits"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Display_Value.update_limits">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+<div class="viewcode-block" id="Monitor_Value.update_limits"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.update_limits">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_limits</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="n">new_limits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="n">new_limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_boxes</span><span class="p">(</span><span class="n">new_limits</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Display_Value.timed_update"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Display_Value.timed_update">[docs]</a>    <span class="k">def</span> <span class="nf">timed_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value.timed_update"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.timed_update">[docs]</a>    <span class="k">def</span> <span class="nf">timed_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># format value based on decimals</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="n">value_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">))</span>
@@ -331,12 +331,12 @@
 
         <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_period</span><span class="o">*</span><span class="mi">1000</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">timed_update</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Display_Value._limits_changed"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Display_Value._limits_changed">[docs]</a>    <span class="k">def</span> <span class="nf">_limits_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value._limits_changed"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value._limits_changed">[docs]</a>    <span class="k">def</span> <span class="nf">_limits_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
         <span class="c1"># ignore value, just emit changes and check alarm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_alarm</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">value</span><span class="p">()))</span></div>
 
-<div class="viewcode-block" id="Display_Value.check_alarm"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Display_Value.check_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">check_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value.check_alarm"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.check_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">check_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">value</span><span class="p">()):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">alarm</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>

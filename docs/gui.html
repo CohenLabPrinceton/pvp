@@ -94,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="controller.html">controller module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="controls.html">controls module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#program-diagram">Program Diagram</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#design-requirements">Design Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ui-notes-todo">UI Notes &amp; Todo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gui-object-documentation">GUI Object Documentation</a><ul>
@@ -187,6 +188,13 @@
             
   <div class="section" id="gui">
 <h1>gui<a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="program-diagram">
+<h2>Program Diagram<a class="headerlink" href="#program-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id1" style="width: 100%">
+<a class="reference internal image-reference" href="images/gui_diagram.png"><img alt="images/gui_diagram.png" src="images/gui_diagram.png" style="width: 100%;" /></a>
+<p class="caption"><span class="caption-text">Schematic diagram of major UI components and signals</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
 <div class="section" id="design-requirements">
 <h2>Design Requirements<a class="headerlink" href="#design-requirements" title="Permalink to this headline">¶</a></h2>
 <ul>
@@ -369,7 +377,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.CONTROL" title="vent.gui.Vent_Gui.CONTROL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTROL</span></code></a></p></td>
 <td><p>dict() -&gt; new empty dictionary</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.DISPLAY" title="vent.gui.Vent_Gui.DISPLAY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DISPLAY</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.MONITOR" title="vent.gui.Vent_Gui.MONITOR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MONITOR</span></code></a></p></td>
 <td><p>Dictionary that remembers insertion order</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.PLOTS" title="vent.gui.Vent_Gui.PLOTS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOTS</span></code></a></p></td>
@@ -420,8 +428,8 @@
 </tbody>
 </table>
 <dl class="py attribute">
-<dt id="vent.gui.Vent_Gui.DISPLAY">
-<code class="sig-name descname">DISPLAY</code><em class="property"> = {'humidity': {'abs_range': (0, 100), 'decimals': 1, 'name': 'Humidity', 'safe_range': (20, 75), 'units': '%'}, 'oxygen': {'abs_range': (0, 100), 'decimals': 1, 'name': 'O2 Concentration', 'safe_range': (60, 100), 'units': '%'}, 'temperature': {'abs_range': (0, 50), 'decimals': 1, 'name': 'Temperature', 'safe_range': (20, 30), 'units': '°C'}, 'vte': {'abs_range': (0, 100), 'decimals': 1, 'name': 'VTE', 'safe_range': (20, 80), 'units': '%'}}</em><a class="headerlink" href="#vent.gui.Vent_Gui.DISPLAY" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.Vent_Gui.MONITOR">
+<code class="sig-name descname">MONITOR</code><em class="property"> = {'humidity': {'abs_range': (0, 100), 'decimals': 1, 'name': 'Humidity', 'safe_range': (20, 75), 'units': '%'}, 'oxygen': {'abs_range': (0, 100), 'decimals': 1, 'name': 'O2 Concentration', 'safe_range': (60, 100), 'units': '%'}, 'temperature': {'abs_range': (0, 50), 'decimals': 1, 'name': 'Temperature', 'safe_range': (20, 30), 'units': '°C'}, 'vte': {'abs_range': (0, 100), 'decimals': 1, 'name': 'VTE', 'safe_range': (20, 80), 'units': '%'}}</em><a class="headerlink" href="#vent.gui.Vent_Gui.MONITOR" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -510,13 +518,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Control" title="vent.gui.widgets.Control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Control</span></code></a>(name, units, abs_range, value, decimals)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Display_Value" title="vent.gui.widgets.Display_Value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Display_Value</span></code></a>(name, units, abs_range, …[, …])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.EditableLabel" title="vent.gui.widgets.EditableLabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EditableLabel</span></code></a>([parent])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.EditableLabel" title="vent.gui.widgets.EditableLabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EditableLabel</span></code></a>([parent])</p></td>
 <td><p>Editable label</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.HeartBeat" title="vent.gui.widgets.HeartBeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HeartBeat</span></code></a>([update_interval, timeout_dur])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.HeartBeat" title="vent.gui.widgets.HeartBeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HeartBeat</span></code></a>([update_interval, timeout_dur])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param update_interval</dt>
 <dd class="field-odd"><p>How often to do the heartbeat, in ms</p>
@@ -524,13 +529,16 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.KeyPressHandler" title="vent.gui.widgets.KeyPressHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KeyPressHandler</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.KeyPressHandler" title="vent.gui.widgets.KeyPressHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KeyPressHandler</span></code></a></p></td>
 <td><p>Custom key press handler</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Log_Console" title="vent.gui.widgets.Log_Console"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Log_Console</span></code></a>([parent])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Log_Console" title="vent.gui.widgets.Log_Console"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Log_Console</span></code></a>([parent])</p></td>
 <td><p><a class="reference external" href="https://stackoverflow.com/a/51641943">https://stackoverflow.com/a/51641943</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Message_Display" title="vent.gui.widgets.Message_Display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Message_Display</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Message_Display" title="vent.gui.widgets.Message_Display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Message_Display</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value" title="vent.gui.widgets.Monitor_Value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Monitor_Value</span></code></a>(name, units, abs_range, …[, …])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Plot" title="vent.gui.widgets.Plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Plot</span></code></a>(name[, buffer_size, plot_duration, …])</p></td>
@@ -554,8 +562,8 @@
 </tbody>
 </table>
 <dl class="py class">
-<dt id="vent.gui.widgets.Display_Value">
-<em class="property">class </em><code class="sig-prename descclassname">vent.gui.widgets.</code><code class="sig-name descname">Display_Value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">units</span></em>, <em class="sig-param"><span class="n">abs_range</span></em>, <em class="sig-param"><span class="n">safe_range</span></em>, <em class="sig-param"><span class="n">decimals</span></em>, <em class="sig-param"><span class="n">update_period</span><span class="o">=</span><span class="default_value">0.1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Display_Value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Display_Value" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value">
+<em class="property">class </em><code class="sig-prename descclassname">vent.gui.widgets.</code><code class="sig-name descname">Monitor_Value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">units</span></em>, <em class="sig-param"><span class="n">abs_range</span></em>, <em class="sig-param"><span class="n">safe_range</span></em>, <em class="sig-param"><span class="n">decimals</span></em>, <em class="sig-param"><span class="n">update_period</span><span class="o">=</span><span class="default_value">0.1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Monitor_Value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Monitor_Value" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Methods</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -563,77 +571,77 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Display_Value._limits_changed" title="vent.gui.widgets.Display_Value._limits_changed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_limits_changed</span></code></a>(val)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value._limits_changed" title="vent.gui.widgets.Monitor_Value._limits_changed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_limits_changed</span></code></a>(val)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Display_Value.check_alarm" title="vent.gui.widgets.Display_Value.check_alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_alarm</span></code></a>([signal])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value.check_alarm" title="vent.gui.widgets.Monitor_Value.check_alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_alarm</span></code></a>([signal])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Display_Value.init_ui" title="vent.gui.widgets.Display_Value.init_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_ui</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value.init_ui" title="vent.gui.widgets.Monitor_Value.init_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_ui</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Display_Value.timed_update" title="vent.gui.widgets.Display_Value.timed_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timed_update</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value.timed_update" title="vent.gui.widgets.Monitor_Value.timed_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timed_update</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Display_Value.update_boxes" title="vent.gui.widgets.Display_Value.update_boxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_boxes</span></code></a>(new_values)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value.update_boxes" title="vent.gui.widgets.Monitor_Value.update_boxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_boxes</span></code></a>(new_values)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Display_Value.update_limits" title="vent.gui.widgets.Display_Value.update_limits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_limits</span></code></a>(new_limits)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value.update_limits" title="vent.gui.widgets.Monitor_Value.update_limits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_limits</span></code></a>(new_limits)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Display_Value.update_value" title="vent.gui.widgets.Display_Value.update_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_value</span></code></a>(new_value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value.update_value" title="vent.gui.widgets.Monitor_Value.update_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_value</span></code></a>(new_value)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py attribute">
-<dt id="vent.gui.widgets.Display_Value.alarm">
-<code class="sig-name descname">alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><em class="property"> = &lt;PySide2.QtCore.Signal object&gt;</em><a class="headerlink" href="#vent.gui.widgets.Display_Value.alarm" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value.alarm">
+<code class="sig-name descname">alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><em class="property"> = &lt;PySide2.QtCore.Signal object&gt;</em><a class="headerlink" href="#vent.gui.widgets.Monitor_Value.alarm" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="vent.gui.widgets.Display_Value.limits_changed">
-<code class="sig-name descname">limits_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><em class="property"> = &lt;PySide2.QtCore.Signal object&gt;</em><a class="headerlink" href="#vent.gui.widgets.Display_Value.limits_changed" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value.limits_changed">
+<code class="sig-name descname">limits_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><em class="property"> = &lt;PySide2.QtCore.Signal object&gt;</em><a class="headerlink" href="#vent.gui.widgets.Monitor_Value.limits_changed" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.gui.widgets.Display_Value.init_ui">
-<code class="sig-name descname">init_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Display_Value.init_ui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Display_Value.init_ui" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value.init_ui">
+<code class="sig-name descname">init_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Monitor_Value.init_ui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Monitor_Value.init_ui" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.gui.widgets.Display_Value.update_boxes">
-<code class="sig-name descname">update_boxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Display_Value.update_boxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Display_Value.update_boxes" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value.update_boxes">
+<code class="sig-name descname">update_boxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Monitor_Value.update_boxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Monitor_Value.update_boxes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.gui.widgets.Display_Value.update_value">
-<code class="sig-name descname">update_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Display_Value.update_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Display_Value.update_value" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value.update_value">
+<code class="sig-name descname">update_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Monitor_Value.update_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Monitor_Value.update_value" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.gui.widgets.Display_Value.update_limits">
-<code class="sig-name descname">update_limits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_limits</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Display_Value.update_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Display_Value.update_limits" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value.update_limits">
+<code class="sig-name descname">update_limits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_limits</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Monitor_Value.update_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Monitor_Value.update_limits" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.gui.widgets.Display_Value.timed_update">
-<code class="sig-name descname">timed_update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Display_Value.timed_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Display_Value.timed_update" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value.timed_update">
+<code class="sig-name descname">timed_update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Monitor_Value.timed_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Monitor_Value.timed_update" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.gui.widgets.Display_Value._limits_changed">
-<code class="sig-name descname">_limits_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Display_Value._limits_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Display_Value._limits_changed" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value._limits_changed">
+<code class="sig-name descname">_limits_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Monitor_Value._limits_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Monitor_Value._limits_changed" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.gui.widgets.Display_Value.check_alarm">
-<code class="sig-name descname">check_alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Display_Value.check_alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Display_Value.check_alarm" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value.check_alarm">
+<code class="sig-name descname">check_alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/widgets.html#Monitor_Value.check_alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.widgets.Monitor_Value.check_alarm" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="vent.gui.widgets.Display_Value.staticMetaObject">
-<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#vent.gui.widgets.Display_Value.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.gui.widgets.Monitor_Value.staticMetaObject">
+<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#vent.gui.widgets.Monitor_Value.staticMetaObject" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

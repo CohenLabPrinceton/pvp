@@ -85,7 +85,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     """
 
-    DISPLAY = defaults.DISPLAY
+    MONITOR = defaults.MONITOR
 
     CONTROL = defaults.CONTROL
 
@@ -103,7 +103,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def __init__(self, update_period = 0.1):
         super(Vent_Gui, self).__init__()
 
-        self.display_values = {}
+        self.monitor = {}
         self.plots = {}
         self.controls = {}
 
@@ -118,18 +118,18 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def test(self):
 
         ox = ((np.sin(time.time()/10)+1)*5)+80
-        self.display_values['oxygen'].update_value(ox)
+        self.monitor['oxygen'].update_value(ox)
 
         temp = ((np.sin(time.time()/20)+1)*2.5)+22
-        self.display_values['temperature'].update_value(temp)
+        self.monitor['temperature'].update_value(temp)
 
         humid = ((np.sin(time.time()/50)+1)*5)+50
-        self.display_values['humidity'].update_value(humid)
+        self.monitor['humidity'].update_value(humid)
 
         press = (np.sin(time.time())+1)*25
-        self.display_values['vte'].update_value(press)
+        self.monitor['vte'].update_value(press)
         self.plots['pressure'].update_value((time.time(), press))
-        # for num, widget in enumerate(self.display_values.values()):
+        # for num, widget in enumerate(self.monitor.values()):
         #     yval = (np.sin(time.time()+num) + 1) * 50
         #     widget.update_value(yval)
         self.plots['flow'].update_value((time.time(),(np.sin(time.time()) + 1) * 50))
@@ -140,8 +140,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
     def update_value(self, value_name, new_value):
-            if value_name in self.display_values.keys():
-                self.display_values[value_name].update_value(new_value)
+            if value_name in self.monitor.keys():
+                self.monitor[value_name].update_value(new_value)
             elif value_name in self.plots.keys():
                 self.plots[value_name].update_value(new_value)
 
@@ -178,9 +178,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # display values
         self.display_layout = QtWidgets.QVBoxLayout()
 
-        for display_key, display_params in self.DISPLAY.items():
-            self.display_values[display_key] = widgets.Display_Value(update_period = self.update_period, **display_params)
-            self.display_layout.addWidget(self.display_values[display_key])
+        for display_key, display_params in self.MONITOR.items():
+            self.monitor[display_key] = widgets.Monitor_Value(update_period = self.update_period, **display_params)
+            self.display_layout.addWidget(self.monitor[display_key])
             self.display_layout.addWidget(widgets.QHLine())
         self.main_layout.addLayout(self.display_layout, self.display_width)
 
@@ -224,8 +224,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         # connect displays to plots
-        self.display_values['vte'].limits_changed.connect(self.plots['pressure'].set_safe_limits)
-        self.plots['pressure'].limits_changed.connect(self.display_values['vte'].update_limits)
+        self.monitor['vte'].limits_changed.connect(self.plots['pressure'].set_safe_limits)
+        self.plots['pressure'].limits_changed.connect(self.monitor['vte'].update_limits)
 
 
         ####################

@@ -98,3 +98,23 @@ text-align: left;
 
 DIVIDER_COLOR = "#FFFFFF"
 
+STATUS_NORMAL = f"""
+QFrame {{
+    background-color: {BACKGROUND_COLOR};
+    color: {TEXT_COLOR};
+}}
+"""
+
+STATUS_WARN = f"""
+QFrame {{
+    background-color: {SUBWAY_COLORS['orange']};
+    color: {TEXT_COLOR};
+}}
+"""
+
+STATUS_ALARM = f"""
+QFrame {{
+    background-color: {SUBWAY_COLORS['red']};
+    color: {TEXT_COLOR};
+}}
+"""

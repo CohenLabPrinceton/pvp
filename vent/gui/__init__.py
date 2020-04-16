@@ -87,75 +87,20 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     """
 
-    DISPLAY = odict({
-        'oxygen': {
-            'name': 'O2 Concentration',
-            'units': '%',
-            'abs_range': (0, 100),
-            'safe_range': (60, 100),
-            'decimals' : 1
-        },
-        'temperature': {
-            'name': 'Temperature',
-            'units': '\N{DEGREE SIGN}C',
-            'abs_range': (0, 50),
-            'safe_range': (20, 30),
-            'decimals': 1
-        },
-        'humidity': {
-            'name': 'Humidity',
-            'units': '%',
-            'abs_range': (0, 100),
-            'safe_range': (20, 75),
-            'decimals': 1
-        },
-        'vte': {
-            'name': 'VTE',
-            'units': '%',
-            'abs_range': (0, 100),
-            'safe_range': (20, 80),
-            'decimals': 1
-        },
-        'etc': {
-            'name': 'Other measurements??',
-            'units': '???',
-            'abs_range': (0, 100),
-            'safe_range': (10, 90),
-            'decimals': 1
-        }
-    })
+    DISPLAY = defaults.DISPLAY
 
-    CONTROL = {
-        'oxygen': {
-            'name': 'O2 Concentration',
-            'units': '%',
-            'abs_range': (0, 100),
-            'value': 80,
-            'decimals': 1
-        },
-        'temperature': {
-            'name': 'Temperature',
-            'units': '\N{DEGREE SIGN}C',
-            'abs_range': (0, 50),
-            'value': 23,
-            'decimals': 1
-        },
-    }
+    CONTROL = defaults.CONTROL
 
-    PLOTS = {
-        'flow': {
-            'name': 'Flow (L/s)',
-            'abs_range': (0, 100),
-            'safe_range': (20, 80),
-            'color': styles.SUBWAY_COLORS['yellow'],
-        },
-        'pressure': {
-            'name': 'Pressure (mmHg)',
-            'abs_range': (0, 100),
-            'safe_range': (20, 80),
-            'color': styles.SUBWAY_COLORS['orange'],
-        }
-    }
+    PLOTS = defaults.PLOTS
+
+    display_width = 2
+    plot_width = 2
+    control_width = 2
+    total_width = display_width+plot_width+control_width
+
+    status_height = 1
+    main_height = 5
+    total_height = status_height+main_height
 
     def __init__(self, update_period = 0.1):
         super(Vent_Gui, self).__init__()
@@ -219,8 +164,17 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # left: readout values
         # center: plotted values
         # right: controls & limits
-        self.layout = QtWidgets.QHBoxLayout()
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.setContentsMargins(0,0,0,0)
         self.main_widget.setLayout(self.layout)
+
+        # layout that includes the display and controls
+        self.main_layout = QtWidgets.QHBoxLayout()
+        self.main_layout.setContentsMargins(0,0,0,0)
+        ##########
+        # Status Bar
+        self.status_bar = widgets.Status_Bar()
+        self.layout.addWidget(self.status_bar, self.status_height)
 
         #########
         # display values
@@ -230,7 +184,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.display_values[display_key] = widgets.Display_Value(update_period = self.update_period, **display_params)
             self.display_layout.addWidget(self.display_values[display_key])
             self.display_layout.addWidget(widgets.QHLine())
-        self.layout.addLayout(self.display_layout, 2)
+        self.main_layout.addLayout(self.display_layout, self.display_width)
 
         ###########
         # plots
@@ -268,7 +222,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.plots[plot_key] = widgets.Plot(**plot_params)
             self.plot_layout.addWidget(self.plots[plot_key])
 
-        self.layout.addLayout(self.plot_layout,5)
+        self.main_layout.addLayout(self.plot_layout,5)
 
 
         # connect displays to plots
@@ -287,9 +241,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.controls_layout.addStretch()
 
-        self.layout.addLayout(self.controls_layout, 1)
+        self.main_layout.addLayout(self.controls_layout, 1)
 
-
+        self.layout.addLayout(self.main_layout, self.main_height)
         self.show()
 
     def set_plot_duration(self, dur):

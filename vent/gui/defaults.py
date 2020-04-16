@@ -30,13 +30,6 @@ DISPLAY = odict({
             'abs_range': (0, 100),
             'safe_range': (20, 80),
             'decimals': 1
-        },
-        'etc': {
-            'name': 'Other measurements??',
-            'units': '???',
-            'abs_range': (0, 100),
-            'safe_range': (10, 90),
-            'decimals': 1
         }
     })
 

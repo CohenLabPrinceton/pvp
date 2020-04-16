@@ -1,15 +1,11 @@
+
 #########################
 # Imports
 
 # python standard libraries
 from collections import deque
-from collections import OrderedDict as odict
 import copy
-import sys
 import time
-import threading
-import pdb
-
 
 # other required libraries
 import numpy as np
@@ -18,12 +14,13 @@ import numpy as np
 from PySide2 import QtCore, QtGui, QtWidgets
 
 # import whole module so pyqtgraph recognizes we're using it
-import PySide2
 # using pyqtgraph for data visualization
 import pyqtgraph as pg
 
+
 # import styles
-import gui_styles
+from vent.gui import defaults
+from vent.gui import styles
 
 ##########################
 # GUI Class
@@ -33,265 +30,6 @@ try:
 except:
     mono_font = QtGui.QFont()
     mono_font.setStyleHint(QtGui.QFont.Monospace)
-
-
-class Vent_Gui(QtWidgets.QMainWindow):
-    """
-
-    Controls:
-        - PIP: peak inhalation pressure (~20 cm H2O)
-        - T_insp: inspiratory time to PEEP (~0.5 sec)
-        - I/E: inspiratory to expiratory time ratio
-        - bpm: breaths per minute (15 bpm -> 1/15 sec cycle time)
-        - PIP_time: Target time for PIP. While lungs expand, dP/dt should be PIP/PIP_time
-        - flow_insp: nominal flow rate during inspiration
-
-    **Set by hardware**
-        - FiO2: fraction of inspired oxygen, set by blender
-        - max_flow: manual valve at output of blender
-        - PEEP: positive end-expiratory pressure, set by manual valve
-
-    **Derived parameters**
-        - cycle_time: 1/bpm
-        - t_insp: inspiratory time, controlled by cycle_time and I/E
-        - t_exp: expiratory time, controlled by cycle_time and I/E
-
-    **Monitored variables**
-        * O2
-        * Temperature
-        * Humidity
-        - (VTE) End-Tidal volume: the volume of air entering the lung, derived from flow through t_exp
-        - PIP: peak inspiratory pressure, set by user in software
-        - Mean plateau pressure: derived from pressure sensor during inspiration cycle hold (no flow)
-        - PEEP: positive end-expiratory pressure, set by manual valve
-        * fTotal (total respiratory frequency) - breaths delivered by vent & patients natural breaths
-
-
-    **Alarms**
-        - Oxygen out of range
-        - High pressure (tube/airway occlusion)
-        - Low-pressure (disconnect)
-        - Temperature out of range
-        - Low voltage alarm (if using battery power)
-        - Tidal volume (expiratory) out of range
-
-
-    Graphs:
-        * Flow
-        * Pressure
-
-    """
-
-    DISPLAY = odict({
-        'oxygen': {
-            'name': 'O2 Concentration',
-            'units': '%',
-            'abs_range': (0, 100),
-            'safe_range': (60, 100),
-            'decimals' : 1
-        },
-        'temperature': {
-            'name': 'Temperature',
-            'units': '\N{DEGREE SIGN}C',
-            'abs_range': (0, 50),
-            'safe_range': (20, 30),
-            'decimals': 1
-        },
-        'humidity': {
-            'name': 'Humidity',
-            'units': '%',
-            'abs_range': (0, 100),
-            'safe_range': (20, 75),
-            'decimals': 1
-        },
-        'vte': {
-            'name': 'VTE',
-            'units': '%',
-            'abs_range': (0, 100),
-            'safe_range': (20, 80),
-            'decimals': 1
-        },
-        'etc': {
-            'name': 'Other measurements??',
-            'units': '???',
-            'abs_range': (0, 100),
-            'safe_range': (10, 90),
-            'decimals': 1
-        }
-    })
-
-    CONTROL = {
-        'oxygen': {
-            'name': 'O2 Concentration',
-            'units': '%',
-            'abs_range': (0, 100),
-            'value': 80,
-            'decimals': 1
-        },
-        'temperature': {
-            'name': 'Temperature',
-            'units': '\N{DEGREE SIGN}C',
-            'abs_range': (0, 50),
-            'value': 23,
-            'decimals': 1
-        },
-    }
-
-    PLOTS = {
-        'flow': {
-            'name': 'Flow (L/s)',
-            'abs_range': (0, 100),
-            'safe_range': (20, 80),
-            'color': gui_styles.SUBWAY_COLORS['yellow'],
-        },
-        'pressure': {
-            'name': 'Pressure (mmHg)',
-            'abs_range': (0, 100),
-            'safe_range': (20, 80),
-            'color': gui_styles.SUBWAY_COLORS['orange'],
-        }
-    }
-
-    def __init__(self, update_period = 0.1):
-        super(Vent_Gui, self).__init__()
-
-        self.display_values = {}
-        self.plots = {}
-        self.controls = {}
-
-        self.update_period = update_period
-
-        self.init_ui()
-        self.start_time = time.time()
-
-        self.test()
-
-
-    def test(self):
-
-        ox = ((np.sin(time.time()/10)+1)*5)+80
-        self.display_values['oxygen'].update_value(ox)
-
-        temp = ((np.sin(time.time()/20)+1)*2.5)+22
-        self.display_values['temperature'].update_value(temp)
-
-        humid = ((np.sin(time.time()/50)+1)*5)+50
-        self.display_values['humidity'].update_value(humid)
-
-        press = (np.sin(time.time())+1)*25
-        self.display_values['vte'].update_value(press)
-        self.plots['pressure'].update_value((time.time(), press))
-        # for num, widget in enumerate(self.display_values.values()):
-        #     yval = (np.sin(time.time()+num) + 1) * 50
-        #     widget.update_value(yval)
-        self.plots['flow'].update_value((time.time(),(np.sin(time.time()) + 1) * 50))
-
-
-        # if (time.time()-self.start_time) < 60:
-        QtCore.QTimer.singleShot(0.02, self.test)
-
-
-    def update_value(self, value_name, new_value):
-            if value_name in self.display_values.keys():
-                self.display_values[value_name].update_value(new_value)
-            elif value_name in self.plots.keys():
-                self.plots[value_name].update_value(new_value)
-
-    def init_ui(self):
-        """
-        Create the UI components for the ventilator screen
-        """
-
-        # basic initialization
-
-
-        self.main_widget = QtWidgets.QWidget()
-        #
-        self.setCentralWidget(self.main_widget)
-
-        # layout - three columns
-        # left: readout values
-        # left: readout values
-        # center: plotted values
-        # right: controls & limits
-        self.layout = QtWidgets.QHBoxLayout()
-        self.main_widget.setLayout(self.layout)
-
-        #########
-        # display values
-        self.display_layout = QtWidgets.QVBoxLayout()
-
-        for display_key, display_params in self.DISPLAY.items():
-            self.display_values[display_key] = Display_Value(update_period = self.update_period, **display_params)
-            self.display_layout.addWidget(self.display_values[display_key])
-            self.display_layout.addWidget(QHLine())
-        self.layout.addLayout(self.display_layout, 2)
-
-        ###########
-        # plots
-        self.plot_layout = QtWidgets.QVBoxLayout()
-
-        # button to set plot history
-        button_box = QtWidgets.QGroupBox("Plot History")
-        #button_group = QtWidgets.QButtonGroup()
-        #button_group.exclusive()
-        times = (("5s", 5),
-                 ("10s", 10),
-                 ("30s", 30),
-                 ("1m", 60),
-                 ("5m", 60*5),
-                 ("15m", 60*15),
-                 ("60m", 60*60))
-
-        self.time_buttons = {}
-        button_layout = QtWidgets.QHBoxLayout()
-        button_layout.addStretch()
-
-        for a_time in times:
-            self.time_buttons[a_time[0]] = QtWidgets.QRadioButton(a_time[0])
-            #self.time_buttons[a_time[0]].setCheckable(True)
-            self.time_buttons[a_time[0]].setObjectName(str(a_time[1]))
-            self.time_buttons[a_time[0]].clicked.connect(self.set_plot_duration)
-            button_layout.addWidget(self.time_buttons[a_time[0]])
-            #button_group.addButton(self.time_buttons[a_time[0]])
-
-        button_box.setLayout(button_layout)
-        self.plot_layout.addWidget(button_box)
-
-
-        for plot_key, plot_params in self.PLOTS.items():
-            self.plots[plot_key] = Plot(**plot_params)
-            self.plot_layout.addWidget(self.plots[plot_key])
-
-        self.layout.addLayout(self.plot_layout,5)
-
-
-        # connect displays to plots
-        self.display_values['vte'].limits_changed.connect(self.plots['pressure'].set_safe_limits)
-        self.plots['pressure'].limits_changed.connect(self.display_values['vte'].update_limits)
-
-
-        ####################
-        # Controls
-
-        self.controls_layout = QtWidgets.QVBoxLayout()
-        for control_name, control_params in self.CONTROL.items():
-            self.controls[control_name] = Control(**control_params)
-            self.controls_layout.addWidget(self.controls[control_name])
-            self.controls_layout.addWidget(QHLine())
-
-        self.controls_layout.addStretch()
-
-        self.layout.addLayout(self.controls_layout, 1)
-
-
-        self.show()
-
-    def set_plot_duration(self, dur):
-        dur = int(self.sender().objectName())
-
-        for plot in self.plots.values():
-            plot.set_duration(dur)
 
 
 
@@ -337,19 +75,19 @@ class Display_Value(QtWidgets.QWidget):
 
         # labels to display values
         self.value_label = QtWidgets.QLabel()
-        self.value_label.setStyleSheet(gui_styles.DISPLAY_VALUE)
+        self.value_label.setStyleSheet(styles.DISPLAY_VALUE)
         self.value_label.setFont(mono_font)
         self.value_label.setAlignment(QtCore.Qt.AlignRight)
         self.value_label.setMargin(0)
         self.value_label.setContentsMargins(0,0,0,0)
 
         self.name_label = QtWidgets.QLabel()
-        self.name_label.setStyleSheet(gui_styles.DISPLAY_NAME)
+        self.name_label.setStyleSheet(styles.DISPLAY_NAME)
         self.name_label.setText(self.name)
         self.name_label.setAlignment(QtCore.Qt.AlignRight)
 
         self.units_label = QtWidgets.QLabel()
-        self.units_label.setStyleSheet(gui_styles.DISPLAY_UNITS)
+        self.units_label.setStyleSheet(styles.DISPLAY_UNITS)
         self.units_label.setText(self.units)
         self.units_label.setAlignment(QtCore.Qt.AlignRight)
 
@@ -426,10 +164,10 @@ class Display_Value(QtWidgets.QWidget):
         if self.value:
             if (self.value >= self.max_safe.value()) or (self.value <= self.min_safe.value()):
                 self.alarm.emit()
-                self.value_label.setStyleSheet(gui_styles.DISPLAY_VALUE_ALARM)
+                self.value_label.setStyleSheet(styles.DISPLAY_VALUE_ALARM)
                 self.range_slider.alarm = True
             else:
-                self.value_label.setStyleSheet(gui_styles.DISPLAY_VALUE)
+                self.value_label.setStyleSheet(styles.DISPLAY_VALUE)
                 self.range_slider.alarm = False
 
 class Control(QtWidgets.QWidget):
@@ -457,7 +195,7 @@ class Control(QtWidgets.QWidget):
         # Units
 
         self.value_label = EditableLabel()
-        self.value_label.setStyleSheet(gui_styles.CONTROL_VALUE)
+        self.value_label.setStyleSheet(styles.CONTROL_VALUE)
         self.value_label.label.setFont(mono_font)
         self.value_label.lineEdit.setFont(mono_font)
         self.value_label.label.setAlignment(QtCore.Qt.AlignRight)
@@ -468,7 +206,7 @@ class Control(QtWidgets.QWidget):
         # FIXME: TEMPORARY HACK - get sizing to work intelligibly with the dial
         #n_ints = len(str(self.abs_range[1]))
         n_ints = 3
-        self.value_label.setFixedWidth(n_ints*gui_styles.VALUE_SIZE*.6)
+        self.value_label.setFixedWidth(n_ints*styles.VALUE_SIZE*.6)
 
         self.dial = QtWidgets.QDial()
         self.dial.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -476,7 +214,7 @@ class Control(QtWidgets.QWidget):
         self.dial.setMaximum(self.abs_range[1])
         self.dial.setNotchesVisible(True)
         self.dial.setContentsMargins(0,0,0,0)
-        self.dial.setFixedHeight(gui_styles.VALUE_SIZE)
+        self.dial.setFixedHeight(styles.VALUE_SIZE)
         self.dial.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
                                 QtWidgets.QSizePolicy.Fixed)
 
@@ -484,7 +222,7 @@ class Control(QtWidgets.QWidget):
         self.dial_min.setText(str(np.round(self.abs_range[0], self.decimals)))
         self.dial_min.setAlignment(QtCore.Qt.AlignLeft)
         self.dial_min.setFont(mono_font)
-        self.dial_min.setStyleSheet(gui_styles.CONTROL_LABEL)
+        self.dial_min.setStyleSheet(styles.CONTROL_LABEL)
         self.dial_min.setMargin(0)
         self.dial_min.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                     QtWidgets.QSizePolicy.Maximum)
@@ -494,20 +232,20 @@ class Control(QtWidgets.QWidget):
         self.dial_max.setText(str(np.round(self.abs_range[1], self.decimals)))
         self.dial_max.setAlignment(QtCore.Qt.AlignRight)
         self.dial_max.setFont(mono_font)
-        self.dial_max.setStyleSheet(gui_styles.CONTROL_LABEL)
+        self.dial_max.setStyleSheet(styles.CONTROL_LABEL)
         self.dial_max.setMargin(0)
         self.dial_max.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                     QtWidgets.QSizePolicy.Maximum)
 
         self.name_label = QtWidgets.QLabel()
-        self.name_label.setStyleSheet(gui_styles.DISPLAY_NAME)
+        self.name_label.setStyleSheet(styles.DISPLAY_NAME)
         self.name_label.setText(self.name)
         self.name_label.setAlignment(QtCore.Qt.AlignRight)
         self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                     QtWidgets.QSizePolicy.Maximum)
 
         self.units_label = QtWidgets.QLabel()
-        self.units_label.setStyleSheet(gui_styles.DISPLAY_UNITS)
+        self.units_label.setStyleSheet(styles.DISPLAY_UNITS)
         self.units_label.setText(self.units)
         self.units_label.setAlignment(QtCore.Qt.AlignRight)
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
@@ -585,7 +323,7 @@ class RangeSlider(QtWidgets.QSlider):
 
     def __init__(self, abs_range, safe_range, *args):
         super(RangeSlider, self).__init__(*args)
-        self.setStyleSheet(gui_styles.RANGE_SLIDER)
+        self.setStyleSheet(styles.RANGE_SLIDER)
 
         self.abs_range = abs_range
         self.setMinimum(abs_range[0])
@@ -620,7 +358,7 @@ class RangeSlider(QtWidgets.QSlider):
                                 self.top_margin,
                                 self.right_margin,
                                 self.bottom_margin)
-        self.setMinimumWidth(gui_styles.SLIDER_WIDTH)
+        self.setMinimumWidth(styles.SLIDER_WIDTH)
 
         # indicator
         self._indicator = 0
@@ -687,16 +425,16 @@ class RangeSlider(QtWidgets.QSlider):
             # draw indicator first, so underneath max and min
             indicator_color = QtGui.QColor(0,0,0)
             if not self.alarm:
-                indicator_color.setNamedColor(gui_styles.INDICATOR_COLOR)
+                indicator_color.setNamedColor(styles.INDICATOR_COLOR)
             else:
-                indicator_color.setNamedColor(gui_styles.ALARM_COLOR)
+                indicator_color.setNamedColor(styles.ALARM_COLOR)
 
-            x_begin = (self.width()-gui_styles.INDICATOR_WIDTH)/2
+            x_begin = (self.width()-styles.INDICATOR_WIDTH)/2
 
             painter.setBrush(indicator_color)
             pen_bak = copy.copy(painter.pen())
             painter.setPen(painter.pen().setWidth(0))
-            painter.drawRect(x_begin,y_loc,gui_styles.INDICATOR_WIDTH,self.height()-y_loc)
+            painter.drawRect(x_begin,y_loc,styles.INDICATOR_WIDTH,self.height()-y_loc)
 
             painter.setPen(pen_bak)
 
@@ -750,7 +488,7 @@ class RangeSlider(QtWidgets.QSlider):
             bottom=y_loc+length//2+rect.height()//2+(border_offset/2)-3
             # there is a 3 px offset that I can't attribute to any metric
             #left = (self.width())-(rect.width())-10
-            left = (self.width()/2)-(gui_styles.INDICATOR_WIDTH/2)-rect.width()-3
+            left = (self.width()/2)-(styles.INDICATOR_WIDTH/2)-rect.width()-3
 
             pos=QtCore.QPoint(left, bottom)
             painter.drawText(pos, label_str)
@@ -875,11 +613,11 @@ class Plot(pg.PlotWidget):
     def __init__(self, name, buffer_size = 4092, plot_duration = 5, abs_range = None, safe_range = None, color=None):
         #super(Plot, self).__init__(axisItems={'bottom':TimeAxis(orientation='bottom')})
         # construct title html string
-        titlestr = "<h1 style=\"{title_style}\">{title_text}</h1>".format(title_style=gui_styles.TITLE_STYLE,
+        titlestr = "<h1 style=\"{title_style}\">{title_text}</h1>".format(title_style=styles.TITLE_STYLE,
                                                                       title_text=name)
 
 
-        super(Plot, self).__init__(background=gui_styles.BACKGROUND_COLOR,
+        super(Plot, self).__init__(background=styles.BACKGROUND_COLOR,
                                    title=titlestr)
         self.timestamps = deque(maxlen=buffer_size)
         self.history = deque(maxlen=buffer_size)
@@ -1006,7 +744,7 @@ class EditableLabel(QtWidgets.QWidget):
         self.is_editable = kwargs.get("editable", True)
         self.keyPressHandler = KeyPressHandler(self)
 
-        self.setStyleSheet(gui_styles.CONTROL_VALUE)
+        self.setStyleSheet(styles.CONTROL_VALUE)
 
         self.mainLayout = QtWidgets.QHBoxLayout(self)
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
@@ -1014,15 +752,15 @@ class EditableLabel(QtWidgets.QWidget):
 
         self.label = QtWidgets.QLabel(self)
         self.label.setObjectName("label")
-        # self.label.setStyleSheet(gui_styles.CONTROL_VALUE)
-        self.label.setMinimumHeight(gui_styles.VALUE_SIZE)
+        # self.label.setStyleSheet(styles.CONTROL_VALUE)
+        self.label.setMinimumHeight(styles.VALUE_SIZE)
 
 
         self.mainLayout.addWidget(self.label)
         self.lineEdit = QtWidgets.QLineEdit(self)
         # self.lineEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
         #                             QtWidgets.QSizePolicy.Expanding)
-        # self.lineEdit.setMinimumHeight(gui_styles.VALUE_SIZE)
+        # self.lineEdit.setMinimumHeight(styles.VALUE_SIZE)
         self.lineEdit.setObjectName("lineEdit")
         self.lineEdit.setValidator(QtGui.QDoubleValidator())
         self.mainLayout.addWidget(self.lineEdit)
@@ -1097,7 +835,7 @@ class QHLine(QtWidgets.QFrame):
     """
     with respct to https://stackoverflow.com/a/51057516
     """
-    def __init__(self, parent=None, color=QtGui.QColor(gui_styles.DIVIDER_COLOR)):
+    def __init__(self, parent=None, color=QtGui.QColor(styles.DIVIDER_COLOR)):
         super(QHLine, self).__init__(parent)
         self.setFrameShape(QtWidgets.QFrame.HLine)
         self.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -1119,16 +857,4 @@ class TimeAxis(pg.AxisItem):
 
     def tickStrings(self, values, scale, spacing):
         return [datetime.fromtimestamp(value).strftime('%H:%M:%S') for value in values]
-
-
-if __name__ == "__main__":
-    # just for testing, should be run from main
-    app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(gui_styles.GLOBAL)
-    gui = Vent_Gui()
-    sys.exit(app.exec_())
-
-
-
-
 

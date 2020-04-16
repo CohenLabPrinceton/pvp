@@ -22,7 +22,7 @@ Design Requirements
 
 * Value Dependencies
 
-UI Notes & Todo
+UI Notes & Todo===
 ---------------
 
 * Jonny add notes from helpful RT in discord!!!
@@ -77,6 +77,21 @@ UI Notes & Todo
 * Spec a display for Julienne!!!!
 
 .. automodule:: gui
+    :members:
+    :undoc-members:
+    :autosummary:
+
+.. automodule:: gui.widgets
+    :members:
+    :undoc-members:
+    :autosummary:
+
+.. automodule:: gui.defaults
+    :members:
+    :undoc-members:
+    :autosummary:
+
+.. automodule:: gui.styles
     :members:
     :undoc-members:
     :autosummary:

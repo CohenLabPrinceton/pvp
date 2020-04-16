@@ -62,15 +62,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
         - t_exp: expiratory time, controlled by cycle_time and I/E
 
     **Monitored variables**
-        * O2
-        * Temperature
-        * Humidity
+        - O2
+        - Temperature
+        - Humidity
         - (VTE) End-Tidal volume: the volume of air entering the lung, derived from flow through t_exp
         - PIP: peak inspiratory pressure, set by user in software
         - Mean plateau pressure: derived from pressure sensor during inspiration cycle hold (no flow)
         - PEEP: positive end-expiratory pressure, set by manual valve
-        * fTotal (total respiratory frequency) - breaths delivered by vent & patients natural breaths
-
+        - fTotal (total respiratory frequency) - breaths delivered by vent & patients natural breaths
 
     **Alarms**
         - Oxygen out of range
@@ -80,10 +79,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         - Low voltage alarm (if using battery power)
         - Tidal volume (expiratory) out of range
 
-
     Graphs:
-        * Flow
-        * Pressure
+        - Flow
+        - Pressure
 
     """
 

@@ -22,8 +22,8 @@ Design Requirements
 
 * Value Dependencies
 
-UI Notes & Todo===
----------------
+UI Notes & Todo
+-------------------
 
 * Jonny add notes from helpful RT in discord!!!
 * Top status Bar
@@ -76,22 +76,37 @@ UI Notes & Todo===
 
 * Spec a display for Julienne!!!!
 
-.. automodule:: gui
+GUI Object Documentation
+-------------------------
+
+Main GUI Module
+~~~~~~~~~~~~~~~~~
+
+.. automodule:: vent.gui
     :members:
     :undoc-members:
     :autosummary:
 
-.. automodule:: gui.widgets
+GUI Widgets
+~~~~~~~~~~~~~
+
+.. automodule:: vent.gui.widgets
     :members:
     :undoc-members:
     :autosummary:
 
-.. automodule:: gui.defaults
+GUI Defaults
+~~~~~~~~~~~~~~~
+
+.. automodule:: vent.gui.defaults
     :members:
     :undoc-members:
     :autosummary:
 
-.. automodule:: gui.styles
+GUI Stylesheets
+~~~~~~~~~~~~~~~~~~
+
+.. automodule:: vent.gui.styles
     :members:
     :undoc-members:
     :autosummary:

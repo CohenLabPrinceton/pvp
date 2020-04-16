@@ -20,8 +20,8 @@ Welcome to ventilator's documentation!
 
    alarms
    controller
+   controls
    GUI <gui>
-   gui_styles
    helper
    main
    main_control

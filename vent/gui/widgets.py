@@ -667,7 +667,7 @@ class RangeSlider(QtWidgets.QSlider):
     This class emits the same signals as the QSlider base class, with the
     exception of valueChanged
 
-    Adapted from https://bitbucket.org/genuine_/idascope-local/src/master/idascope/widgets/RangeSlider.py
+    Adapted from `<https://bitbucket.org/genuine_/idascope-local/src/master/idascope/widgets/RangeSlider.py>`_
     (Thank you!!!)
 
     With code from https://stackoverflow.com/a/54819051
@@ -1204,12 +1204,12 @@ class QHLine(QtWidgets.QFrame):
         pal.setColor(QtGui.QPalette.WindowText, color)
         self.setPalette(pal)
 
-class TimeAxis(pg.AxisItem):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setLabel(text='Time', units=None)
-        self.enableAutoSIPrefix(False)
-
-    def tickStrings(self, values, scale, spacing):
-        return [datetime.fromtimestamp(value).strftime('%H:%M:%S') for value in values]
+# class TimeAxis(pg.AxisItem):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.setLabel(text='Time', units=None)
+#         self.enableAutoSIPrefix(False)
+#
+#     def tickStrings(self, values, scale, spacing):
+#         return [datetime.fromtimestamp(value).strftime('%H:%M:%S') for value in values]
 

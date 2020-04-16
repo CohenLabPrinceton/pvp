@@ -312,12 +312,22 @@ class Status_Bar(QtWidgets.QWidget):
 
         self.log_console = Message_Display()
         self.layout.addWidget(self.log_console)
+
+        self.heartbeat = HeartBeat()
+        self.heartbeat.start_timer()
+        self.layout.addWidget(self.heartbeat)
+
         self.layout.setContentsMargins(5,5,5,5)
 
         self.setLayout(self.layout)
 
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                           QtWidgets.QSizePolicy.Expanding)
+        style = self.style()
+        size = style.pixelMetric(QtWidgets.QStyle.PM_MessageBoxIconSize, None, self)
+
+        self.setMaximumHeight(size*1.5)
+        #
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                    QtWidgets.QSizePolicy.Expanding)
 
 
 
@@ -481,6 +491,105 @@ class Message_Display(QtWidgets.QFrame):
         else:
             self.update_message(None)
 
+
+class HeartBeat(QtWidgets.QFrame):
+
+    timeout = QtCore.Signal(bool)
+    heartbeat = QtCore.Signal(float)
+
+    def __init__(self, update_interval = 100, timeout_dur = 5000):
+        """
+        Args:
+            update_interval (int): How often to do the heartbeat, in ms
+            timeout (int): how long to wait before hearing from control process
+        """
+
+        super(HeartBeat, self).__init__()
+
+        self.update_interval = update_interval
+        self.start_time = None
+        self.timeout_dur = timeout_dur
+        self._state = False
+        self._last_heartbeat = 0
+        self.init_ui()
+
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self._heartbeat)
+
+    def init_ui(self):
+
+        self.layout = QtWidgets.QGridLayout()
+
+        self.timer_label = QtWidgets.QLabel()
+        self.timer_label.setFont(mono_font)
+
+        self.indicator = QtWidgets.QRadioButton()
+
+        self.set_indicator()
+
+        self.layout.addWidget(QtWidgets.QLabel("Uptime"), 0, 0, alignment=QtGui.Qt.AlignVCenter | QtGui.Qt.AlignRight)
+        self.layout.addWidget(self.timer_label, 1, 0)
+        self.layout.addWidget(QtWidgets.QLabel("Status"), 0, 1)
+        self.layout.addWidget(self.indicator, 1, 1)
+
+        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Raised)
+
+
+        self.setLayout(self.layout)
+
+    def check_timeout(self):
+        if (time.time() - self._last_heartbeat) > (self.timeout_dur/1000):
+            self._state = True
+            self.set_indicator("alarm")
+            self.timeout.emit(True)
+        else:
+            self._state = False
+            self.set_indicator("")
+
+    def set_indicator(self, state=None):
+
+        if state == 'alarm':
+            self.setStyleSheet(styles.HEARTBEAT_ALARM)
+
+        else:
+            self.setStyleSheet(styles.HEARTBEAT_NORMAL)
+
+    def start_timer(self, update_interval=None):
+        """
+        Args:
+            update_interval (float): How often (in ms) the timer should be updated.
+        """
+        self.start_time = time.time()
+        self._last_heartbeat = self.start_time
+
+        if update_interval:
+            self.update_interval = update_interval
+
+        self.timer.start(self.update_interval)
+
+    def stop_timer(self):
+        """
+        you can read the sign ya punk
+        """
+        self.timer.stop()
+        self.setText("")
+
+    @QtCore.Slot(float)
+    def beatheart(self, heartbeat_time):
+        self._last_heartbeat = heartbeat_time
+
+    def _heartbeat(self):
+        """
+        Called every (update_interval) milliseconds to set the text of the timer.
+
+        """
+        current_time = time.time()
+        self.heartbeat.emit(current_time)
+
+        secs_elapsed = current_time-self.start_time
+        self.timer_label.setText("{:02d}:{:02d}:{:.2f}".format(int(secs_elapsed/3600), int((secs_elapsed/60))%60, secs_elapsed%60))
+
+        self.check_timeout()
 
 
 

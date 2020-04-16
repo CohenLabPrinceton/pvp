@@ -118,3 +118,25 @@ QFrame {{
     color: {TEXT_COLOR};
 }}
 """
+
+HEARTBEAT_NORMAL = f"""
+QRadioButton::indicator {{
+    background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 {SUBWAY_COLORS['blue']});
+    border-radius: 5px;
+}}
+
+QLabel {{
+    color: {TEXT_COLOR};
+}}
+"""
+
+HEARTBEAT_ALARM = f"""
+QRadioButton::indicator {{
+    background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 {SUBWAY_COLORS['red']});
+    border-radius: 5px;
+}}
+
+QLabel {{
+    color: {SUBWAY_COLORS['red']};
+}}
+"""

@@ -1,24 +1,22 @@
 #!/usr/bin/env python
+import argparse
+from vent.coordinator.ui_control_module import get_ui_control_module
 
-# This is the main script. The UI people can create this for us.
-# It calls to main_control which reads in sensor data and controls the system.
-import time
-from vent import main_control, sensors, alarms
 
-SAMPLETIME = 0.01
+def parse_cmd_args():
+    parser = argparse.ArgumentParser()
+    # TODO: maybe we should add a mode without UI display, so this would only have command line interface?
+    parser.add_argument('--simulation', help='running as simulation using virtual sensors and actuators',
+                        action='store_true')
+    parser.add_argument('--single_process', help='running UI and controller within one process', action='store_true')
+    return parser.parse_args()
 
-# Initialize sensor reading/tracking and UI structures:
-julieplease     = sensors.JuliePlease()
-curr            = sensors.SensorReadings(julieplease)
-tracker         = sensors.SensorTracking()
-alarm_bounds    = alarms.AlarmBounds()
 
-while True:
-    
-    # UI logic should go into this script. Callbacks needed. 
-    
-    main_control.take_step(curr, tracker, alarm_bounds)
-    # Pause until next datapoint capture
-    time.sleep(SAMPLETIME)
-    
-    
+def main():
+    args = parse_cmd_args()
+    ui_control_module = get_ui_control_module(single_process=args.single_process, sim_mode=args.simulation)
+    # TODO: gui.main(ui_control_module)
+
+
+if __name__ == '__main__':
+    main()

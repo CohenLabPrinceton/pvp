@@ -82,6 +82,10 @@ UI Notes & Todo
         * flow vs volume
         * volume vs time
 
+* Performance
+
+    * Cache drawText() calls in range selector by drawing to pixmap
+
 
 * Spec a display for Julienne!!!!
 

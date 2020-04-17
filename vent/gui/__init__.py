@@ -8,11 +8,13 @@ import sys
 import os
 import time
 import pdb
+import argparse
 # add to path
 PACKAGE_PARENT = '../..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 #pdb.set_trace()
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
 
 
 # other required libraries
@@ -86,21 +88,52 @@ class Vent_Gui(QtWidgets.QMainWindow):
     """
 
     MONITOR = defaults.MONITOR
+    """
+    see :data:`.gui.defaults.MONITOR`
+    """
+
 
     CONTROL = defaults.CONTROL
+    """
+    see :data:`.gui.defaults.CONTROL`
+    """
 
     PLOTS = defaults.PLOTS
+    """
+    see :data:`.gui.defaults.PLOTS`
+    """
 
     display_width = 2
     plot_width = 2
     control_width = 2
     total_width = display_width+plot_width+control_width
+    """
+    computed from ``display_width+plot_width+control_width``
+    """
 
     status_height = 1
     main_height = 5
     total_height = status_height+main_height
+    """
+    computed from ``status_height+main_height``
+    """
 
-    def __init__(self, update_period = 0.1):
+    def __init__(self, update_period = 0.1, test=False):
+        """
+
+        Attributes:
+            monitor (dict): Dictionary mapping :data:`.default.MONITOR` keys to :class:`.widgets.Monitor_Value` objects
+            plots (dict): Dictionary mapping :data:`.default.PLOT` keys to :class:`.widgets.Plot` objects
+            controls (dict): Dictionary mapping :data:`.default.CONTROL` keys to :class:`.widgets.Control` objects
+            start_time (float): Start time as returned by :func:`time.time`
+
+
+        Arguments:
+            update_period (float): The global delay between redraws of the GUI (seconds)
+            test (bool): Whether the monitored values and plots should be fed sine waves for visual testing.
+
+
+        """
         super(Vent_Gui, self).__init__()
 
         self.monitor = {}
@@ -112,7 +145,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.init_ui()
         self.start_time = time.time()
 
-        self.test()
+        if test:
+            self.test()
 
 
     def test(self):
@@ -140,10 +174,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
     def update_value(self, value_name, new_value):
-            if value_name in self.monitor.keys():
-                self.monitor[value_name].update_value(new_value)
-            elif value_name in self.plots.keys():
-                self.plots[value_name].update_value(new_value)
+        """
+        Arguments:
+            value_name (str): Name of key in :attr:`.Vent_Gui.monitor` and :attr:`.Vent_Gui.plots` to update
+            new_value (int, float): New value to display/plot
+        """
+        if value_name in self.monitor.keys():
+            self.monitor[value_name].update_value(new_value)
+        elif value_name in self.plots.keys():
+            self.plots[value_name].update_value(new_value)
 
     def init_ui(self):
         """
@@ -157,11 +196,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
         #
         self.setCentralWidget(self.main_widget)
 
-        # layout - three columns
-        # left: readout values
-        # left: readout values
-        # center: plotted values
-        # right: controls & limits
+        # layout
+        #   - two rows (status, main)
+        #   - three columns
+        #       left:   monitor values
+        #       center: plotted values
+        #       right:  controls
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
         self.main_widget.setLayout(self.layout)
@@ -169,6 +209,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # layout that includes the display and controls
         self.main_layout = QtWidgets.QHBoxLayout()
         self.main_layout.setContentsMargins(0,0,0,0)
+
         ##########
         # Status Bar
         self.status_bar = widgets.Status_Bar()
@@ -224,6 +265,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         # connect displays to plots
+        # FIXME: Link in gui.defaults
         self.monitor['vte'].limits_changed.connect(self.plots['pressure'].set_safe_limits)
         self.plots['pressure'].limits_changed.connect(self.monitor['vte'].update_limits)
 
@@ -252,8 +294,23 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Launch the Ventilator GUI")
+    parser.add_argument('test', '-t', '--test',
+                        dest='test',
+                        help="Run in test mode? (y=1/n=0, default=0)",
+                        choices=(0,1),
+                        default=0)
+
+
+
+    args = parser.parse_args()
+
+    gui_test = False
+    if args.test in (1, True, 'y'):
+        gui_test = True
+
     # just for testing, should be run from main
     app = QtWidgets.QApplication(sys.argv)
     app.setStyleSheet(styles.GLOBAL)
-    gui = Vent_Gui()
+    gui = Vent_Gui(test=gui_test)
     sys.exit(app.exec_())

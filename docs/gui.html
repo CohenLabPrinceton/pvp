@@ -190,9 +190,9 @@
 <h1>gui<a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="program-diagram">
 <h2>Program Diagram<a class="headerlink" href="#program-diagram" title="Permalink to this headline">¶</a></h2>
-<div class="figure align-center" id="id1" style="width: 100%">
+<div class="figure align-center" id="id4" style="width: 100%">
 <a class="reference internal image-reference" href="images/gui_diagram.png"><img alt="images/gui_diagram.png" src="images/gui_diagram.png" style="width: 100%;" /></a>
-<p class="caption"><span class="caption-text">Schematic diagram of major UI components and signals</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Schematic diagram of major UI components and signals</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="design-requirements">
@@ -297,6 +297,13 @@
 </ul>
 </div></blockquote>
 </li>
+<li><p>Performance</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Cache drawText() calls in range selector by drawing to pixmap</p></li>
+</ul>
+</div></blockquote>
+</li>
 <li><p>Spec a display for Julienne!!!!</p></li>
 </ul>
 </div>
@@ -311,14 +318,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui" title="vent.gui.Vent_Gui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vent_Gui</span></code></a>([update_period])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui" title="vent.gui.Vent_Gui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vent_Gui</span></code></a>([update_period, test])</p></td>
 <td><p>Controls:     - PIP: peak inhalation pressure (~20 cm H2O)     - T_insp: inspiratory time to PEEP (~0.5 sec)     - I/E: inspiratory to expiratory time ratio     - bpm: breaths per minute (15 bpm -&gt; 1/15 sec cycle time)     - PIP_time: Target time for PIP.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt id="vent.gui.Vent_Gui">
-<em class="property">class </em><code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">Vent_Gui</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">update_period</span><span class="o">=</span><span class="default_value">0.1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui.html#Vent_Gui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.Vent_Gui" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">Vent_Gui</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">update_period</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">test</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui.html#Vent_Gui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.Vent_Gui" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Controls:</dt><dd><ul class="simple">
 <li><p>PIP: peak inhalation pressure (~20 cm H2O)</p></li>
@@ -375,13 +382,13 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.CONTROL" title="vent.gui.Vent_Gui.CONTROL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTROL</span></code></a></p></td>
-<td><p>dict() -&gt; new empty dictionary</p></td>
+<td><p>see <a class="reference internal" href="vent.gui.html#vent.gui.defaults.CONTROL" title="vent.gui.defaults.CONTROL"><code class="xref py py-data docutils literal notranslate"><span class="pre">gui.defaults.CONTROL</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.MONITOR" title="vent.gui.Vent_Gui.MONITOR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MONITOR</span></code></a></p></td>
-<td><p>Dictionary that remembers insertion order</p></td>
+<td><p>see <a class="reference internal" href="vent.gui.html#vent.gui.defaults.MONITOR" title="vent.gui.defaults.MONITOR"><code class="xref py py-data docutils literal notranslate"><span class="pre">gui.defaults.MONITOR</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.PLOTS" title="vent.gui.Vent_Gui.PLOTS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOTS</span></code></a></p></td>
-<td><p>dict() -&gt; new empty dictionary</p></td>
+<td><p>see <a class="reference internal" href="vent.gui.html#vent.gui.defaults.PLOTS" title="vent.gui.defaults.PLOTS"><code class="xref py py-data docutils literal notranslate"><span class="pre">gui.defaults.PLOTS</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.control_width" title="vent.gui.Vent_Gui.control_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">control_width</span></code></a></p></td>
 <td><p>int([x]) -&gt; integer</p></td>
@@ -399,10 +406,10 @@
 <td><p>int([x]) -&gt; integer</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.total_height" title="vent.gui.Vent_Gui.total_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_height</span></code></a></p></td>
-<td><p>int([x]) -&gt; integer</p></td>
+<td><p>computed from <code class="docutils literal notranslate"><span class="pre">status_height+main_height</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.total_width" title="vent.gui.Vent_Gui.total_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_width</span></code></a></p></td>
-<td><p>int([x]) -&gt; integer</p></td>
+<td><p>computed from <code class="docutils literal notranslate"><span class="pre">display_width+plot_width+control_width</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -413,34 +420,102 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.init_ui" title="vent.gui.Vent_Gui.init_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_ui</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.__init__" title="vent.gui.Vent_Gui.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([update_period, test])</p></td>
+<td><p><dl class="py attribute">
+<dt id="vent.gui.monitor">
+<code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">monitor</code><a class="headerlink" href="#vent.gui.monitor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.init_ui" title="vent.gui.Vent_Gui.init_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_ui</span></code></a>()</p></td>
 <td><p>Create the UI components for the ventilator screen</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.set_plot_duration" title="vent.gui.Vent_Gui.set_plot_duration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_plot_duration</span></code></a>(dur)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.set_plot_duration" title="vent.gui.Vent_Gui.set_plot_duration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_plot_duration</span></code></a>(dur)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.test" title="vent.gui.Vent_Gui.test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.test" title="vent.gui.Vent_Gui.test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.update_value" title="vent.gui.Vent_Gui.update_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_value</span></code></a>(value_name, new_value)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.Vent_Gui.update_value" title="vent.gui.Vent_Gui.update_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_value</span></code></a>(value_name, new_value)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param value_name</dt>
+<dd class="field-odd"><p>Name of key in <a class="reference internal" href="vent.gui.html#id0" title="vent.gui.Vent_Gui.monitor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Vent_Gui.monitor</span></code></a> and <a class="reference internal" href="vent.gui.html#id1" title="vent.gui.Vent_Gui.plots"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Vent_Gui.plots</span></code></a> to update</p>
+</dd>
+</dl>
+</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py attribute">
+<dt id="vent.gui.Vent_Gui.monitor">
+<code class="sig-name descname">monitor</code><a class="headerlink" href="#vent.gui.Vent_Gui.monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary mapping <code class="xref py py-data docutils literal notranslate"><span class="pre">default.MONITOR</span></code> keys to <a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value" title="vent.gui.widgets.Monitor_Value"><code class="xref py py-class docutils literal notranslate"><span class="pre">widgets.Monitor_Value</span></code></a> objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.gui.Vent_Gui.plots">
+<code class="sig-name descname">plots</code><a class="headerlink" href="#vent.gui.Vent_Gui.plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary mapping <code class="xref py py-data docutils literal notranslate"><span class="pre">default.PLOT</span></code> keys to <a class="reference internal" href="vent.gui.html#vent.gui.widgets.Plot" title="vent.gui.widgets.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">widgets.Plot</span></code></a> objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.gui.Vent_Gui.controls">
+<code class="sig-name descname">controls</code><a class="headerlink" href="#vent.gui.Vent_Gui.controls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary mapping <code class="xref py py-data docutils literal notranslate"><span class="pre">default.CONTROL</span></code> keys to <a class="reference internal" href="vent.gui.html#vent.gui.widgets.Control" title="vent.gui.widgets.Control"><code class="xref py py-class docutils literal notranslate"><span class="pre">widgets.Control</span></code></a> objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.gui.Vent_Gui.start_time">
+<code class="sig-name descname">start_time</code><a class="headerlink" href="#vent.gui.Vent_Gui.start_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start time as returned by <code class="xref py py-func docutils literal notranslate"><span class="pre">time.time()</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>update_period</strong> (<em>float</em>) – The global delay between redraws of the GUI (seconds)</p></li>
+<li><p><strong>test</strong> (<em>bool</em>) – Whether the monitored values and plots should be fed sine waves for visual testing.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
 <dt id="vent.gui.Vent_Gui.MONITOR">
 <code class="sig-name descname">MONITOR</code><em class="property"> = {'humidity': {'abs_range': (0, 100), 'decimals': 1, 'name': 'Humidity', 'safe_range': (20, 75), 'units': '%'}, 'oxygen': {'abs_range': (0, 100), 'decimals': 1, 'name': 'O2 Concentration', 'safe_range': (60, 100), 'units': '%'}, 'temperature': {'abs_range': (0, 50), 'decimals': 1, 'name': 'Temperature', 'safe_range': (20, 30), 'units': '°C'}, 'vte': {'abs_range': (0, 100), 'decimals': 1, 'name': 'VTE', 'safe_range': (20, 80), 'units': '%'}}</em><a class="headerlink" href="#vent.gui.Vent_Gui.MONITOR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>see <a class="reference internal" href="vent.gui.html#vent.gui.defaults.MONITOR" title="vent.gui.defaults.MONITOR"><code class="xref py py-data docutils literal notranslate"><span class="pre">gui.defaults.MONITOR</span></code></a></p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="vent.gui.Vent_Gui.CONTROL">
 <code class="sig-name descname">CONTROL</code><em class="property"> = {'oxygen': {'abs_range': (0, 100), 'decimals': 1, 'name': 'O2 Concentration', 'units': '%', 'value': 80}, 'temperature': {'abs_range': (0, 50), 'decimals': 1, 'name': 'Temperature', 'units': '°C', 'value': 23}}</em><a class="headerlink" href="#vent.gui.Vent_Gui.CONTROL" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>see <a class="reference internal" href="vent.gui.html#vent.gui.defaults.CONTROL" title="vent.gui.defaults.CONTROL"><code class="xref py py-data docutils literal notranslate"><span class="pre">gui.defaults.CONTROL</span></code></a></p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="vent.gui.Vent_Gui.PLOTS">
 <code class="sig-name descname">PLOTS</code><em class="property"> = {'flow': {'abs_range': (0, 100), 'color': '#FCCC0A', 'name': 'Flow (L/s)', 'safe_range': (20, 80)}, 'pressure': {'abs_range': (0, 100), 'color': '#FF6319', 'name': 'Pressure (mmHg)', 'safe_range': (20, 80)}}</em><a class="headerlink" href="#vent.gui.Vent_Gui.PLOTS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>see <a class="reference internal" href="vent.gui.html#vent.gui.defaults.PLOTS" title="vent.gui.defaults.PLOTS"><code class="xref py py-data docutils literal notranslate"><span class="pre">gui.defaults.PLOTS</span></code></a></p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="vent.gui.Vent_Gui.display_width">
@@ -460,7 +535,8 @@
 <dl class="py attribute">
 <dt id="vent.gui.Vent_Gui.total_width">
 <code class="sig-name descname">total_width</code><em class="property"> = 6</em><a class="headerlink" href="#vent.gui.Vent_Gui.total_width" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>computed from <code class="docutils literal notranslate"><span class="pre">display_width+plot_width+control_width</span></code></p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt id="vent.gui.Vent_Gui.status_height">
@@ -475,7 +551,65 @@
 <dl class="py attribute">
 <dt id="vent.gui.Vent_Gui.total_height">
 <code class="sig-name descname">total_height</code><em class="property"> = 6</em><a class="headerlink" href="#vent.gui.Vent_Gui.total_height" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>computed from <code class="docutils literal notranslate"><span class="pre">status_height+main_height</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.gui.Vent_Gui.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">update_period</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">test</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui.html#Vent_Gui.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.Vent_Gui.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="id0">
+<code class="sig-name descname">monitor</code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary mapping <code class="xref py py-data docutils literal notranslate"><span class="pre">default.MONITOR</span></code> keys to <a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value" title="vent.gui.widgets.Monitor_Value"><code class="xref py py-class docutils literal notranslate"><span class="pre">widgets.Monitor_Value</span></code></a> objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="id1">
+<code class="sig-name descname">plots</code><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary mapping <code class="xref py py-data docutils literal notranslate"><span class="pre">default.PLOT</span></code> keys to <a class="reference internal" href="vent.gui.html#vent.gui.widgets.Plot" title="vent.gui.widgets.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">widgets.Plot</span></code></a> objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="id2">
+<code class="sig-name descname">controls</code><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary mapping <code class="xref py py-data docutils literal notranslate"><span class="pre">default.CONTROL</span></code> keys to <a class="reference internal" href="vent.gui.html#vent.gui.widgets.Control" title="vent.gui.widgets.Control"><code class="xref py py-class docutils literal notranslate"><span class="pre">widgets.Control</span></code></a> objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="id3">
+<code class="sig-name descname">start_time</code><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start time as returned by <code class="xref py py-func docutils literal notranslate"><span class="pre">time.time()</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>update_period</strong> (<em>float</em>) – The global delay between redraws of the GUI (seconds)</p></li>
+<li><p><strong>test</strong> (<em>bool</em>) – Whether the monitored values and plots should be fed sine waves for visual testing.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="vent.gui.Vent_Gui.test">
@@ -485,7 +619,15 @@
 <dl class="py method">
 <dt id="vent.gui.Vent_Gui.update_value">
 <code class="sig-name descname">update_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value_name</span></em>, <em class="sig-param"><span class="n">new_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui.html#Vent_Gui.update_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.Vent_Gui.update_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value_name</strong> (<em>str</em>) – Name of key in <a class="reference internal" href="vent.gui.html#id0" title="vent.gui.Vent_Gui.monitor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Vent_Gui.monitor</span></code></a> and <a class="reference internal" href="vent.gui.html#id1" title="vent.gui.Vent_Gui.plots"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Vent_Gui.plots</span></code></a> to update</p></li>
+<li><p><strong>new_value</strong> (<em>int</em><em>, </em><em>float</em>) – New value to display/plot</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="vent.gui.Vent_Gui.init_ui">
@@ -1395,6 +1537,94 @@ to <code class="xref py py-func docutils literal notranslate"><span class="pre">
 </div>
 <div class="section" id="module-vent.gui.defaults">
 <span id="gui-defaults"></span><h3>GUI Defaults<a class="headerlink" href="#module-vent.gui.defaults" title="Permalink to this headline">¶</a></h3>
+<p><strong>Data</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.defaults.CONTROL" title="vent.gui.defaults.CONTROL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTROL</span></code></a></p></td>
+<td><p>Values to control but not monitor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.defaults.LIMITS" title="vent.gui.defaults.LIMITS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LIMITS</span></code></a></p></td>
+<td><p>Values that are dependent on other values:</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.defaults.MONITOR" title="vent.gui.defaults.MONITOR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MONITOR</span></code></a></p></td>
+<td><p>Values to monitor but not control.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="vent.gui.html#vent.gui.defaults.PLOTS" title="vent.gui.defaults.PLOTS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOTS</span></code></a></p></td>
+<td><p>Values to plot.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt id="vent.gui.defaults.MONITOR">
+<code class="sig-prename descclassname">vent.gui.defaults.</code><code class="sig-name descname">MONITOR</code><em class="property"> = {'humidity': {'abs_range': (0, 100), 'decimals': 1, 'name': 'Humidity', 'safe_range': (20, 75), 'units': '%'}, 'oxygen': {'abs_range': (0, 100), 'decimals': 1, 'name': 'O2 Concentration', 'safe_range': (60, 100), 'units': '%'}, 'temperature': {'abs_range': (0, 50), 'decimals': 1, 'name': 'Temperature', 'safe_range': (20, 30), 'units': '°C'}, 'vte': {'abs_range': (0, 100), 'decimals': 1, 'name': 'VTE', 'safe_range': (20, 80), 'units': '%'}}</em><a class="headerlink" href="#vent.gui.defaults.MONITOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values to monitor but not control.</p>
+<p>Used to set alarms for out-of-bounds sensor values. These should be sent from the control module and not computed.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;name&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span>  <span class="n">Human</span> <span class="n">readable</span> <span class="n">name</span><span class="p">,</span>
+    <span class="s1">&#39;units&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="n">units</span> <span class="n">string</span><span class="p">,</span> <span class="p">(</span><span class="n">like</span> <span class="n">degrees</span> <span class="ow">or</span> <span class="o">%</span><span class="p">),</span>
+    <span class="s1">&#39;abs_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="n">absolute</span> <span class="n">possible</span> <span class="nb">range</span> <span class="n">of</span> <span class="n">values</span><span class="p">,</span>
+    <span class="s1">&#39;safe_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="nb">range</span> <span class="n">outside</span> <span class="n">of</span> <span class="n">which</span> <span class="n">a</span> <span class="n">warning</span> <span class="n">will</span> <span class="n">be</span> <span class="n">raised</span><span class="p">,</span>
+    <span class="s1">&#39;decimals&#39;</span> <span class="p">(</span><span class="nb">int</span><span class="p">):</span> <span class="n">The</span> <span class="n">number</span> <span class="n">of</span> <span class="n">decimals</span> <span class="n">of</span> <span class="n">precision</span> <span class="n">this</span> <span class="n">number</span> <span class="n">should</span> <span class="n">be</span> <span class="n">displayed</span> <span class="k">with</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt id="vent.gui.defaults.CONTROL">
+<code class="sig-prename descclassname">vent.gui.defaults.</code><code class="sig-name descname">CONTROL</code><em class="property"> = {'oxygen': {'abs_range': (0, 100), 'decimals': 1, 'name': 'O2 Concentration', 'units': '%', 'value': 80}, 'temperature': {'abs_range': (0, 50), 'decimals': 1, 'name': 'Temperature', 'units': '°C', 'value': 23}}</em><a class="headerlink" href="#vent.gui.defaults.CONTROL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values to control but not monitor.</p>
+<p>Sent to control module to control operation of ventilator.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;name&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span>  <span class="n">Human</span> <span class="n">readable</span> <span class="n">name</span><span class="p">,</span>
+    <span class="s1">&#39;units&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="n">units</span> <span class="n">string</span><span class="p">,</span> <span class="p">(</span><span class="n">like</span> <span class="n">degrees</span> <span class="ow">or</span> <span class="o">%</span><span class="p">),</span>
+    <span class="s1">&#39;abs_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="n">absolute</span> <span class="n">possible</span> <span class="nb">range</span> <span class="n">of</span> <span class="n">values</span><span class="p">,</span>
+    <span class="s1">&#39;safe_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="nb">range</span> <span class="n">outside</span> <span class="n">of</span> <span class="n">which</span> <span class="n">a</span> <span class="n">warning</span> <span class="n">will</span> <span class="n">be</span> <span class="n">raised</span><span class="p">,</span>
+    <span class="s1">&#39;value&#39;</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span> <span class="n">the</span> <span class="n">default</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="n">parameter</span><span class="p">,</span>
+    <span class="s1">&#39;decimals&#39;</span> <span class="p">(</span><span class="nb">int</span><span class="p">):</span> <span class="n">The</span> <span class="n">number</span> <span class="n">of</span> <span class="n">decimals</span> <span class="n">of</span> <span class="n">precision</span> <span class="n">this</span> <span class="n">number</span> <span class="n">should</span> <span class="n">be</span> <span class="n">displayed</span> <span class="k">with</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt id="vent.gui.defaults.PLOTS">
+<code class="sig-prename descclassname">vent.gui.defaults.</code><code class="sig-name descname">PLOTS</code><em class="property"> = {'flow': {'abs_range': (0, 100), 'color': '#FCCC0A', 'name': 'Flow (L/s)', 'safe_range': (20, 80)}, 'pressure': {'abs_range': (0, 100), 'color': '#FF6319', 'name': 'Pressure (mmHg)', 'safe_range': (20, 80)}}</em><a class="headerlink" href="#vent.gui.defaults.PLOTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values to plot.</p>
+<p>Should have the same key as some key in <a class="reference internal" href="vent.gui.html#vent.gui.defaults.MONITOR" title="vent.gui.defaults.MONITOR"><code class="xref py py-data docutils literal notranslate"><span class="pre">MONITOR</span></code></a>. If it does,
+it will be mutually connected to the resulting <a class="reference internal" href="vent.gui.html#vent.gui.widgets.Monitor_Value" title="vent.gui.widgets.Monitor_Value"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.widgets.Monitor_Value</span></code></a>
+such that the set limit range is updated when the horizontal bars on the plot are updated.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;name&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="n">title</span> <span class="n">of</span> <span class="n">plot</span><span class="p">,</span>
+    <span class="s1">&#39;abs_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="n">absolute</span> <span class="n">limit</span> <span class="n">of</span> <span class="n">plot</span> <span class="nb">range</span><span class="p">,</span>
+    <span class="s1">&#39;safe_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="n">safe</span> <span class="nb">range</span><span class="p">,</span> <span class="n">will</span> <span class="n">be</span> <span class="n">discolored</span> <span class="n">outside</span> <span class="n">of</span> <span class="n">this</span> <span class="nb">range</span><span class="p">,</span>
+    <span class="s1">&#39;color&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="nb">hex</span> <span class="n">color</span> <span class="n">of</span> <span class="n">line</span> <span class="p">(</span><span class="n">like</span> <span class="s2">&quot;#FF0000&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt id="vent.gui.defaults.LIMITS">
+<code class="sig-prename descclassname">vent.gui.defaults.</code><code class="sig-name descname">LIMITS</code><em class="property"> = {}</em><a class="headerlink" href="#vent.gui.defaults.LIMITS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values that are dependent on other values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;dependent_value&quot;</span><span class="p">:</span> <span class="p">(</span>
+        <span class="p">[</span><span class="s1">&#39;value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;value_2&#39;</span><span class="p">],</span>
+        <span class="n">callable_returning_boolean</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Where the first argument in the tuple is a list of the values that will be
+given as argument to the <code class="docutils literal notranslate"><span class="pre">callable_returning_boolean</span></code> which will return
+whether (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or not (<code class="docutils literal notranslate"><span class="pre">False</span></code>) a value is allowed.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-vent.gui.styles">
 <span id="gui-stylesheets"></span><h3>GUI Stylesheets<a class="headerlink" href="#module-vent.gui.styles" title="Permalink to this headline">¶</a></h3>

@@ -314,3 +314,6 @@ if __name__ == "__main__":
     app.setStyleSheet(styles.GLOBAL)
     gui = Vent_Gui(test=gui_test)
     sys.exit(app.exec_())
+    gui = Vent_Gui(test=gui_test)
+    sys.exit(app.exec_())
+

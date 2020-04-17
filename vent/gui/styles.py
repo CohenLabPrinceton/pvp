@@ -17,6 +17,7 @@ INDICATOR_WIDTH = SLIDER_WIDTH/3
 SLIDER_COLOR = TEXT_COLOR
 INDICATOR_COLOR = SUBWAY_COLORS['blue']
 ALARM_COLOR = "#FF0000"
+VALUE_SIZE = 72
 
 GLOBAL = """
 QWidget {{
@@ -38,18 +39,20 @@ height: {height}px;
 width: 20px;
 margin: 0px -20px 0px px;
 background-color: {slider_color};
-box-shadow: 1px 1px 1px #000000;
 }}
 
 """.format(slider_width=INDICATOR_WIDTH,
     height=HANDLE_HEIGHT,
            slider_color=SLIDER_COLOR)
 
+
+
 DISPLAY_VALUE =  """
 QLabel {{ 
     color: {textcolor}; 
-    font-size: 72pt;
-}}""".format(textcolor=TEXT_COLOR)
+    font-size: {value_size}pt;
+}}""".format(textcolor=TEXT_COLOR,
+             value_size=VALUE_SIZE)
 
 DISPLAY_VALUE_ALARM =  """
 QLabel { 
@@ -68,6 +71,25 @@ DISPLAY_WIDGET = """
 border-bottom: 2px solid white;
 """
 
+CONTROL_LABEL = """
+QLabel {
+    font-size: 12px;
+}
+"""
+
+CONTROL_VALUE =  """
+QLabel {{ 
+    color: {textcolor}; 
+    font-size: {display_value}pt;
+}}
+QLineEdit {{ 
+    color: {textcolor}; 
+    font-size: {display_value}pt;
+}}
+
+""".format(textcolor=TEXT_COLOR,
+             display_value=VALUE_SIZE)
+
 TITLE_STYLE = """
 font-size: 32pt;
 color: {text_color};
@@ -76,3 +98,45 @@ text-align: left;
 
 DIVIDER_COLOR = "#FFFFFF"
 
+STATUS_NORMAL = f"""
+QFrame {{
+    background-color: {BACKGROUND_COLOR};
+    color: {TEXT_COLOR};
+}}
+"""
+
+STATUS_WARN = f"""
+QFrame {{
+    background-color: {SUBWAY_COLORS['orange']};
+    color: {TEXT_COLOR};
+}}
+"""
+
+STATUS_ALARM = f"""
+QFrame {{
+    background-color: {SUBWAY_COLORS['red']};
+    color: {TEXT_COLOR};
+}}
+"""
+
+HEARTBEAT_NORMAL = f"""
+QRadioButton::indicator {{
+    background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 {SUBWAY_COLORS['blue']});
+    border-radius: 5px;
+}}
+
+QLabel {{
+    color: {TEXT_COLOR};
+}}
+"""
+
+HEARTBEAT_ALARM = f"""
+QRadioButton::indicator {{
+    background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 {SUBWAY_COLORS['red']});
+    border-radius: 5px;
+}}
+
+QLabel {{
+    color: {SUBWAY_COLORS['red']};
+}}
+"""

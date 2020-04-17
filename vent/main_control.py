@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 
-import time
-import automationhat
-import sensors
-import alarms
-import controller
-import helper
+from vent import controller, alarms
+
 
 def take_step(curr, tracker, alarm_bounds):
     # Read the sensors. 

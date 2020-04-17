@@ -6,7 +6,7 @@ import time               # Import time library
 GPIO.setmode(GPIO.BCM) 
 GPIO.setup(17, GPIO.OUT)  # Set GPIO pin 17 to output mode.
 GPIO.setup(27, GPIO.OUT)  # Set GPIO pin 17 to output mode.
-pwm = GPIO.PWM(17, 30)   # Initialize PWM on pwmPin 100Hz frequency
+pwm = GPIO.PWM(17, 100)   # Initialize PWM on pwmPin 100Hz frequency
 pwm2 = GPIO.PWM(27, 10)   # Initialize PWM on pwmPin 100Hz frequency
 
 RAMPTIME = 0.2

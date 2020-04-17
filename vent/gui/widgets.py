@@ -683,6 +683,9 @@ class RangeSlider(QtWidgets.QSlider):
         self.abs_range = abs_range
         self.setMinimum(abs_range[0])
         self.setMaximum(abs_range[1])
+
+        self.levels = np.linspace(self.minimum(), self.maximum(), 5)
+        # TODO: recalculate when minimum or maximum are set
         #self.setTickInterval(round((abs_range[1]-abs_range[0])/5))
         #self.setTickPosition(QtWidgets.QSlider.TicksLeft)
 
@@ -828,11 +831,10 @@ class RangeSlider(QtWidgets.QSlider):
         border_offset = 5
         available -= border_offset
 
-        levels = np.linspace(self.minimum(), self.maximum(), 5)
 
         painter.setFont(mono_font)
 
-        for v in levels:
+        for v in self.levels:
             label_str = str(int(round(v)))
             # label_str = "{0:d}".format(v)
             rect = painter.drawText(QtCore.QRect(), QtCore.Qt.TextDontPrint, label_str)
@@ -848,7 +850,7 @@ class RangeSlider(QtWidgets.QSlider):
             pos=QtCore.QPoint(left, bottom)
             painter.drawText(pos, label_str)
 
-        self.setTickInterval(levels[1]-levels[0])
+        self.setTickInterval(self.levels[1]-self.levels[0])
 
 
 

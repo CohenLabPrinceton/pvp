@@ -1,15 +1,15 @@
 from typing import List
 
-import control_module
-from ipc import IPC
-from message import SensorValues, ControlSettings, Alarm
-from process_manager import ProcessManager
+from vent.coordinator.control_module import get_control_module
+from vent.coordinator.ipc import IPC
+from vent.coordinator.message import SensorValues, ControlSettings, Alarm
+from vent.coordinator.process_manager import ProcessManager
 
 
 class UIControlModuleBase:
     def __init__(self, sim_mode=False):
         # get_ui_control_module handles single_process flag
-        self.control_module = control_module.get_control_module(sim_mode)
+        self.control_module = get_control_module(sim_mode)
         self.sensor_values = None
         self.alarms = None
         self.control_settings = None
@@ -40,6 +40,7 @@ class UIControlModuleLocal(UIControlModuleBase):
     def __init__(self, sim_mode=False):
         super().__init__(sim_mode=sim_mode)
         self.thread_id = None  # TODO: do I have a thread
+        raise NotImplementedError
 
 
 class UIControlModuleRemote(UIControlModuleBase):
@@ -48,6 +49,7 @@ class UIControlModuleRemote(UIControlModuleBase):
         # TODO: pass max_heartbeat_interval
         self.process_manager = ProcessManager()
         self.rpc = IPC()
+        raise NotImplementedError
 
 
 def get_ui_control_module(single_process=False, sim_mode=False):

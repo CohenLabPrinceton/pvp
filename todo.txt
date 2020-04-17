@@ -1,2 +1,33 @@
 * fade color for older traces
 * buttons to control length of history
+
+- design specific API for 
+
+- be ablee to both receive and emit alarms
+
+- save ui state and load
+
+- threads
+	main ui thread
+	communication thread
+		qthread checkig on socket
+		timeout on wait, signal process management that haven't received message
+	process management thread
+		periodic callbck
+
+- logging
+	check on available space
+	delete/rotate logs
+
+- command line option to not reload state
+
+to do:
+	diagram of the UI, ownership, calling relationship
+	ui/communication thred - two queues, ingoing and outcoing
+	ui/process management thread - tell process manager when new values
+	logging
+	testing - document test cases, conditions, signals and slots
+	cli parameters
+	error handling
+	add requirements to requirements doc
+

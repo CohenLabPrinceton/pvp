@@ -19,8 +19,17 @@ class UIControlModuleBase:
         # returns SensorValues struct
         pass
 
-    def get_alarms(self) -> List[Alarm]:
-        # returns list of Alarm structs
+    # def get_alarms(self) -> List[Alarm]:
+    #     # returns list of Alarm structs
+    #     pass
+
+    def get_active_alarms(self) -> List[Alarm]:
+        pass
+
+    def get_logged_alarms(self) -> List[Alarm]:
+        pass
+
+    def clear_logged_alarms(self):
         pass
 
     def set_controls(self, control_settings: ControlSettings):

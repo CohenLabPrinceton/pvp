@@ -255,12 +255,12 @@ class Control(QtWidgets.QWidget):
 
         ###
         # layout
-        self.layout.addWidget(self.value_label, 0, 0, 3, 1, alignment=QtGui.Qt.AlignVCenter | QtGui.Qt.AlignRight)
-        self.layout.addWidget(self.dial, 0, 1, 2, 2, alignment=QtGui.Qt.AlignVCenter)
+        self.layout.addWidget(self.value_label, 0, 0, 3, 1, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.dial, 0, 1, 2, 2, alignment=QtCore.Qt.AlignVCenter)
         self.layout.addWidget(self.dial_min, 2, 1, 1, 1)
         self.layout.addWidget(self.dial_max, 2, 2, 1, 1)
-        self.layout.addWidget(self.name_label, 3, 0, 1, 3, alignment=QtGui.Qt.AlignRight)
-        self.layout.addWidget(self.units_label, 4, 0, 1, 3, alignment=QtGui.Qt.AlignRight)
+        self.layout.addWidget(self.name_label, 3, 0, 1, 3, alignment=QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.units_label, 4, 0, 1, 3, alignment=QtCore.Qt.AlignRight)
 
         self.setLayout(self.layout)
 
@@ -398,7 +398,7 @@ class Message_Display(QtWidgets.QFrame):
         self.layout = QtWidgets.QHBoxLayout()
 
         self.message = QtWidgets.QLabel('test nessage')
-        self.message.setAlignment(QtGui.Qt.AlignVCenter | QtGui.Qt.AlignRight)
+        self.message.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         self.message.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                            QtWidgets.QSizePolicy.Expanding)
 
@@ -527,7 +527,7 @@ class HeartBeat(QtWidgets.QFrame):
 
         self.set_indicator()
 
-        self.layout.addWidget(QtWidgets.QLabel("Uptime"), 0, 0, alignment=QtGui.Qt.AlignVCenter | QtGui.Qt.AlignRight)
+        self.layout.addWidget(QtWidgets.QLabel("Uptime"), 0, 0, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         self.layout.addWidget(self.timer_label, 1, 0)
         self.layout.addWidget(QtWidgets.QLabel("Status"), 0, 1)
         self.layout.addWidget(self.indicator, 1, 1)

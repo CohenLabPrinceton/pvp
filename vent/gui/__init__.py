@@ -255,5 +255,6 @@ if __name__ == "__main__":
     # just for testing, should be run from main
     app = QtWidgets.QApplication(sys.argv)
     app.setStyleSheet(styles.GLOBAL)
+    app.setStyle("Fusion")
     gui = Vent_Gui()
     sys.exit(app.exec_())

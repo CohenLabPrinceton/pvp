@@ -1,3 +1,7 @@
+from typing import List
+from vent.coordinator.message import SensorValues, ControlSettings, Alarm
+
+
 class ControlModuleBase:
     # Abstract class for controlling hardware based on settings received
     #   Functions:
@@ -6,15 +10,22 @@ class ControlModuleBase:
         self.control_settings = None
         self.loop_counter = None
 
-    def get_sensors_values(self):
+    def get_sensors(self) -> SensorValues:
         # returns SensorValues
         # include a timestamp and loop counter
         pass
 
-    def get_alarms(self):
+    def get_active_alarms(self) -> List[Alarm]:
         pass
 
-    def set_controls(self, controlSettings):
+    def get_logged_alarms(self) -> List[Alarm]:
+        pass
+
+    def clear_logged_alarms(self):
+        pass
+
+    def set_controls(self, control_settings: ControlSettings):
+        # takes ControlSettings struct
         pass
 
     def start(self, controlSettings):

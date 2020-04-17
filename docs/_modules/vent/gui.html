@@ -181,11 +181,13 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pdb</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
 <span class="c1"># add to path</span>
 <span class="n">PACKAGE_PARENT</span> <span class="o">=</span> <span class="s1">&#39;../..&#39;</span>
 <span class="n">SCRIPT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
 <span class="c1">#pdb.set_trace()</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">PACKAGE_PARENT</span><span class="p">)))</span>
+
 
 
 <span class="c1"># other required libraries</span>
@@ -259,21 +261,52 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">MONITOR</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">MONITOR</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    see :data:`.gui.defaults.MONITOR`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 
     <span class="n">CONTROL</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">CONTROL</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    see :data:`.gui.defaults.CONTROL`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">PLOTS</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">PLOTS</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    see :data:`.gui.defaults.PLOTS`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">display_width</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">plot_width</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">control_width</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">total_width</span> <span class="o">=</span> <span class="n">display_width</span><span class="o">+</span><span class="n">plot_width</span><span class="o">+</span><span class="n">control_width</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    computed from ``display_width+plot_width+control_width``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">status_height</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">main_height</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="n">total_height</span> <span class="o">=</span> <span class="n">status_height</span><span class="o">+</span><span class="n">main_height</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    computed from ``status_height+main_height``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_period</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
+<div class="viewcode-block" id="Vent_Gui.__init__"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_period</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            monitor (dict): Dictionary mapping :data:`.default.MONITOR` keys to :class:`.widgets.Monitor_Value` objects</span>
+<span class="sd">            plots (dict): Dictionary mapping :data:`.default.PLOT` keys to :class:`.widgets.Plot` objects</span>
+<span class="sd">            controls (dict): Dictionary mapping :data:`.default.CONTROL` keys to :class:`.widgets.Control` objects</span>
+<span class="sd">            start_time (float): Start time as returned by :func:`time.time`</span>
+
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            update_period (float): The global delay between redraws of the GUI (seconds)</span>
+<span class="sd">            test (bool): Whether the monitored values and plots should be fed sine waves for visual testing.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Vent_Gui</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="p">{}</span>
@@ -285,7 +318,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Vent_Gui.test"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -313,10 +347,15 @@
 
 
 <div class="viewcode-block" id="Vent_Gui.update_value"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            value_name (str): Name of key in :attr:`.Vent_Gui.monitor` and :attr:`.Vent_Gui.plots` to update</span>
+<span class="sd">            new_value (int, float): New value to display/plot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Vent_Gui.init_ui"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -330,11 +369,12 @@
         <span class="c1">#</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span><span class="p">)</span>
 
-        <span class="c1"># layout - three columns</span>
-        <span class="c1"># left: readout values</span>
-        <span class="c1"># left: readout values</span>
-        <span class="c1"># center: plotted values</span>
-        <span class="c1"># right: controls &amp; limits</span>
+        <span class="c1"># layout</span>
+        <span class="c1">#   - two rows (status, main)</span>
+        <span class="c1">#   - three columns</span>
+        <span class="c1">#       left:   monitor values</span>
+        <span class="c1">#       center: plotted values</span>
+        <span class="c1">#       right:  controls</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
@@ -342,6 +382,7 @@
         <span class="c1"># layout that includes the display and controls</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
         <span class="c1">##########</span>
         <span class="c1"># Status Bar</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Status_Bar</span><span class="p">()</span>
@@ -397,6 +438,7 @@
 
 
         <span class="c1"># connect displays to plots</span>
+        <span class="c1"># FIXME: Link in gui.defaults</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="s1">&#39;vte&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_safe_limits</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="s1">&#39;vte&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_limits</span><span class="p">)</span>
 
@@ -425,10 +467,25 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Launch the Ventilator GUI&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="s1">&#39;--test&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Run in test mode? (y=1/n=0, default=0)&quot;</span><span class="p">,</span>
+                        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">gui_test</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">):</span>
+        <span class="n">gui_test</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="c1"># just for testing, should be run from main</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">GLOBAL</span><span class="p">)</span>
-    <span class="n">gui</span> <span class="o">=</span> <span class="n">Vent_Gui</span><span class="p">()</span>
+    <span class="n">gui</span> <span class="o">=</span> <span class="n">Vent_Gui</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">gui_test</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
 </pre></div>
 

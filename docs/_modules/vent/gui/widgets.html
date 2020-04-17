@@ -858,6 +858,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span> <span class="o">=</span> <span class="n">abs_range</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">(),</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="c1"># TODO: recalculate when minimum or maximum are set</span>
         <span class="c1">#self.setTickInterval(round((abs_range[1]-abs_range[0])/5))</span>
         <span class="c1">#self.setTickPosition(QtWidgets.QSlider.TicksLeft)</span>
 
@@ -1003,11 +1006,10 @@
         <span class="n">border_offset</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="n">available</span> <span class="o">-=</span> <span class="n">border_offset</span>
 
-        <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">(),</span> <span class="mi">5</span><span class="p">)</span>
 
         <span class="n">painter</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">levels</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">:</span>
             <span class="n">label_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
             <span class="c1"># label_str = &quot;{0:d}&quot;.format(v)</span>
             <span class="n">rect</span> <span class="o">=</span> <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(),</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TextDontPrint</span><span class="p">,</span> <span class="n">label_str</span><span class="p">)</span>
@@ -1023,7 +1025,7 @@
             <span class="n">pos</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPoint</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">bottom</span><span class="p">)</span>
             <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">label_str</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">setTickInterval</span><span class="p">(</span><span class="n">levels</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setTickInterval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 
 

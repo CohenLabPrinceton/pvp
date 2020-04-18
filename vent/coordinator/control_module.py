@@ -1,5 +1,6 @@
 import numpy as np
 import time
+from .message import SensorValues, ControlSettings, Alarm
 
 class ControlModuleBase:
     # Abstract class for controlling hardware based on settings received
@@ -56,7 +57,11 @@ class Balloon_Simulator:
         self.P0               = 0     # Minimum pressure.
         self.leak             = leak
         self.delay            = delay
-        
+
+        self.temperature      = 37   # keep track of this, as is important output variable
+        self.humidity         = 90
+        self.fio2             = 60
+
         #Dynamical parameters - these are the initial conditions
         self.current_flow     = 0                  # in unit  liters/sec
         self.current_pressure = 0                  # in unit  cm-H2O
@@ -92,6 +97,30 @@ class Balloon_Simulator:
             
         self.current_pressure = self.P0 + (self.PC/(r0**2 * self.r_real)) *(1 - (r0/self.r_real)**6)
 
+        #Temperature, humidity and o2 fluctuations modelled as OUprocess
+        self.temperature = OUupdate(self.temperature, dt=dt, mu=37, sigma=0.3, tau=1)
+        self.fio2        = OUupdate(self.fio2,        dt=dt, mu=60, sigma=5,   tau=1)
+        self.humidity    = OUupdate(self.humidity,    dt=dt, mu=90, sigma=5,   tau=1)
+        if self.humidity>100:
+            self.humidity = 100
+
+def OUupdate(variable, dt, mu, sigma, tau):
+    '''
+    This is a simple function to produce an OU process.
+    It is used as model for fluctuations in measurement variables.
+    inputs:
+       variable:   float     value at previous time step
+       dt      :   timestep
+       mu      :   mean
+       sigma   :   noise amplitude
+       tau     :   time scale
+    returns:
+       new_variable :  value of "variable" at next time step
+    '''
+    sigma_bis = sigma * np.sqrt(2. / tau)
+    sqrtdt = np.sqrt(dt)
+    new_variable = variable + dt * (-(variable - mu) / tau) + sigma_bis * sqrtdt * np.random.randn()
+    return new_variable
 
 class StateController:
     '''
@@ -191,19 +220,30 @@ class ControlModuleSimulator(ControlModuleBase):
         self.last_update = time.time()
 
     def get_sensors_values(self):
-        # returns SensorValues
-        # include a timestamp and loop counter
-        pressure = self.Balloon.get_pressure()
-        return pressure
-        # self.sensor_values = FORMAT(...) 
-        # return (self.timestamp, self.loop_counter)
+        # returns SensorValues and a time stamp
+
+        ExhaledVolumeLastCycle = np.nan             # FIX THIS
+
+        self.sensor_values = SensorValues(pip = self.Controller.PIP, \
+            peep = self.Controller.PEEP,                             \
+            fio2 = self.Balloon.fio2,                                \
+            temp = self.Balloon.temperature,                         \
+            humidity = self.Balloon.humidity,                        \
+            pressure = self.Balloon.current_pressure,                \
+            vte = ExhaledVolumeLastCycle,                            \
+            breaths_per_minute = self.Controller.bpm,                \
+            inspiration_time_sec = self.Controller.I_phase,          \
+            timestamp = time.time() )
+
+        return self.sensor_values
+
 
     def get_alarms(self):
         return 1
 
     def set_controls(self, controlSettings):
         # set PIP, PEEP...
-        pass
+        return 1
 
     def run(self):
         # start running
@@ -215,20 +255,21 @@ class ControlModuleSimulator(ControlModuleBase):
         now = time.time()
         self.Balloon.update(now - self.last_update)
         self.last_update = now
-        
-        self.pressure = self.Balloon.get_pressure()
 
-        self.Controller.update(self.pressure)
+        pressure = self.Balloon.get_pressure()
+        temperature = self.Balloon.temperature
+
+        self.Controller.update(pressure)
         Qout = self.Controller.get_Qout()
         Qin  = self.Controller.get_Qin()
         self.Balloon.set_flow(Qin, Qout)
-
         
         pass
 
     def stop(self):
         # stop running
         pass
+
     def recvUIHeartbeat(self):
         return time.time()
 

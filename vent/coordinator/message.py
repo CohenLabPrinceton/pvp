@@ -2,13 +2,14 @@ from enum import Enum, auto
 
 
 class SensorValues:
-    def __init__(self, pip=None, peep=None, fio2=None, temp=None, humidity=None, vte=None, breaths_per_minute=None,
+    def __init__(self, pip=None, peep=None, fio2=None, temp=None, humidity=None, pressure=None, vte=None, breaths_per_minute=None,
                  inspiration_time_sec=None, timestamp=None):
         self.pip = pip
         self.peep = peep
         self.fio2 = fio2
         self.temp = temp
         self.humidity = humidity
+        self.pressure = pressure
         self.vte = vte
         self.breaths_per_minute = breaths_per_minute
         self.inspiration_time_sec = inspiration_time_sec

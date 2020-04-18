@@ -33,7 +33,7 @@ class ControlModuleBase:
 
 # Variables:
 #   sensorValues
-#   controlSettings
+#   controlSettings.  
 #   loopCounter
 
 class ControlModuleDevice(ControlModuleBase):

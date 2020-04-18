@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 class SensorValues:
     def __init__(self, pip=None, peep=None, fio2=None, temp=None, humidity=None, pressure=None, vte=None, breaths_per_minute=None,
-                 inspiration_time_sec=None, timestamp=None):
+                 inspiration_time_sec=None, timestamp=None, loop_counter = None):
         self.pip = pip
         self.peep = peep
         self.fio2 = fio2
@@ -14,17 +14,21 @@ class SensorValues:
         self.breaths_per_minute = breaths_per_minute
         self.inspiration_time_sec = inspiration_time_sec
         self.timestamp = timestamp
+        self.loop_counter = loop_counter
 
 
 class ControlSettingName(Enum):
-    PIP = auto()
-    PEEP = auto()
+    #Setting that are likely important for future adjustements
+    PIP = auto()       # PIP pressure
+    PIP_TIME = auto()  # time to reach PIP
+    PEEP = auto()      # PEEP pressure
+    BREATHS_PER_MINUTE = auto()
+    INSPIRATION_TIME_SEC = auto()
+    #Settings that are read out, but can't be controlled by software
     FIO2 = auto()
     TEMP = auto()
     HUMIDITY = auto()
     VTE = auto()
-    BREATHS_PER_MINUTE = auto()
-    INSPIRATION_TIME_SEC = auto()
 
 
 class ControlSettings:

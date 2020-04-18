@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from .message import SensorValues, ControlSettings, Alarm
+from .message import SensorValues, ControlSettings, Alarm, ControlSettingName
 
 class ControlModuleBase:
     # Abstract class for controlling hardware based on settings received
@@ -153,27 +153,29 @@ class StateController:
         self.PIP            = 22
         self.PIP_time       = 1.0
         self.PEEP           = 5
-        self.PEEP_time      = 1.0  # time to reach PEEP
-        self.IEratio        = 0.5
+        self.PEEP_time      = 0.5    # as fast as possible, try 500ms
         self.bpm            = 10
+        self.I_phase        = 1.0
         self.cycle_start    = time.time()
         self.Qin            = 0
         self.Qout           = 0
         self.pressure       = 0
-        
+
         #Derived variables
         self.cycle_duration = 60/self.bpm
-        self.E_phase        = self.cycle_duration / (self.IEratio + 1)  #duration of E and I phases
-        self.I_phase        = self.cycle_duration - self.E_phase
-        
+        self.E_phase        = self.cycle_duration -  self.I_phase
         self.t_inspiration  = self.PIP_time   # time [sec] for the four phases
         self.t_plateau      = self.I_phase - self.PIP_time 
         self.t_expiration   = self.PEEP_time 
         self.t_PEEP         = self.E_phase - self.PEEP_time 
-    
-    def print_parameters(self):
-        print(self.t_inspiration, self.t_plateau)
-        print(self.t_expiration, self.t_PEEP)
+
+    def update_internalVeriables(self):
+        self.cycle_duration = 60/self.bpm
+        self.E_phase        = self.cycle_duration -  self.I_phase
+        self.t_inspiration  = self.PIP_time
+        self.t_plateau      = self.I_phase - self.PIP_time 
+        self.t_expiration   = self.PEEP_time 
+        self.t_PEEP         = self.E_phase - self.PEEP_time 
         
     def get_Qin(self):
         return self.Qin
@@ -186,23 +188,30 @@ class StateController:
         cycle_phase = now - self.cycle_start
 
         self.pressure = pressure
-        
         if cycle_phase < self.t_inspiration:       # ADD CONTROL dP/dt
+            # to PIP
             self.Qin  = 1
             self.Qout = 0  
             if self.pressure > self.PIP:
                 self.Qin = 0
         elif cycle_phase < self.I_phase:           # ADD CONTROL P
+            # keep PIP plateau
             self.Qin  = 0
             self.Qout = 0
+            if self.pressure < self.PIP:
+                self.Qin = 0
         elif cycle_phase < self.t_expiration + self.I_phase:
+            # to PEEP
             self.Qin  = 0
             self.Qout = 1
             if self.pressure < self.PEEP:
                 self.Qout = 0
         elif cycle_phase < self.cycle_duration:
+            # keeping PEEP
             self.Qin  = 0
             self.Qout = 0
+            if self.pressure < self.PEEP:
+                self.Qout = 0
         else:
             self.cycle_start = time.time() # restart
 
@@ -213,7 +222,7 @@ class ControlModuleSimulator(ControlModuleBase):
     def __init__(self):
         super().__init__()      # get all from parent
 
-        self.Balloon = Balloon_Simulator(leak = False, delay = False)
+        self.Balloon = Balloon_Simulator(leak = True, delay = False)
         self.Controller = StateController()
         self.loop_counter = 0
         self.pressure = 15
@@ -242,9 +251,27 @@ class ControlModuleSimulator(ControlModuleBase):
         return 1
 
     def set_controls(self, controlSettings):
-        # set PIP, PEEP...
-        return 1
+        #Right now, this supports only five settings
+        if controlSettings.name is ControlSettingName.PIP:
+            self.Controller.PIP = controlSettings.value 
 
+        elif controlSettings.name is ControlSettingName.PIP_TIME:
+            self.Controller.PIP_time = controlSettings.value
+
+        elif controlSettings.name is ControlSettingName.PEEP:
+            self.Controller.PEEP = controlSettings.value
+
+        elif controlSettings.name is ControlSettingName.BREATHS_PER_MINUTE:
+            self.Controller.bpm = controlSettings.value
+
+        elif controlSettings.name is ControlSettingName.INSPIRATION_TIME_SEC:
+            self.Controller.I_phase = controlSettings.value
+
+        else:
+            error("you cannot set" + str(controlSettings.name))
+
+        self.Controller.update_internalVeriables()
+        
     def run(self):
         # start running
         # controls actuators to achieve target state
@@ -263,8 +290,6 @@ class ControlModuleSimulator(ControlModuleBase):
         Qout = self.Controller.get_Qout()
         Qin  = self.Controller.get_Qin()
         self.Balloon.set_flow(Qin, Qout)
-        
-        pass
 
     def stop(self):
         # stop running

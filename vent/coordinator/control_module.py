@@ -189,29 +189,29 @@ class StateController:
 
         self.pressure = pressure
         if cycle_phase < self.t_inspiration:       # ADD CONTROL dP/dt
-            # to PIP
+            # to PIP, air in as fast as possible
             self.Qin  = 1
             self.Qout = 0  
             if self.pressure > self.PIP:
                 self.Qin = 0
         elif cycle_phase < self.I_phase:           # ADD CONTROL P
-            # keep PIP plateau
+            # keep PIP plateau, let air in if below
             self.Qin  = 0
             self.Qout = 0
             if self.pressure < self.PIP:
-                self.Qin = 0
+                self.Qin = 1
         elif cycle_phase < self.t_expiration + self.I_phase:
-            # to PEEP
+            # to PEEP, open exit valve
             self.Qin  = 0
             self.Qout = 1
             if self.pressure < self.PEEP:
                 self.Qout = 0
         elif cycle_phase < self.cycle_duration:
-            # keeping PEEP
+            # keeping PEEP, let air in if below
             self.Qin  = 0
             self.Qout = 0
             if self.pressure < self.PEEP:
-                self.Qout = 0
+                self.Qin = 1
         else:
             self.cycle_start = time.time() # restart
 

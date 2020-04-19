@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from .message import SensorValues, ControlSettings, Alarm, ControlSettingName
+from .common.message import SensorValues, ControlSettings, Alarm, ControlSettingName
 
 class ControlModuleBase:
     # Abstract class for controlling hardware based on settings received

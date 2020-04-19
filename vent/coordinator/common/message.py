@@ -24,7 +24,7 @@ class ControlSettingName(Enum):
     PEEP = auto()      # PEEP pressure
     BREATHS_PER_MINUTE = auto()
     INSPIRATION_TIME_SEC = auto()
-    #Settings that are read out, but can't be controlled by software
+    #Settings that are read out, but can not be controlled by software
     FIO2 = auto()
     TEMP = auto()
     HUMIDITY = auto()

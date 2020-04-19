@@ -234,7 +234,7 @@ def test_critical_levels(min, max, value, name, alarms) -> List[Alarm]:
 
         if does_not_exist:
             alarms.append(new_alarm)
-            print(str(self.PIP_min) + " < " + str(PIP) + " < " + str(self.PIP_max) + "  violated.")
+            print(str(name) + ": " + str(min) + " < " + str(value) + " < " + str(max) + "  violated.")
 
     else:                                    # If the variable is within bounds, and an alarm exists, inactivate it.
         for alarm_idx in range(len(alarms)):
@@ -274,7 +274,7 @@ class ControlModuleSimulator(ControlModuleBase):
         self.I_phase_lastset  = time.time()
 
         # Alarm management
-        self.alarms           = {}    # list of all alarms
+        self.alarms           = []    # list of all alarms
 
     def get_sensors_values(self):
         # returns SensorValues and a time stamp
@@ -354,7 +354,7 @@ class ControlModuleSimulator(ControlModuleBase):
             self.PIP_time_lastset    = controlSettings.timestamp
 
         elif controlSettings.name is ControlSettingName.PEEP:
-            self.ControllerPEEP      = controlSettings.value
+            self.Controller.PEEP      = controlSettings.value
             self.PEEP_min            = controlSettings.min_value
             self.PEEP_max            = controlSettings.max_value
             self.PEEP_lastset        = controlSettings.timestamp

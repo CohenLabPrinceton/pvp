@@ -1,7 +1,7 @@
 import numpy as np
 import time
 from typing import List
-from .common.message import SensorValues, ControlSettings, Alarm, ControlSettingName
+from .common.message import SensorValues, ControlSettings, Alarm, AlarmSeverity, ControlSettingName
 
 class ControlModuleBase:
     # Abstract class for controlling hardware based on settings received
@@ -40,10 +40,6 @@ class ControlModuleBase:
         pass
 
 
-# Variables:
-#   sensorValues
-#   controlSettings.  
-#   loopCounter
 
 class ControlModuleDevice(ControlModuleBase):
     # Implement ControlModuleBase functions
@@ -132,7 +128,7 @@ def OUupdate(variable, dt, mu, sigma, tau):
 
 class StateController:
     '''
-    This is a class to control a respirator by iterating through set states.
+    This is a class to control a respirator by iterating through set states with hard-coded valve settings
     '''
     def __init__(self):
         self.PIP              = 22
@@ -152,23 +148,6 @@ class StateController:
         self.t_plateau        = self.I_phase - self.PIP_time 
         self.t_expiration     = self.PEEP_time 
         self.t_PEEP           = self.E_phase - self.PEEP_time 
-
-        # Variable limits to raise alarms, initialized as +- 10%
-        self.PIP_min          = self.PIP      *0.9
-        self.PIP_max          = self.PIP      *1.1
-        self.PIP_lastset      = time.time()
-        self.PIP_time_min     = self.PIP_time *0.9
-        self.PIP_time_max     = self.PIP_time *1.1
-        self.PIP_time_lastset = time.time()
-        self.PEEP_min         = self.PEEP     *0.9
-        self.PEEP_max         = self.PEEP     *1.1
-        self.PEEP_lastset     = time.time()
-        self.bpm_min          = self.bpm      *0.9
-        self.bpm_max          = self.bpm      *1.1
-        self.bpm_lastset      = time.time()
-        self.I_phase_min      = self.I_phase  *0.9
-        self.I_phase_max      = self.I_phase  *1.1
-        self.I_phase_lastset  = time.time()
 
         # Parameters to keep track of breath-cycle
         self.cycle_start      = time.time()
@@ -229,6 +208,43 @@ class StateController:
             data = np.append(data, [[cycle_phase, pressure]], axis=0)
             self.cycle_waveforms[self.cycle_counter] = data
 
+def test_critical_levels(min, max, value, name, alarms) -> List[Alarm]:
+    '''
+    This tests whether a variable is within bounds.
+    If it is, and an alarm existed, then the "alarm_end_time" is set.
+    If it is NOT, a new alarm is generated and appendede to the alarm-list.
+    Input:
+        min:    minimum value  (e.g. 2)
+        max:    maximum value  (e.g. 5)
+        value:  test value   (e.g. 3)
+        name:   parameter type (e.g. "PIP", "PEEP" etc.)
+        alarms: list of existing alarms 
+    Returns:
+        alarms: updated list of existing alarms
+
+    '''
+    if (value<min) or (value>max):           # If the variable is not within limits, make sure there is an alarm.
+        new_alarm = Alarm(alarm_name = name, is_active = True, severity = AlarmSeverity.RED, \
+            alarm_start_time = time.time(), alarm_end_time = None)
+
+        does_not_exist = True
+        for alarm_idx in range(len(alarms)):
+            if (alarms[alarm_idx].alarm_name == name) and alarms[alarm_idx].is_active:
+                does_not_exist = False       # No update needed, as alarm already exists.
+
+        if does_not_exist:
+            alarms.append(new_alarm)
+            print(str(self.PIP_min) + " < " + str(PIP) + " < " + str(self.PIP_max) + "  violated.")
+
+    else:                                    # If the variable is within bounds, and an alarm exists, inactivate it.
+        for alarm_idx in range(len(alarms)):
+            if (alarms[alarm_idx].alarm_name == name) and alarms[alarm_idx].is_active:
+                alarms[alarm_idx].alarm_end_time = time.time()
+                alarms[alarm_idx].is_active = False
+
+    return alarms
+
+
 class ControlModuleSimulator(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self):
@@ -240,8 +256,25 @@ class ControlModuleSimulator(ControlModuleBase):
         self.pressure = 15
         self.last_update = time.time()
 
-        # Parameters for alarm management
-        self.alarms           = []    # list of all alarms
+        # Variable limits to raise alarms, initialized as +- 10% of what the controller initializes
+        self.PIP_min          = self.Controller.PIP      *0.9
+        self.PIP_max          = self.Controller.PIP      *1.1
+        self.PIP_lastset      = time.time()
+        self.PIP_time_min     = self.Controller.PIP_time *0.9
+        self.PIP_time_max     = self.Controller.PIP_time *1.1
+        self.PIP_time_lastset = time.time()
+        self.PEEP_min         = self.Controller.PEEP     *0.9
+        self.PEEP_max         = self.Controller.PEEP     *1.1
+        self.PEEP_lastset     = time.time()
+        self.bpm_min          = self.Controller.bpm      *0.9
+        self.bpm_max          = self.Controller.bpm      *1.1
+        self.bpm_lastset      = time.time()
+        self.I_phase_min      = self.Controller.I_phase  *0.9
+        self.I_phase_max      = self.Controller.I_phase  *1.1
+        self.I_phase_lastset  = time.time()
+
+        # Alarm management
+        self.alarms           = {}    # list of all alarms
 
     def get_sensors_values(self):
         # returns SensorValues and a time stamp
@@ -263,97 +296,80 @@ class ControlModuleSimulator(ControlModuleBase):
 
 
     def update_alarms(self):
-        ''' This goes through the LAST waveform, and updates alarms '''
-
-        # performs a number of checks on the 
-        # data from last cycle:
+        ''' This goes through the LAST waveform, and updates alarms.'''
         this_cycle = self.Controller.cycle_counter
-        data = self.Controller.cycle_waveforms[this_cycle-1]
-        phase = data[:,0]
-        pressure = data[:,1]
 
-        # get the pressure niveaus heuristically (much faster than fitting)
-        # 20 and 80 percentiles pulled out of my hat.
-        PEEP = np.percentile(pressure,20)
-        PIP  = np.percentile(pressure,80)
+        if this_cycle > 1:   #The first cycle for which we can calculate this is cycle "1".
+            data = self.Controller.cycle_waveforms[this_cycle-1]
+            phase = data[:,0]
+            pressure = data[:,1]
 
-        # measure time of reaching PIP, and leaving PIP
-        last_PIP   = phase[ np.max(np.where(pressure>PIP)) ]
-        first_PIP  = phase[ np.min(np.where(pressure>PIP)) ]
-        # and measure the same for PEEP
-        first_PEEP = phase[ np.min(np.where(np.logical_and(pressure<PEEP, phase > 1))) ]
-        last_PEEP  = phase[-1]
+            # get the pressure niveau heuristically (much faster than fitting)
+            # 20 and 80 percentiles pulled out of my hat.
+            PEEP = np.percentile(pressure,20)
+            PIP  = np.percentile(pressure,80)
 
-        bpm     = 60./last_PEEP  # 60sec divided by the duration of last waveform
-        I_phase = last_PIP       # last time-point of the plateau
+            # measure time of reaching PIP, and leaving PIP
+            last_PIP   = phase[ np.max(np.where(pressure>PIP)) ]
+            first_PIP  = phase[ np.min(np.where(pressure>PIP)) ]
+            # and measure the same for PEEP
+            first_PEEP = phase[ np.min(np.where(np.logical_and(pressure<PEEP, phase > 1))) ]
+            last_PEEP  = phase[-1]
 
-        #generate new active alarms, if necessary:
-        if (PIP<self.PIP_min) or (PIP>self.PIP_max):
-            new_alarm = Alarm(alarm_name="PIP", is_active = True, severity = AlarmSeverity.Red, \
-                      alarm_start_time = time.time(), alarm_end_time = None)
-            self.alarms.append(new_alarm)
+            bpm     = 60./last_PEEP  # 60 sec divided by the duration of last waveform
+            I_phase = last_PIP       # last time-point of the plateau
 
-        if (first_PIP<self.PIP_time_min) or (first_PIP>self.PIP_time_max):
-            new_alarm = Alarm(alarm_name="PIP_TIME", is_active = True, severity = AlarmSeverity.Yellow, \
-                      alarm_start_time = time.time(), alarm_end_time = None)
-            self.alarms.append(new_alarm)
-
-        if (PEEP<self.PEEP_min) or (PEEP>self.PEEP_max):
-            new_alarm = Alarm(alarm_name="PEEP", is_active = True, severity = AlarmSeverity.Red, \
-                      alarm_start_time = time.time(), alarm_end_time = None)
-            self.alarms.append(new_alarm)
-
-        if (bpm<self.bpm_min) or (bpm>self.bpm_max):
-            new_alarm = Alarm(alarm_name="BREATHS_PER_MINUTE", is_active = True, severity = AlarmSeverity.Red, \
-                      alarm_start_time = time.time(), alarm_end_time = None)
-            self.alarms.append(new_alarm)
-
-        if (I_phase<self.I_phase_min) or (I_phase>I_phase_max):
-            new_alarm = Alarm(alarm_name="I_PHASE", is_active = True, severity = AlarmSeverity.Red, \
-                      alarm_start_time = time.time(), alarm_end_time = None)
-            self.alarms.append(new_alarm)
-
+            self.alarms = test_critical_levels(min = self.PIP_min,      max = self.PIP_max,      value = PIP,       name = "PIP",                alarms = self.alarms)
+            self.alarms = test_critical_levels(min = self.PIP_time_min, max = self.PIP_time_max, value = first_PIP, name = "PIP_TIME",           alarms = self.alarms)
+            self.alarms = test_critical_levels(min = self.PEEP_min,     max = self.PEEP_max,     value = PEEP,      name = "PEEP",               alarms = self.alarms)
+            self.alarms = test_critical_levels(min = self.bpm_min,      max = self.bpm_max,      value = bpm,       name = "BREATHS_PER_MINUTE", alarms = self.alarms)
+            self.alarms = test_critical_levels(min = self.I_phase_min,  max = self.I_phase_max,  value = I_phase,   name = "I_PHASE",            alarms = self.alarms)
 
     def get_alarms(self):
+        #Returns all alarms
         return self.alarms
 
-    def get_active_alarms():
+    def get_active_alarms(self):
+        #Returns only the active alarms
         active_alarms = [alarm for alarm in self.alarms if alarm.is_active]
+        return active_alarms
         
-    def get_logged_alarms():
-        pass
+    def get_logged_alarms(self):
+        #Returns only the inactive alarms
+        logged_alarms = [alarm for alarm in self.alarms if not alarm.is_active]
+        return logged_alarms
 
     def set_controls(self, controlSettings):
-        #Right now, this supports only five settings
+        ''' Updates the control settings. '''
         if controlSettings.name is ControlSettingName.PIP:
-            self.Controller.PIP              = controlSettings.value 
-            self.Controller.PIP_min          = controlSettings.min_value
-            self.Controller.PIP_max          = controlSettings.max_value
-            self.Controller.PIP_lastset      = controlSettings.timestamp
+            self.Controller.PIP      = controlSettings.value 
+            self.PIP_min             = controlSettings.min_value
+            self.PIP_max             = controlSettings.max_value
+            self.PIP_lastset         = controlSettings.timestamp
 
         elif controlSettings.name is ControlSettingName.PIP_TIME:
             self.Controller.PIP_time = controlSettings.value
-            self.Controller.PIP_time_min     = controlSettings.min_value
-            self.Controller.PIP_time_max     = controlSettings.max_value
-            self.Controller.PIP_time_lastset = controlSettings.timestamp
+            self.PIP_time_min        = controlSettings.min_value
+            self.PIP_time_max        = controlSettings.max_value
+            self.PIP_time_lastset    = controlSettings.timestamp
 
         elif controlSettings.name is ControlSettingName.PEEP:
-            self.Controller.PEEP             = controlSettings.value
-            self.Controller.PEEP_min         = controlSettings.min_value
-            self.Controller.PEEP_max         = controlSettings.max_value
-            self.Controller.PEEP_lastset     = controlSettings.timestamp
+            self.ControllerPEEP      = controlSettings.value
+            self.PEEP_min            = controlSettings.min_value
+            self.PEEP_max            = controlSettings.max_value
+            self.PEEP_lastset        = controlSettings.timestamp
 
         elif controlSettings.name is ControlSettingName.BREATHS_PER_MINUTE:
-            self.Controller.bpm              = controlSettings.value
-            self.Controller.bpm_min          = controlSettings.min_value
-            self.Controller.bpm_max          = controlSettings.max_value
-            self.Controller.bpm_lastset      = controlSettings.timestamp
+            self.Controller.bpm      = controlSettings.value
+            self.bpm_min             = controlSettings.min_value
+            self.bpm_max             = controlSettings.max_value
+            self.bpm_lastset         = controlSettings.timestamp
 
         elif controlSettings.name is ControlSettingName.INSPIRATION_TIME_SEC:
-            self.Controller.I_phase          = controlSettings.value
-            self.Controller.I_phase_min      = controlSettings.min_value
-            self.Controller.I_phase_max      = controlSettings.max_value
-            self.Controller.I_phase_lastset  = controlSettings.timestamp
+            self.Controller.I_phase  = controlSettings.value
+            self.I_phase_min         = controlSettings.min_value
+            self.I_phase_max         = controlSettings.max_value
+            self.I_phase_lastset     = controlSettings.timestamp
 
         else:
             error("You cannot set the variabe: " + str(controlSettings.name))

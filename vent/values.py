@@ -3,35 +3,35 @@ from collections import OrderedDict as odict
 from vent.gui import styles
 
 MONITOR = odict({
-        'oxygen': {
-            'name': 'O2 Concentration',
-            'units': '%',
-            'abs_range': (0, 100),
-            'safe_range': (60, 100),
-            'decimals' : 1
-        },
-        'temperature': {
-            'name': 'Temperature',
-            'units': '\N{DEGREE SIGN}C',
-            'abs_range': (0, 50),
-            'safe_range': (20, 30),
-            'decimals': 1
-        },
-        'humidity': {
-            'name': 'Humidity',
-            'units': '%',
-            'abs_range': (0, 100),
-            'safe_range': (20, 75),
-            'decimals': 1
-        },
-        'vte': {
-            'name': 'VTE',
-            'units': '%',
-            'abs_range': (0, 100),
-            'safe_range': (20, 80),
-            'decimals': 1
-        }
-    })
+    'oxygen': {
+        'name': 'O2 Concentration',
+        'units': '%',
+        'abs_range': (0, 100),
+        'safe_range': (60, 100),
+        'decimals' : 1
+    },
+    'temperature': {
+        'name': 'Temperature',
+        'units': '\N{DEGREE SIGN}C',
+        'abs_range': (0, 50),
+        'safe_range': (20, 30),
+        'decimals': 1
+    },
+    'humidity': {
+        'name': 'Humidity',
+        'units': '%',
+        'abs_range': (0, 100),
+        'safe_range': (20, 75),
+        'decimals': 1
+    },
+    'vte': {
+        'name': 'VTE',
+        'units': '%',
+        'abs_range': (0, 100),
+        'safe_range': (20, 80),
+        'decimals': 1
+    }
+})
 """
 Values to monitor but not control. 
 
@@ -47,22 +47,40 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 """
 
 
-CONTROL = {
-        'oxygen': {
-            'name': 'O2 Concentration',
-            'units': '%',
-            'abs_range': (0, 100),
-            'value': 80,
-            'decimals': 1
-        },
-        'temperature': {
-            'name': 'Temperature',
-            'units': '\N{DEGREE SIGN}C',
-            'abs_range': (0, 50),
-            'value': 23,
-            'decimals': 1
-        },
+CONTROL = odict({
+    'pip': {
+        'name': 'PIP (Peak Inspiratory Pressure)',
+        'units': 'cmH2O',
+        'abs_range': (0, 100), # FIXME
+        'safe_range': (0,100), # FIXME
+        'value': 80,           # FIXME
+        'decimals': 1          # FIXME
+    },
+    'peep': {
+        'name': 'PEEP (Positive End Expiratory Pressure)',
+        'units': 'cmH2O',
+        'abs_range': (0, 100),  # FIXME
+        'safe_range': (0, 100), # FIXME
+        'value': 80,            # FIXME
+        'decimals': 1           # FIXME
+    },
+    'ie': {
+        'name': 'I:E',
+        'units': 'inspiratory/expiratory time',
+        'abs_range': (0, 100),  # FIXME
+        'safe_range': (0, 100), # FIXME
+        'value': 80,            # FIXME
+        'decimals': 1           # FIXME
+    },
+    'bpm': {
+        'name': 'Breath Rate',
+        'units': 'breaths/min',
+        'abs_range': (0, 100),  # FIXME
+        'safe_range': (0, 100), # FIXME
+        'value': 80,            # FIXME
+        'decimals': 1           # FIXME
     }
+})
 """
 Values to control but not monitor.
 

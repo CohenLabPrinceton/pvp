@@ -39,7 +39,7 @@ UI Notes & Todo
 
     * Start/stop button
     * Status indicator - a clock that increments with heartbeats,
-        or some other visual indicator that things are alright
+      or some other visual indicator that things are alright
     * Status bar - most recent alarm or notification w/ means of clearing
     * Override to give 100% oxygen and silence all alarms
 
@@ -75,6 +75,9 @@ UI Notes & Todo
         * Derived - one value is computed from another/others
 
     * Monitored values should have defaults, warning range, and absolute range
+    * Two classes of monitored values -- ones with limits and ones without. There seem to be
+      lots and lots of observed values, but only some need limits. might want to make larger drawer
+      of smaller displayed values that don't need controls
     * Save/load parameters. Autosave, and autorestore if saved <5m ago, otherwise init from defaults.
     * Possible plots
 

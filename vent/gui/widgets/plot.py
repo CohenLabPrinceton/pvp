@@ -74,36 +74,40 @@ class Plot(pg.PlotWidget):
         """
         new_value: (timestamp from time.time(), value)
         """
-        this_time = time.time()
-        #time_diff = this_time-self._last_time
-        limits = self.getPlotItem().viewRange()
-        current_relative_time = (this_time-self._start_time) % self.plot_duration
-        self.time_marker.setData([current_relative_time, current_relative_time],
-                                 [limits[1][0], limits[1][1]])
-
-        self.timestamps.append(new_value[0])
-        self.history.append(new_value[1])
-
-        # filter values based on timestamps
-        ts_array = np.array(self.timestamps)
-        end_ind = len(self.history)
-        start_ind = np.where(ts_array > (this_time - self.plot_duration))[0][0]
-
-        # subtract start time and take modulus of duration to get wrapped timestamps
-        plot_timestamps = np.mod(ts_array[start_ind:end_ind]-self._start_time, self.plot_duration)
-        plot_values = np.array([self.history[i] for i in range(start_ind, end_ind)])
-
-        # find the point where the time resets
         try:
-            reset_ind = np.where(np.diff(plot_timestamps)<0)[0][0]
+            this_time = time.time()
+            #time_diff = this_time-self._last_time
+            limits = self.getPlotItem().viewRange()
+            current_relative_time = (this_time-self._start_time) % self.plot_duration
+            self.time_marker.setData([current_relative_time, current_relative_time],
+                                     [limits[1][0], limits[1][1]])
 
-            # plot early and late
-            self.early_curve.setData(plot_timestamps[0:reset_ind+1],plot_values[0:reset_ind+1] )
-            self.late_curve.setData(plot_timestamps[reset_ind+1:], plot_values[reset_ind+1:])
+            self.timestamps.append(new_value[0])
+            self.history.append(new_value[1])
 
-        except IndexError:
-            self.early_curve.setData(plot_timestamps, plot_values)
-            self.late_curve.clear()
+            # filter values based on timestamps
+            ts_array = np.array(self.timestamps)
+            end_ind = len(self.history)
+            start_ind = np.where(ts_array > (this_time - self.plot_duration))[0][0]
+
+            # subtract start time and take modulus of duration to get wrapped timestamps
+            plot_timestamps = np.mod(ts_array[start_ind:end_ind]-self._start_time, self.plot_duration)
+            plot_values = np.array([self.history[i] for i in range(start_ind, end_ind)])
+
+            # find the point where the time resets
+            try:
+                reset_ind = np.where(np.diff(plot_timestamps)<0)[0][0]
+
+                # plot early and late
+                self.early_curve.setData(plot_timestamps[0:reset_ind+1],plot_values[0:reset_ind+1] )
+                self.late_curve.setData(plot_timestamps[reset_ind+1:], plot_values[reset_ind+1:])
+
+            except IndexError:
+                self.early_curve.setData(plot_timestamps, plot_values)
+                self.late_curve.clear()
+        except:
+            # FIXME: Log this lol
+            print('error with value: {}, timestamp: {}'.format(new_value[1], new_value[0]))
 
         #self._last_time = this_time
 

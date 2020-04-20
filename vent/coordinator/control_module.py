@@ -321,7 +321,7 @@ class ControllerThread(threading.Thread):
     -jls 042020
 
     """
-    def __init__(self, threadID, name, counter):
+    def __init__(self, threadID, name, counter=True):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
@@ -333,7 +333,8 @@ class ControllerThread(threading.Thread):
             #     controls actuators to achieve target state
             self.ContollInstance.run()  # run a contol update
             time.sleep(.01)  # wait 10ms
-            self.counter -= 1
+            if isinstance(self.counter, int):
+                self.counter -= 1
 
     def set_controls(self, command):
         self.ContollInstance.set_controls(command)

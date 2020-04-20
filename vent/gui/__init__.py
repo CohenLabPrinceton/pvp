@@ -9,10 +9,11 @@ import time
 import argparse
 import pdb
 # add to path
-PACKAGE_PARENT = '../..'
-SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
-#pdb.set_trace()
-sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+# FIXME: Do packaging
+# PACKAGE_PARENT = '../..'
+# SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+# #pdb.set_trace()
+# sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 
 # other required libraries
@@ -24,20 +25,27 @@ from PySide2 import QtCore, QtGui, QtWidgets
 # import whole module so pyqtgraph recognizes we're using it
 # using pyqtgraph for data visualization
 
-# import styles
-from vent.gui import widgets
-from vent import values
-from vent.gui import styles
-
-
-##########################
-# GUI Class
-
 try:
     mono_font = QtGui.QFont('Fira Code')
 except:
     mono_font = QtGui.QFont()
     mono_font.setStyleHint(QtGui.QFont.Monospace)
+
+
+# import styles
+from vent.gui import widgets
+from vent import values
+from vent.gui import styles
+
+# for testing
+from vent.coordinator.control_module import get_control_module, ControllerThread   # this is the file to change
+from vent.coordinator.common.message import SensorValues, ControlSettings, Alarm, ControlSettingName
+
+
+
+##########################
+# GUI Class
+
 
 
 class Vent_Gui(QtWidgets.QMainWindow):
@@ -146,8 +154,76 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if test:
             self.test()
 
-
     def test(self):
+        """
+        Use a controller simulator returned by :func:`~vent.coordinator.control_module.get_control_module` to test the GUI
+
+        Following the example in /sandbox/testPIDControllerClass
+
+        """
+
+        c1 = ControlSettings(name=ControlSettingName.PIP,
+                             value=22, min_value=20,
+                             max_value=24, timestamp=time.time())
+
+        c2 = ControlSettings(name=ControlSettingName.PIP_TIME, value=0.5, min_value=0.2,
+                             max_value=0.5, timestamp=time.time())
+
+        c3 = ControlSettings(name=ControlSettingName.PEEP, value=5, min_value=4,
+                             max_value=6, timestamp=time.time())
+
+        c4 = ControlSettings(name=ControlSettingName.BREATHS_PER_MINUTE, value=10,
+                             min_value=18, max_value=22, timestamp=time.time())
+
+        c5 = ControlSettings(name=ControlSettingName.INSPIRATION_TIME_SEC, value=2.0,
+                             min_value=1.0, max_value=1.5, timestamp=time.time())
+
+        runtime = 300  # run this for 30 seconds
+        self.thread = ControllerThread(1, "Controller-1", runtime / 0.01)  # 5sec in 10ms steps
+
+        for command in [c1, c2, c3, c4, c5]:
+            self.thread.set_controls(command)
+
+        self.thread.start()
+
+        self.read_sensors()
+
+    def set_value(self, new_value):
+        """
+        set value in the test thread
+        """
+        # get sender ID
+        value_name = self.sender().objectName()
+        control_object = ControlSettings(name=getattr(ControlSettingName, value_name),
+                                         value=new_value,
+                                         min_value = self.CONTROL[value_name]['safe_range'][0],
+                                         max_value = self.CONTROL[value_name]['safe_range'][1],
+                                         timestamp = time.time())
+        self.thread.set_controls(control_object)
+
+    def read_sensors(self):
+
+        vals = self.thread.get_sensor_values()
+        #pdb.set_trace()
+
+        # for monitor_key, monitor_obj in self.monitor.items():
+        #     if hasattr(vals, monitor_key):
+        #         monitor_obj.update_value(getattr(vals, monitor_key))
+
+        for plot_key, plot_obj in self.plots.items():
+            if hasattr(vals, plot_key):
+                plot_obj.update_value((time.time(), getattr(vals, plot_key)))
+
+
+        QtCore.QTimer.singleShot(1, self.read_sensors)
+
+
+
+    def test_old(self):
+        """
+        Testing method that uses a bunch of hardcoded variable names and
+        manually generated values instead of the simulator.
+        """
 
         ox = ((np.sin(time.time()/10)+1)*5)+80
         self.monitor['oxygen'].update_value(ox)
@@ -274,6 +350,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_layout = QtWidgets.QVBoxLayout()
         for control_name, control_params in self.CONTROL.items():
             self.controls[control_name] = widgets.Control(**control_params)
+            self.controls[control_name].setObjectName(control_name)
+            self.controls[control_name].value_changed.connect(self.set_value)
             self.controls_layout.addWidget(self.controls[control_name])
             self.controls_layout.addWidget(widgets.components.QHLine())
 
@@ -293,10 +371,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Launch the Ventilator GUI")
-    parser.add_argument('test', '-t', '--test',
+    parser.add_argument('--test',
                         dest='test',
                         help="Run in test mode? (y=1/n=0, default=0)",
-                        choices=(0,1),
+                        choices=('y','n'),
                         default=0)
 
 

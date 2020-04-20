@@ -3,7 +3,7 @@ from collections import OrderedDict as odict
 from vent.gui import styles
 
 MONITOR = odict({
-    'oxygen': {
+    'fio2': {
         'name': 'O2 Concentration',
         'units': '%',
         'abs_range': (0, 100),
@@ -48,7 +48,7 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 
 
 CONTROL = odict({
-    'pip': {
+    'PIP': {
         'name': 'PIP (Peak Inspiratory Pressure)',
         'units': 'cmH2O',
         'abs_range': (0, 100), # FIXME
@@ -56,29 +56,45 @@ CONTROL = odict({
         'value': 80,           # FIXME
         'decimals': 1          # FIXME
     },
-    'peep': {
+    'PIP_TIME': {
+        'name': 'PIP (Peak Inspiratory Pressure)',
+        'units': 'seconds',
+        'abs_range': (0, 1),  # FIXME
+        'safe_range': (0.2, 0.5),  # FIXME
+        'value': 0.5,  # FIXME
+        'decimals': 1  # FIXME
+    },
+    'PEEP': {
         'name': 'PEEP (Positive End Expiratory Pressure)',
         'units': 'cmH2O',
-        'abs_range': (0, 100),  # FIXME
-        'safe_range': (0, 100), # FIXME
-        'value': 80,            # FIXME
+        'abs_range': (0, 10),  # FIXME
+        'safe_range': (4,6), # FIXME
+        'value': 5,            # FIXME
         'decimals': 1           # FIXME
+    },
+    'BREATHS_PER_MINUTE': {
+        'name': 'Breath Rate',
+        'units': 'breaths/min',
+        'abs_range': (0, 50), # FIXME
+        'safe_range': (18, 22), # FIXME
+        'value': 10,            # FIXME
+        'decimals': 1           # FIXME
+    },
+    'INSPIRATION_TIME_SEC': {
+        'name': 'Inspiration Time',
+        'units': 'seconds',
+        'abs_range': (0, 5),  # FIXME
+        'safe_range': (1, 2.0),  # FIXME
+        'value': 2.0,  # FIXME
+        'decimals': 1  # FIXME
     },
     'ie': {
         'name': 'I:E',
         'units': 'inspiratory/expiratory time',
         'abs_range': (0, 100),  # FIXME
-        'safe_range': (0, 100), # FIXME
-        'value': 80,            # FIXME
-        'decimals': 1           # FIXME
-    },
-    'bpm': {
-        'name': 'Breath Rate',
-        'units': 'breaths/min',
-        'abs_range': (0, 100),  # FIXME
-        'safe_range': (0, 100), # FIXME
-        'value': 80,            # FIXME
-        'decimals': 1           # FIXME
+        'safe_range': (0, 100),  # FIXME
+        'value': 80,  # FIXME
+        'decimals': 1  # FIXME
     }
 })
 """

@@ -9,12 +9,13 @@ class Control(QtWidgets.QWidget):
 
     value_changed = QtCore.Signal(float)
 
-    def __init__(self, name, units, abs_range, value, decimals):
+    def __init__(self, name, units, abs_range, safe_range, value, decimals):
         super(Control, self).__init__()
 
         self.name = name
         self.units = units
         self.abs_range = abs_range
+        self.safe_range = safe_range
         self.value = value
         self.decimals = decimals
 

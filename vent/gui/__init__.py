@@ -3,13 +3,17 @@
 # Imports
 
 # python standard libraries
-from collections import OrderedDict as odict
 import sys
 import os
 import time
-import pdb
 import argparse
 # add to path
+import vent.gui.widgets.components
+import vent.gui.widgets.control
+import vent.gui.widgets.monitor_value
+import vent.gui.widgets.plot
+import vent.gui.widgets.status_bar
+
 PACKAGE_PARENT = '../..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 #pdb.set_trace()
@@ -28,7 +32,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 # import styles
 from vent.gui import widgets
-from vent.gui import defaults
+from vent import values
 from vent.gui import styles
 
 
@@ -87,18 +91,18 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     """
 
-    MONITOR = defaults.MONITOR
+    MONITOR = values.MONITOR
     """
     see :data:`.gui.defaults.MONITOR`
     """
 
 
-    CONTROL = defaults.CONTROL
+    CONTROL = values.CONTROL
     """
     see :data:`.gui.defaults.CONTROL`
     """
 
-    PLOTS = defaults.PLOTS
+    PLOTS = values.PLOTS
     """
     see :data:`.gui.defaults.PLOTS`
     """
@@ -212,7 +216,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         ##########
         # Status Bar
-        self.status_bar = widgets.Status_Bar()
+        self.status_bar = vent.gui.widgets.Status_Bar()
         self.layout.addWidget(self.status_bar, self.status_height)
 
         #########
@@ -220,9 +224,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.display_layout = QtWidgets.QVBoxLayout()
 
         for display_key, display_params in self.MONITOR.items():
-            self.monitor[display_key] = widgets.Monitor_Value(update_period = self.update_period, **display_params)
+            self.monitor[display_key] = vent.gui.widgets.Monitor_Value(update_period = self.update_period, **display_params)
             self.display_layout.addWidget(self.monitor[display_key])
-            self.display_layout.addWidget(widgets.QHLine())
+            self.display_layout.addWidget(vent.gui.widgets.components.QHLine())
         self.main_layout.addLayout(self.display_layout, self.display_width)
 
         ###########
@@ -258,7 +262,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         for plot_key, plot_params in self.PLOTS.items():
-            self.plots[plot_key] = widgets.Plot(**plot_params)
+            self.plots[plot_key] = vent.gui.widgets.Plot(**plot_params)
             self.plot_layout.addWidget(self.plots[plot_key])
 
         self.main_layout.addLayout(self.plot_layout,5)
@@ -275,9 +279,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.controls_layout = QtWidgets.QVBoxLayout()
         for control_name, control_params in self.CONTROL.items():
-            self.controls[control_name] = widgets.Control(**control_params)
+            self.controls[control_name] = vent.gui.widgets.Control(**control_params)
             self.controls_layout.addWidget(self.controls[control_name])
-            self.controls_layout.addWidget(widgets.QHLine())
+            self.controls_layout.addWidget(vent.gui.widgets.components.QHLine())
 
         self.controls_layout.addStretch()
 

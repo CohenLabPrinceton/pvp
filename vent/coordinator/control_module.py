@@ -1,4 +1,5 @@
 import numpy as np
+import threading
 import time
 from typing import List
 from .common.message import SensorValues, ControlSettings, Alarm, ControlSettingName
@@ -314,4 +315,36 @@ def get_control_module(sim_mode=False):
         return ControlModuleDevice()
 
 
+class ControllerThread(threading.Thread):
+    """
+    Copied & Pasted from /sandbox/testPIDControllerClass
+    -jls 042020
+
+    """
+    def __init__(self, threadID, name, counter):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+        self.ContollInstance = get_control_module(sim_mode=True)
+
+    def run(self):
+        while self.counter:
+            #     controls actuators to achieve target state
+            self.ContollInstance.run()  # run a contol update
+            time.sleep(.01)  # wait 10ms
+            self.counter -= 1
+
+    def set_controls(self, command):
+        self.ContollInstance.set_controls(command)
+
+    def get_sensor_values(self):
+        # returns SensorValues, include a timestamp and loop counter
+        sv = self.ContollInstance.get_sensors_values()
+        sv.loop_counter = self.counter
+        return sv
+
+    def heartbeat(self):
+        print("%s: %s" % (self.name, time.ctime(time.time())))
+        print("Internal counter =" + str(self.counter) + '.\n')
 

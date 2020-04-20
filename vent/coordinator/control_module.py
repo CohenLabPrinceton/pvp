@@ -153,7 +153,8 @@ class StateController:
         self.Qin              = 0
         self.Qout             = 0
         self.pressure         = 0
-
+        self.volume           = 0
+        self.last_update      = time.time() 
         #Derived variables
         self.cycle_duration   = 60/self.bpm
         self.E_phase          = self.cycle_duration -  self.I_phase
@@ -164,7 +165,7 @@ class StateController:
 
         # Parameters to keep track of breath-cycle
         self.cycle_start      = time.time()
-        self.cycle_pressure_waveforms  = {}    # saves the waveforms to meassure pip, peep etc.
+        self.cycle_waveforms  = {}    # saves the waveforms to meassure pip, peep etc.
         self.cycle_counter    = 0
 
     def update_internalVeriables(self):
@@ -184,7 +185,10 @@ class StateController:
     def update(self, pressure):
         now = time.time()
         cycle_phase = now - self.cycle_start
+        time_since_last_update = now - self.last_update
+        self.last_update = now
 
+        self.volume += time_since_last_update*(Qin-Qout)
         self.pressure = pressure
         if cycle_phase < self.t_inspiration:       # ADD CONTROL dP/dt
             # to PIP, air in as fast as possible
@@ -214,12 +218,12 @@ class StateController:
             self.cycle_start    = time.time() # new cycle starts
             self.cycle_counter += 1
 
-        if self.cycle_counter not in self.cycle_pressure_waveforms.keys():   #if this cycle doesn't exist yet, start it
-            self.cycle_pressure_waveforms[self.cycle_counter] = np.array([[0, pressure]])
+        if self.cycle_counter not in self.cycle_waveforms.keys():   #if this cycle doesn't exist yet, start it
+            self.cycle_waveforms[self.cycle_counter] = np.array([[0, pressure, volume]])   #add volume
         else:
-            data = self.cycle_pressure_waveforms[self.cycle_counter]
-            data = np.append(data, [[cycle_phase, pressure]], axis=0)
-            self.cycle_pressure_waveforms[self.cycle_counter] = data
+            data = self.cycle_waveforms[self.cycle_counter]
+            data = np.append(data, [[cycle_phase, pressure, volume]], axis=0)
+            self.cycle_waveforms[self.cycle_counter] = data
 
 
 
@@ -260,6 +264,7 @@ class ControlModuleSimulator(ControlModuleBase):
         self.first_PEEP       = None # Time when PEEP is reached first
         self.last_PEEP        = None # Last time of PEEP - by definition end of breath cycle
         self.bpm              = None # Measured breathing rate, by definition 60sec / length_of_breath_cycle
+        self.vte              = None # Maximum air displacement in last breath cycle
 
     def test_critical_levels(self, min, max, value, name):
         '''
@@ -291,9 +296,12 @@ class ControlModuleSimulator(ControlModuleBase):
         this_cycle = self.Controller.cycle_counter
 
         if this_cycle > 1:   #The first cycle for which we can calculate this is cycle "1".
-            data = self.Controller.cycle_pressure_waveforms[this_cycle-1]
+            data = self.Controller.cycle_waveforms[this_cycle-1]
             phase = data[:,0]
             pressure = data[:,1]
+            volume = data[:,2]
+
+            self.vte = np.max(volume) - np.min(volume)
 
             # get the pressure niveau heuristically (much faster than fitting)
             # 20 and 80 percentiles pulled out of my hat.
@@ -317,7 +325,6 @@ class ControlModuleSimulator(ControlModuleBase):
     def get_sensors_values(self):
         # returns SensorValues and a time stamp
 
-        ExhaledVolumeLastCycle = np.nan             # FIXME
         self.update_alarms()                        # Make sure we are up to date
 
         self.sensor_values = SensorValues(pip = self.Controller.PIP,   \
@@ -326,7 +333,7 @@ class ControlModuleSimulator(ControlModuleBase):
             temp                 = self.Balloon.temperature,           \
             humidity             = self.Balloon.humidity,              \
             pressure             = self.Balloon.current_pressure,      \
-            vte                  = ExhaledVolumeLastCycle,             \
+            vte                  = self.vte,                           \
             breaths_per_minute   = self.bpm,                           \
             inspiration_time_sec = self.I_phase,                       \
             timestamp            = time.time() )

@@ -109,8 +109,10 @@ class Monitor_Value(QtWidgets.QWidget):
     def update_value(self, new_value):
 
         # stash numerical value
+
         self.value = new_value
         self.check_alarm()
+        new_value = np.clip(new_value, self.abs_range[0], self.abs_range[1])
         self.range_slider.update_indicator(new_value)
 
     @QtCore.Slot(tuple)

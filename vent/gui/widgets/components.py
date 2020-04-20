@@ -96,6 +96,11 @@ class RangeSlider(QtWidgets.QSlider):
         self.high = high
 
     def update_indicator(self, new_val):
+        if new_val > self.maximum():
+            new_val = self.maximum()
+        elif new_val < self.minimum():
+            new_val = self.minimum()
+
         self._indicator = new_val
         self.update()
 

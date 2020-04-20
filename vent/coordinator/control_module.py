@@ -188,8 +188,11 @@ class StateController:
         time_since_last_update = now - self.last_update
         self.last_update = now
 
-        self.volume += time_since_last_update*(Qin-Qout)
+        self.volume += time_since_last_update*(self.Qin-self.Qout)  # Integrate what has happened within the last few seconds 
+        # NOTE: As Qin and Qout are set, this is what the controllr believes has happened. NOT A MEASUREMENT, MIGHT NOT BE REALITY!
+
         self.pressure = pressure
+
         if cycle_phase < self.t_inspiration:       # ADD CONTROL dP/dt
             # to PIP, air in as fast as possible
             self.Qin  = 1
@@ -219,10 +222,10 @@ class StateController:
             self.cycle_counter += 1
 
         if self.cycle_counter not in self.cycle_waveforms.keys():   #if this cycle doesn't exist yet, start it
-            self.cycle_waveforms[self.cycle_counter] = np.array([[0, pressure, volume]])   #add volume
+            self.cycle_waveforms[self.cycle_counter] = np.array([[0, pressure, self.volume]])   #add volume
         else:
             data = self.cycle_waveforms[self.cycle_counter]
-            data = np.append(data, [[cycle_phase, pressure, volume]], axis=0)
+            data = np.append(data, [[cycle_phase, pressure, self.volume]], axis=0)
             self.cycle_waveforms[self.cycle_counter] = data
 
 

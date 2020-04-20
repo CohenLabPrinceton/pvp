@@ -208,41 +208,37 @@ class StateController:
             data = np.append(data, [[cycle_phase, pressure]], axis=0)
             self.cycle_waveforms[self.cycle_counter] = data
 
-def test_critical_levels(min, max, value, name, alarms) -> List[Alarm]:
+
+def test_critical_levels(min, max, value, name, active_alarms, logged_alarms):
     '''
     This tests whether a variable is within bounds.
     If it is, and an alarm existed, then the "alarm_end_time" is set.
     If it is NOT, a new alarm is generated and appendede to the alarm-list.
     Input:
-        min:    minimum value  (e.g. 2)
-        max:    maximum value  (e.g. 5)
-        value:  test value   (e.g. 3)
-        name:   parameter type (e.g. "PIP", "PEEP" etc.)
-        alarms: list of existing alarms 
+        min:           minimum value  (e.g. 2)
+        max:           maximum value  (e.g. 5)
+        value:         test value   (e.g. 3)
+        name:          parameter type (e.g. "PIP", "PEEP" etc.)
+        active_alarms: dictionary of active alarms
+        logged_alarms: list of the logged alarms
     Returns:
-        alarms: updated list of existing alarms
+        alarms: updated active_alarms and logged_alarms
 
     '''
-    if (value<min) or (value>max):           # If the variable is not within limits, make sure there is an alarm.
-        new_alarm = Alarm(alarm_name = name, is_active = True, severity = AlarmSeverity.RED, \
-            alarm_start_time = time.time(), alarm_end_time = None)
-
-        does_not_exist = True
-        for alarm_idx in range(len(alarms)):
-            if (alarms[alarm_idx].alarm_name == name) and alarms[alarm_idx].is_active:
-                does_not_exist = False       # No update needed, as alarm already exists.
-
-        if does_not_exist:
-            alarms.append(new_alarm)
+    if (value<min) or (value>max):                 # If the variable is not within limits
+        if name not in active_alarms.keys():       # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
+            new_alarm = Alarm(alarm_name = name, is_active = True, severity = AlarmSeverity.RED, \
+                              alarm_start_time = time.time(), alarm_end_time = None)
+            active_alarms[name] = new_alarm
             print(str(name) + ": " + str(min) + " < " + str(value) + " < " + str(max) + "  violated.")
+    else:                                          # Else: if the variable is within bounds, 
+        if name in active_alarms.keys():           # And an alarm exists -> inactivate it.
+            active_alarms[name].alarm_end_time = time.time()
+            active_alarms[name].is_active      = False
+            logged_alarms.append( active_alarms[name] )
+            active_alarms[name] = None
 
-    else:                                    # If the variable is within bounds, and an alarm exists, inactivate it.
-        for alarm_idx in range(len(alarms)):
-            if (alarms[alarm_idx].alarm_name == name) and alarms[alarm_idx].is_active:
-                alarms[alarm_idx].alarm_end_time = time.time()
-                alarms[alarm_idx].is_active = False
-
-    return alarms
+    return active_alarms, logged_alarms
 
 
 class ControlModuleSimulator(ControlModuleBase):
@@ -274,7 +270,8 @@ class ControlModuleSimulator(ControlModuleBase):
         self.I_phase_lastset  = time.time()
 
         # Alarm management
-        self.alarms           = []    # list of all alarms
+        self.active_alarms           = {}    # dictionary of active alarms
+        self.logged_alarms           = []    # list of all resolved alarms 
 
     def get_sensors_values(self):
         # returns SensorValues and a time stamp
@@ -318,26 +315,32 @@ class ControlModuleSimulator(ControlModuleBase):
 
             bpm     = 60./last_PEEP  # 60 sec divided by the duration of last waveform
             I_phase = last_PIP       # last time-point of the plateau
-
-            self.alarms = test_critical_levels(min = self.PIP_min,      max = self.PIP_max,      value = PIP,       name = "PIP",                alarms = self.alarms)
-            self.alarms = test_critical_levels(min = self.PIP_time_min, max = self.PIP_time_max, value = first_PIP, name = "PIP_TIME",           alarms = self.alarms)
-            self.alarms = test_critical_levels(min = self.PEEP_min,     max = self.PEEP_max,     value = PEEP,      name = "PEEP",               alarms = self.alarms)
-            self.alarms = test_critical_levels(min = self.bpm_min,      max = self.bpm_max,      value = bpm,       name = "BREATHS_PER_MINUTE", alarms = self.alarms)
-            self.alarms = test_critical_levels(min = self.I_phase_min,  max = self.I_phase_max,  value = I_phase,   name = "I_PHASE",            alarms = self.alarms)
+            
+            self.active_alarms, self. logged_alarms = test_critical_levels(min = self.PIP_min,      max = self.PIP_max,      value = PIP,       \
+                                            name = "PIP",                active_alarms = self.active_alarms,    logged_alarms = self.logged_alarms)
+            self.active_alarms, self. logged_alarms = test_critical_levels(min = self.PIP_time_min, max = self.PIP_time_max, value = first_PIP, \
+                                            name = "PIP_TIME",           active_alarms = self.active_alarms,    logged_alarms = self.logged_alarms)
+            self.active_alarms, self. logged_alarms = test_critical_levels(min = self.PEEP_min,     max = self.PEEP_max,     value = PEEP,      \
+                                            name = "PEEP",               active_alarms = self.active_alarms,    logged_alarms = self.logged_alarms)
+            self.active_alarms, self. logged_alarms = test_critical_levels(min = self.bpm_min,      max = self.bpm_max,      value = bpm,       \
+                                            name = "BREATHS_PER_MINUTE", active_alarms = self.active_alarms,    logged_alarms = self.logged_alarms)
+            self.active_alarms, self. logged_alarms = test_critical_levels(min = self.I_phase_min,  max = self.I_phase_max,  value = I_phase,   \
+                                            name = "I_PHASE",            active_alarms = self.active_alarms,    logged_alarms = self.logged_alarms)
 
     def get_alarms(self):
-        #Returns all alarms
-        return self.alarms
+        #Returns all alarms as a list
+        ls = self.logged_alarms
+        for alarm_key in self.active_alarms.keys():
+            ls.append( self.active_alarms[alarm_key] )
+        return ls
 
     def get_active_alarms(self):
         #Returns only the active alarms
-        active_alarms = [alarm for alarm in self.alarms if alarm.is_active]
-        return active_alarms
+        return self.active_alarms
         
     def get_logged_alarms(self):
         #Returns only the inactive alarms
-        logged_alarms = [alarm for alarm in self.alarms if not alarm.is_active]
-        return logged_alarms
+        return self.logged_alarms
 
     def set_controls(self, controlSettings):
         ''' Updates the control settings. '''

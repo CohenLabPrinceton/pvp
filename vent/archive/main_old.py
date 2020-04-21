@@ -3,7 +3,7 @@
 # This is the main script. The UI people can create this for us.
 # It calls to main_control which reads in sensor data and controls the system.
 import time
-from vent import main_control, sensors, alarms
+from vent.archive import sensors, alarms, main_control
 
 SAMPLETIME = 0.01
 

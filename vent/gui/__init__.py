@@ -6,6 +6,7 @@
 import sys
 import os
 import time
+import argparse
 import pdb
 import argparse
 # add to path
@@ -364,7 +365,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         for display_key, display_params in self.MONITOR.items():
             self.monitor[display_key] = widgets.Monitor_Value(update_period = self.update_period, **display_params)
             self.display_layout.addWidget(self.monitor[display_key])
-            self.display_layout.addWidget(widgets.QHLine())
+            self.display_layout.addWidget(widgets.components.QHLine())
         self.main_layout.addLayout(self.display_layout, self.display_width)
 
         ###########

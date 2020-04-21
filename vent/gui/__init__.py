@@ -22,14 +22,54 @@ import numpy as np
 # Using PySide (Qt) to build GUI
 from PySide2 import QtCore, QtGui, QtWidgets
 
-# import whole module so pyqtgraph recognizes we're using it
-# using pyqtgraph for data visualization
 
-try:
-    mono_font = QtGui.QFont('Fira Code')
-except:
-    mono_font = QtGui.QFont()
-    mono_font.setStyleHint(QtGui.QFont.Monospace)
+_GUI_INSTANCE = None
+
+def get_instance():
+    return globals()['_GUI_INSTANCE']
+
+###########
+# Load a monospace font for displaying numbers
+# Want to load an explicit font because computing the hint to find the default mono font is expensive
+
+_MONO_FONT = None
+def mono_font():
+    """
+    module function to return a :class:`PySide2.QtGui.QFont` to use as the mono font.
+
+    use this instead of just making because :class:`PySide2.QtGui.QFontDatabase` can't be instantiated before the
+    :class:`PySide2.QtWidgets.QApplication` is instantiated, so we load the font after the app
+    """
+    return globals()['_MONO_FONT']
+
+def load_mono():
+    """
+    Load the monospaced font and set the module-global :data:`_MONO_FONT` object.
+
+    .. note::
+
+        Must be called after :class:`PySide2.QtWidgets.QApplication` is instantiated!
+
+    """
+    try:
+        # first try to load fira code for monospace font
+        external_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'external')
+        font_db = QtGui.QFontDatabase()
+        font_db.addApplicationFont(os.path.join(external_dir, 'FiraCode-Regular.otf'))
+        font_db.addApplicationFont(os.path.join(external_dir, 'FiraCode-Bold.otf'))
+        mono_font = QtGui.QFont('Fira Code')
+    except:
+        # if that fails, try to load liberation mono
+        # TODO: Log this
+        try:
+            mono_font = QtGui.QFont('Liberation Mono')
+
+        except:
+            # otherwise get the system default mono font
+            mono_font = QtGui.QFont()
+            mono_font.setStyleHint(QtGui.QFont.Monospace)
+
+    globals()['_MONO_FONT'] = mono_font
 
 
 # import styles
@@ -93,11 +133,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     """
 
+    gui_closing = QtCore.Signal()
+
     MONITOR = values.MONITOR
     """
     see :data:`.gui.defaults.MONITOR`
     """
-
 
     CONTROL = values.CONTROL
     """
@@ -132,6 +173,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
             plots (dict): Dictionary mapping :data:`.default.PLOT` keys to :class:`.widgets.Plot` objects
             controls (dict): Dictionary mapping :data:`.default.CONTROL` keys to :class:`.widgets.Control` objects
             start_time (float): Start time as returned by :func:`time.time`
+            update_period (float): The global delay between redraws of the GUI (seconds)
+
 
 
         Arguments:
@@ -140,7 +183,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         """
+        if globals()['_GUI_INSTANCE'] is not None:
+            raise Exception('Instance of gui already running!')
+        else:
+            globals()['_GUI_INSTANCE'] = self
+
         super(Vent_Gui, self).__init__()
+
+        # first off, load the monospaced font
+        load_mono()
 
         self.monitor = {}
         self.plots = {}
@@ -150,6 +201,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.init_ui()
         self.start_time = time.time()
+
+        self.thread = None
 
         if test:
             self.test()
@@ -163,20 +216,35 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
 
         c1 = ControlSettings(name=ControlSettingName.PIP,
-                             value=22, min_value=20,
-                             max_value=24, timestamp=time.time())
+                             value=values.CONTROL['PIP']['value'],
+                             min_value=values.CONTROL['PIP']['abs_range'][0],
+                             max_value=values.CONTROL['PIP']['abs_range'][1],
+                             timestamp=time.time())
 
-        c2 = ControlSettings(name=ControlSettingName.PIP_TIME, value=0.5, min_value=0.2,
-                             max_value=0.5, timestamp=time.time())
+        c2 = ControlSettings(
+                            name=ControlSettingName.PIP_TIME,
+                            value=values.CONTROL['PIP_TIME']['value'],
+                            min_value=values.CONTROL['PIP_TIME']['abs_range'][0],
+                            max_value=values.CONTROL['PIP_TIME']['abs_range'][1],
+                            timestamp=time.time())
 
-        c3 = ControlSettings(name=ControlSettingName.PEEP, value=5, min_value=4,
-                             max_value=6, timestamp=time.time())
+        c3 = ControlSettings(name=ControlSettingName.PEEP,
+                            value=values.CONTROL['PEEP']['value'],
+                            min_value=values.CONTROL['PEEP']['abs_range'][0],
+                            max_value=values.CONTROL['PEEP']['abs_range'][1],
+                            timestamp=time.time())
 
-        c4 = ControlSettings(name=ControlSettingName.BREATHS_PER_MINUTE, value=10,
-                             min_value=18, max_value=22, timestamp=time.time())
+        c4 = ControlSettings(name=ControlSettingName.BREATHS_PER_MINUTE,
+                            value=values.CONTROL['BREATHS_PER_MINUTE']['value'],
+                            min_value=values.CONTROL['BREATHS_PER_MINUTE']['abs_range'][0],
+                            max_value=values.CONTROL['BREATHS_PER_MINUTE']['abs_range'][1],
+                            timestamp=time.time())
 
-        c5 = ControlSettings(name=ControlSettingName.INSPIRATION_TIME_SEC, value=2.0,
-                             min_value=1.0, max_value=1.5, timestamp=time.time())
+        c5 = ControlSettings(name=ControlSettingName.INSPIRATION_TIME_SEC,
+                            value=values.CONTROL['INSPIRATION_TIME_SEC']['value'],
+                            min_value=values.CONTROL['INSPIRATION_TIME_SEC']['abs_range'][0],
+                            max_value=values.CONTROL['INSPIRATION_TIME_SEC']['abs_range'][1],
+                            timestamp=time.time())
 
         runtime = 300  # run this for 30 seconds
         self.thread = ControllerThread(1, "Controller-1", runtime / 0.01)  # 5sec in 10ms steps
@@ -327,6 +395,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             button_layout.addWidget(self.time_buttons[a_time[0]])
             #button_group.addButton(self.time_buttons[a_time[0]])
 
+
         button_box.setLayout(button_layout)
         self.plot_layout.addWidget(button_box)
 
@@ -360,6 +429,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.main_layout.addLayout(self.controls_layout, 1)
 
         self.layout.addLayout(self.main_layout, self.main_height)
+
+
+        ######################
+        # set the default view as 30s
+        self.time_buttons[times[2][0]].click()
+
+        # TODO: Set more defaults
+
+
         self.show()
 
     def set_plot_duration(self, dur):
@@ -367,6 +445,21 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         for plot in self.plots.values():
             plot.set_duration(dur)
+
+    def closeEvent(self, event):
+        """
+        Emit :attr:`.gui_closing` and close!
+        """
+        globals()['_GUI_INSTANCE'] = None
+        self.gui_closing.emit()
+
+        if self.thread:
+            try:
+                self.thread.stop()
+            except:
+                raise Warning('had a thread object, but the thread object couldnt be stopped')
+
+        event.accept()
 
 
 if __name__ == "__main__":

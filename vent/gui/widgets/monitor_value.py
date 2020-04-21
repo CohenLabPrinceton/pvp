@@ -48,7 +48,7 @@ class Monitor_Value(QtWidgets.QWidget):
         # labels to display values
         self.value_label = QtWidgets.QLabel()
         self.value_label.setStyleSheet(styles.DISPLAY_VALUE)
-        self.value_label.setFont(mono_font)
+        self.value_label.setFont(mono_font())
         self.value_label.setAlignment(QtCore.Qt.AlignRight)
         self.value_label.setMargin(0)
         self.value_label.setContentsMargins(0,0,0,0)

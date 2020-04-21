@@ -4,14 +4,14 @@ from vent.gui import styles
 
 MONITOR = odict({
     'fio2': {
-        'name': 'O2 Concentration',
+        'name': 'FiO2',
         'units': '%',
         'abs_range': (0, 100),
         'safe_range': (60, 100),
         'decimals' : 1
     },
     'temperature': {
-        'name': 'Temperature',
+        'name': 'Temp',
         'units': '\N{DEGREE SIGN}C',
         'abs_range': (0, 50),
         'safe_range': (20, 30),
@@ -49,23 +49,23 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 
 CONTROL = odict({
     'PIP': {
-        'name': 'PIP (Peak Inspiratory Pressure)',
+        'name': 'PIP', # (Peak Inspiratory Pressure)
         'units': 'cmH2O',
-        'abs_range': (0, 100), # FIXME
-        'safe_range': (0,100), # FIXME
-        'value': 80,           # FIXME
+        'abs_range': (10, 30), # FIXME
+        'safe_range': (20,24), # FIXME
+        'value': 22,           # FIXME
         'decimals': 1          # FIXME
     },
     'PIP_TIME': {
-        'name': 'PIP (Peak Inspiratory Pressure)',
+        'name': 'PIPt', #  (Peak Inspiratory Pressure)
         'units': 'seconds',
         'abs_range': (0, 1),  # FIXME
         'safe_range': (0.2, 0.5),  # FIXME
-        'value': 0.5,  # FIXME
+        'value': 0.3,  # FIXME
         'decimals': 1  # FIXME
     },
     'PEEP': {
-        'name': 'PEEP (Positive End Expiratory Pressure)',
+        'name': 'PEEP', #  (Positive End Expiratory Pressure)
         'units': 'cmH2O',
         'abs_range': (0, 10),  # FIXME
         'safe_range': (4,6), # FIXME
@@ -76,21 +76,21 @@ CONTROL = odict({
         'name': 'Breath Rate',
         'units': 'breaths/min',
         'abs_range': (0, 50), # FIXME
-        'safe_range': (18, 22), # FIXME
-        'value': 10,            # FIXME
+        'safe_range': (16, 19), # FIXME
+        'value': 17,            # FIXME
         'decimals': 1           # FIXME
     },
     'INSPIRATION_TIME_SEC': {
         'name': 'Inspiration Time',
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME
-        'safe_range': (1, 2.0),  # FIXME
+        'safe_range': (1, 3.0),  # FIXME
         'value': 2.0,  # FIXME
         'decimals': 1  # FIXME
     },
     'ie': {
         'name': 'I:E',
-        'units': 'inspiratory/expiratory time',
+        'units': '',
         'abs_range': (0, 100),  # FIXME
         'safe_range': (0, 100),  # FIXME
         'value': 80,  # FIXME
@@ -113,20 +113,33 @@ Sent to control module to control operation of ventilator.::
 """
 
 
-PLOTS = {
-        'flow': {
-            'name': 'Flow (L/s)',
-            'abs_range': (0, 100),
-            'safe_range': (20, 80),
-            'color': styles.SUBWAY_COLORS['yellow'],
-        },
+PLOTS = odict({
+        # 'flow': {
+        #     'name': 'Flow (L/s)',
+        #     'abs_range': (0, 100),
+        #     'safe_range': (20, 80),
+        #     'color': styles.SUBWAY_COLORS['yellow'],
+        # },
+
         'pressure': {
             'name': 'Pressure (mmHg)',
-            'abs_range': (0, 100),
-            'safe_range': (20, 80),
+            'abs_range': (0, 30),
+            'safe_range': (5, 20),
             'color': styles.SUBWAY_COLORS['orange'],
+        },
+        'temp': {
+            'name': 'Temperature (C)',
+            'abs_range': (20,50),
+            'safe_range' :(35,40),
+            'color': styles.SUBWAY_COLORS['red']
+        },
+        'humidity': {
+            'name': 'Humidity (% H2O)',
+            'abs_range': (70, 100),
+            'safe_range': (90, 100),
+            'color': styles.SUBWAY_COLORS['blue']
         }
-    }
+    })
 """
 Values to plot.
 

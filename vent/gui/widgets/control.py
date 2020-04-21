@@ -2,7 +2,7 @@ import numpy as np
 from PySide2 import QtWidgets, QtCore
 
 from vent.gui import styles, mono_font
-from vent.gui.widgets.components import EditableLabel
+from vent.gui.widgets.components import EditableLabel, DoubleSlider
 
 
 class Control(QtWidgets.QWidget):
@@ -24,6 +24,8 @@ class Control(QtWidgets.QWidget):
 
     def init_ui(self):
         self.layout = QtWidgets.QGridLayout()
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                  QtWidgets.QSizePolicy.Expanding)
 
         # Value, Controller
         #        min,   max
@@ -32,46 +34,33 @@ class Control(QtWidgets.QWidget):
 
         self.value_label = EditableLabel()
         self.value_label.setStyleSheet(styles.CONTROL_VALUE)
-        self.value_label.label.setFont(mono_font)
-        self.value_label.lineEdit.setFont(mono_font)
+        self.value_label.label.setFont(mono_font())
+        self.value_label.lineEdit.setFont(mono_font())
         self.value_label.label.setAlignment(QtCore.Qt.AlignRight)
         #self.value_label.setMargin(0)
         self.value_label.setContentsMargins(0,0,0,0)
 
-        # set max size based on range
-        # FIXME: TEMPORARY HACK - get sizing to work intelligibly with the dial
-        #n_ints = len(str(self.abs_range[1]))
-        n_ints = 3
+        # # set max size based on range
+        # # FIXME: TEMPORARY HACK - get sizing to work intelligibly with the dial
+        # #n_ints = len(str(self.abs_range[1]))
+        # n_ints = 3
+        if self.decimals > 0:
+            # don't just add decimals b/c we add another for the decimal itself
+            # but don't want to +1 if decimals = 0!
+            n_ints = int(len(str(self.abs_range[1]))+self.decimals+1)
+        else:
+            n_ints = int(len(str(self.abs_range[1])))
+
+        # to simplify things for now, if we're supposed to display _more_
+        # than the 5 we assume (eg. 100.0), then use the n_ints
+        # otherwise just use 5
+        if n_ints <= 5:
+            n_ints = 5
         self.value_label.setFixedWidth(n_ints*styles.VALUE_SIZE*.6)
-
-        self.dial = QtWidgets.QDial()
-        self.dial.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.dial.setMinimum(self.abs_range[0])
-        self.dial.setMaximum(self.abs_range[1])
-        self.dial.setNotchesVisible(True)
-        self.dial.setContentsMargins(0,0,0,0)
-        self.dial.setFixedHeight(styles.VALUE_SIZE)
-        self.dial.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
-                                QtWidgets.QSizePolicy.Fixed)
-
-        self.dial_min = QtWidgets.QLabel()
-        self.dial_min.setText(str(np.round(self.abs_range[0], self.decimals)))
-        self.dial_min.setAlignment(QtCore.Qt.AlignLeft)
-        self.dial_min.setFont(mono_font)
-        self.dial_min.setStyleSheet(styles.CONTROL_LABEL)
-        self.dial_min.setMargin(0)
-        self.dial_min.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                    QtWidgets.QSizePolicy.Maximum)
+        # self.value_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                             QtWidgets.QSizePolicy.Maximum)
 
 
-        self.dial_max = QtWidgets.QLabel()
-        self.dial_max.setText(str(np.round(self.abs_range[1], self.decimals)))
-        self.dial_max.setAlignment(QtCore.Qt.AlignRight)
-        self.dial_max.setFont(mono_font)
-        self.dial_max.setStyleSheet(styles.CONTROL_LABEL)
-        self.dial_max.setMargin(0)
-        self.dial_max.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                    QtWidgets.QSizePolicy.Maximum)
 
         self.name_label = QtWidgets.QLabel()
         self.name_label.setStyleSheet(styles.DISPLAY_NAME)
@@ -79,6 +68,7 @@ class Control(QtWidgets.QWidget):
         self.name_label.setAlignment(QtCore.Qt.AlignRight)
         self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                     QtWidgets.QSizePolicy.Maximum)
+        self.name_label.setWordWrap(True)
 
         self.units_label = QtWidgets.QLabel()
         self.units_label.setStyleSheet(styles.DISPLAY_UNITS)
@@ -87,26 +77,101 @@ class Control(QtWidgets.QWidget):
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                     QtWidgets.QSizePolicy.Maximum)
 
+        # Expand drawer button
+        self.toggle_button = QtWidgets.QToolButton(checkable=True,
+                                                   checked=False)
+        self.toggle_button.setStyleSheet(styles.DISPLAY_NAME)
+
+        self.toggle_button.toggled.connect(self.toggle_control)
+        self.toggle_button.setToolButtonStyle(
+            QtCore.Qt.ToolButtonIconOnly
+        )
+        self.toggle_button.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                         QtWidgets.QSizePolicy.Expanding)
+        self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
 
         ###
         # layout
         self.layout.addWidget(self.value_label, 0, 0, 3, 1, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        self.layout.addWidget(self.dial, 0, 1, 2, 2, alignment=QtCore.Qt.AlignVCenter)
-        self.layout.addWidget(self.dial_min, 2, 1, 1, 1)
-        self.layout.addWidget(self.dial_max, 2, 2, 1, 1)
-        self.layout.addWidget(self.name_label, 3, 0, 1, 3, alignment=QtCore.Qt.AlignRight)
-        self.layout.addWidget(self.units_label, 4, 0, 1, 3, alignment=QtCore.Qt.AlignRight)
+        #self.layout.addWidget(self.dial, 0, 1, 2, 2, alignment=QtCore.Qt.AlignVCenter)
+        #self.layout.addWidget(self.slider_min, 2, 1, 1, 1)
+        #self.layout.addWidget(self.slider_max, 2, 2, 1, 1)
+        self.layout.addWidget(self.name_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.units_label, 2, 1, 1, 1, alignment=QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.toggle_button, 0, 2, 3, 1, alignment=QtCore.Qt.AlignRight)
 
         self.setLayout(self.layout)
 
 
+        ################
+        # Create initially hidden widgets
+
+        # Min value - slider - max value
+
+        self.slider_layout = QtWidgets.QHBoxLayout()
+
+        self.slider_min = QtWidgets.QLabel()
+        self.slider_min.setText(str(np.round(self.abs_range[0], self.decimals)))
+        self.slider_min.setAlignment(QtCore.Qt.AlignLeft)
+        self.slider_min.setFont(mono_font())
+        self.slider_min.setStyleSheet(styles.CONTROL_LABEL)
+        self.slider_min.setMargin(0)
+        self.slider_min.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                    QtWidgets.QSizePolicy.Maximum)
+
+
+        self.slider_max = QtWidgets.QLabel()
+        self.slider_max.setText(str(np.round(self.abs_range[1], self.decimals)))
+        self.slider_max.setAlignment(QtCore.Qt.AlignRight)
+        self.slider_max.setFont(mono_font())
+        self.slider_max.setStyleSheet(styles.CONTROL_LABEL)
+        self.slider_max.setMargin(0)
+        self.slider_max.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                    QtWidgets.QSizePolicy.Maximum)
+
+        self.slider = DoubleSlider(decimals=self.decimals, orientation=QtCore.Qt.Orientation.Horizontal)
+        self.slider.setMinimum(self.abs_range[0])
+        self.slider.setMaximum(self.abs_range[1])
+        #self.slider.setContentsMargins(0,0,0,0)
+        self.slider.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                  QtWidgets.QSizePolicy.Maximum)
+        
+        self.slider_layout.addWidget(self.slider_min)
+        self.slider_layout.addWidget(self.slider)
+        self.slider_layout.addWidget(self.slider_max)
+        
+        #
+        # self.dial = QtWidgets.QDial()
+        # self.dial.setFocusPolicy(QtCore.Qt.StrongFocus)
+        # self.dial.setMinimum(self.abs_range[0])
+        # self.dial.setMaximum(self.abs_range[1])
+        # self.dial.setNotchesVisible(True)
+        # self.dial.setContentsMargins(0,0,0,0)
+        # self.dial.setFixedHeight(styles.VALUE_SIZE)
+        # self.dial.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
+        #                         QtWidgets.QSizePolicy.Fixed)
+        #
+
         ###
         # set signals
         self.value_label.textChanged.connect(self.update_value)
-        self.dial.valueChanged.connect(self.update_value)
+        self.slider.doubleValueChanged.connect(self.update_value)
 
 
         self.update_value(self.value)
+
+    @QtCore.Slot(bool)
+    def toggle_control(self, state):
+        if state == True:
+            self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
+            self.layout.addLayout(self.slider_layout, 3, 0, 1, 3)
+            self.adjustSize()
+        else:
+            self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
+            self.layout.removeItem(self.slider_layout)
+            self.adjustSize()
+        pass
+
 
     def update_value(self, new_value):
         if isinstance(new_value, str):
@@ -121,4 +186,4 @@ class Control(QtWidgets.QWidget):
         value_str = str(np.round(self.value, self.decimals))
         self.value_label.setText(value_str)
 
-        self.dial.setValue(self.value)
+        self.slider.setValue(self.value)

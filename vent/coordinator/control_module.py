@@ -326,15 +326,23 @@ class ControllerThread(threading.Thread):
         self.threadID = threadID
         self.name = name
         self.counter = counter
+        self.quitting = threading.Event()
+        self.quitting.clear()
         self.ContollInstance = get_control_module(sim_mode=True)
 
     def run(self):
-        while self.counter:
+        while self.counter and not self.quitting.is_set():
             #     controls actuators to achieve target state
             self.ContollInstance.run()  # run a contol update
             time.sleep(.01)  # wait 10ms
             if isinstance(self.counter, int):
                 self.counter -= 1
+
+    def stop(self):
+        """
+        set :attr:`.quitting` so the thread terminates
+        """
+        self.quitting.set()
 
     def set_controls(self, command):
         self.ContollInstance.set_controls(command)

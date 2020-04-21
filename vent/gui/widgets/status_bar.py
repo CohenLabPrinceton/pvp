@@ -5,6 +5,7 @@ import numpy as np
 from PySide2 import QtWidgets, QtCore
 
 from vent.gui import styles, mono_font
+from vent.gui import get_instance
 
 
 class Status_Bar(QtWidgets.QWidget):
@@ -232,12 +233,14 @@ class HeartBeat(QtWidgets.QFrame):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self._heartbeat)
 
+        get_instance().gui_closing.connect(self.timer.stop)
+
     def init_ui(self):
 
         self.layout = QtWidgets.QGridLayout()
 
         self.timer_label = QtWidgets.QLabel()
-        self.timer_label.setFont(mono_font)
+        self.timer_label.setFont(mono_font())
 
         self.indicator = QtWidgets.QRadioButton()
 

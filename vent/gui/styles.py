@@ -17,7 +17,10 @@ INDICATOR_WIDTH = SLIDER_WIDTH/3
 SLIDER_COLOR = TEXT_COLOR
 INDICATOR_COLOR = SUBWAY_COLORS['blue']
 ALARM_COLOR = "#FF0000"
+
 VALUE_SIZE = 72
+NAME_SIZE = 20
+UNIT_SIZE = 12
 
 GLOBAL = """
 QWidget {{
@@ -62,10 +65,18 @@ QLabel {
 }"""
 
 DISPLAY_NAME = """
-"""
+QLabel {{ 
+    color: {textcolor}; 
+    font-size: {name_size}pt;
+}}""".format(textcolor=TEXT_COLOR,
+             name_size=NAME_SIZE)
 
 DISPLAY_UNITS = """
-"""
+QLabel {{ 
+    color: {textcolor}; 
+    font-size: {unit_size}pt;
+}}""".format(textcolor=TEXT_COLOR,
+             unit_size=UNIT_SIZE)
 
 DISPLAY_WIDGET = """
 border-bottom: 2px solid white;

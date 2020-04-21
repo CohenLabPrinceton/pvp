@@ -36,14 +36,15 @@ master_doc = "index"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.todo',
+    'sphinx.ext.autodoc',     # automatically document packages
+    'sphinx.ext.autosummary', # create summary tables on api doc pages
+    'sphinx.ext.intersphinx', # include documentation from other projects
+    'sphinx.ext.todo',        # todo directive
     'sphinx.ext.viewcode',
     # 'sphinx_automodapi.automodapi',
-    'sphinxcontrib.napoleon',
+    'sphinxcontrib.napoleon', # parse google style docstrings
     'autodocsumm',
-    'recommonmark'
+    'recommonmark'   # support markdown
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -93,6 +94,21 @@ autosummary_generate = True
 # Todo extension
 
 todo_include_todos = True
+
+
+
+########
+# Intersphinx
+
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
+                       #'PySide2': ('https://doc.qt.io/qtforpython/PySide2/', None),
+                       #'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
+                       #'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
+                       #'tornado': ('https://www.tornadoweb.org/en/stable/', None),
+                       'pyqtgraph': ('https://pyqtgraph.readthedocs.io/en/latest/', None),
+                       'numpy': ('https://numpy.readthedocs.io/en/latest/', None),
+                       #'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+                       }
 
 
 # -- Options for HTML output -------------------------------------------------

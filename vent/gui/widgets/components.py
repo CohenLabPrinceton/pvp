@@ -5,6 +5,44 @@ from PySide2 import QtWidgets, QtCore, QtGui
 
 from vent.gui import styles, mono_font
 
+class DoubleSlider(QtWidgets.QSlider):
+    """
+    Ripped off from
+    and https://stackoverflow.com/a/50300848 for double support!
+
+    Thank you!!!
+    """
+
+    # override the default valueChanged signal
+    doubleValueChanged = QtCore.Signal(float)
+
+    def __init__(self, decimals=1, *args, **kargs):
+        super(DoubleSlider, self).__init__( *args, **kargs)
+        self._multi = 10 ** decimals
+
+        self.valueChanged.connect(self.emitDoubleValueChanged)
+
+    def emitDoubleValueChanged(self):
+        self.doubleValueChanged.emit(self.value())
+
+    def value(self):
+        return float(super(DoubleSlider, self).value()) / self._multi
+
+    def setMinimum(self, value):
+        return super(DoubleSlider, self).setMinimum(value * self._multi)
+
+    def setMaximum(self, value):
+        return super(DoubleSlider, self).setMaximum(value * self._multi)
+
+    def setSingleStep(self, value):
+        return super(DoubleSlider, self).setSingleStep(value * self._multi)
+
+    def singleStep(self):
+        return float(super(DoubleSlider, self).singleStep()) / self._multi
+
+    def setValue(self, value):
+        super(DoubleSlider, self).setValue(int(value * self._multi))
+
 
 class RangeSlider(QtWidgets.QSlider):
     """
@@ -20,6 +58,7 @@ class RangeSlider(QtWidgets.QSlider):
 
     With code from https://stackoverflow.com/a/54819051
     for labels!
+
     """
 
     valueChanged = QtCore.Signal(tuple)
@@ -185,7 +224,7 @@ class RangeSlider(QtWidgets.QSlider):
         available -= border_offset
 
 
-        painter.setFont(mono_font)
+        painter.setFont(mono_font())
 
         for v in self.levels:
             label_str = str(int(round(v)))

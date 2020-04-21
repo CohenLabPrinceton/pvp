@@ -79,6 +79,7 @@ UI Notes & Todo
       lots and lots of observed values, but only some need limits. might want to make larger drawer
       of smaller displayed values that don't need controls
     * Save/load parameters. Autosave, and autorestore if saved <5m ago, otherwise init from defaults.
+    * Implement timed updates to plots to limit resource usage
     * Possible plots
 
         * Pressure vs. flow

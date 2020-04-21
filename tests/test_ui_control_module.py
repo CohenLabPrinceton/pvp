@@ -25,4 +25,5 @@ def test_control_single_process_simulation(control_setting_name):
     assert c_read.min_value == c.min_value
     assert c_read.max_value == c.max_value
     assert c_read.timestamp == c.timestamp
+    assert ui_control_module.get_msg_timestamp() == t
 

@@ -40,6 +40,9 @@ class ControlModuleBase:
         # takes ControlSettings struct
         pass
 
+    def get_controls(self, control_setting_name: ControlSettingName) -> ControlSettings:
+        pass
+
     def start(self, controlSettings):
         # start running
         # controls actuators to achieve target state
@@ -365,40 +368,76 @@ class ControlModuleSimulator(ControlModuleBase):
 
     def set_controls(self, controlSettings):
         ''' Updates the control settings. '''
-        if controlSettings.name is ControlSettingName.PIP:
+        if controlSettings.name == ControlSettingName.PIP:
             self.Controller.PIP = controlSettings.value
             self.PIP_min = controlSettings.min_value
             self.PIP_max = controlSettings.max_value
             self.PIP_lastset = controlSettings.timestamp
 
-        elif controlSettings.name is ControlSettingName.PIP_TIME:
+        elif controlSettings.name == ControlSettingName.PIP_TIME:
             self.Controller.PIP_time = controlSettings.value
             self.PIP_time_min = controlSettings.min_value
             self.PIP_time_max = controlSettings.max_value
             self.PIP_time_lastset = controlSettings.timestamp
 
-        elif controlSettings.name is ControlSettingName.PEEP:
+        elif controlSettings.name == ControlSettingName.PEEP:
             self.Controller.PEEP = controlSettings.value
             self.PEEP_min = controlSettings.min_value
             self.PEEP_max = controlSettings.max_value
             self.PEEP_lastset = controlSettings.timestamp
 
-        elif controlSettings.name is ControlSettingName.BREATHS_PER_MINUTE:
+        elif controlSettings.name == ControlSettingName.BREATHS_PER_MINUTE:
             self.Controller.bpm = controlSettings.value
             self.bpm_min = controlSettings.min_value
             self.bpm_max = controlSettings.max_value
             self.bpm_lastset = controlSettings.timestamp
 
-        elif controlSettings.name is ControlSettingName.INSPIRATION_TIME_SEC:
+        elif controlSettings.name == ControlSettingName.INSPIRATION_TIME_SEC:
             self.Controller.I_phase = controlSettings.value
             self.I_phase_min = controlSettings.min_value
             self.I_phase_max = controlSettings.max_value
             self.I_phase_lastset = controlSettings.timestamp
 
         else:
-            error("You cannot set the variabe: " + str(controlSettings.name))
+            raise KeyError("You cannot set the variabe: " + str(controlSettings.name))
 
         self.Controller.update_internalVeriables()
+
+    def get_controls(self, control_setting_name: ControlSettingName) -> ControlSettings:
+        ''' Updates the control settings. '''
+        if control_setting_name == ControlSettingName.PIP:
+            return ControlSettings(control_setting_name,
+                                   self.Controller.PIP,
+                                   self.PIP_min,
+                                   self.PIP_max,
+                                   self.PIP_lastset)
+        elif control_setting_name == ControlSettingName.PIP_TIME:
+            return ControlSettings(control_setting_name,
+                                   self.Controller.
+                                   PIP_time,
+                                   self.PIP_time_min,
+                                   self.PIP_time_max,
+                                   self.PIP_time_lastset, )
+        elif control_setting_name == ControlSettingName.PEEP:
+            return ControlSettings(control_setting_name,
+                                   self.Controller.PEEP,
+                                   self.PEEP_min,
+                                   self.PEEP_max,
+                                   self.PEEP_lastset)
+        elif control_setting_name == ControlSettingName.BREATHS_PER_MINUTE:
+            return ControlSettings(control_setting_name,
+                                   self.Controller.bpm,
+                                   self.bpm_min,
+                                   self.bpm_max,
+                                   self.bpm_lastset)
+        elif control_setting_name == ControlSettingName.INSPIRATION_TIME_SEC:
+            return ControlSettings(control_setting_name,
+                                   self.Controller.I_phase,
+                                   self.I_phase_min,
+                                   self.I_phase_max,
+                                   self.I_phase_lastset)
+        else:
+            raise KeyError("You cannot set the variabe: " + str(control_setting_name))
 
     def run(self):
         # start running

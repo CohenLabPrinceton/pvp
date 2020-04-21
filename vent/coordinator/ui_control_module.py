@@ -1,6 +1,6 @@
 from typing import List
 
-from vent.coordinator.control_module import get_control_module
+from vent.controller.control_module import get_control_module
 from vent.coordinator.ipc import IPC
 from vent.common.message import SensorValues, ControlSettings, Alarm
 from vent.coordinator.process_manager import ProcessManager

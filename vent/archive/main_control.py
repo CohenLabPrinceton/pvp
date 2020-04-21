@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from vent import controller, alarms
+from vent import controller
+from vent.archive import alarms
 
 
 def take_step(curr, tracker, alarm_bounds):

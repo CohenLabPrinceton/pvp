@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from .common.message import SensorValues, ControlSettings, Alarm, AlarmSeverity, ControlSettingName
+from vent.common.message import SensorValues, ControlSettings, Alarm, AlarmSeverity, ControlSettingName
 
 
 class ControlModuleBase:

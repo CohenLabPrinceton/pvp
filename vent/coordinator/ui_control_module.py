@@ -2,7 +2,7 @@ from typing import List
 
 from vent.controller.control_module import get_control_module
 from vent.coordinator.ipc import IPC
-from vent.common.message import SensorValues, ControlSettings, Alarm
+from vent.common.message import SensorValues, ControlSettings, Alarm, ControlSettingName
 from vent.coordinator.process_manager import ProcessManager
 
 
@@ -34,6 +34,9 @@ class UIControlModuleBase:
 
     def set_controls(self, control_settings: ControlSettings):
         # takes ControlSettings struct
+        pass
+
+    def get_controls(self, control_setting_name: ControlSettingName) -> ControlSettings:
         pass
 
     def get_msg_timestamp(self):

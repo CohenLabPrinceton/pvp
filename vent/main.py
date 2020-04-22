@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import argparse
-from vent.coordinator.ui_control_module import get_ui_control_module
+from vent.coordinator.coordinator import get_coordinator
 
 
 def parse_cmd_args():
@@ -14,7 +14,7 @@ def parse_cmd_args():
 
 def main():
     args = parse_cmd_args()
-    ui_control_module = get_ui_control_module(single_process=args.single_process, sim_mode=args.simulation)
+    coordinator = get_coordinator(single_process=args.single_process, sim_mode=args.simulation)
     # TODO: gui.main(ui_control_module)
 
 

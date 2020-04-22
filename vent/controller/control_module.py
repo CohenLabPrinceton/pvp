@@ -1,6 +1,6 @@
 import time
 from typing import List
-
+import threading
 import numpy as np
 
 from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ControlSettingName
@@ -43,17 +43,11 @@ class ControlModuleBase:
     def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         pass
 
-    def start(self, controlSettings):
-        # start running
-        # controls actuators to achieve target state
-        # determined by settings and assessed by sensor values
-        pass
-
     def stop(self):
         # stop running
         pass
 
-    def test_critical_levels(min, max, value, name, active_alarms, logged_alarms):
+    def test_critical_levels(self, min, max, value, name, active_alarms, logged_alarms):
         # Tests whether a variable exceeds its bounds, and produces an alert.
         pass
 
@@ -238,14 +232,18 @@ class StateController:
             self.cycle_waveforms[self.cycle_counter] = data
 
 
-class ControlModuleSimulator(ControlModuleBase):
+class ControlModuleSimulator(ControlModuleBase, threading.Thread):
     # Implement ControlModuleBase functions
-    def __init__(self):
-        super().__init__()  # get all from parent
+    def __init__(self, threadID, name):
+
+        ControlModuleBase.__init__(self)
+        threading.Thread.__init__(self)
+        self.threadID        = threadID
+        self.name            = name
 
         self.Balloon = Balloon_Simulator(leak=True, delay=False)
         self.Controller = StateController()
-        self.loop_counter = 0
+        self._running = True
         self.pressure = 15
         self.last_update = time.time()
 
@@ -443,30 +441,35 @@ class ControlModuleSimulator(ControlModuleBase):
         # start running
         # controls actuators to achieve target state
         # determined by settings and assessed by sensor values
+        self.loop_counter = 0
 
-        self.loop_counter += 1
-        now = time.time()
-        self.Balloon.update(now - self.last_update)
-        self.last_update = now
+        while self._running:
+            time.sleep(.01)
+            self.loop_counter += 1
+            now = time.time()
+            self.Balloon.update(now - self.last_update)
+            self.last_update = now
 
-        pressure = self.Balloon.get_pressure()
-        temperature = self.Balloon.temperature
+            pressure = self.Balloon.get_pressure()
+            temperature = self.Balloon.temperature
 
-        self.Controller.update(pressure)
-        Qout = self.Controller.get_Qout()
-        Qin = self.Controller.get_Qin()
-        self.Balloon.set_flow(Qin, Qout)
+            self.Controller.update(pressure)
+            Qout = self.Controller.get_Qout()
+            Qin = self.Controller.get_Qin()
+            self.Balloon.set_flow(Qin, Qout)
 
     def stop(self):
-        # stop running
-        pass
+        self._running = False
 
-    def recvUIHeartbeat(self):
-        return time.time()
-
+    def heartbeat(self):
+        if self._running:
+            print("Controller running...")
+        else:
+            print("Controller not running...")
+        print("Current loop = " + str(self.loop_counter)+'.\n')
 
 def get_control_module(sim_mode=False):
     if sim_mode == True:
-        return ControlModuleSimulator()
+        return ControlModuleSimulator(1, "Controller")
     else:
         return ControlModuleDevice()

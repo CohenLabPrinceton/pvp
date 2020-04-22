@@ -348,8 +348,9 @@ class ControlModuleSimulator(ControlModuleBase):
                                           vte=self.vte,
                                           breaths_per_minute=self.bpm,
                                           inspiration_time_sec=self.I_phase,
-                                          timestamp=time.time())
-
+                                          timestamp=time.time(),
+                                          loop_counter = self.loop_counter)
+                                          
         return self.sensor_values
 
     def get_alarms(self):

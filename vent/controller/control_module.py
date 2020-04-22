@@ -282,7 +282,8 @@ class ControlModuleBase:
                 self.Qin = 1
         else:
             self.cycle_start = time.time()  # new cycle starts
-            self.cycle_counter += 1
+            self.cycle_counter += 1         # For the dictionary, new waveform -> increase cycle counter by 1
+            self.DATA_VOLUME = 0            # New cycle, start at zero volume
             self.update_alarms()            # Run alarm detection over last cycle's waveform
             
         if self.cycle_counter not in self.cycle_waveforms.keys():  # if this cycle doesn't exist yet, start it

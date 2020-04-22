@@ -333,7 +333,7 @@ class ControlModuleSimulator(ControlModuleBase):
             self.test_critical_levels(min=self.bpm_min, max=self.bpm_max, value=self.bpm, name="BREATHS_PER_MINUTE")
             self.test_critical_levels(min=self.I_phase_min, max=self.I_phase_max, value=self.I_phase, name="I_PHASE")
 
-    def get_sensors_values(self):
+    def get_sensors(self):
         # returns SensorValues and a time stamp
 
         self.update_alarms()  # Make sure we are up to date

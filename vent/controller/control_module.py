@@ -1,6 +1,8 @@
 import time
 from typing import List
 import threading
+lock = threading.Lock()
+
 import numpy as np
 
 from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ControlSettingName
@@ -151,11 +153,11 @@ class ControlModuleSimulator(ControlModuleBase):
 
         # Internal Control variables. "SET" indicates that this is set.
         self.SET_PIP = 22         # Target PIP pressure
-        self.SET_PIP_TIME = 1.0   # Target time to reach PIP in seconds
+        self.SET_PIP_TIME = 0.4   # Target time to reach PIP in seconds
         self.SET_PEEP = 5         # Target PEEP pressure
         self.SET_PEEP_TIME = 0.5  # Target time to reach PEEP from PIP plateau
-        self.SET_BPM = 10         # Target breaths per minute
-        self.SET_I_PHASE = 1.0    # Target duration of inspiratory phase
+        self.SET_BPM = 15         # Target breaths per minute
+        self.SET_I_PHASE = 1.3    # Target duration of inspiratory phase
 
         # Derived internal control variables - fully defined by numbers above
         self.SET_CYCLE_DURATION = 60 / self.SET_BPM
@@ -189,8 +191,8 @@ class ControlModuleSimulator(ControlModuleBase):
         self.PIP_min = self.SET_PIP * 0.9
         self.PIP_max = self.SET_PIP * 1.1
         self.PIP_lastset = time.time()
-        self.PIP_time_min = self.SET_PIP_TIME * 0.9
-        self.PIP_time_max = self.SET_PIP_TIME * 1.1
+        self.PIP_time_min = self.SET_PIP_TIME - 0.2 
+        self.PIP_time_max = self.SET_PIP_TIME + 0.2
         self.PIP_time_lastset = time.time()
         self.PEEP_min = self.SET_PEEP * 0.9
         self.PEEP_max = self.SET_PEEP * 1.1
@@ -213,7 +215,6 @@ class ControlModuleSimulator(ControlModuleBase):
         self.SET_E_PHASE = self.SET_CYCLE_DURATION - self.SET_I_PHASE
         self.SET_T_PLATEAU = self.SET_I_PHASE - self.SET_PIP_TIME
         self.SET_T_PEEP = self.SET_E_PHASE - self.SET_PEEP_TIME
-
 
     def test_critical_levels(self, min, max, value, name):
         '''
@@ -275,6 +276,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
         self.update_alarms()  # Make sure we are up to date
 
+        lock.acquire()
         self.sensor_values = SensorValues(pip=self.DATA_PIP,
                                           peep=self.DATA_PEEP,
                                           fio2=self.Balloon.fio2,
@@ -286,6 +288,7 @@ class ControlModuleSimulator(ControlModuleBase):
                                           inspiration_time_sec=self.DATA_I_PHASE,
                                           timestamp=time.time(),
                                           loop_counter = self.loop_counter)
+        lock.release()
 
         return self.sensor_values
 
@@ -339,7 +342,7 @@ class ControlModuleSimulator(ControlModuleBase):
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting.name))
 
-        self.Controller.update_internalVeriables()
+        self.update_internalVeriables()
 
     def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         ''' Updates the control settings. '''
@@ -429,11 +432,11 @@ class ControlModuleSimulator(ControlModuleBase):
             time.sleep(.01)
             self.loop_counter += 1
             now = time.time()
+
+            # Only one sensor "is connected" and that is the pressure in the balloon
             self.Balloon.update(now - self.last_update)
             self.last_update = now
-
             self.pressure = self.Balloon.get_pressure()
-            temperature = self.Balloon.temperature
 
             self.PID_update()
 

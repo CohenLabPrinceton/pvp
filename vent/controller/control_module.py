@@ -242,7 +242,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
         self.Balloon = Balloon_Simulator(leak=True, delay=False)
         self.Controller = StateController()
-        self._running = True
+        self._running = False
         self.pressure = 15
         self.last_update = time.time()
 
@@ -473,7 +473,7 @@ class ControlModuleSimulator(ControlModuleBase):
             self._running = False
         else:
             print("Main Loop is not running.")
-            
+
 
     def heartbeat(self):
         if self._running:

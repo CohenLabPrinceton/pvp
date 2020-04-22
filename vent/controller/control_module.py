@@ -190,8 +190,7 @@ class StateController:
         time_since_last_update = now - self.last_update
         self.last_update = now
 
-        self.volume += time_since_last_update * (
-                    self.Qin - self.Qout)  # Integrate what has happened within the last few seconds
+        self.volume += time_since_last_update * ( self.Qin - self.Qout )  # Integrate what has happened within the last few seconds
         # NOTE: As Qin and Qout are set, this is what the controllr believes has happened. NOT A MEASUREMENT, MIGHT NOT BE REALITY!
 
         self.pressure = pressure
@@ -232,7 +231,7 @@ class StateController:
             self.cycle_waveforms[self.cycle_counter] = data
 
 
-class ControlModuleSimulator(ControlModuleBase, threading.Thread):
+class ControlModuleSimulator(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self, threadID, name):
 
@@ -275,6 +274,11 @@ class ControlModuleSimulator(ControlModuleBase, threading.Thread):
         self.bpm = None  # Measured breathing rate, by definition 60sec / length_of_breath_cycle
         self.vte = None  # Maximum air displacement in last breath cycle
 
+        # Run the start() method as a thread
+        self.thread = threading.Thread(target=self.start_mainloop, daemon=True)
+        self.loop_counter = 0
+        self.thread.start()
+        
     def test_critical_levels(self, min, max, value, name):
         '''
         This tests whether a variable is within bounds.
@@ -325,8 +329,7 @@ class ControlModuleSimulator(ControlModuleBase, threading.Thread):
             self.bpm = 60. / phase[-1]  # 60 sec divided by the duration of last waveform
 
             self.test_critical_levels(min=self.PIP_min, max=self.PIP_max, value=self.PIP, name="PIP")
-            self.test_critical_levels(min=self.PIP_time_min, max=self.PIP_time_max, value=self.first_PIP,
-                                      name="PIP_TIME")
+            self.test_critical_levels(min=self.PIP_time_min, max=self.PIP_time_max, value=self.first_PIP, name="PIP_TIME")
             self.test_critical_levels(min=self.PEEP_min, max=self.PEEP_max, value=self.PEEP, name="PEEP")
             self.test_critical_levels(min=self.bpm_min, max=self.bpm_max, value=self.bpm, name="BREATHS_PER_MINUTE")
             self.test_critical_levels(min=self.I_phase_min, max=self.I_phase_max, value=self.I_phase, name="I_PHASE")
@@ -437,11 +440,10 @@ class ControlModuleSimulator(ControlModuleBase, threading.Thread):
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
 
-    def run(self):
+    def start_mainloop(self):
         # start running
-        # controls actuators to achieve target state
-        # determined by settings and assessed by sensor values
-        self.loop_counter = 0
+        # this should be run as a thread! 
+        # Compare to initialization
 
         while self._running:
             time.sleep(.01)
@@ -458,8 +460,20 @@ class ControlModuleSimulator(ControlModuleBase, threading.Thread):
             Qin = self.Controller.get_Qin()
             self.Balloon.set_flow(Qin, Qout)
 
+    def start(self):
+        if not self.thread.is_alive():  # If the previous thread has been stopped, make a new one.
+            self._running = True
+            self.thread = threading.Thread(target=self.start_mainloop, daemon=True)
+            self.thread.start()
+        else:
+            print("Main Loop already running.")
+
     def stop(self):
-        self._running = False
+        if self.thread.is_alive():
+            self._running = False
+        else:
+            print("Main Loop is not running.")
+            
 
     def heartbeat(self):
         if self._running:

@@ -274,8 +274,6 @@ class ControlModuleSimulator(ControlModuleBase):
     def get_sensors(self):
         # returns SensorValues and a time stamp
 
-        self.update_alarms()  # Make sure we are up to date
-
         lock.acquire()
         self.sensor_values = SensorValues(pip=self.DATA_PIP,
                                           peep=self.DATA_PEEP,
@@ -380,6 +378,16 @@ class ControlModuleSimulator(ControlModuleBase):
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
 
     def PID_update(self):
+        ''' 
+        This instantiates the control algorithms.
+        During the breathing cycle, it goes through the four states:
+           1) Rise to PIP
+           2) Sustain PIP pressure
+           3) Quick fall to PEEP
+           4) Sustaint PEEP pressure
+        Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
+        A record of pressure/volume waveforms is kept in self.cycle_waveforms
+        '''
         now = time.time()
         cycle_phase = now - self.cycle_start
         time_since_last_update = now - self.last_update
@@ -415,6 +423,8 @@ class ControlModuleSimulator(ControlModuleBase):
         else:
             self.cycle_start = time.time()  # new cycle starts
             self.cycle_counter += 1
+            self.update_alarms()            # Run alarm detection over last cycle's waveform
+            
 
         if self.cycle_counter not in self.cycle_waveforms.keys():  # if this cycle doesn't exist yet, start it
             self.cycle_waveforms[self.cycle_counter] = np.array([[0, self.pressure, self.volume]])  # add volume
@@ -457,6 +467,7 @@ class ControlModuleSimulator(ControlModuleBase):
             print("Main Loop is not running.")
 
     def heartbeat(self):
+        '''only used for fiddling'''
         if self._running:
             print("Controller running...")
         else:

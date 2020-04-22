@@ -6,7 +6,7 @@ from vent.common.message import SensorValues, ControlSettings, Alarm, ControlSet
 from vent.coordinator.process_manager import ProcessManager
 
 
-class UIControlModuleBase:
+class CoordinatorBase:
     def __init__(self, sim_mode=False):
         # get_ui_control_module handles single_process flag
         self.control_module = get_control_module(sim_mode)
@@ -54,7 +54,7 @@ class UIControlModuleBase:
             raise KeyError("Error: undefined action" + str(command))
 
 
-class UIControlModuleLocal(UIControlModuleBase):
+class CoordinatorLocal(CoordinatorBase):
     def __init__(self, sim_mode=False):
         super().__init__(sim_mode=sim_mode)
         self.thread_id = None  # TODO: do I need a thread
@@ -84,11 +84,10 @@ class UIControlModuleLocal(UIControlModuleBase):
         return self.last_message_timestamp
 
     def do_process(self, command):
-
         super().do_process(command)
 
 
-class UIControlModuleRemote(UIControlModuleBase):
+class CoordinatorRemote(CoordinatorBase):
     def __init__(self, sim_mode=False):
         super().__init__(sim_mode=sim_mode)
         # TODO: pass max_heartbeat_interval
@@ -97,8 +96,8 @@ class UIControlModuleRemote(UIControlModuleBase):
         raise NotImplementedError
 
 
-def get_ui_control_module(single_process=False, sim_mode=False):
+def get_coordinator(single_process=False, sim_mode=False):
     if single_process == True:
-        return UIControlModuleLocal(sim_mode)
+        return CoordinatorLocal(sim_mode)
     else:
-        return UIControlModuleRemote(sim_mode)
+        return CoordinatorRemote(sim_mode)

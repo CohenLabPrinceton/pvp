@@ -11,6 +11,12 @@ class ControlModuleBase:
     # Abstract class for controlling hardware based on settings received
     def __init__(self):
 
+        #########################  Control management  #########################
+
+        # This is what the machine has controll over
+        self.Qin = 0              # State of a valve on the inspiratory side
+        self.Qout = 0             # State of a valve on the expiratory side
+
         # Internal Control variables. "SET" indicates that this is set.
         self.SET_PIP = 22         # Target PIP pressure
         self.SET_PIP_TIME = 0.4   # Target time to reach PIP in seconds
@@ -25,7 +31,10 @@ class ControlModuleBase:
         self.SET_T_PLATEAU      = self.SET_I_PHASE - self.SET_PIP_TIME
         self.SET_T_PEEP         = self.SET_E_PHASE - self.SET_PEEP_TIME
 
-        # These are measurement values from the last breath cycle.
+
+        #########################  Data management  #########################
+
+        # These are measurements from the last breath cycle.
         self.DATA_PIP = None         # Measured value of PIP
         self.DATA_PIP_TIME = None    # Measured time of reaching PIP plateau
         self.DATA_PEEP = None        # Measured valued of PEEP
@@ -35,23 +44,24 @@ class ControlModuleBase:
         self.DATA_BPM = None         # Measured breathing rate, by definition 60sec / length_of_breath_cycle
         self.DATA_VTE = None         # Maximum air displacement in last breath cycle
 
-        self.sensor_values = None
-        self.active_alarms = {}  # dictionary of active alarms
-        self.logged_alarms = []  # list of all resolved alarms
-
-        # This is what our machine has controll over:
-        self.Qin = 0                 # State of a valve on the inspiratory side
-        self.Qout = 0                # State of a valve on the expiratory side
-
-        self.pressure = 0
-        self.volume = 0
-        self.last_update = time.time()
-
         # Parameters to keep track of breath-cycle
         self.cycle_start = time.time()
-        self.cycle_waveforms = {}  # saves the waveforms to meassure pip, peep etc.
+        self.cycle_waveforms = {}   # saves the waveforms to meassure pip, peep etc.
         self.cycle_counter = 0
 
+        # If queried, sensor values are grouped in this object:
+        self.sensor_values = None
+
+        # These are measurements that change from timepoint to timepoint
+        self.DATA_PRESSURE = 0
+        self.DATA_VOLUME = 0
+        self.last_update = time.time()
+
+
+        #########################  Alarm management  #########################
+        self.active_alarms = {}     # Dictionary of active alarms
+        self.logged_alarms = []     # List of all resolved alarms
+ 
         # Variable limits to raise alarms, initialized as +- 10% of what the controller initializes
         self.PIP_min = self.SET_PIP * 0.9
         self.PIP_max = self.SET_PIP * 1.1
@@ -69,6 +79,7 @@ class ControlModuleBase:
         self.I_phase_max = self.SET_I_PHASE * 1.1
         self.I_phase_lastset = time.time()
 
+        #########################  Algorithm/Program management  #########################
         # Run the start() method as a thread
         self.thread = threading.Thread(target=self.start_mainloop, daemon=True)
         self.loop_counter = 0
@@ -134,7 +145,7 @@ class ControlModuleBase:
         # This will depend on simulation vs. reality
         pass
 
-    def get_alarms(self) -> List[Alarms]:
+    def get_alarms(self) -> List[Alarm]:
         # Returns all alarms as a list
         ls = self.logged_alarms
         for alarm_key in self.active_alarms.keys():
@@ -145,7 +156,7 @@ class ControlModuleBase:
         # Returns only the active alarms
         return self.active_alarms
 
-    def get_logged_alarms(self) -> List[Alarms]:
+    def get_logged_alarms(self) -> List[Alarm]:
         # Returns only the inactive alarms
         return self.logged_alarms
 
@@ -224,7 +235,7 @@ class ControlModuleBase:
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
 
-    def PID_update(self):
+    def PID_update(self, dt):
         ''' 
         This instantiates the control algorithms.
         During the breathing cycle, it goes through the four states:
@@ -235,40 +246,39 @@ class ControlModuleBase:
         Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
         A record of pressure/volume waveforms is kept in self.cycle_waveforms
 
-        RIGHT NOW THIS IS NOT A PID CONTROLLER!
+            dt: Time since last update in seconds 
 
+        RIGHT NOW THIS IS NOT A PID CONTROLLER!
         '''
         now = time.time()
         cycle_phase = now - self.cycle_start
-        time_since_last_update = now - self.last_update
-        self.last_update = now
 
-        self.volume += time_since_last_update * ( self.Qin - self.Qout )  # Integrate what has happened within the last few seconds
+        self.DATA_VOLUME += dt * ( self.Qin - self.Qout )  # Integrate what has happened within the last few seconds
         # NOTE: As Qin and Qout are set, this is what the controllr believes has happened. NOT A MEASUREMENT, MIGHT NOT BE REALITY!
 
         if cycle_phase < self.SET_PIP_TIME:  # ADD CONTROL dP/dt
             # to PIP, air in as fast as possible
             self.Qin = 1
             self.Qout = 0
-            if self.pressure > self.SET_PIP:
+            if self.DATA_PRESSURE > self.SET_PIP:
                 self.Qin = 0
         elif cycle_phase < self.SET_I_PHASE:  # ADD CONTROL P
             # keep PIP plateau, let air in if below
             self.Qin = 0
             self.Qout = 0
-            if self.pressure < self.SET_PIP:
+            if self.DATA_PRESSURE < self.SET_PIP:
                 self.Qin = 1
         elif cycle_phase < self.SET_PEEP_TIME + self.SET_I_PHASE:
             # to PEEP, open exit valve
             self.Qin = 0
             self.Qout = 1
-            if self.pressure < self.SET_PEEP:
+            if self.DATA_PRESSURE < self.SET_PEEP:
                 self.Qout = 0
         elif cycle_phase < self.SET_CYCLE_DURATION:
             # keeping PEEP, let air in if below
             self.Qin = 0
             self.Qout = 0
-            if self.pressure < self.SET_PEEP:
+            if self.DATA_PRESSURE < self.SET_PEEP:
                 self.Qin = 1
         else:
             self.cycle_start = time.time()  # new cycle starts
@@ -276,10 +286,10 @@ class ControlModuleBase:
             self.update_alarms()            # Run alarm detection over last cycle's waveform
             
         if self.cycle_counter not in self.cycle_waveforms.keys():  # if this cycle doesn't exist yet, start it
-            self.cycle_waveforms[self.cycle_counter] = np.array([[0, self.pressure, self.volume]])  # add volume
+            self.cycle_waveforms[self.cycle_counter] = np.array([[0, self.DATA_PRESSURE, self.DATA_VOLUME]])  # add volume
         else:
             data = self.cycle_waveforms[self.cycle_counter]
-            data = np.append(data, [[cycle_phase, self.pressure, self.volume]], axis=0)
+            data = np.append(data, [[cycle_phase, self.DATA_PRESSURE, self.DATA_VOLUME]], axis=0)
             self.cycle_waveforms[self.cycle_counter] = data
 
     def start_mainloop(self):
@@ -394,8 +404,7 @@ class ControlModuleSimulator(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self):
         ControlModuleBase.__init__(self)
-
-        self.Balloon = Balloon_Simulator(leak=True, delay=False)          # SIMULATION
+        self.Balloon = Balloon_Simulator(leak=True, delay=False)          # This is the simulation
 
     def get_sensors(self):
         # returns SensorValues and a time stamp
@@ -415,9 +424,8 @@ class ControlModuleSimulator(ControlModuleBase):
         return self.sensor_values
 
     def start_mainloop(self):
-        # start running
-        # this should be run as a thread! 
-        # Compare to initialization
+        # start running, this should be run as a thread! 
+        # Compare to initialization in Base Class!
 
         while self._running:
             time.sleep(.01)
@@ -425,13 +433,12 @@ class ControlModuleSimulator(ControlModuleBase):
             now = time.time()
 
             # Only one sensor "is connected" and that is the pressure in the balloon
-            self.Balloon.update(now - self.last_update)
-            self.last_update = now
-            self.pressure = self.Balloon.get_pressure()
+            self.Balloon.update(dt = now - self.last_update)
+            self.DATA_PRESSURE = self.Balloon.get_pressure()
 
-            self.PID_update()
-
+            self.PID_update(dt = now - self.last_update)
             self.Balloon.set_flow(self.Qin, self.Qout)
+            self.last_update = now
 
     def heartbeat(self):
         '''only used for fiddling'''

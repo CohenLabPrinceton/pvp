@@ -1,8 +1,8 @@
 from typing import List
 
+from vent.common.message import SensorValues, ControlSetting, Alarm, ControlSettingName, IPCMessageCommand
 from vent.controller.control_module import get_control_module
 from vent.coordinator.ipc import IPC
-from vent.common.message import SensorValues, ControlSettings, Alarm, ControlSettingName, IPCMessageCommand
 from vent.coordinator.process_manager import ProcessManager
 
 
@@ -12,7 +12,8 @@ class CoordinatorBase:
         self.control_module = get_control_module(sim_mode)
         self.sensor_values = None
         self.alarms = None
-        self.control_settings = None
+        self.control_settings = {}
+        self.tentative_control_settings = {}
         self.last_message_timestamp = None
 
     def get_sensors(self) -> SensorValues:
@@ -32,11 +33,11 @@ class CoordinatorBase:
     def clear_logged_alarms(self):
         pass
 
-    def set_controls(self, control_settings: ControlSettings):
-        # takes ControlSettings struct
+    def set_control(self, control_setting: ControlSetting):
+        # takes ControlSetting struct
         pass
 
-    def get_controls(self, control_setting_name: ControlSettingName) -> ControlSettings:
+    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         pass
 
     def get_msg_timestamp(self):
@@ -59,12 +60,12 @@ class CoordinatorLocal(CoordinatorBase):
         super().__init__(sim_mode=sim_mode)
         self.thread_id = None  # TODO: do I need a thread
 
-    def set_controls(self, control_settings: ControlSettings):
-        self.control_module.set_controls(control_settings)
-        self.last_message_timestamp = control_settings.timestamp
+    def set_control(self, control_setting: ControlSetting):
+        self.control_module.set_control(control_setting)
+        self.last_message_timestamp = control_setting.timestamp
 
-    def get_controls(self, control_setting_name: ControlSettingName) -> ControlSettings:
-        return self.control_module.get_controls(control_setting_name)
+    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
+        return self.control_module.get_control(control_setting_name)
 
     def get_sensors(self) -> SensorValues:
         sensor_values = self.control_module.get_sensors()

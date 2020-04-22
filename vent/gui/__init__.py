@@ -251,7 +251,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.thread = ControllerThread(1, "Controller-1", runtime / 0.01)  # 5sec in 10ms steps
 
         for command in [c1, c2, c3, c4, c5]:
-            self.thread.set_controls(command)
+            self.thread.set_control(command)
 
         self.thread.start()
 
@@ -268,7 +268,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                                          min_value = self.CONTROL[value_name]['safe_range'][0],
                                          max_value = self.CONTROL[value_name]['safe_range'][1],
                                          timestamp = time.time())
-        self.thread.set_controls(control_object)
+        self.thread.set_control(control_object)
 
     def read_sensors(self):
 

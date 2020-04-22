@@ -31,7 +31,7 @@ class ControlSettingName(Enum):
     VTE = auto()
 
 
-class ControlSettings:
+class ControlSetting:
     def __init__(self, name, value, min_value, max_value, timestamp):
         """
         TODO: if enum is hard to use, we may just use a predefined set, e.g. {'PIP', 'PEEP', ...}

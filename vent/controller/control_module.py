@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from vent.common.message import SensorValues, ControlSettings, Alarm, AlarmSeverity, ControlSettingName
+from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ControlSettingName
 
 
 class ControlModuleBase:
@@ -36,11 +36,11 @@ class ControlModuleBase:
     def clear_logged_alarms(self):
         pass
 
-    def set_controls(self, control_settings: ControlSettings):
-        # takes ControlSettings struct
+    def set_control(self, control_setting: ControlSetting):
+        # takes ControlSetting struct
         pass
 
-    def get_controls(self, control_setting_name: ControlSettingName) -> ControlSettings:
+    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         pass
 
     def start(self, controlSettings):
@@ -333,7 +333,7 @@ class ControlModuleSimulator(ControlModuleBase):
             self.test_critical_levels(min=self.bpm_min, max=self.bpm_max, value=self.bpm, name="BREATHS_PER_MINUTE")
             self.test_critical_levels(min=self.I_phase_min, max=self.I_phase_max, value=self.I_phase, name="I_PHASE")
 
-    def get_sensors_values(self):
+    def get_sensors(self):
         # returns SensorValues and a time stamp
 
         self.update_alarms()  # Make sure we are up to date
@@ -366,76 +366,76 @@ class ControlModuleSimulator(ControlModuleBase):
         # Returns only the inactive alarms
         return self.logged_alarms
 
-    def set_controls(self, controlSettings):
+    def set_control(self, control_setting):
         ''' Updates the control settings. '''
-        if controlSettings.name == ControlSettingName.PIP:
-            self.Controller.PIP = controlSettings.value
-            self.PIP_min = controlSettings.min_value
-            self.PIP_max = controlSettings.max_value
-            self.PIP_lastset = controlSettings.timestamp
+        if control_setting.name == ControlSettingName.PIP:
+            self.Controller.PIP = control_setting.value
+            self.PIP_min = control_setting.min_value
+            self.PIP_max = control_setting.max_value
+            self.PIP_lastset = control_setting.timestamp
 
-        elif controlSettings.name == ControlSettingName.PIP_TIME:
-            self.Controller.PIP_time = controlSettings.value
-            self.PIP_time_min = controlSettings.min_value
-            self.PIP_time_max = controlSettings.max_value
-            self.PIP_time_lastset = controlSettings.timestamp
+        elif control_setting.name == ControlSettingName.PIP_TIME:
+            self.Controller.PIP_time = control_setting.value
+            self.PIP_time_min = control_setting.min_value
+            self.PIP_time_max = control_setting.max_value
+            self.PIP_time_lastset = control_setting.timestamp
 
-        elif controlSettings.name == ControlSettingName.PEEP:
-            self.Controller.PEEP = controlSettings.value
-            self.PEEP_min = controlSettings.min_value
-            self.PEEP_max = controlSettings.max_value
-            self.PEEP_lastset = controlSettings.timestamp
+        elif control_setting.name == ControlSettingName.PEEP:
+            self.Controller.PEEP = control_setting.value
+            self.PEEP_min = control_setting.min_value
+            self.PEEP_max = control_setting.max_value
+            self.PEEP_lastset = control_setting.timestamp
 
-        elif controlSettings.name == ControlSettingName.BREATHS_PER_MINUTE:
-            self.Controller.bpm = controlSettings.value
-            self.bpm_min = controlSettings.min_value
-            self.bpm_max = controlSettings.max_value
-            self.bpm_lastset = controlSettings.timestamp
+        elif control_setting.name == ControlSettingName.BREATHS_PER_MINUTE:
+            self.Controller.bpm = control_setting.value
+            self.bpm_min = control_setting.min_value
+            self.bpm_max = control_setting.max_value
+            self.bpm_lastset = control_setting.timestamp
 
-        elif controlSettings.name == ControlSettingName.INSPIRATION_TIME_SEC:
-            self.Controller.I_phase = controlSettings.value
-            self.I_phase_min = controlSettings.min_value
-            self.I_phase_max = controlSettings.max_value
-            self.I_phase_lastset = controlSettings.timestamp
+        elif control_setting.name == ControlSettingName.INSPIRATION_TIME_SEC:
+            self.Controller.I_phase = control_setting.value
+            self.I_phase_min = control_setting.min_value
+            self.I_phase_max = control_setting.max_value
+            self.I_phase_lastset = control_setting.timestamp
 
         else:
-            raise KeyError("You cannot set the variabe: " + str(controlSettings.name))
+            raise KeyError("You cannot set the variabe: " + str(control_setting.name))
 
         self.Controller.update_internalVeriables()
 
-    def get_controls(self, control_setting_name: ControlSettingName) -> ControlSettings:
+    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         ''' Updates the control settings. '''
         if control_setting_name == ControlSettingName.PIP:
-            return ControlSettings(control_setting_name,
-                                   self.Controller.PIP,
-                                   self.PIP_min,
-                                   self.PIP_max,
-                                   self.PIP_lastset)
+            return ControlSetting(control_setting_name,
+                                  self.Controller.PIP,
+                                  self.PIP_min,
+                                  self.PIP_max,
+                                  self.PIP_lastset)
         elif control_setting_name == ControlSettingName.PIP_TIME:
-            return ControlSettings(control_setting_name,
-                                   self.Controller.
-                                   PIP_time,
-                                   self.PIP_time_min,
-                                   self.PIP_time_max,
-                                   self.PIP_time_lastset, )
+            return ControlSetting(control_setting_name,
+                                  self.Controller.
+                                  PIP_time,
+                                  self.PIP_time_min,
+                                  self.PIP_time_max,
+                                  self.PIP_time_lastset, )
         elif control_setting_name == ControlSettingName.PEEP:
-            return ControlSettings(control_setting_name,
-                                   self.Controller.PEEP,
-                                   self.PEEP_min,
-                                   self.PEEP_max,
-                                   self.PEEP_lastset)
+            return ControlSetting(control_setting_name,
+                                  self.Controller.PEEP,
+                                  self.PEEP_min,
+                                  self.PEEP_max,
+                                  self.PEEP_lastset)
         elif control_setting_name == ControlSettingName.BREATHS_PER_MINUTE:
-            return ControlSettings(control_setting_name,
-                                   self.Controller.bpm,
-                                   self.bpm_min,
-                                   self.bpm_max,
-                                   self.bpm_lastset)
+            return ControlSetting(control_setting_name,
+                                  self.Controller.bpm,
+                                  self.bpm_min,
+                                  self.bpm_max,
+                                  self.bpm_lastset)
         elif control_setting_name == ControlSettingName.INSPIRATION_TIME_SEC:
-            return ControlSettings(control_setting_name,
-                                   self.Controller.I_phase,
-                                   self.I_phase_min,
-                                   self.I_phase_max,
-                                   self.I_phase_lastset)
+            return ControlSetting(control_setting_name,
+                                  self.Controller.I_phase,
+                                  self.I_phase_min,
+                                  self.I_phase_max,
+                                  self.I_phase_lastset)
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
 

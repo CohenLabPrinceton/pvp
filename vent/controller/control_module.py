@@ -165,14 +165,14 @@ class ControlModuleSimulator(ControlModuleBase):
 
         # These are measurement values from the last breath cycle.
         # NOTE: For the controller target value, see Controller.PEEP etc.
-        self.DATA_PIP = None       # Measured value of PIP
-        self.DATA_PIP_TIME = None  # Measured time of reaching PIP plateau
-        self.DATA_PEEP = None      # Measured valued of PEEP
-        self.DATA_I_PHASE = None   # Measured duration of inspiratory phase
+        self.DATA_PIP = None         # Measured value of PIP
+        self.DATA_PIP_TIME = None    # Measured time of reaching PIP plateau
+        self.DATA_PEEP = None        # Measured valued of PEEP
+        self.DATA_I_PHASE = None     # Measured duration of inspiratory phase
         self.DATA_FIRST_PEEP = None  # Time when PEEP is reached first
-        self.DATA_LAST_PEEP = None  # Last time of PEEP - by definition end of breath cycle
-        self.DATA_BPM = None  # Measured breathing rate, by definition 60sec / length_of_breath_cycle
-        self.DATA_VTE = None  # Maximum air displacement in last breath cycle
+        self.DATA_LAST_PEEP = None   # Last time of PEEP - by definition end of breath cycle
+        self.DATA_BPM = None         # Measured breathing rate, by definition 60sec / length_of_breath_cycle
+        self.DATA_VTE = None         # Maximum air displacement in last breath cycle
 
         self.Qin = 0
         self.Qout = 0
@@ -202,8 +202,6 @@ class ControlModuleSimulator(ControlModuleBase):
         self.I_phase_max = self.SET_I_PHASE * 1.1
         self.I_phase_lastset = time.time()
 
-
-
         # Run the start() method as a thread
         self.thread = threading.Thread(target=self.start_mainloop, daemon=True)
         self.loop_counter = 0
@@ -211,12 +209,11 @@ class ControlModuleSimulator(ControlModuleBase):
 
     def update_internalVeriables(self):
         # This updates internal control variables
-        self.cycle_duration = 60 / self.bpm
-        self.E_phase = self.cycle_duration - self.I_phase
-        self.t_inspiration = self.PIP_time
-        self.t_plateau = self.I_phase - self.PIP_time
-        self.t_expiration = self.PEEP_time
-        self.t_PEEP = self.E_phase - self.PEEP_time
+        self.SET_CYCLE_DURATION = 60 / self.SET_BPM
+        self.SET_E_PHASE = self.SET_CYCLE_DURATION - self.SET_I_PHASE
+        self.SET_T_PLATEAU = self.SET_I_PHASE - self.SET_PIP_TIME
+        self.SET_T_PEEP = self.SET_E_PHASE - self.SET_PEEP_TIME
+
 
     def test_critical_levels(self, min, max, value, name):
         '''

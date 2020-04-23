@@ -251,7 +251,7 @@ class ControlModuleBase:
             self.COPY_PIP_lastset = control_setting.timestamp
 
         elif control_setting.name == ControlSettingName.PIP_TIME:
-            self.COPY_SET_PIP_time = control_setting.value
+            self.COPY_SET_PIP_TIME = control_setting.value
             self.COPY_PIP_time_min = control_setting.min_value
             self.COPY_PIP_time_max = control_setting.max_value
             self.COPY_PIP_time_lastset = control_setting.timestamp
@@ -288,7 +288,7 @@ class ControlModuleBase:
                                   self.COPY_PIP_lastset)
         elif control_setting_name == ControlSettingName.PIP_TIME:
             return_value = ControlSetting(control_setting_name,
-                                  self.COPY_SET_PIP_time,
+                                  self.COPY_SET_PIP_TIME,
                                   self.COPY_PIP_time_min,
                                   self.COPY_PIP_time_max,
                                   self.COPY_PIP_time_lastset, )

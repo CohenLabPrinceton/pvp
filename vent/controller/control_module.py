@@ -220,8 +220,8 @@ class ControlModuleBase:
 
     def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         ''' Updates the control settings. '''
-
-        lock.acquire()
+        if self.thread.is_alive(): 
+            lock.acquire()
 
         if control_setting_name == ControlSettingName.PIP:
             return_value = ControlSetting(control_setting_name,
@@ -256,7 +256,8 @@ class ControlModuleBase:
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
 
-        lock.release()
+        if self.thread.is_alive(): 
+            lock.release()
 
         return return_value
 

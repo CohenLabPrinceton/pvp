@@ -165,23 +165,23 @@ class ControlModuleBase:
     def get_alarms(self) -> List[Alarm]:
         # Returns all alarms as a list
         lock.acquire()
-        ls = self.__logged_alarms
+        new_alarm_list = self.__logged_alarms.copy()     # Make sure to return a copy!
         for alarm_key in self.__active_alarms.keys():
-            ls.append(self.__active_alarms[alarm_key])
+            new_alarm_list.append(self.__active_alarms[alarm_key])
         lock.release()
-        return ls
+        return new_alarm_list
 
     def get_active_alarms(self):
         # Returns only the active alarms
         lock.acquire()
-        active_alarms = self.__active_alarms
+        active_alarms = self.__active_alarms.copy() # Make sure to return a copy
         lock.release()
         return active_alarms
 
     def get_logged_alarms(self) -> List[Alarm]:
         # Returns only the inactive alarms
         lock.acquire()
-        logged_alarms = self.__logged_alarms
+        logged_alarms = self.__logged_alarms.copy()  # Make sure to return a copy
         lock.release()
         return logged_alarms
 

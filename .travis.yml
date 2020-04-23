@@ -7,6 +7,5 @@ before_install:
   - pip install -U pytest
 install:
     - pip install .
-# command to run tests
 script:
   - pytest tests

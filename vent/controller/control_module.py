@@ -11,6 +11,9 @@ class ControlModuleBase:
     # Abstract class for controlling hardware based on settings received
     # Internal variables only to be accessed though the set_ and get_ functions
     #
+    # NOTE: 
+    #        get_ and set_ act on COPIES, that are synched with the main loop every few iterations
+    #
     #  === GET VALUES ===
     # get_sensors()
     # get_alarms()
@@ -24,7 +27,6 @@ class ControlModuleBase:
     # === START/STOP CONTROLLER
     # start()
     # stop()
-
     def __init__(self):
 
         #########################  Control management  #########################
@@ -46,7 +48,6 @@ class ControlModuleBase:
         self.__SET_E_PHASE        = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PLATEAU      = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP         = self.__SET_E_PHASE - self.__SET_PEEP_TIME
-
 
         #########################  Data management  #########################
 
@@ -78,7 +79,7 @@ class ControlModuleBase:
         #########################  Alarm management  #########################
         self.__active_alarms = {}     # Dictionary of active alarms
         self.__logged_alarms = []     # List of all resolved alarms
- 
+
         # Variable limits to raise alarms, initialized as +- 10% of what the controller initializes
         self.__PIP_min = self.__SET_PIP * 0.9
         self.__PIP_max = self.__SET_PIP * 1.1
@@ -102,6 +103,73 @@ class ControlModuleBase:
         self._running = False
         self.thread = threading.Thread(target=self._start_mainloop, daemon=True)
         self.thread.start()
+
+        # Copy of the SET variables for threading.
+        self.COPY_SET_PIP       = self.__SET_PIP 
+        self.COPY_SET_PIP_TIME  = self.__SET_PIP_TIME
+        self.COPY_SET_PEEP      = self.__SET_PEEP
+        self.COPY_SET_PEEP_TIME = self.__SET_PEEP_TIME
+        self.COPY_SET_BPM       = self.__SET_BPM
+        self.COPY_SET_I_PHASE   = self.__SET_I_PHASE
+
+        # Copy of the alarm variables for threading.
+        self.COPY_active_alarms = {}
+        self.COPY_logged_alarms = []
+
+        # Variable limits to raise alarms, initialized as +- 10% of what the controller initializes
+        self.COPY_PIP_min = self.__PIP_min
+        self.COPY_PIP_max = self.__PIP_max
+        self.COPY_PIP_lastset = self.__PIP_lastset
+        self.COPY_PIP_time_min = self.__PIP_time_min 
+        self.COPY_PIP_time_max = self.__PIP_time_max
+        self.COPY_PIP_time_lastset = self.__PIP_time_lastset
+        self.COPY_PEEP_min = self.__PEEP_min
+        self.COPY_PEEP_max = self.__PEEP_max
+        self.COPY_PEEP_lastset = self.__PEEP_lastset
+        self.COPY_bpm_min = self.__bpm_min 
+        self.COPY_bpm_max = self.__bpm_max
+        self.COPY_bpm_lastset = self.__bpm_lastset
+        self.COPY_I_phase_min = self.__I_phase_min
+        self.COPY_I_phase_max = self.__I_phase_max
+        self.COPY_I_phase_lastset = self.__I_phase_lastset
+
+    def _update_to_COPYs(self):
+
+        # Update the alarms
+        self.COPY_active_alarms = self.__active_alarms.copy()
+        self.COPY_logged_alarms = self.__logged_alarms.copy()
+
+        # And the alarm thresholds
+        self.COPY_PIP_min = self.__PIP_min
+        self.COPY_PIP_max = self.__PIP_max
+        self.COPY_PIP_lastset = self.__PIP_lastset
+        self.COPY_PIP_time_min = self.__PIP_time_min 
+        self.COPY_PIP_time_max = self.__PIP_time_max
+        self.COPY_PIP_time_lastset = self.__PIP_time_lastset
+        self.COPY_PEEP_min = self.__PEEP_min
+        self.COPY_PEEP_max = self.__PEEP_max
+        self.COPY_PEEP_lastset = self.__PEEP_lastset
+        self.COPY_bpm_min = self.__bpm_min 
+        self.COPY_bpm_max = self.__bpm_max
+        self.COPY_bpm_lastset = self.__bpm_lastset
+        self.COPY_I_phase_min = self.__I_phase_min
+        self.COPY_I_phase_max = self.__I_phase_max
+        self.COPY_I_phase_lastset = self.__I_phase_lastset
+
+    def _update_from_COPYs(self):
+
+        # Update SET variables
+        self.__SET_PIP       = self.COPY_SET_PIP
+        self.__SET_PIP_TIME  = self.COPY_SET_PIP_TIME
+        self.__SET_PEEP      = self.COPY_SET_PEEP
+        self.__SET_PEEP_TIME = self.COPY_SET_PEEP_TIME
+        self.__SET_BPM       = self.COPY_SET_BPM
+        self.__SET_I_PHASE   = self.COPY_SET_I_PHASE
+
+        self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
+        self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
+        self.__SET_T_PLATEAU = self.__SET_I_PHASE - self.__SET_PIP_TIME
+        self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
 
     def __test_critical_levels(self, min, max, value, name):
         '''
@@ -164,112 +232,91 @@ class ControlModuleBase:
 
     def get_alarms(self) -> List[Alarm]:
         # Returns all alarms as a list
-        lock.acquire()
-        new_alarm_list = self.__logged_alarms.copy()     # Make sure to return a copy!
-        for alarm_key in self.__active_alarms.keys():
-            new_alarm_list.append(self.__active_alarms[alarm_key])
-        lock.release()
+        new_alarm_list = self.COPY_logged_alarms.copy()
+        for alarm_key in self.COPY_active_alarms.keys():
+            new_alarm_list.append(self.COPY_active_alarms[alarm_key])
         return new_alarm_list
 
     def get_active_alarms(self):
         # Returns only the active alarms
-        lock.acquire()
-        active_alarms = self.__active_alarms.copy() # Make sure to return a copy
-        lock.release()
+        active_alarms = self.COPY_active_alarms.copy() # Make sure to return a copy
         return active_alarms
 
     def get_logged_alarms(self) -> List[Alarm]:
         # Returns only the inactive alarms
-        lock.acquire()
-        logged_alarms = self.__logged_alarms.copy()  # Make sure to return a copy
-        lock.release()
+        logged_alarms = self.COPY_logged_alarms.copy()  # Make sure to return a copy
         return logged_alarms
 
     def set_control(self, control_setting: ControlSetting):
-        # Updates the control settings, and re-calculate the derived control variables 
-
-        lock.acquire()
-
+        ''' Updates the COPY of the control settings'''
         if control_setting.name == ControlSettingName.PIP:
-            self.__SET_PIP = control_setting.value
-            self.__PIP_min = control_setting.min_value
-            self.__PIP_max = control_setting.max_value
-            self.__PIP_lastset = control_setting.timestamp
+            self.COPY_SET_PIP = control_setting.value
+            self.COPY_PIP_min = control_setting.min_value
+            self.COPY_PIP_max = control_setting.max_value
+            self.COPY_PIP_lastset = control_setting.timestamp
 
         elif control_setting.name == ControlSettingName.PIP_TIME:
-            self.__SET_PIP_time = control_setting.value
-            self.__PIP_time_min = control_setting.min_value
-            self.__PIP_time_max = control_setting.max_value
-            self.__PIP_time_lastset = control_setting.timestamp
+            self.COPY_SET_PIP_time = control_setting.value
+            self.COPY_PIP_time_min = control_setting.min_value
+            self.COPY_PIP_time_max = control_setting.max_value
+            self.COPY_PIP_time_lastset = control_setting.timestamp
 
         elif control_setting.name == ControlSettingName.PEEP:
-            self.__SET_PEEP = control_setting.value
-            self.__PEEP_min = control_setting.min_value
-            self.__PEEP_max = control_setting.max_value
-            self.__PEEP_lastset = control_setting.timestamp
+            self.COPY_SET_PEEP = control_setting.value
+            self.COPY_PEEP_min = control_setting.min_value
+            self.COPY_PEEP_max = control_setting.max_value
+            self.COPY_PEEP_lastset = control_setting.timestamp
 
         elif control_setting.name == ControlSettingName.BREATHS_PER_MINUTE:
-            self.__SET_BPM = control_setting.value
-            self.__bpm_min = control_setting.min_value
-            self.__bpm_max = control_setting.max_value
-            self.__bpm_lastset = control_setting.timestamp
+            self.COPY_SET_BPM = control_setting.value
+            self.COPY_bpm_min = control_setting.min_value
+            self.COPY_bpm_max = control_setting.max_value
+            self.COPY_bpm_lastset = control_setting.timestamp
 
         elif control_setting.name == ControlSettingName.INSPIRATION_TIME_SEC:
-            self.__SET_I_PHASE = control_setting.value
-            self.__I_phase_min = control_setting.min_value
-            self.__I_phase_max = control_setting.max_value
-            self.__I_phase_lastset = control_setting.timestamp
+            self.COPY_SET_I_PHASE = control_setting.value
+            self.COPY_I_phase_min = control_setting.min_value
+            self.COPY_I_phase_max = control_setting.max_value
+            self.COPY_I_phase_lastset = control_setting.timestamp
 
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting.name))
 
-        self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
-        self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
-        self.__SET_T_PLATEAU = self.__SET_I_PHASE - self.__SET_PIP_TIME
-        self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
-
-        lock.release()
-
     def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
-        ''' Updates the control settings. '''
-        if self.thread.is_alive(): 
-            lock.acquire()
+        ''' Gets values of the COPY of the control settings. '''
 
         if control_setting_name == ControlSettingName.PIP:
             return_value = ControlSetting(control_setting_name,
-                                  self.__SET_PIP,
-                                  self.__PIP_min,
-                                  self.__PIP_max,
-                                  self.__PIP_lastset)
+                                  self.COPY_SET_PIP,
+                                  self.COPY_PIP_min,
+                                  self.COPY_PIP_max,
+                                  self.COPY_PIP_lastset)
         elif control_setting_name == ControlSettingName.PIP_TIME:
             return_value = ControlSetting(control_setting_name,
-                                  self.__SET_PIP_time,
-                                  self.__PIP_time_min,
-                                  self.__PIP_time_max,
-                                  self.__PIP_time_lastset, )
+                                  self.COPY_SET_PIP_time,
+                                  self.COPY_PIP_time_min,
+                                  self.COPY_PIP_time_max,
+                                  self.COPY_PIP_time_lastset, )
         elif control_setting_name == ControlSettingName.PEEP:
             return_value = ControlSetting(control_setting_name,
-                                  self.__SET_PEEP,
-                                  self.__PEEP_min,
-                                  self.__PEEP_max,
-                                  self.__PEEP_lastset)
+                                  self.COPY_SET_PEEP,
+                                  self.COPY_PEEP_min,
+                                  self.COPY_PEEP_max,
+                                  self.COPY_PEEP_lastset)
         elif control_setting_name == ControlSettingName.BREATHS_PER_MINUTE:
             return_value = ControlSetting(control_setting_name,
-                                  self.__SET_BPM,
-                                  self.__bpm_min,
-                                  self.__bpm_max,
-                                  self.__bpm_lastset)
+                                  self.COPY_SET_BPM,
+                                  self.COPY_bpm_min,
+                                  self.COPY_bpm_max,
+                                  self.COPY_bpm_lastset)
         elif control_setting_name == ControlSettingName.INSPIRATION_TIME_SEC:
             return_value = ControlSetting(control_setting_name,
-                                  self.__SET_I_PHASE,
-                                  self.__I_phase_min,
-                                  self.__I_phase_max,
-                                  self.__I_phase_lastset)
+                                  self.COPY_SET_I_PHASE,
+                                  self.COPY_I_phase_min,
+                                  self.COPY_I_phase_max,
+                                  self.COPY_I_phase_lastset)
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
-
-        if self.thread.is_alive(): 
-            lock.release()
 
         return return_value
 
@@ -466,6 +513,8 @@ class ControlModuleSimulator(ControlModuleBase):
         # start running, this should be run as a thread! 
         # Compare to initialization in Base Class!
 
+        update_copies = 10  #update the COPY every 10 loops
+
         while self._running:
             time.sleep(.01)
             self._loop_counter += 1
@@ -478,6 +527,15 @@ class ControlModuleSimulator(ControlModuleBase):
             self._PID_update(dt = now - self._last_update)
             self.Balloon.set_flow(self._Qin, self._Qout)
             self._last_update = now
+
+            if update_copies == 0:
+                lock.acquire()
+                self._update_from_COPYs()     # Update from possibly updated values as a chunck
+                self._update_to_COPYs()       # Copy current settings to COPY
+                lock.release()
+                update_copies = 5
+            else:
+                update_copies -= 1
 
     def heartbeat(self):
         '''only used for fiddling'''

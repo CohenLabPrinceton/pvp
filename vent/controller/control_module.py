@@ -11,8 +11,20 @@ class ControlModuleBase:
     # Abstract class for controlling hardware based on settings received
     # Internal variables only to be accessed though the set_ and get_ functions
     #
+    #  === GET VALUES ===
+    # get_sensors()
+    # get_alarms()
+    # get_active_alarms()
+    # get_logged_alarms()
+    # get_control()
     #
+    #  === SET VALUES ===
+    # set_control()
     #
+    # === START/STOP CONTROLLER
+    # start()
+    # stop()
+
     def __init__(self):
 
         #########################  Control management  #########################
@@ -88,7 +100,7 @@ class ControlModuleBase:
         # Run the start() method as a thread
         self._loop_counter = 0
         self._running = False
-        self.thread = threading.Thread(target=self.start_mainloop, daemon=True)
+        self.thread = threading.Thread(target=self._start_mainloop, daemon=True)
         self.thread.start()
 
     def __test_critical_levels(self, min, max, value, name):
@@ -319,14 +331,14 @@ class ControlModuleBase:
             data = np.append(data, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
             self.__cycle_waveforms[self.__cycle_counter] = data
 
-    def start_mainloop(self):
+    def _start_mainloop(self):
         # This will depend on simulation or reality
         pass   
 
     def start(self):
         if not self.thread.is_alive():  # If the previous thread has been stopped, make a new one.
             self._running = True
-            self.thread = threading.Thread(target=self.start_mainloop, daemon=True)
+            self.thread = threading.Thread(target=self._start_mainloop, daemon=True)
             self.thread.start()
         else:
             print("Main Loop already running.")
@@ -450,7 +462,7 @@ class ControlModuleSimulator(ControlModuleBase):
         lock.release()
         return self.sensor_values
 
-    def start_mainloop(self):
+    def _start_mainloop(self):
         # start running, this should be run as a thread! 
         # Compare to initialization in Base Class!
 

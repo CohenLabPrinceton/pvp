@@ -147,21 +147,32 @@ class ControlModuleBase:
 
     def get_alarms(self) -> List[Alarm]:
         # Returns all alarms as a list
+        lock.acquire()
         ls = self.logged_alarms
         for alarm_key in self.active_alarms.keys():
             ls.append(self.active_alarms[alarm_key])
+        lock.release()
         return ls
 
     def get_active_alarms(self):
         # Returns only the active alarms
-        return self.active_alarms
+        lock.acquire()
+        active_alarms = self.active_alarms
+        lock.release()
+        return active_alarms
 
     def get_logged_alarms(self) -> List[Alarm]:
         # Returns only the inactive alarms
-        return self.logged_alarms
+        lock.acquire()
+        logged_alarms = self.logged_alarms
+        lock.release()
+        return logged_alarms
 
     def set_control(self, control_setting: ControlSetting):
         # Updates the control settings, and re-calculate the derived control variables 
+
+        lock.acquire()
+
         if control_setting.name == ControlSettingName.PIP:
             self.SET_PIP = control_setting.value
             self.PIP_min = control_setting.min_value
@@ -200,34 +211,39 @@ class ControlModuleBase:
         self.SET_T_PLATEAU = self.SET_I_PHASE - self.SET_PIP_TIME
         self.SET_T_PEEP = self.SET_E_PHASE - self.SET_PEEP_TIME
 
+        lock.release()
+
     def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         ''' Updates the control settings. '''
+
+        lock.acquire()
+
         if control_setting_name == ControlSettingName.PIP:
-            return ControlSetting(control_setting_name,
+            return_value = ControlSetting(control_setting_name,
                                   self.SET_PIP,
                                   self.PIP_min,
                                   self.PIP_max,
                                   self.PIP_lastset)
         elif control_setting_name == ControlSettingName.PIP_TIME:
-            return ControlSetting(control_setting_name,
+            return_value = ControlSetting(control_setting_name,
                                   self.SET_PIP_time,
                                   self.PIP_time_min,
                                   self.PIP_time_max,
                                   self.PIP_time_lastset, )
         elif control_setting_name == ControlSettingName.PEEP:
-            return ControlSetting(control_setting_name,
+            return_value = ControlSetting(control_setting_name,
                                   self.SET_PEEP,
                                   self.PEEP_min,
                                   self.PEEP_max,
                                   self.PEEP_lastset)
         elif control_setting_name == ControlSettingName.BREATHS_PER_MINUTE:
-            return ControlSetting(control_setting_name,
+            return_value = ControlSetting(control_setting_name,
                                   self.SET_BPM,
                                   self.bpm_min,
                                   self.bpm_max,
                                   self.bpm_lastset)
         elif control_setting_name == ControlSettingName.INSPIRATION_TIME_SEC:
-            return ControlSetting(control_setting_name,
+            return_value = ControlSetting(control_setting_name,
                                   self.SET_I_PHASE,
                                   self.I_phase_min,
                                   self.I_phase_max,
@@ -235,6 +251,10 @@ class ControlModuleBase:
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
 
+        lock.release()
+
+        return return_value
+        
     def PID_update(self, dt):
         ''' 
         This instantiates the control algorithms.

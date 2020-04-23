@@ -66,10 +66,6 @@ class ControlModuleBase:
         self.__cycle_waveforms = {}   # saves the waveforms to meassure pip, peep etc.
         self.__cycle_counter = 0
 
-        # If queried, sensor values are grouped in this object.
-        # It is updated internally on a regular basis.
-        self.sensor_values = None
-
         # These are measurements that change from timepoint to timepoint
         self._DATA_PRESSURE = 0
         self.__DATA_VOLUME = 0
@@ -98,12 +94,25 @@ class ControlModuleBase:
         self.__I_phase_lastset = time.time()
 
         #########################  Algorithm/Program management  #########################
+        # Hyper-Parameters
+        self._LOOP_UPDATE_TIME                   = 0.01    #Run the main control loop every 0.01 sec
+        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      #After every 10 main control loop iterations, update COPYs.
+
         # Run the start() method as a thread
         self._loop_counter = 0
         self._running = False
         self.thread = threading.Thread(target=self._start_mainloop, daemon=True)
         self.thread.start()
 
+        # Make the COPY variables that are updated internally on a regular basis
+        self.COPY_active_alarms = {}
+        self.COPY_logged_alarms = []
+        self.COPY_sensor_values = SensorValues()
+        self._alarm_to_COPY()
+        self._initialize_set_to_COPY()
+
+    def _initialize_set_to_COPY(self):
+        lock.acquire()
         # Copy of the SET variables for threading.
         self.COPY_SET_PIP       = self.__SET_PIP 
         self.COPY_SET_PIP_TIME  = self.__SET_PIP_TIME
@@ -111,35 +120,15 @@ class ControlModuleBase:
         self.COPY_SET_PEEP_TIME = self.__SET_PEEP_TIME
         self.COPY_SET_BPM       = self.__SET_BPM
         self.COPY_SET_I_PHASE   = self.__SET_I_PHASE
+        lock.release()
 
-        # Copy of the alarm variables for threading.
-        self.COPY_active_alarms = {}
-        self.COPY_logged_alarms = []
-
-        # Variable limits to raise alarms, initialized as +- 10% of what the controller initializes
-        self.COPY_PIP_min = self.__PIP_min
-        self.COPY_PIP_max = self.__PIP_max
-        self.COPY_PIP_lastset = self.__PIP_lastset
-        self.COPY_PIP_time_min = self.__PIP_time_min 
-        self.COPY_PIP_time_max = self.__PIP_time_max
-        self.COPY_PIP_time_lastset = self.__PIP_time_lastset
-        self.COPY_PEEP_min = self.__PEEP_min
-        self.COPY_PEEP_max = self.__PEEP_max
-        self.COPY_PEEP_lastset = self.__PEEP_lastset
-        self.COPY_bpm_min = self.__bpm_min 
-        self.COPY_bpm_max = self.__bpm_max
-        self.COPY_bpm_lastset = self.__bpm_lastset
-        self.COPY_I_phase_min = self.__I_phase_min
-        self.COPY_I_phase_max = self.__I_phase_max
-        self.COPY_I_phase_lastset = self.__I_phase_lastset
-
-    def _update_to_COPYs(self):
-
+    def _alarm_to_COPY(self):
+        lock.acquire()
         # Update the alarms
         self.COPY_active_alarms = self.__active_alarms.copy()
         self.COPY_logged_alarms = self.__logged_alarms.copy()
 
-        # And the alarm thresholds
+        # The alarm thresholds
         self.COPY_PIP_min = self.__PIP_min
         self.COPY_PIP_max = self.__PIP_max
         self.COPY_PIP_lastset = self.__PIP_lastset
@@ -155,10 +144,15 @@ class ControlModuleBase:
         self.COPY_I_phase_min = self.__I_phase_min
         self.COPY_I_phase_max = self.__I_phase_max
         self.COPY_I_phase_lastset = self.__I_phase_lastset
+        lock.release()
 
-    def _update_from_COPYs(self):
+    def _sensor_to_COPY(self):
+        # These variables have to come from the hardware
+        pass
 
+    def _controls_from_COPY(self):
         # Update SET variables
+        lock.acquire()
         self.__SET_PIP       = self.COPY_SET_PIP
         self.__SET_PIP_TIME  = self.COPY_SET_PIP_TIME
         self.__SET_PEEP      = self.COPY_SET_PEEP
@@ -170,6 +164,7 @@ class ControlModuleBase:
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PLATEAU = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
+        lock.release()
 
     def __test_critical_levels(self, min, max, value, name):
         '''
@@ -228,7 +223,7 @@ class ControlModuleBase:
 
     def get_sensors(self) -> SensorValues:
         # This will depend on simulation vs. reality
-        pass
+        return self.COPY_sensor_values
 
     def get_alarms(self) -> List[Alarm]:
         # Returns all alarms as a list
@@ -248,7 +243,7 @@ class ControlModuleBase:
         return logged_alarms
 
     def set_control(self, control_setting: ControlSetting):
-        ''' Updates the COPY of the control settings'''
+        ''' Updates the entry of COPY contained in the control settings'''
         if control_setting.name == ControlSettingName.PIP:
             self.COPY_SET_PIP = control_setting.value
             self.COPY_PIP_min = control_setting.min_value
@@ -491,15 +486,16 @@ class ControlModuleSimulator(ControlModuleBase):
     def __init__(self):
         ControlModuleBase.__init__(self)
         self.Balloon = Balloon_Simulator(leak=True, delay=False)          # This is the simulation
+        self._sensor_to_COPY()
 
-    def get_sensors(self):
-        # returns SensorValues and a time stamp
+    def _sensor_to_COPY(self):
+        # And the sensor measurements
         lock.acquire()
-        self.sensor_values = SensorValues(pip=self._DATA_PIP,
+        self.COPY_sensor_values = SensorValues(pip=self._DATA_PIP,
                                           peep=self._DATA_PEEP,
                                           fio2=self.Balloon.fio2,
                                           temp=self.Balloon.temperature,
-                                          humidity=self.Balloon.humidity,
+                                          humidity= self.Balloon.humidity,
                                           pressure=self.Balloon.current_pressure,
                                           vte=self._DATA_VTE,
                                           breaths_per_minute=self._DATA_BPM,
@@ -507,16 +503,15 @@ class ControlModuleSimulator(ControlModuleBase):
                                           timestamp=time.time(),
                                           loop_counter = self._loop_counter)
         lock.release()
-        return self.sensor_values
 
     def _start_mainloop(self):
         # start running, this should be run as a thread! 
         # Compare to initialization in Base Class!
 
-        update_copies = 10  #update the COPY every 10 loops
+        update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
         while self._running:
-            time.sleep(.01)
+            time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
 
@@ -529,11 +524,10 @@ class ControlModuleSimulator(ControlModuleBase):
             self._last_update = now
 
             if update_copies == 0:
-                lock.acquire()
-                self._update_from_COPYs()     # Update from possibly updated values as a chunck
-                self._update_to_COPYs()       # Copy current settings to COPY
-                lock.release()
-                update_copies = 5
+                self._controls_from_COPY()     # Update controls from possibly updated values as a chunk
+                self._alarm_to_COPY()          # Copy current alarms and settings to COPY
+                self._sensor_to_COPY()         # Copy sensor values to COPY
+                update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
 

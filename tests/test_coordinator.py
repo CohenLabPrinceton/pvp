@@ -30,17 +30,3 @@ def test_single_process_simulation(control_setting_name):
     # assert c_read.min_value == c.min_value
     # assert c_read.max_value == c.max_value
     # assert c_read.timestamp == c.timestamp
-
-def test_controller():
-
-    Controller = get_control_module(sim_mode=True)
-
-    Controller.start()
-    vals_start = Controller.get_sensors()
-
-    time.sleep(1)
-
-    vals_stop = Controller.get_sensors()
-    Controller.stop()
-
-    assert vals_start.loop_counter < vals_stop.loop_counter

@@ -2,10 +2,10 @@ import time
 from typing import List
 import threading
 import numpy as np
+import copy 
 
 from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ControlSettingName
 
-lock = threading.Lock()
 
 class ControlModuleBase:
     # Abstract class for controlling hardware based on settings received
@@ -28,6 +28,18 @@ class ControlModuleBase:
     # start()
     # stop()
     def __init__(self):
+
+        #########################  Algorithm/Program management  ###############
+        # Hyper-Parameters
+        self._LOOP_UPDATE_TIME                   = 0.01    #Run the main control loop every 0.01 sec
+        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      #After every 10 main control loop iterations, update COPYs.
+
+        # Run the start() method as a thread
+        self._loop_counter = 0
+        self._running = False
+        self._lock = threading.Lock()
+        self.thread = threading.Thread(target=self._start_mainloop, daemon=True)
+        self.thread.start()
 
         #########################  Control management  #########################
 
@@ -93,18 +105,8 @@ class ControlModuleBase:
         self.__I_phase_max = self.__SET_I_PHASE * 1.1
         self.__I_phase_lastset = time.time()
 
-        #########################  Algorithm/Program management  #########################
-        # Hyper-Parameters
-        self._LOOP_UPDATE_TIME                   = 0.01    #Run the main control loop every 0.01 sec
-        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      #After every 10 main control loop iterations, update COPYs.
-
-        # Run the start() method as a thread
-        self._loop_counter = 0
-        self._running = False
-        self.thread = threading.Thread(target=self._start_mainloop, daemon=True)
-        self.thread.start()
-
-        # Make the COPY variables that are updated internally on a regular basis
+        ############### Initialize COPY variables for threads  ##############
+        # COPY variables that later updated on a regular basis
         self.COPY_active_alarms = {}
         self.COPY_logged_alarms = []
         self.COPY_sensor_values = SensorValues()
@@ -112,7 +114,7 @@ class ControlModuleBase:
         self._initialize_set_to_COPY()
 
     def _initialize_set_to_COPY(self):
-        lock.acquire()
+        self._lock.acquire()
         # Copy of the SET variables for threading.
         self.COPY_SET_PIP       = self.__SET_PIP 
         self.COPY_SET_PIP_TIME  = self.__SET_PIP_TIME
@@ -120,10 +122,10 @@ class ControlModuleBase:
         self.COPY_SET_PEEP_TIME = self.__SET_PEEP_TIME
         self.COPY_SET_BPM       = self.__SET_BPM
         self.COPY_SET_I_PHASE   = self.__SET_I_PHASE
-        lock.release()
+        self._lock.release()
 
     def _alarm_to_COPY(self):
-        lock.acquire()
+        self._lock.acquire()
         # Update the alarms
         self.COPY_active_alarms = self.__active_alarms.copy()
         self.COPY_logged_alarms = self.__logged_alarms.copy()
@@ -144,15 +146,19 @@ class ControlModuleBase:
         self.COPY_I_phase_min = self.__I_phase_min
         self.COPY_I_phase_max = self.__I_phase_max
         self.COPY_I_phase_lastset = self.__I_phase_lastset
-        lock.release()
+
+        self._lock.release()
 
     def _sensor_to_COPY(self):
         # These variables have to come from the hardware
+        self._lock.acquire()
+        # Make sure you have acquire and release!
+        self._lock.release()
         pass
 
     def _controls_from_COPY(self):
         # Update SET variables
-        lock.acquire()
+        self._lock.acquire()
         self.__SET_PIP       = self.COPY_SET_PIP
         self.__SET_PIP_TIME  = self.COPY_SET_PIP_TIME
         self.__SET_PEEP      = self.COPY_SET_PEEP
@@ -164,7 +170,7 @@ class ControlModuleBase:
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PLATEAU = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
-        lock.release()
+        self._lock.release()
 
     def __test_critical_levels(self, min, max, value, name):
         '''
@@ -222,28 +228,39 @@ class ControlModuleBase:
             self.__test_critical_levels(min=self.__I_phase_min, max=self.__I_phase_max, value=self._DATA_I_PHASE, name="I_PHASE")
 
     def get_sensors(self) -> SensorValues:
-        # This will depend on simulation vs. reality
-        return self.COPY_sensor_values
+        # Make sure to return a copy of the instance
+        self._lock.acquire()
+        cp = copy.deepcopy( self.COPY_sensor_values )
+        self._lock.release()
+        return cp
 
     def get_alarms(self) -> List[Alarm]:
         # Returns all alarms as a list
+        self._lock.acquire()
         new_alarm_list = self.COPY_logged_alarms.copy()
         for alarm_key in self.COPY_active_alarms.keys():
             new_alarm_list.append(self.COPY_active_alarms[alarm_key])
+        self._lock.release()
         return new_alarm_list
 
     def get_active_alarms(self):
         # Returns only the active alarms
+        self._lock.acquire()
         active_alarms = self.COPY_active_alarms.copy() # Make sure to return a copy
+        self._lock.release()
         return active_alarms
 
     def get_logged_alarms(self) -> List[Alarm]:
         # Returns only the inactive alarms
+        self._lock.acquire()
         logged_alarms = self.COPY_logged_alarms.copy()  # Make sure to return a copy
+        self._lock.release()
         return logged_alarms
 
     def set_control(self, control_setting: ControlSetting):
         ''' Updates the entry of COPY contained in the control settings'''
+        self._lock.acquire()
+
         if control_setting.name == ControlSettingName.PIP:
             self.COPY_SET_PIP = control_setting.value
             self.COPY_PIP_min = control_setting.min_value
@@ -277,9 +294,12 @@ class ControlModuleBase:
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting.name))
 
+        self._lock.release()
+
     def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         ''' Gets values of the COPY of the control settings. '''
-
+        
+        self._lock.acquire()
         if control_setting_name == ControlSettingName.PIP:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_PIP,
@@ -312,6 +332,8 @@ class ControlModuleBase:
                                   self.COPY_I_phase_lastset)
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
+
+        self._lock.release()
 
         return return_value
 
@@ -490,7 +512,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
     def _sensor_to_COPY(self):
         # And the sensor measurements
-        lock.acquire()
+        self._lock.acquire()
         self.COPY_sensor_values = SensorValues(pip=self._DATA_PIP,
                                           peep=self._DATA_PEEP,
                                           fio2=self.Balloon.fio2,
@@ -502,7 +524,7 @@ class ControlModuleSimulator(ControlModuleBase):
                                           inspiration_time_sec=self._DATA_I_PHASE,
                                           timestamp=time.time(),
                                           loop_counter = self._loop_counter)
-        lock.release()
+        self._lock.release()
 
     def _start_mainloop(self):
         # start running, this should be run as a thread! 

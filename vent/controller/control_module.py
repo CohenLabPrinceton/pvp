@@ -8,25 +8,29 @@ from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeveri
 
 
 class ControlModuleBase:
-    # Abstract class for controlling hardware based on settings received
-    # Internal variables only to be accessed though the set_ and get_ functions
-    #
-    # NOTE: 
-    #        get_ and set_ act on COPIES, that are synched with the main loop every few iterations
-    #
-    #  === GET VALUES ===
-    # get_sensors()
-    # get_alarms()
-    # get_active_alarms()
-    # get_logged_alarms()
-    # get_control()
-    #
-    #  === SET VALUES ===
-    # set_control()
-    #
-    # === START/STOP CONTROLLER
-    # start()
-    # stop()
+    """This is an abstract class for controlling simulation and hardware.
+
+    1. All internal variables fall in three classes, denoted by the beginning of the variable:
+        - "COPY_varname": These are copies (see 1.) that are regularly sync'ed with internal variables.
+        - "__varname":    These are variables only used in the ControlModuleBase-Class
+        - "_varname":     These are variables used in derived classes.
+
+    2. Internal variables should only to be accessed though the set_ and get_ functions.
+        These functions act on COPIES of internal variables ("__" and "_"), that are sync'd every few
+        iterations. How often this is done is adjusted by the variable
+        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE. To avoid multiple threads manipulating the same 
+        variables at the same time, every manipulation of "COPY_" is surrounded by a thread lock.
+
+    Public Methods:
+        get_sensors():                     Returns a copy of the current sensor values.
+        get_alarms():                      Returns a List of all alarms, active and logged
+        get_active_alarms():               Returns a Dictionary of all currently active alarms.
+        get_logged_alarms():               Returns a List of logged alarms
+        get_control(ControlSetting):       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
+        start():                           Starts the main-loop of the controller
+        stop():                            Stops the main-loop of the controller
+    """
+
     def __init__(self):
 
         #########################  Algorithm/Program management  ###############
@@ -38,8 +42,8 @@ class ControlModuleBase:
         self._loop_counter = 0
         self._running = False
         self._lock = threading.Lock()
-        self.thread = threading.Thread(target=self._start_mainloop, daemon=True)
-        self.thread.start()
+        self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
+        self.__thread.start()
 
         #########################  Control management  #########################
 
@@ -68,8 +72,8 @@ class ControlModuleBase:
         self._DATA_PIP_TIME = None    # Measured time of reaching PIP plateau
         self._DATA_PEEP = None        # Measured valued of PEEP
         self._DATA_I_PHASE = None     # Measured duration of inspiratory phase
-        self.__DATA_FIRST_PEEP = None  # Time when PEEP is reached first
-        self.__DATA_LAST_PEEP = None   # Last time of PEEP - by definition end of breath cycle
+        self.__DATA_FIRST_PEEP = None # Time when PEEP is reached first
+        self.__DATA_LAST_PEEP = None  # Last time of PEEP - by definition end of breath cycle
         self._DATA_BPM = None         # Measured breathing rate, by definition 60sec / length_of_breath_cycle
         self._DATA_VTE = None         # Maximum air displacement in last breath cycle
 
@@ -400,15 +404,15 @@ class ControlModuleBase:
         pass   
 
     def start(self):
-        if not self.thread.is_alive():  # If the previous thread has been stopped, make a new one.
+        if not self.__thread.is_alive():  # If the previous thread has been stopped, make a new one.
             self._running = True
-            self.thread = threading.Thread(target=self._start_mainloop, daemon=True)
-            self.thread.start()
+            self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
+            self.__thread.start()
         else:
             print("Main Loop already running.")
 
     def stop(self):
-        if self.thread.is_alive():
+        if self.__thread.is_alive():
             self._running = False
         else:
             print("Main Loop is not running.")

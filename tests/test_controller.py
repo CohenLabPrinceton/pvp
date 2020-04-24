@@ -18,11 +18,11 @@ def test_control_dynamical():
 
     vals_start = Controller.get_sensors()
 
-    v_peep = random.randint(0, 15)
+    v_peep = random.randint(5, 15)
     command = ControlSetting(name=ControlSettingName.PEEP, value=v_peep, min_value=v_peep-1, max_value=v_peep+1, timestamp=time.time())
     Controller.set_control(command)
 
-    v_pip = random.randint(15, 30)
+    v_pip = random.randint(15, 25)
     command = ControlSetting(name=ControlSettingName.PIP, value=v_pip, min_value=v_pip-1, max_value=v_pip+1, timestamp=time.time())
     Controller.set_control(command)
 

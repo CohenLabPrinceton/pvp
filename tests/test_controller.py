@@ -20,3 +20,14 @@ def test_controller():
     Controller.stop()
 
     assert vals_start.loop_counter < vals_stop.loop_counter
+
+
+# get sensors
+# get alarms
+# get active alarms
+# get logged alarms
+# set controls
+# get control
+# test _PID update?
+# repeated stars and stops of the mainloop, make sure heartbeat increases
+# For settings, try good and bad values. Make sure that it works

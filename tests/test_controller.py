@@ -18,7 +18,7 @@ def test_control_dynamical():
 
     vals_start = Controller.get_sensors()
 
-    v_peep = random.randint(5, 15)
+    v_peep = random.randint(0, 15)
     command = ControlSetting(name=ControlSettingName.PEEP, value=v_peep, min_value=v_peep-1, max_value=v_peep+1, timestamp=time.time())
     Controller.set_control(command)
 
@@ -30,17 +30,24 @@ def test_control_dynamical():
     command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=v_bpm, min_value=v_bpm-1, max_value=v_bpm+1, timestamp=time.time()) 
     Controller.set_control(command)
 
+    v_iphase = 1.2*random.random() + 0.8  #between 0.8 and 2
+    command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=v_iphase, min_value=v_iphase-1, max_value=v_iphase+1, timestamp=time.time()) 
+    Controller.set_control(command)
+
+
     vals_start = Controller.get_sensors()
     Controller.start()
-    time.sleep(15)              #let this run for 15 sec
-    Controller.stop()
+    time.sleep(15)                                                   # Let this run for 15 sec
+    Controller.stop() 
     
     vals_stop = Controller.get_sensors()
     
-    assert (vals_stop.loop_counter - vals_start.loop_counter) > 1000
-    assert np.abs(vals_stop.peep - v_peep) < 0.5  # error within 0.5 cmH2O
-    assert np.abs(vals_stop.pip - v_pip)   < 0.5
-    assert np.abs(vals_stop.breaths_per_minute - v_bpm)   < 1 # within a bpm
+    assert (vals_stop.loop_counter - vals_start.loop_counter) > 1000 # In 15sec, this program should go through at least 1000 loops
+    assert np.abs(vals_stop.peep - v_peep)                     < 0.5 # PIP error correct within 0.5 cmH2O
+    assert np.abs(vals_stop.pip - v_pip)                       < 0.5 # PIP error correct within 0.5 cmH2O
+    assert np.abs(vals_stop.breaths_per_minute - v_bpm)        < 1   # Breaths per minute correct within 1 bpm
+    assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < 0.2 # Inspiration time   correct within 0.2 sec
+
 
 # self.COPY_sensor_values = SensorValues(pip=self._DATA_PIP,
 #                                   peep=self._DATA_PEEP,

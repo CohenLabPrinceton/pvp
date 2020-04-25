@@ -60,7 +60,7 @@ def test_control_dynamical():
     command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=v_bpm, min_value=v_bpm-1, max_value=v_bpm+1, timestamp=time.time()) 
     Controller.set_control(command)
 
-    v_iphase = 1.2*random.random() + 0.8  #between 0.8 and 2
+    v_iphase = (0.3 + np.random.random()*0.5) * 60/v_bpm
     command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=v_iphase, min_value=v_iphase-1, max_value=v_iphase+1, timestamp=time.time()) 
     Controller.set_control(command)
 
@@ -72,7 +72,7 @@ def test_control_dynamical():
     
     vals_stop = Controller.get_sensors()
     
-    assert (vals_stop.loop_counter - vals_start.loop_counter) > 1000 # In 20s, this program should go through at least 1000 loops
+    assert (vals_stop.loop_counter - vals_start.loop_counter)  > 1000 # In 20s, this program should go through at least 1000 loops
     assert np.abs(vals_stop.peep - v_peep)                     < 2 # PIP error correct within 2 cmH2O
     assert np.abs(vals_stop.pip - v_pip)                       < 2 # PIP error correct within 2 cmH2O
     assert np.abs(vals_stop.breaths_per_minute - v_bpm)        < 1   # Breaths per minute correct within 1 bpm

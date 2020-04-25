@@ -67,12 +67,12 @@ def test_control_dynamical():
 
     vals_start = Controller.get_sensors()
     Controller.start()
-    time.sleep(15)                                                   # Let this run for 15 sec
+    time.sleep(20)                                                   # Let this run for 20 sec
     Controller.stop() 
     
     vals_stop = Controller.get_sensors()
     
-    assert (vals_stop.loop_counter - vals_start.loop_counter) > 1000 # In 15sec, this program should go through at least 1000 loops
+    assert (vals_stop.loop_counter - vals_start.loop_counter) > 1000 # In 20s, this program should go through at least 1000 loops
     assert np.abs(vals_stop.peep - v_peep)                     < 2 # PIP error correct within 2 cmH2O
     assert np.abs(vals_stop.pip - v_pip)                       < 2 # PIP error correct within 2 cmH2O
     assert np.abs(vals_stop.breaths_per_minute - v_bpm)        < 1   # Breaths per minute correct within 1 bpm

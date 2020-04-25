@@ -8,13 +8,43 @@ from vent.coordinator.coordinator import get_coordinator
 from vent.controller.control_module import get_control_module
 
 
+@pytest.mark.parametrize("control_setting_name", [ControlSettingName.PIP,
+                                                  ControlSettingName.PIP_TIME,
+                                                  ControlSettingName.PEEP,
+                                                  ControlSettingName.BREATHS_PER_MINUTE,
+                                                  ControlSettingName.INSPIRATION_TIME_SEC])
+
+def test_control_settingss(control_setting_name):
+    '''
+    Set and read a few variables, make sure that they are identical.
+    '''
+    Controller = get_control_module(sim_mode=True)
+    Controller.start()
+    Controller.stop()
+
+    v = random.randint(10, 100)
+    v_min = random.randint(10, 100)
+    v_max = random.randint(10, 100)
+    t = time.time()
+
+    c_set = ControlSetting(name=control_setting_name, value=v, min_value=v_min, max_value=v_max, timestamp=t)
+    Controller.set_control(c_set)
+
+    c_get = Controller.get_control(control_setting_name)
+
+    assert c_get.name == c_set.name
+    assert c_get.value == c_set.value
+    assert c_get.min_value == c_set.min_value
+    assert c_get.max_value == c_set.max_value
+    assert c_get.timestamp == c_set.timestamp
+
+
+
 def test_control_dynamical():
     ''' 
     Start controller, set control values, measure whether actually there
     '''
     Controller = get_control_module(sim_mode=True)
-
-    Controller._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 2
 
     vals_start = Controller.get_sensors()
 
@@ -49,18 +79,7 @@ def test_control_dynamical():
     assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < 0.2 # Inspiration time   correct within 0.2 sec
 
 
-# self.COPY_sensor_values = SensorValues(pip=self._DATA_PIP,
-#                                   peep=self._DATA_PEEP,
-#                                   fio2=self.Balloon.fio2,
-#                                   temp=self.Balloon.temperature,
-#                                   humidity= self.Balloon.humidity,
-#                                   pressure=self.Balloon.current_pressure,
-#                                   vte=self._DATA_VTE,
-#                                   breaths_per_minute=self._DATA_BPM,
-#                                   inspiration_time_sec=self._DATA_I_PHASE,
-#                                   timestamp=time.time(),
-#                                   loop_counter = self._loop_counter)
-# self.__SET_I_PHASE = 1.3    # Target duration of inspiratory phase)
+# Still to check:
 # get sensors
 # get alarms
 # get active alarms

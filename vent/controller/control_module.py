@@ -200,10 +200,9 @@ class ControlModuleBase:
                 self.__logged_alarms.append(old_alarm)
                 del self.__active_alarms[name]
 
-    def __update_alarms(self):
-        ''' This goes through the last waveform, and updates alarms.'''
+    def __analyze_last_waveform(self):
+        ''' This goes through the last waveform, and updates fits to VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
         this_cycle = self.__cycle_counter
-
         if this_cycle > 1:  # The first cycle for which we can calculate this is cycle "1".
             data = self.__cycle_waveforms[this_cycle - 1]
             phase = data[:, 0]
@@ -226,6 +225,9 @@ class ControlModuleBase:
             self.__DATA_FIRST_PEEP = phase[np.min(np.where(np.logical_and(pressure < self._DATA_PEEP, phase > 1)))]
             self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform
 
+    def __update_alarms(self):
+        ''' This goes through the last waveform, and updates alarms.'''
+        if self.__cycle_counter > 1:  # The first cycle for which we can calculate this is cycle "1".
             self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name="PIP")
             self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name="PIP_TIME")
             self.__test_critical_levels(min=self.__PEEP_min, max=self.__PEEP_max, value=self._DATA_PEEP, name="PEEP")
@@ -234,6 +236,7 @@ class ControlModuleBase:
 
     def get_sensors(self) -> SensorValues:
         # Make sure to return a copy of the instance
+        # And if this has been called before last wavecycle was analyzed -> do that.
         self._lock.acquire()
         cp = copy.deepcopy( self.COPY_sensor_values )
         self._lock.release()
@@ -394,7 +397,7 @@ class ControlModuleBase:
             
         if self.__cycle_counter not in self.__cycle_waveforms.keys():  # if this cycle doesn't exist yet, start it
             self.__cycle_waveforms[self.__cycle_counter] = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])  # add volume
-            
+            self.__analyze_last_waveform()    # Analyze last waveform
             self.__update_alarms()            # Run alarm detection over last cycle's waveform
             self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
         else:

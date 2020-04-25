@@ -201,7 +201,7 @@ class ControlModuleBase:
                 del self.__active_alarms[name]
 
     def __analyze_last_waveform(self):
-        ''' This goes through the last waveform, and updates fits to VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
+        ''' This goes through the last waveform, and updates VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
         this_cycle = self.__cycle_counter
         if this_cycle > 1:  # The first cycle for which we can calculate this is cycle "1".
             data = self.__cycle_waveforms[this_cycle - 1]
@@ -226,7 +226,7 @@ class ControlModuleBase:
             self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform
 
     def __update_alarms(self):
-        ''' This goes through the last waveform, and updates alarms.'''
+        ''' This goes through the values obtained from the last waveform, and updates alarms.'''
         if self.__cycle_counter > 1:  # The first cycle for which we can calculate this is cycle "1".
             self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name="PIP")
             self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name="PIP_TIME")
@@ -236,7 +236,6 @@ class ControlModuleBase:
 
     def get_sensors(self) -> SensorValues:
         # Make sure to return a copy of the instance
-        # And if this has been called before last wavecycle was analyzed -> do that.
         self._lock.acquire()
         cp = copy.deepcopy( self.COPY_sensor_values )
         self._lock.release()

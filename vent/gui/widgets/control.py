@@ -181,6 +181,9 @@ class Control(QtWidgets.QWidget):
             self.value = new_value
 
             self.value_changed.emit(self.value)
+        else:
+            # TODO: Log this
+            pass
 
         # still draw regardless in case an invalid value was given
         value_str = str(np.round(self.value, self.decimals))

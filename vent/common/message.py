@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from vent import values
 
 
 class SensorValues:
@@ -16,20 +17,21 @@ class SensorValues:
         self.timestamp = timestamp
         self.loop_counter = loop_counter
 
+#
+# class ControlSettingName(Enum):
+#     #Setting that are likely important for future adjustements
+#     PIP = auto()       # PIP pressure
+#     PIP_TIME = auto()  # time to reach PIP
+#     PEEP = auto()      # PEEP pressure
+#     BREATHS_PER_MINUTE = auto()
+#     INSPIRATION_TIME_SEC = auto()
+#     #Settings that are read out, but can not be controlled by software
+#     FIO2 = auto()
+#     TEMP = auto()
+#     HUMIDITY = auto()
+#     VTE = auto()
 
-class ControlSettingName(Enum):
-    #Setting that are likely important for future adjustements
-    PIP = auto()       # PIP pressure
-    PIP_TIME = auto()  # time to reach PIP
-    PEEP = auto()      # PEEP pressure
-    BREATHS_PER_MINUTE = auto()
-    INSPIRATION_TIME_SEC = auto()
-    #Settings that are read out, but can not be controlled by software
-    FIO2 = auto()
-    TEMP = auto()
-    HUMIDITY = auto()
-    VTE = auto()
-
+ControlSettingName = Enum('ControlSettingName', list(values.CONTROL.keys()))
 
 class ControlSetting:
     def __init__(self, name, value, min_value, max_value, timestamp):

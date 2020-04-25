@@ -213,9 +213,10 @@ class ControlModuleBase:
             self._DATA_VTE = np.max(volume) - np.min(volume)
 
             # get the pressure niveau heuristically (much faster than fitting)
-            # 20 and 80 percentiles pulled out of my hat.
-            self._DATA_PEEP = np.percentile(pressure, 20)
-            self._DATA_PIP = np.percentile(pressure, 80)
+            # 20/80 percentile of pressure values below/above mean
+            # Assumption: waveform is mostly between both plateaus
+            self._DATA_PEEP = np.percentile(pressure[ pressure < np.mean(pressure)], 20 )
+            self._DATA_PIP  = np.percentile(pressure[ pressure > np.mean(pressure)], 80 )
 
             # measure time of reaching PIP, and leaving PIP
             self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP))]
@@ -390,10 +391,12 @@ class ControlModuleBase:
             self.__cycle_start = time.time()  # new cycle starts
             self.__cycle_counter += 1         # For the dictionary, new waveform -> increase cycle counter by 1
             self.__DATA_VOLUME = 0            # New cycle, start at zero volume
-            self.__update_alarms()            # Run alarm detection over last cycle's waveform
             
         if self.__cycle_counter not in self.__cycle_waveforms.keys():  # if this cycle doesn't exist yet, start it
             self.__cycle_waveforms[self.__cycle_counter] = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])  # add volume
+            
+            self.__update_alarms()            # Run alarm detection over last cycle's waveform
+            self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
         else:
             data = self.__cycle_waveforms[self.__cycle_counter]
             data = np.append(data, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)

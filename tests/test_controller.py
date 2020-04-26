@@ -71,8 +71,11 @@ def test_control_dynamical():
     vals_start = Controller.get_sensors()
     time.sleep(20)                                                   # Let this run for 20 sec
     vals_stop = Controller.get_sensors()
+
+    Controller.stop() # consecutive stops should be ignored
     Controller.stop() 
-    
+    Controller.stop() 
+
     vals_stop = Controller.get_sensors()
     
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 1000 # In 20s, this program should go through at least 1000 loops
@@ -106,6 +109,9 @@ def test_control_dynamical():
     assert COPY_tt       == vals_stop.timestamp
     assert COPY_lc       == vals_stop.loop_counter
 
+    hb1 = Controller.heartbeat()
+    assert hb1 > 0                                 # Test the heartbeat
+    assert np.abs(hb1 - COPY_lc) < Controller._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE  # true heart-beat should be close to the sensor loop counter
 
 
 
@@ -222,19 +228,10 @@ def test_alarm():
     assert len(Controller.get_active_alarms()) == 0
     assert len(Controller.get_logged_alarms()) == 4
     assert len(Controller.get_alarms()) == 4
-        
-
-# def test_alarms():
-#     '''
-#     This starts the PI controller in a particular state, triggers an alarm, and tests whether it is called with the right time stamp.
-#     '''
-#     assert that this stuff is true:
-#     print(Controller.COPY_PEEP_min)
-#     print(Controller._ControlModuleBase__PEEP_min)
 
 
-# Still to check:
-# test _PID update?
-# Good and bad values. Make sure that it works
+# # Still to check:
+# # test _PID update?
+# # Good and bad values. Make sure that it works
 
 

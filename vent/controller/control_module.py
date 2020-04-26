@@ -585,11 +585,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
     def heartbeat(self):
         '''only used for fiddling'''
-        if self._running:
-            print("Controller running...")
-        else:
-            print("Controller not running...")
-        print("Current loop = " + str(self._loop_counter)+'.\n')
+        return self._loop_counter
 
 
 

@@ -1,7 +1,7 @@
 import pigpio
-import struct
 import abc
 import numpy as np
+from collections import OrderedDict
 from time import sleep
 
 class Ventilator:
@@ -26,7 +26,7 @@ class Device(abc.ABC):
     Abstract class for pigpio handles
     '''
     def __init__(self,pig):
-        self._pig = pig
+        self._pig = pig if pig is not None else pigpio.pi()
 
     def __del__(self):
         self.close()
@@ -36,13 +36,13 @@ class Device(abc.ABC):
         return self._handle
 
     def close(self):
-        self._handle.close()
+        self._pig.close(self._handle)
 
 class i2cDevice(Device):
     '''
     A class wrapper for pigpio I2C handles 
     '''
-    def __init__(self,pig,i2c_address,i2c_bus=1):
+    def __init__(self, i2c_address, i2c_bus, pig=None):
         super().__init__(pig)
         self._handle    = self._pig.i2c_open(i2c_bus,i2c_address)
 
@@ -92,16 +92,87 @@ class i2cDevice(Device):
         return self._byteswap(word)
 
     def _le16_to_be(self,word):
-        '''Little Endian to BigEndian conversion for signed 2Byte integers (2 complement).'''
+        '''Little Endian to BigEndian conversion for unsigned 2Byte integers (2 complement).'''
         word = self._byteswap(word)
-        if(word >= 2**15):
-            word = word-2**16
+        #if(word >= 2**15):
+        #    word = word-2**16
         return word
 
     def _byteswap(self,word):
         '''Revert Byte order for Words (2 Bytes, 16 Bit).'''
         word = (word>>8 |word<<8)&0xFFFF
         return word
+
+    class Register:
+        '''
+        Describes a writable configuration register. Has Dynamically-defined
+        attributes corresponding to the fields described by the passed arguments.
+        Takes as arguments two tuples of equal length, the first of which
+        names each field and the second being a tuple of tuples containing
+        the (human readable) possible settings/values for each field.  
+        '''
+        def __init__(self,fields,values):
+            self._fields = fields
+            
+            ''' Dynamically initialize attributes'''
+            offset = 0
+            for f,v in zip(reversed(fields),reversed(values)):
+                setattr( self, f, self.ConfigField(offset, len(v)-1, OrderedDict(zip( v, range(len(v)) )) ) )
+                offset += (len(v)-1).bit_length()
+                
+        def unpack(self,cfg):
+            '''
+            Given the contents of a register in integer form, returns a dict of fields and their current settings
+            '''
+            return OrderedDict(zip(self._fields, ( getattr(getattr(self,field), 'unpack' )(cfg) for field in self._fields )))
+        
+        def pack(self,cfg,**kwargs):
+            '''
+            Given an initial integer representation of a register and an
+            arbitrary number of field=value settings, returns an integer
+            representation of the register incorporating the new settings
+            '''
+            for field,value in kwargs.items():
+                if hasattr(self,field) and value is not None:
+                    cfg = getattr( getattr(self,field), 'insert' )(cfg,value)
+            return cfg
+
+        class ConfigField:
+            '''
+            Describes a configurable field in a writable register.
+            '''
+            def __init__(self,offset,mask,values):
+                self._OFFSET    = offset
+                self._MASK      = mask
+                self._VALUES    = values
+                
+            def offset(self):
+                return self._OFFSET
+
+            def info(self):
+                ''' Returns a list containing stuff '''
+                return [ self._OFFSET, self._MASK, self._VALUES ]
+            
+            def unpack(self,cfg):
+                ''' Extracts setting from passed 16-bit config & returns human readable result '''
+                return OrderedDict(map(reversed,self._VALUES.items()))[ self.extract(cfg) ]
+            
+            def pack(self,value):
+                '''Takes a human-readable setting and returns a bit-shifted integer'''
+                return self._VALUES[value] << self._OFFSET
+                
+            def insert(self,cfg,value):
+                ''' 
+                Performs validation and then does a bitwise replacement on passed config with
+                the passed value. Returns integer representation of the new config.
+                '''
+                if value not in self._VALUES.keys():
+                    raise ValueError("ConfigField must be one of: {}".format(self._VALUES.keys()))
+                return ( cfg & ~(self._MASK<<self._OFFSET) )|( self._VALUES[value] << self._OFFSET )
+                
+            def extract(self,cfg):
+                '''Extracts setting from passed 16-bit config & returns integer representation'''
+                return ( cfg & (self._MASK<<self._OFFSET) )>>self._OFFSET
 
 class spiDevice(Device):
     '''
@@ -111,184 +182,84 @@ class spiDevice(Device):
         super().__init__(pig)
         self._handle = self._pig.spi_open(spi_channel,baudrate)
         	
-class ads1115(i2cDevice):  # This should inherit from i2cInterface - change i2c_device to match convention & whatever else needs to happen
+class ads1115(i2cDevice):  
     '''
-    Class for the ADS1115 16 bit, 4 Channel Analog to Digital Converter
+    Class for the ADS1115 16 bit, 4 Channel Analog to Digital Converter.
+    Datasheet:
+        http://www.ti.com/lit/ds/symlink/ads1114.pdf?ts=1587872241912
     '''
-    ''' Default config values & other hardware descriptors'''
-    _POINTER_CONVERSION     = 0x00
-    _POINTER_CONFIG         = 0x01
+    
+    '''Default Values'''
+    #Default ventidude config:   '0b1100001111100011' / 0xC3E3 / 50147
+    #Default config on power-up: '0b1000010110000101' / 0x8583 / 34179
     _DEFAULT_ADDRESS        = 0x48
-    _DEFAULT_CHANNEL        = 0
-    _DEFAULT_GAIN           = 1
-    _DEFAULT_DATA_RATE      = 860
-    _DEFAULT_MODE           = 'SINGLE'
-    _CONFIG_OS_SINGLE       = 0x8000
-    _CONFIG_MUX_OFFSET      = 12
-    _CONFIG_COMP_QUE_DISABLE = 0x0003
-    '''Maps pins & differential combinations of pins to channels'''
-    _CONFIG_CHANNELS = {
-        (0, 1): 0,
-        (0, 3): 1,
-        (1, 3): 2,
-        (2, 3): 3,
-        0 : 4,
-        1 : 5,
-        2 : 6,
-        3 : 7 }
-    '''Possible gain settings'''
-    _CONFIG_GAIN = {   
-        2 / 3: 0x0000,
-        1: 0x0200,
-        2: 0x0400,
-        4: 0x0600,
-        8: 0x0800,
-        16: 0x0A00 }
-    _CONFIG_MODE = { 'CONTINUOUS' : 0x0000, 'SINGLE' : 0x0100 }
-    """Data sample rates"""
-    _CONFIG_DATA_RATE = {
-            8: 0x0000,
-            16: 0x0020,
-            32: 0x0040,
-            64: 0x0060,
-            128: 0x0080,
-            250: 0x00A0,
-            475: 0x00C0,
-            860: 0x00E0 }
-    '''human readable gains'''
-    _PGA_RANGE = {
-        2 / 3: 6.144,
-        1: 4.096,
-        2: 2.048,
-        4: 1.024,
-        8: 0.512,
-        16: 0.256}
+    _DEFAULT_VALUES         = {'MUX':0, 'PGA':4.096, 'MODE':'SINGLE', 'DR':860}
     
-    def __init__(self, pig, address=_DEFAULT_ADDRESS):
-        super().__init__(pig,address)
-        self.channel    = self._DEFAULT_CHANNEL
-        self.gain       = self._DEFAULT_GAIN
-        self.data_rate  = self._DEFAULT_DATA_RATE
-        self.mode       = self._DEFAULT_MODE
-        self.config     = (self.channel,self.gain,self.data_rate,self.mode)
-
-    @property
-    def channel(self):
-        '''Returns the human-readable definition of the channel spcified by the current register''' 
-        return dict(map(reversed,self._CONFIG_CHANNELS.items()))[self._CHANNEL >> self._CONFIG_MUX_OFFSET]
-
-    @property
-    def gain(self):
-        """The ADC gain."""
-        return dict(map(reversed,self._CONFIG_GAIN.items()))[self._GAIN]
-
-    @property
-    def data_rate(self):
-        """The data rate for ADC conversion in samples per second."""
-        return dict(map(reversed,self._CONFIG_DATA_RATE.items()))[self._DATA_RATE]
-
-    @property
-    def mode(self):
-        """The ADC conversion mode."""
-        return dict(map(reversed,self._CONFIG_MODE.items()))[self._MODE]
-
-    @property
-    def config(self):
-        """The word to be written to the config register"""
-        return {'channel'   : self.channel,
-                'gain'      : self.gain,
-                'data_rate' : self.data_rate,
-                'mode'      : self.mode }
-    '''Overloaded property.setters'''
-
-    @channel.setter
-    def channel(self,channel):
-        possible_channels = self.get_channels()
-        if channel not in possible_channels:
-            raise ValueError("Channel must be one of: {}".format(list(possible_channels)))
-        self._CHANNEL = self._CONFIG_CHANNELS[channel] << self._CONFIG_MUX_OFFSET
-            
-    @gain.setter
-    def gain(self, gain):
-        possible_gains = self.get_gains()
-        if gain not in possible_gains:
-            raise ValueError("Gain is {} but must be one of: {}".format(gain,possible_gains))
-        self._GAIN = self._CONFIG_GAIN[gain]
-
-    @data_rate.setter
-    def data_rate(self, rate):
-        possible_rates = self.get_rates()
-        if rate not in possible_rates:
-            raise ValueError("Data rate must be one of: {}".format(possible_rates))
-        self._DATA_RATE = self._CONFIG_DATA_RATE[rate]
-
-    @mode.setter
-    def mode(self, mode):
-        possible_modes = self.get_modes()
-        if mode not in possible_modes:
-            raise ValueError("Mode must be one of: {}".format(possible_modes))
-        self._MODE = self._CONFIG_MODE[mode]
+    '''Address Pointer Register (write-only)'''
+    _POINTER_FIELDS = ( 'P' )
+    _POINTER_VALUES = ( ('CONVERSION', 'CONFIG', 'LO_THRESH', 'HIGH_THRESH'), )
     
-    @config.setter
-    def config(self,channel=None,gain=None,data_rate=None,mode=None):
-        new_and_old = zip( (channel,gain,data_rate,mode), (self.channel,self.gain,self.data_rate,self.mode) )
-        if not any(new is not None and new !=old for new,old in new_and_old):
-            pass
-        else:
-            self._CONFIG = self._CONFIG_OS_SINGLE
-            for config,new_config in new_and_old:
-                if new_config != config: config = new_config 
-                self._CONFIG |= config
-            self.write_register(self._POINTER_CONFIG, self._CONFIG)
-
-    def read(self,channel,gain=None,data_rate=None,mode=None):
-        return self.raw_read(channel,gain,data_rate,mode)*self._PGA_RANGE[self.gain] / 32767
+    '''Config Register (R/W) '''
+    _CONFIG_FIELDS = ('OS','MUX','PGA','MODE','DR','COMP_MODE','COMP_POL','COMP_LAT','COMP_QUE')   
+    _CONFIG_VALUES  = ( ( 'NO_EFFECT', 'START_CONVERSION' ),
+                        ( (0, 1), (0, 3), (1, 3), (2, 3), 0, 1, 2, 3 ),
+                        ( 6.144, 4.096, 2.048, 1.024, 0.512, 0.256, 0.256, 0.256 ),
+                        ( 'CONTINUOUS', 'SINGLE' ),
+                        ( 8, 16, 32, 64, 128, 250, 475, 860 ),
+                        ( 'TRADIONAL', 'WINDOW' ),
+                        ( 'ACTIVE_LOW', 'ACTIVE_HIGH' ),
+                        ( 'NONLATCHING', 'LATCHING' ),
+                        ( 1, 2, 3, 'DISABLE' ) )
+                        
+    '''
+    Note: The Conversion Register is read-only and contains a 16bit representation of 
+    the requested value (provided the conversion is ready).
+    The Lo-thresh & Hi-thresh Registers are not used in this application.
+    However, their function and usage are described in the datasheet. 
+    '''
     
-    def raw_read(self, channel, gain=None,data_rate=None,mode=None):
+    def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None,):
+        super().__init__(address,i2c_bus,pig)
+        '''Define registers. Pointer register is write only, config is R/W.'''
+        self.pointer    = self.Register(self._POINTER_FIELDS,self._POINTER_VALUES)
+        self.config     = self.Register(self._CONFIG_FIELDS,self._CONFIG_VALUES)
+        '''Set initial value of _LAST_CFG to what is actually on the ADS'''
+        self._LAST_CFG  = self.read_register(self.pointer.P.pack('CONFIG'))
+        '''Pack default settings into _CFG, don't bother to write to ADC yet'''
+        self._CFG       = self.config.pack( cfg     = self._LAST_CFG,
+                                            MUX     = self._DEFAULT_VALUES['MUX'],
+                                            PGA     = self._DEFAULT_VALUES['PGA'],
+                                            MODE    = self._DEFAULT_VALUES['MODE'],
+                                            DR      = self._DEFAULT_VALUES['DR'] )
+                                            
+    def read(self,channel=None,gain=None,mode=None,data_rate=None):
+        '''Performs a raw_read and converts the result to voltage '''
+        return self.raw_read(channel=channel,gain=gain,mode=mode,data_rate=data_rate)*self.config.PGA.unpack(self._CFG) / 32767
+    
+    def raw_read(self,channel=None,gain=None,mode=None,data_rate=None):
         '''
-        Checks to see whether new config values  were passed, and if
-        they were, whether they are different from the current config.
-        If there are new values that are different, set the new config.
-        If ADC is in single-shot mode, or if a new config was set, wait
-        until the conversion is ready. Finally, read the value in the
-        conversion register.
+        Packs any new values passed as arguments into a new cfg. 
+        If new cfg differs from the last, or if single-shot mode is specified,
+        write new cfg to config register and wait for conversion.
+        Otherwise, or after the above has been done, read the conversion value.
         '''
-        if self.mode == 'SINGLE':
-            self.write_register(self._POINTER_CONFIG, self._CONFIG)
-            sleep(1/self.data_rate)
-            while not self.ready():
-                sleep(1/self.data_rate/10)
-        return self.read_register(self._POINTER_CONVERSION)
+        self._CFG = self.config.pack(self._CFG,MUX=channel,PGA=gain,MODE=mode,DR=data_rate)
+        mode = self.config.MODE.unpack(self._CFG)
+        if self._CFG != self._LAST_CFG or mode == 'SINGLE':
+            self.write_register(self.pointer.P.pack('CONFIG'), self._CFG)
+            sleep(1/self.config.DR.unpack(self._CFG))
+            while not ( self.ready() or  mode == 'CONTINUOUS' ):
+                sleep(1/self.config.DR.unpack(self._CFG)/10)
+                #pass       # not sure which is better here
+        self._LAST_CFG = self._CFG
+        return self.read_register(self.pointer.P.pack('CONVERSION'))
     
     def ready(self):
-        """Return status of ADC conversion."""
-        # OS is bit 15
+        '''Return status of ADC conversion.'''
         # OS = 0: Device is currently performing a conversion
         # OS = 1: Device is not currently performing a conversion
-        return self.read_register(self._POINTER_CONFIG) & 0x8000
-
-    def get_channels(self):
-        c = list(self._CONFIG_CHANNELS.keys())
-        return c
+        return self.read_register(self.pointer.P.pack('CONFIG')) & (1 << self.config.OS.offset())
         
-    def get_gains(self):
-        """Possible gain settings."""
-        g = list(self._CONFIG_GAIN.keys())
-        g.sort()
-        return g
-
-    def get_rates(self):
-        """Possible data rate settings."""
-        r = list(self._CONFIG_DATA_RATE.keys())
-        r.sort()
-        return r
-
-    def get_modes(self):
-        """Possible modes."""
-        m = list(self._CONFIG_MODE.keys())
-        m.sort()
-        return m
-
 class Sensor(abc.ABC):
     '''
     Class describing generalized sensors
@@ -423,14 +394,22 @@ class P4vMini(Sensor):
     def _convert(self,raw):
         return self._conversion_factor*self.read()
 
-# ~ class OxygenSensor(Sensor):
+# ~ class Pin
+
+# ~ class InputPin
+
+# ~ class OutputPin
+
+# ~ class PWMOutput
+
+# ~ class Valve(abc.ABC):
+	
+# ~ class SolenoidValve(Valve,OutputPin):
+	
+# ~ class ProportionalValve(Valve,PWMOuput): # or DAC out if it comes to that
+
+# ~ class OxygenSensor(AnalogSensor):
 	
 # ~ class HumiditySensor(Sensor):
 	
 # ~ class TemperatureSensor(Sensor):
-
-# ~ class Valve():
-	
-# ~ class SolenoidValve(Valve):
-	
-# ~ class ProportionalValve(Valve):

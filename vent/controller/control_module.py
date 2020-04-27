@@ -53,7 +53,7 @@ class ControlModuleBase:
 
         # Internal Control variables. "SET" indicates that this is set.
         self.__SET_PIP = 22         # Target PIP pressure
-        self.__SET_PIP_TIME = 0.4   # Target time to reach PIP in seconds
+        self.__SET_PIP_TIME = 0.8   # Target time to reach PIP in seconds
         self.__SET_PEEP = 5         # Target PEEP pressure
         self.__SET_PEEP_TIME = 0.5  # Target time to reach PEEP from PIP plateau
         self.__SET_BPM = 15         # Target breaths per minute
@@ -92,12 +92,12 @@ class ControlModuleBase:
         self.__active_alarms = {}     # Dictionary of active alarms
         self.__logged_alarms = []     # List of all resolved alarms
 
-        # Variable limits to raise alarms, initialized as +- 10% of what the controller initializes
-        self.__PIP_min = self.__SET_PIP * 0.9
-        self.__PIP_max = self.__SET_PIP * 1.1
+        # Variable limits to raise alarms, initialized as small deviation of what the controller initializes
+        self.__PIP_min = self.__SET_PIP - 0.2
+        self.__PIP_max = self.__SET_PIP + 0.2
         self.__PIP_lastset = time.time()
-        self.__PIP_time_min = self.__SET_PIP_TIME - 0.2 
-        self.__PIP_time_max = self.__SET_PIP_TIME + 0.2
+        self.__PIP_time_min = self.__SET_PIP_TIME - 0.5
+        self.__PIP_time_max = self.__SET_PIP_TIME + 0.5
         self.__PIP_time_lastset = time.time()
         self.__PEEP_min = self.__SET_PEEP * 0.9
         self.__PEEP_max = self.__SET_PEEP * 1.1
@@ -163,6 +163,8 @@ class ControlModuleBase:
     def _controls_from_COPY(self):
         # Update SET variables
         self._lock.acquire()
+
+        #Update values
         self.__SET_PIP       = self.COPY_SET_PIP
         self.__SET_PIP_TIME  = self.COPY_SET_PIP_TIME
         self.__SET_PEEP      = self.COPY_SET_PEEP
@@ -170,10 +172,29 @@ class ControlModuleBase:
         self.__SET_BPM       = self.COPY_SET_BPM
         self.__SET_I_PHASE   = self.COPY_SET_I_PHASE
 
+        #Update derived values
         self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PLATEAU = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
+
+        #Update new confidence intervals
+        self.__PIP_min          = self.COPY_PIP_min
+        self.__PIP_max          = self.COPY_PIP_max 
+        self.__PIP_lastset      = self.COPY_PIP_lastset  
+        self.__PIP_time_min     = self.COPY_PIP_time_min  
+        self.__PIP_time_max     = self.COPY_PIP_time_max  
+        self.__PIP_time_lastset = self.COPY_PIP_time_lastset  
+        self.__PEEP_min         = self.COPY_PEEP_min 
+        self.__PEEP_max         = self.COPY_PEEP_max  
+        self.__PEEP_lastset     = self.COPY_PEEP_lastset  
+        self.__bpm_min          = self.COPY_bpm_min 
+        self.__bpm_max          = self.COPY_bpm_max  
+        self.__bpm_lastset      = self.COPY_bpm_lastset  
+        self.__I_phase_min      = self.COPY_I_phase_min  
+        self.__I_phase_max      = self.COPY_I_phase_max 
+        self.__I_phase_lastset  = self.COPY_I_phase_lastset  
+
         self._lock.release()
 
     def __test_critical_levels(self, min, max, value, name):
@@ -564,11 +585,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
     def heartbeat(self):
         '''only used for fiddling'''
-        if self._running:
-            print("Controller running...")
-        else:
-            print("Controller not running...")
-        print("Current loop = " + str(self._loop_counter)+'.\n')
+        return self._loop_counter
 
 
 

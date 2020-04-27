@@ -71,8 +71,11 @@ def test_control_dynamical():
     vals_start = Controller.get_sensors()
     time.sleep(20)                                                   # Let this run for 20 sec
     vals_stop = Controller.get_sensors()
+
+    Controller.stop() # consecutive stops should be ignored
     Controller.stop() 
-    
+    Controller.stop() 
+
     vals_stop = Controller.get_sensors()
     
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 1000 # In 20s, this program should go through at least 1000 loops
@@ -106,6 +109,9 @@ def test_control_dynamical():
     assert COPY_tt       == vals_stop.timestamp
     assert COPY_lc       == vals_stop.loop_counter
 
+    hb1 = Controller.heartbeat()
+    assert hb1 > 0                                 # Test the heartbeat
+    assert np.abs(hb1 - COPY_lc) < Controller._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE  # true heart-beat should be close to the sensor loop counter
 
 
 
@@ -126,11 +132,106 @@ def test_restart_controller():
 
 
 
-# Still to check:
-# get alarms
-# get active alarms
-# get logged alarms
-# test _PID update?
-# For settings, try good and bad values. Make sure that it works
+def test_alarm():
+    '''
+        This is a function to test the alarm functions. It triggers a series of alarms, that remain active for a while, and then are deactivated.
+    '''
+    Controller = get_control_module(sim_mode=True)
+    Controller.start()
+
+    for t in np.arange(0, 40,0.05):
+
+        ### Make a cascade of changes that will not trigger alarms
+        if t == 0:
+            command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=30, timestamp=time.time())
+            Controller.set_control(command)
+        if t == 3:
+            command = ControlSetting(name=ControlSettingName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
+            Controller.set_control(command)
+        if t == 7:
+            command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=2, timestamp=time.time())
+            Controller.set_control(command)
+        if t == 10:
+            command = ControlSetting(name=ControlSettingName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
+            Controller.set_control(command)
+
+        ### Make a cascade of changes to trigger four alarms
+        if t == 8:    # trigger a PIP alarm
+            command = ControlSetting(name=ControlSettingName.PIP, value=25, min_value=0, max_value=5, timestamp=time.time())
+            Controller.set_control(command)
+        if t == 23:    #resolve the PIP alarm
+            command = ControlSetting(name=ControlSettingName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
+            Controller.set_control(command)
+        if (t > 8+(60/17)) and (t<23):  #T est whether it is active
+            activealarms = Controller.get_active_alarms()
+            assert len(activealarms.keys()) >= 1
+            assert 'PIP' in activealarms.keys()
+
+        if t == 12:    # trigger a PEEP alarm
+            command = ControlSetting(name=ControlSettingName.PEEP, value=10, min_value=0, max_value=5, timestamp=time.time())
+            Controller.set_control(command)
+        if t == 23:    # resolve it
+            command = ControlSetting(name=ControlSettingName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
+            Controller.set_control(command)
+        if (t > 12+(60/17)) and (t<23):
+            activealarms = Controller.get_active_alarms()
+            assert len(activealarms.keys()) >= 1
+            assert 'PEEP' in activealarms.keys()
+
+        if t == 15:    # trigger a BPM alarm
+            command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=5, timestamp=time.time())
+            Controller.set_control(command)
+        if t == 20:    # resolve it
+            command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=20, timestamp=time.time())
+            Controller.set_control(command)
+        if (t > 15+(60/17)) and (t<20):
+            activealarms = Controller.get_active_alarms()
+            assert len(activealarms.keys()) >= 1
+            assert 'BREATHS_PER_MINUTE' in activealarms.keys()
+
+        if t == 17:    # Trigger a INSPIRATION_TIME_SEC alarm
+            command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=1, timestamp=time.time())
+            Controller.set_control(command)
+        if t == 22:    # resolve it
+            command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=3, timestamp=time.time())
+            Controller.set_control(command)
+        if (t > 17+(60/17)) and (t<2):
+            activealarms = Controller.get_active_alarms()
+            assert len(activealarms.keys()) >= 1
+            assert 'BREATHS_PER_MINUTE' in activealarms.keys()
+
+
+        time.sleep(0.05)
+
+    Controller.stop()
+    
+    
+    #Check that the duration of the four alarms was correct
+    sv = Controller.get_sensors()
+    logged_alarms = Controller.get_logged_alarms()
+
+    for a in logged_alarms:
+        print(a.alarm_name)
+        assert not a.is_active
+
+        alarm_duration = a.alarm_end_time - a.alarm_start_time
+        if a.alarm_name == 'PEEP':
+            assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 11/60)) * 60/sv.breaths_per_minute
+        if a.alarm_name == 'BREATHS_PER_MINUTE':
+            assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 5/60)) * 60/sv.breaths_per_minute
+        if a.alarm_name == 'I_PHASE':
+            assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 5/60)) * 60/sv.breaths_per_minute
+        if a.alarm_name == "PIP":
+            assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 15/60)) * 60/sv.breaths_per_minute
+
+    # And that they have been resolved/logged correctly
+    assert len(Controller.get_active_alarms()) == 0
+    assert len(Controller.get_logged_alarms()) == 4
+    assert len(Controller.get_alarms()) == 4
+
+
+# # Still to check:
+# # test _PID update?
+# # Good and bad values. Make sure that it works
 
 

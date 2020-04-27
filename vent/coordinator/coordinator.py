@@ -116,25 +116,25 @@ class CoordinatorLocal(CoordinatorBase):
                          ControlSettingName.BREATHS_PER_MINUTE,
                          ControlSettingName.INSPIRATION_TIME_SEC]:
                 self.lock.acquire()
-                if (name not in self.control_settings):
-                    self.lock.release()
+                in_control_settings = name not in self.control_settings
+                self.lock.release()
+                if in_control_settings:
                     control_setting = self.control_module.get_control(name)
                     self.lock.acquire()
                     self.control_settings[name] = control_setting
                     self.lock.release()
-                else:
-                    self.lock.release()
 
                 self.lock.acquire()
-                if name in self.tentative_control_settings and self.tentative_control_settings[name] != self.control_settings[
-                            name]:
+                disagreed_tentative = name in self.tentative_control_settings and self.tentative_control_settings[name] != self.control_settings[
+                            name]
+                self.lock.release()
+                if disagreed_tentative:
+                    self.lock.acquire()
                     tentative_control_setting = self.tentative_control_settings[name]
                     self.lock.release()
                     self.control_module.set_control(tentative_control_setting)
                     self.lock.acquire()
                     self.control_settings[name] = self.control_module.get_control(name)
-                    self.lock.release()
-                else:
                     self.lock.release()
             # sleep 10 ms
             time.sleep(0.01)

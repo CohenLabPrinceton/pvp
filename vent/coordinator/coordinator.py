@@ -2,6 +2,7 @@ import time
 import threading
 from typing import List, Dict
 
+import vent
 from vent.common.message import SensorValues, ControlSetting, Alarm, ControlSettingName, IPCMessageCommand
 from vent.controller.control_module import get_control_module
 from vent.coordinator.ipc import IPC
@@ -12,7 +13,7 @@ class CoordinatorBase:
     def __init__(self, sim_mode=False):
         # get_ui_control_module handles single_process flag
         # TODO: SHARED_ is a better prefix than COPY_, as not all fields are copy
-        self.control_module = get_control_module(sim_mode)
+        self.control_module = vent.controller.control_module.get_control_module(sim_mode)
         self.COPY_sensor_values = None
         self.COPY_active_alarms = {}
         self.COPY_logged_alarms = []

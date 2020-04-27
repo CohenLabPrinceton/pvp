@@ -28,7 +28,8 @@ class CoordinatorBase:
     #     # returns list of Alarm structs
     #     pass
 
-    def get_active_alarms(self) -> Dict[Alarm]:
+    def get_active_alarms(self) -> Dict[str, Alarm]:
+        # TODO: the dict key should be better as class instead of str
         pass
 
     def get_logged_alarms(self) -> List[Alarm]:
@@ -93,7 +94,7 @@ class CoordinatorLocal(CoordinatorBase):
         self.lock.release()
         return logged_alarms
 
-    def get_active_alarms(self) -> Dict[Alarm]:
+    def get_active_alarms(self) -> Dict[str, Alarm]:
         self.lock.acquire()
         active_alarms = self.COPY_active_alarms.copy()  # Make sure to return a copy
         self.lock.release()

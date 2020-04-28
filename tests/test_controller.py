@@ -76,11 +76,6 @@ def test_control_dynamical():
     Controller.stop() 
     Controller.stop()
 
-    waveformlist_1 = Controller.get_past_waveforms() #This also should work fine
-    waveformlist_2 = Controller.get_past_waveforms()
-
-    assert len([s for s in waveformlist_1 if s is not None]) > len([s for s in waveformlist_2 if s is not None])   #Test: calling the past_waveforms clears ring buffer.
-
     vals_stop = Controller.get_sensors()
     
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 1000 # In 20s, this program should go through at least 1000 loops
@@ -234,6 +229,10 @@ def test_alarm():
     assert len(Controller.get_logged_alarms()) >= 4
     assert len(Controller.get_alarms()) >= 4
 
+    waveformlist_1 = Controller.get_past_waveforms() #This also should work fine
+    waveformlist_2 = Controller.get_past_waveforms()
+
+    assert len([s for s in waveformlist_1 if s is not None]) > len([s for s in waveformlist_2 if s is not None])   #Test: calling the past_waveforms clears ring buffer.
 
 # # Still to check:
 # # test _PID update?

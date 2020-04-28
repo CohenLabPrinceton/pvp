@@ -6,6 +6,32 @@ import copy
 
 from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ControlSettingName
 
+class RingBuffer:
+    ''' 
+    A simple ring buffer class, to store waveforms and alarms in a list of limited length.
+    '''
+    def __init__(self, size):
+        self.data = [None for i in range(size)]
+        self.size = size
+
+    def append(self, x):
+        self.data.pop(0)    # get rid of entry 0
+        self.data.append(x) # append entry x
+
+    def get(self):
+        #returns the entire archive
+        return self.data.copy()
+
+    def get_last(self):
+        #returns the last entry
+        return self.data[-1]
+
+    def clear_up_to_last(self):
+        #Removes everything byt the last entry
+        last_entry = self.data[-1]
+        self.data = [None for i in range(self.size)]
+        self.data[-1] = last_entry
+
 
 class ControlModuleBase:
     """This is an abstract class for controlling simulation and hardware.
@@ -79,8 +105,8 @@ class ControlModuleBase:
 
         # Parameters to keep track of breath-cycle
         self.__cycle_start = time.time()
-        self.__cycle_waveforms = {}   # saves the waveforms to meassure pip, peep etc.
-        self.__cycle_counter = 0
+        self.__cycle_waveform = None                             # To build up the current cycle's waveform
+        self.__cycle_waveform_archive = RingBuffer(100)          # An archive of past waveforms.
 
         # These are measurements that change from timepoint to timepoint
         self._DATA_PRESSURE = 0
@@ -90,7 +116,7 @@ class ControlModuleBase:
 
         #########################  Alarm management  #########################
         self.__active_alarms = {}     # Dictionary of active alarms
-        self.__logged_alarms = []     # List of all resolved alarms
+        self.__logged_alarms = RingBuffer(100)     # List of all resolved alarms
 
         # Variable limits to raise alarms, initialized as small deviation of what the controller initializes
         self.__PIP_min = self.__SET_PIP - 0.2
@@ -112,7 +138,7 @@ class ControlModuleBase:
         ############### Initialize COPY variables for threads  ##############
         # COPY variables that later updated on a regular basis
         self.COPY_active_alarms = {}
-        self.COPY_logged_alarms = []
+        self.COPY_logged_alarms = self.__logged_alarms.get()
         self.COPY_sensor_values = SensorValues()
         self._alarm_to_COPY()
         self._initialize_set_to_COPY()
@@ -132,7 +158,7 @@ class ControlModuleBase:
         self._lock.acquire()
         # Update the alarms
         self.COPY_active_alarms = self.__active_alarms.copy()
-        self.COPY_logged_alarms = self.__logged_alarms.copy()
+        self.COPY_logged_alarms = self.__logged_alarms.get()
 
         # The alarm thresholds
         self.COPY_PIP_min = self.__PIP_min
@@ -223,9 +249,8 @@ class ControlModuleBase:
 
     def __analyze_last_waveform(self):
         ''' This goes through the last waveform, and updates VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
-        this_cycle = self.__cycle_counter
-        if this_cycle > 1:  # The first cycle for which we can calculate this is cycle "1".
-            data = self.__cycle_waveforms[this_cycle - 1]
+        data = self.__cycle_waveform_archive.get_last()
+        if data is not None:  # Only if there was a previous cycle
             phase = data[:, 0]
             pressure = data[:, 1]
             volume = data[:, 2]
@@ -248,7 +273,7 @@ class ControlModuleBase:
 
     def __update_alarms(self):
         ''' This goes through the values obtained from the last waveform, and updates alarms.'''
-        if self.__cycle_counter > 1:  # The first cycle for which we can calculate this is cycle "1".
+        if self.__cycle_waveform_archive.get_last() is not None:
             self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name="PIP")
             self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name="PIP_TIME")
             self.__test_critical_levels(min=self.__PEEP_min, max=self.__PEEP_max, value=self._DATA_PEEP, name="PEEP")
@@ -265,7 +290,7 @@ class ControlModuleBase:
     def get_alarms(self) -> List[Alarm]:
         # Returns all alarms as a list
         self._lock.acquire()
-        new_alarm_list = self.COPY_logged_alarms.copy()
+        new_alarm_list = [alarm for alarm in self.COPY_logged_alarms if alarm is not None]
         for alarm_key in self.COPY_active_alarms.keys():
             new_alarm_list.append(self.COPY_active_alarms[alarm_key])
         self._lock.release()
@@ -281,7 +306,7 @@ class ControlModuleBase:
     def get_logged_alarms(self) -> List[Alarm]:
         # Returns only the inactive alarms
         self._lock.acquire()
-        logged_alarms = self.COPY_logged_alarms.copy()  # Make sure to return a copy
+        logged_alarms = [alarm for alarm in self.COPY_logged_alarms if alarm is not None]  # Make sure to return a copy
         self._lock.release()
         return logged_alarms
 
@@ -374,7 +399,7 @@ class ControlModuleBase:
            3) Quick fall to PEEP
            4) Sustaint PEEP pressure
         Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
-        A record of pressure/volume waveforms is kept in self.__cycle_waveforms
+        A record of pressure/volume waveforms is kept in self.__cycle_waveform_archive
 
             dt: Time since last update in seconds 
 
@@ -382,6 +407,7 @@ class ControlModuleBase:
         '''
         now = time.time()
         cycle_phase = now - self.__cycle_start
+        next_cycle = False
 
         self.__DATA_VOLUME += dt * ( self._Qin - self._Qout )  # Integrate what has happened within the last few seconds
         # NOTE: As Qin and Qout are set, this is what the controllr believes has happened. NOT A MEASUREMENT, MIGHT NOT BE REALITY!
@@ -411,19 +437,32 @@ class ControlModuleBase:
             if self._DATA_PRESSURE < self.__SET_PEEP:
                 self._Qin = 1
         else:
-            self.__cycle_start = time.time()  # new cycle starts
-            self.__cycle_counter += 1         # For the dictionary, new waveform -> increase cycle counter by 1
-            self.__DATA_VOLUME = 0            # New cycle, start at zero volume
+            self.__cycle_start = time.time()  # New cycle starts
+            self.__DATA_VOLUME = 0            # ... start at zero volume in the lung
+            next_cycle = True
             
-        if self.__cycle_counter not in self.__cycle_waveforms.keys():  # if this cycle doesn't exist yet, start it
-            self.__cycle_waveforms[self.__cycle_counter] = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])  # add volume
+        if next_cycle or (self.__cycle_waveform is None):  # if a new breath cycle has started, or program just started
+            self.__cycle_waveform_archive.append( self.__cycle_waveform )
+            self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])  # add volume
             self.__analyze_last_waveform()    # Analyze last waveform
             self.__update_alarms()            # Run alarm detection over last cycle's waveform
             self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
         else:
-            data = self.__cycle_waveforms[self.__cycle_counter]
-            data = np.append(data, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
-            self.__cycle_waveforms[self.__cycle_counter] = data
+            self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
+
+    def get_past_waveforms(self):
+        # Returns a list of past waveforms.
+        # Format:
+        #     Returns a list of [Nx3] waveforms, of [time, pressure, volume]
+        #     Most recent entry is waveform_list[-1]
+        # Note:
+        #     After calling this function, archive is emptied!
+        self._lock.acquire()
+        archive = self.__cycle_waveform_archive.get() # Make sure to return a copy
+        waveform_list = archive.copy()
+        self.__cycle_waveform_archive.clear_up_to_last()     # And clear the archive
+        self._lock.release()
+        return waveform_list
 
     def _start_mainloop(self):
         # This will depend on simulation or reality

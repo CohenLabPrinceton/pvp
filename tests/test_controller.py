@@ -74,7 +74,12 @@ def test_control_dynamical():
 
     Controller.stop() # consecutive stops should be ignored
     Controller.stop() 
-    Controller.stop() 
+    Controller.stop()
+
+    waveformlist_1 = Controller.get_past_waveforms() #This also should work fine
+    waveformlist_2 = Controller.get_past_waveforms()
+
+    assert len([s for s in waveformlist_1 if s is not None]) > len([s for s in waveformlist_2 if s is not None])   #Test: calling the past_waveforms clears ring buffer.
 
     vals_stop = Controller.get_sensors()
     
@@ -111,7 +116,7 @@ def test_control_dynamical():
 
     hb1 = Controller.heartbeat()
     assert hb1 > 0                                 # Test the heartbeat
-    assert np.abs(hb1 - COPY_lc) < Controller._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE  # true heart-beat should be close to the sensor loop counter
+    assert np.abs(hb1 - COPY_lc) <= Controller._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE  # true heart-beat should be close to the sensor loop counter
 
 
 
@@ -226,8 +231,8 @@ def test_alarm():
 
     # And that they have been resolved/logged correctly
     assert len(Controller.get_active_alarms()) == 0
-    assert len(Controller.get_logged_alarms()) == 4
-    assert len(Controller.get_alarms()) == 4
+    assert len(Controller.get_logged_alarms()) >= 4
+    assert len(Controller.get_alarms()) >= 4
 
 
 # # Still to check:

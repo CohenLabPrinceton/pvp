@@ -51,7 +51,7 @@ class ControlModuleBase:
         get_sensors():                     Returns a copy of the current sensor values.
         get_alarms():                      Returns a List of all alarms, active and logged
         get_active_alarms():               Returns a Dictionary of all currently active alarms.
-        get_logged_alarms():               Returns a List of logged alarms
+        get_logged_alarms():               Returns a List of logged alarms, up to maximum lengh of self._RINGBUFFER_SIZE
         get_control(ControlSetting):       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
         start():                           Starts the main-loop of the controller
         stop():                            Stops the main-loop of the controller
@@ -61,8 +61,9 @@ class ControlModuleBase:
 
         #########################  Algorithm/Program management  ###############
         # Hyper-Parameters
-        self._LOOP_UPDATE_TIME                   = 0.01    #Run the main control loop every 0.01 sec
-        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      #After every 10 main control loop iterations, update COPYs.
+        self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec
+        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      # After every 10 main control loop iterations, update COPYs.
+        self._RINGBUFFER_SIZE                    = 100     # Maximum number of breath cycles kept in memory
 
         # Run the start() method as a thread
         self._loop_counter = 0
@@ -106,7 +107,7 @@ class ControlModuleBase:
         # Parameters to keep track of breath-cycle
         self.__cycle_start = time.time()
         self.__cycle_waveform = None                             # To build up the current cycle's waveform
-        self.__cycle_waveform_archive = RingBuffer(100)          # An archive of past waveforms.
+        self.__cycle_waveform_archive = RingBuffer(self._RINGBUFFER_SIZE)          # An archive of past waveforms.
 
         # These are measurements that change from timepoint to timepoint
         self._DATA_PRESSURE = 0
@@ -116,7 +117,7 @@ class ControlModuleBase:
 
         #########################  Alarm management  #########################
         self.__active_alarms = {}     # Dictionary of active alarms
-        self.__logged_alarms = RingBuffer(100)     # List of all resolved alarms
+        self.__logged_alarms = RingBuffer(self._RINGBUFFER_SIZE)     # List of all resolved alarms
 
         # Variable limits to raise alarms, initialized as small deviation of what the controller initializes
         self.__PIP_min = self.__SET_PIP - 0.2

@@ -59,7 +59,17 @@ class CoordinatorBase:
 
 class CoordinatorLocal(CoordinatorBase):
     def __init__(self, sim_mode=False):
+        """
+
+        Args:
+            sim_mode:
+
+        Attributes:
+            stopping (:class:`threading.Event`): ``.set()`` when thread should stop
+
+        """
         super().__init__(sim_mode=sim_mode)
+        self.stopping = threading.Event()
         self.lock = threading.Lock()
         self.thread = threading.Thread(target=self.start, daemon=True)
         self.thread.start()
@@ -104,7 +114,7 @@ class CoordinatorLocal(CoordinatorBase):
         super().do_process(command)
 
     def start(self):
-        while True:
+        while not self.stopping.is_set():
             sensor_values = self.control_module.get_sensors()
             self.lock.acquire()
             self.sensor_values = sensor_values
@@ -138,6 +148,9 @@ class CoordinatorLocal(CoordinatorBase):
                     self.lock.release()
             # sleep 10 ms
             time.sleep(0.01)
+
+    def stop(self):
+        self.stopping.set()
 
 
 class CoordinatorRemote(CoordinatorBase):

@@ -76,7 +76,7 @@ def load_mono_font():
 
     globals()['_MONO_FONT'] = mono_font
 
-from vent.gui.main import Vent_Gui
+#from vent.gui.main import Vent_Gui
 
 # modules for interacting with rest of ventilator
 

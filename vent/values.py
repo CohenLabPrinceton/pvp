@@ -106,6 +106,7 @@ class Value(object):
 
 
 
+
 MONITOR = odict({
     'fio2': Value(**{ 'name': 'FiO2',
         'units': '%',
@@ -191,14 +192,14 @@ CONTROL = odict({
         'default': 2.0,  # FIXME
         'decimals': 1  # FIXME
     }),
-    'ie': Value(**{
-        'name': 'I:E',
-        'units': '',
-        'abs_range': (0, 100),  # FIXME
-        'safe_range': (0, 100),  # FIXME
-        'default': 80,  # FIXME
-        'decimals': 1  # FIXME
-    })
+    # 'ie': Value(**{
+    #     'name': 'I:E',
+    #     'units': '',
+    #     'abs_range': (0, 100),  # FIXME
+    #     'safe_range': (0, 100),  # FIXME
+    #     'default': 80,  # FIXME
+    #     'decimals': 1  # FIXME
+    # })
 })
 """
 Values to control but not monitor.

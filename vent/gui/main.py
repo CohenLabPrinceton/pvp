@@ -1,10 +1,11 @@
 import time
+import sys
 
 from PySide2 import QtWidgets, QtCore
 
 from vent import values
 from vent.common.message import ControlSetting, ControlSettingName
-from vent.gui import widgets, set_gui_instance, get_gui_instance
+from vent.gui import widgets, set_gui_instance, get_gui_instance, styles
 from vent.controller.control_module import get_control_module
 
 
@@ -88,7 +89,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     computed from ``status_height+main_height``
     """
 
-    def __init__(self, control_module, update_period = 0.1, test=False):
+    def __init__(self, coordinator, update_period = 0.1, test=False):
         """
 
         Attributes:
@@ -119,71 +120,54 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.control_settings = {}
 
+        self.coordinator = coordinator
+        self.control_module = self.coordinator.control_module
+
+        # start QTimer to update values
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.update_gui)
+        # stop QTimer when program closing
+        self.gui_closing.connect(self.timer.stop)
+        # start the timer
+
+        # set update period (after timer is created!!)
+        self._update_period = None
         self.update_period = update_period
+
+        # initialize controls to starting values
+        self.init_controls()
+
 
         self.init_ui()
         self.start_time = time.time()
 
-        self.controller = control_module
+        self.timer.start(self.update_period*1000)
 
-        if test:
-            self.test()
+    @property
+    def update_period(self):
+        return self._update_period
 
-    def test(self):
-        """
-        Use a controller simulator returned by :func:`~vent.coordinator.control_module.get_control_module` to test the GUI
+    @update_period.setter
+    def update_period(self, update_period):
+        assert(isinstance(update_period, float) or isinstance(update_period, int))
 
-        Following the example in /sandbox/testPIDControllerClass
-        """
+        if update_period != self._update_period:
+            # if the timer is active, stop it and restart with new period
+            if self.timer.isActive():
+                self.timer.setInterval(update_period*1000)
 
-        c1 = ControlSetting(name=ControlSettingName.PIP,
-                             value=values.CONTROL['PIP']['value'],
-                             min_value=values.CONTROL['PIP']['abs_range'][0],
-                             max_value=values.CONTROL['PIP']['abs_range'][1],
-                             timestamp=time.time())
+            # store new value
+            self._update_period = update_period
 
-        c2 = ControlSetting(
-                            name=ControlSettingName.PIP_TIME,
-                            value=values.CONTROL['PIP_TIME']['value'],
-                            min_value=values.CONTROL['PIP_TIME']['abs_range'][0],
-                            max_value=values.CONTROL['PIP_TIME']['abs_range'][1],
-                            timestamp=time.time())
 
-        c3 = ControlSetting(name=ControlSettingName.PEEP,
-                            value=values.CONTROL['PEEP']['value'],
-                            min_value=values.CONTROL['PEEP']['abs_range'][0],
-                            max_value=values.CONTROL['PEEP']['abs_range'][1],
-                            timestamp=time.time())
-
-        c4 = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE,
-                            value=values.CONTROL['BREATHS_PER_MINUTE']['value'],
-                            min_value=values.CONTROL['BREATHS_PER_MINUTE']['abs_range'][0],
-                            max_value=values.CONTROL['BREATHS_PER_MINUTE']['abs_range'][1],
-                            timestamp=time.time())
-
-        c5 = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC,
-                            value=values.CONTROL['INSPIRATION_TIME_SEC']['value'],
-                            min_value=values.CONTROL['INSPIRATION_TIME_SEC']['abs_range'][0],
-                            max_value=values.CONTROL['INSPIRATION_TIME_SEC']['abs_range'][1],
-                            timestamp=time.time())
-
-        runtime = 300  # run this for 30 seconds
-        self.controller = get_control_module()
-
-        for command in [c1, c2, c3, c4, c5]:
-            self.controller.set_control(command)
-
-        self.controller.start()
-
-        self.read_sensors()
 
     def init_controls(self):
         """
-        on startup, set controls in controller to ensure init state is synchronized
+        on startup, set controls in coordinator to ensure init state is synchronized
         """
 
         for control_name, control_params in self.CONTROL.items():
-            self.set_value(control_params.default)
+            self.set_value(control_params.default, control_name)
 
 
     def set_value(self, new_value, value_name=None):
@@ -200,12 +184,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
                                          min_value = self.CONTROL[value_name]['safe_range'][0],
                                          max_value = self.CONTROL[value_name]['safe_range'][1],
                                          timestamp = time.time())
-        self.controller.set_control(control_object)
+        self.coordinator.set_control(control_object)
 
 
-    def read_sensors(self):
+    def update_gui(self):
 
-        vals = self.controller.get_sensor_values()
+        vals = self.coordinator.get_sensors()
         #pdb.set_trace()
 
         # for monitor_key, monitor_obj in self.monitor.items():
@@ -216,8 +200,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
             if hasattr(vals, plot_key):
                 plot_obj.update_value((time.time(), getattr(vals, plot_key)))
 
-
-        QtCore.QTimer.singleShot(1, self.read_sensors)
+        #
+        # QtCore.QTimer.singleShot(1, self.read_sensors)
 
 
 
@@ -269,7 +253,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.display_layout = QtWidgets.QVBoxLayout()
 
         for display_key, display_params in self.MONITOR.items():
-            self.monitor[display_key] = widgets.Monitor_Value(update_period = self.update_period, **display_params)
+            self.monitor[display_key] = widgets.Monitor_Value(display_params, update_period = self.update_period)
             self.display_layout.addWidget(self.monitor[display_key])
             self.display_layout.addWidget(widgets.components.QHLine())
         self.main_layout.addLayout(self.display_layout, self.display_width)
@@ -325,7 +309,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.controls_layout = QtWidgets.QVBoxLayout()
         for control_name, control_params in self.CONTROL.items():
-            self.controls[control_name] = widgets.Control(**control_params)
+            self.controls[control_name] = widgets.Control(control_params)
             self.controls[control_name].setObjectName(control_name)
             self.controls[control_name].value_changed.connect(self.set_value)
             self.controls_layout.addWidget(self.controls[control_name])
@@ -360,10 +344,19 @@ class Vent_Gui(QtWidgets.QMainWindow):
         globals()['_GUI_INSTANCE'] = None
         self.gui_closing.emit()
 
-        if self.controller:
+        if self.coordinator:
             try:
-                self.controller.stop()
+                self.coordinator.stop()
             except:
                 raise Warning('had a thread object, but the thread object couldnt be stopped')
 
         event.accept()
+
+def launch_gui(coordinator):
+
+    # just for testing, should be run from main
+    app = QtWidgets.QApplication(sys.argv)
+    app.setStyleSheet(styles.GLOBAL)
+    gui = Vent_Gui(coordinator)
+
+    return app, gui

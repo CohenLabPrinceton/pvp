@@ -17,6 +17,7 @@ class CoordinatorBase:
         self.control_settings = {}
         self.tentative_control_settings = {}
         self.last_message_timestamp = None
+        
 
     def get_sensors(self) -> SensorValues:
         # returns SensorValues struct
@@ -114,6 +115,11 @@ class CoordinatorLocal(CoordinatorBase):
         super().do_process(command)
 
     def start(self):
+
+        if not self.control_module.running():
+            self.do_process(IPCMessageCommand.START)
+
+
         while not self.stopping.is_set():
             sensor_values = self.control_module.get_sensors()
             self.lock.acquire()

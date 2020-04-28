@@ -27,8 +27,8 @@ class ControlModuleBase:
         get_active_alarms():               Returns a Dictionary of all currently active alarms.
         get_logged_alarms():               Returns a List of logged alarms
         get_control(ControlSetting):       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
-        start():                           Starts the main-loop of the controller
-        stop():                            Stops the main-loop of the controller
+        start():                           Starts the main-loop of the coordinator
+        stop():                            Stops the main-loop of the coordinator
     """
 
     def __init__(self):
@@ -92,7 +92,7 @@ class ControlModuleBase:
         self.__active_alarms = {}     # Dictionary of active alarms
         self.__logged_alarms = []     # List of all resolved alarms
 
-        # Variable limits to raise alarms, initialized as small deviation of what the controller initializes
+        # Variable limits to raise alarms, initialized as small deviation of what the coordinator initializes
         self.__PIP_min = self.__SET_PIP - 0.2
         self.__PIP_max = self.__SET_PIP + 0.2
         self.__PIP_lastset = time.time()
@@ -442,6 +442,9 @@ class ControlModuleBase:
             self._running = False
         else:
             print("Main Loop is not running.")
+
+    def running(self):
+        return self._running
 
 
 

@@ -5,24 +5,6 @@ from collections import OrderedDict
 from struct import pack,unpack
 
 
-class Ventilator:
-    ''' Class representation of the physical ventilator device
-    '''
-    def __init__(self):
-        #self.pig = PigPi()
-        pass
-        
-    def __del__(self):
-        #self.pig.stop()
-        pass
-        
-    def test(self,sensor):
-        pass
-
-    def calibrate(self):
-        pass
-
-
 class IODeviceBase(ABC):
     ''' Abstract base Class for pigpio handles (or whatever other GPIO library
     we end up using)

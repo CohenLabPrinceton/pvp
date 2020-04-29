@@ -1,21 +1,48 @@
 from enum import Enum, auto
 from vent import values
 
+#
+# class SensorValues:
+#     def __init__(self, pip=None, peep=None, fio2=None, temp=None, humidity=None, pressure=None, vte=None, breaths_per_minute=None,
+#                  inspiration_time_sec=None, timestamp=None, loop_counter = None):
+#         self.pip = pip
+#         self.peep = peep
+#         self.fio2 = fio2
+#         self.temp = temp
+#         self.humidity = humidity
+#         self.pressure = pressure
+#         self.vte = vte
+#         self.breaths_per_minute = breaths_per_minute
+#         self.inspiration_time_sec = inspiration_time_sec
+#         self.timestamp = timestamp
+#         self.loop_counter = loop_counter
 
 class SensorValues:
-    def __init__(self, pip=None, peep=None, fio2=None, temp=None, humidity=None, pressure=None, vte=None, breaths_per_minute=None,
-                 inspiration_time_sec=None, timestamp=None, loop_counter = None):
-        self.pip = pip
-        self.peep = peep
-        self.fio2 = fio2
-        self.temp = temp
-        self.humidity = humidity
-        self.pressure = pressure
-        self.vte = vte
-        self.breaths_per_minute = breaths_per_minute
-        self.inspiration_time_sec = inspiration_time_sec
+    def __init__(self, timestamp=None, loop_counter=None, **kwargs):
+        """
+
+        Args:
+            **kwargs: sensor readings, must be in :data:`vent.values.SENSOR.keys`
+        """
+
+        # init
         self.timestamp = timestamp
         self.loop_counter = loop_counter
+
+        # init all sensor values to none
+        for key in values.SENSOR.keys():
+            setattr(self, key, None)
+        for key in values.CONTROL.keys():
+            setattr(self, key, None)
+
+        # assign kwargs as attributes,
+        # check that all the kwargs are in values.SENSOR
+        for key, value in kwargs.items():
+            if (key in values.SENSOR.keys()) or (key in values.CONTROL.keys()):
+                setattr(self, key, value)
+            else:
+                raise KeyError(f'value {key} not declared in vent.values!!!')
+
 
 #
 # class ControlSettingName(Enum):

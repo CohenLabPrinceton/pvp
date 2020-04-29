@@ -1,5 +1,6 @@
 import time
 import sys
+import threading
 
 from PySide2 import QtWidgets, QtCore
 
@@ -59,9 +60,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
     :class:`PySide2.QtCore.Signal` emitted when the GUI is closing.
     """
 
-    MONITOR = values.MONITOR
+    MONITOR = values.SENSOR
     """
-    see :data:`.gui.defaults.MONITOR`
+    see :data:`.gui.defaults.SENSOR`
     """
 
     CONTROL = values.CONTROL
@@ -93,7 +94,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
 
         Attributes:
-            monitor (dict): Dictionary mapping :data:`.default.MONITOR` keys to :class:`.widgets.Monitor_Value` objects
+            monitor (dict): Dictionary mapping :data:`.default.SENSOR` keys to :class:`.widgets.Monitor_Value` objects
             plots (dict): Dictionary mapping :data:`.default.PLOT` keys to :class:`.widgets.Plot` objects
             controls (dict): Dictionary mapping :data:`.default.CONTROL` keys to :class:`.widgets.Control` objects
             start_time (float): Start time as returned by :func:`time.time`
@@ -120,12 +121,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.control_settings = {}
 
+        self.draw_lock = threading.Lock()
+
         self.coordinator = coordinator
         self.control_module = self.coordinator.control_module
 
         # start QTimer to update values
         self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.update_gui)
+        #self.timer.timeout.connect(self.update_gui)
         # stop QTimer when program closing
         self.gui_closing.connect(self.timer.stop)
         # start the timer
@@ -141,7 +144,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.init_ui()
         self.start_time = time.time()
 
-        self.timer.start(self.update_period*1000)
+        self.update_gui()
+
+        #self.timer.start(self.update_period*1000)
 
     @property
     def update_period(self):
@@ -188,20 +193,27 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
     def update_gui(self):
+        try:
+            vals = self.coordinator.get_sensors()
 
-        vals = self.coordinator.get_sensors()
-        #pdb.set_trace()
+            for plot_key, plot_obj in self.plots.items():
+                if hasattr(vals, plot_key):
+                    plot_obj.update_value((time.time(), getattr(vals, plot_key)))
 
-        # for monitor_key, monitor_obj in self.monitor.items():
-        #     if hasattr(vals, monitor_key):
-        #         monitor_obj.update_value(getattr(vals, monitor_key))
+            for monitor_key, monitor_obj in self.monitor.items():
+                if hasattr(vals, monitor_key):
+                    monitor_obj.update_value(getattr(vals, monitor_key))
 
-        for plot_key, plot_obj in self.plots.items():
-            if hasattr(vals, plot_key):
-                plot_obj.update_value((time.time(), getattr(vals, plot_key)))
+        except TypeError:
+            # FIXME: why?
+            pass
+
+
+
 
         #
-        # QtCore.QTimer.singleShot(1, self.read_sensors)
+        finally:
+            QtCore.QTimer.singleShot(self.update_period*1000, self.update_gui)
 
 
 

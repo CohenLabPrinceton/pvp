@@ -100,21 +100,14 @@ class Value(object):
     def __getitem__(self, key):
         return self.__getattribute__(key)
 
-
-
-
-
-
-
-
-MONITOR = odict({
+SENSOR = odict({
     'fio2': Value(**{ 'name': 'FiO2',
         'units': '%',
         'abs_range': (0, 100),
         'safe_range': (60, 100),
         'decimals' : 1
     }),
-    'temperature': Value(**{
+    'temp': Value(**{
         'name': 'Temp',
         'units': '\N{DEGREE SIGN}C',
         'abs_range': (0, 50),
@@ -134,6 +127,13 @@ MONITOR = odict({
         'abs_range': (0, 100),
         'safe_range': (20, 80),
         'decimals': 1
+    }),
+    'pressure': Value(**{
+        'name': 'Pressure',
+        'units': 'mmH2O',
+        'abs_range': (0,100),
+        'safe_range': (10,80),
+        'decimals': 1
     })
 })
 """
@@ -152,7 +152,7 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 
 
 CONTROL = odict({
-    'PIP': Value(**{
+    'pip': Value(**{
         'name': 'PIP', # (Peak Inspiratory Pressure)
         'units': 'cmH2O',
         'abs_range': (10, 30), # FIXME
@@ -160,7 +160,7 @@ CONTROL = odict({
         'default': 22,           # FIXME
         'decimals': 1          # FIXME
     }),
-    'PIP_TIME': Value(**{
+    'pipt': Value(**{
         'name': 'PIPt', #  (Peak Inspiratory Pressure)
         'units': 'seconds',
         'abs_range': (0, 1),  # FIXME
@@ -168,7 +168,7 @@ CONTROL = odict({
         'default': 0.3,  # FIXME
         'decimals': 1  # FIXME
     }),
-    'PEEP': Value(**{
+    'peep': Value(**{
         'name': 'PEEP', #  (Positive End Expiratory Pressure)
         'units': 'cmH2O',
         'abs_range': (0, 10),  # FIXME
@@ -176,7 +176,7 @@ CONTROL = odict({
         'default': 5,            # FIXME
         'decimals': 1           # FIXME
     }),
-    'BREATHS_PER_MINUTE': Value(**{
+    'breaths_per_minute': Value(**{
         'name': 'Breath Rate',
         'units': 'breaths/min',
         'abs_range': (0, 50), # FIXME
@@ -184,7 +184,7 @@ CONTROL = odict({
         'default': 17,            # FIXME
         'decimals': 1           # FIXME
     }),
-    'INSPIRATION_TIME_SEC': Value(**{
+    'inspiration_time_sec': Value(**{
         'name': 'Inspiration Time',
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME
@@ -247,7 +247,7 @@ PLOTS = odict({
 """
 Values to plot.
 
-Should have the same key as some key in :data:`~.defaults.MONITOR`. If it does,
+Should have the same key as some key in :data:`~.defaults.SENSOR`. If it does,
 it will be mutually connected to the resulting :class:`.gui.widgets.Monitor_Value`
 such that the set limit range is updated when the horizontal bars on the plot are updated.::
 

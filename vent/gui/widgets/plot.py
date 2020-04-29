@@ -131,31 +131,31 @@ class Plot(pg.PlotWidget):
     def set_safe_limits(self, limits):
         self.max_safe.setPos(limits[1])
         self.min_safe.setPos(limits[0])
-
-    def plot(self, *args, **kargs):
-        """
-        Override method :meth:`pyqtgraph.graphicsItems.PlotItem.plot` to return :class:`TimedPlotDataItem`
-
-        Add and return a new plot.
-        See :func:`PlotDataItem.__init__ <pyqtgraph.PlotDataItem.__init__>` for data arguments
-
-        Extra allowed arguments are:
-            clear    - clear all plots before displaying new data
-            params   - meta-parameters to associate with this data
-        """
-        clear = kargs.get('clear', False)
-        params = kargs.get('params', None)
-
-        if clear:
-            self.clear()
-
-        item = TimedPlotDataItem(*args, **kargs)
-
-        if params is None:
-            params = {}
-        self.addItem(item, params=params)
-
-        return item
+    #
+    # def plot(self, *args, **kargs):
+    #     """
+    #     Override method :meth:`pyqtgraph.graphicsItems.PlotItem.plot` to return :class:`TimedPlotDataItem`
+    #
+    #     Add and return a new plot.
+    #     See :func:`PlotDataItem.__init__ <pyqtgraph.PlotDataItem.__init__>` for data arguments
+    #
+    #     Extra allowed arguments are:
+    #         clear    - clear all plots before displaying new data
+    #         params   - meta-parameters to associate with this data
+    #     """
+    #     clear = kargs.get('clear', False)
+    #     params = kargs.get('params', None)
+    #
+    #     if clear:
+    #         self.clear()
+    #
+    #     item = TimedPlotDataItem(*args, **kargs)
+    #
+    #     if params is None:
+    #         params = {}
+    #     self.addItem(item, params=params)
+    #
+    #     return item
 
 class TimedPlotDataItem(pg.PlotDataItem):
     """

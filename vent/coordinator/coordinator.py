@@ -17,7 +17,7 @@ class CoordinatorBase:
         self.control_settings = {}
         self.tentative_control_settings = {}
         self.last_message_timestamp = None
-        
+
 
     def get_sensors(self) -> SensorValues:
         # returns SensorValues struct
@@ -126,11 +126,7 @@ class CoordinatorLocal(CoordinatorBase):
             self.sensor_values = sensor_values
             self.last_message_timestamp = sensor_values.timestamp
             self.lock.release()
-            for name in [ControlSettingName.PIP,
-                         ControlSettingName.PIP_TIME,
-                         ControlSettingName.PEEP,
-                         ControlSettingName.BREATHS_PER_MINUTE,
-                         ControlSettingName.INSPIRATION_TIME_SEC]:
+            for name in ControlSettingName:
                 self.lock.acquire()
                 if (name not in self.control_settings):
                     self.lock.release()

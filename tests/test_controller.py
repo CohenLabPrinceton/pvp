@@ -7,14 +7,20 @@ from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeveri
 from vent.coordinator.coordinator import get_coordinator
 from vent.controller.control_module import get_control_module
 
-
+######################################################################
+#########################   TEST 1  ##################################
+######################################################################
+#
+#   Make sure the controller remembers settings, and can be started
+#   and stopped repeatedly a couple of times.
+#
 @pytest.mark.parametrize("control_setting_name", [ControlSettingName.PIP,
                                                   ControlSettingName.PIP_TIME,
                                                   ControlSettingName.PEEP,
                                                   ControlSettingName.BREATHS_PER_MINUTE,
                                                   ControlSettingName.INSPIRATION_TIME_SEC])
 
-def test_control_settingss(control_setting_name):
+def test_control_settings(control_setting_name):
     '''
     This test set_controls and get_controls
     Set and read a all five variables, make sure that they are identical.
@@ -39,8 +45,35 @@ def test_control_settingss(control_setting_name):
     assert c_get.max_value == c_set.max_value
     assert c_get.timestamp == c_set.timestamp
 
+def test_restart_controller():
+    '''
+    This tests whether the controller can be started and stopped 10 times without problems
+    '''
+    Controller = get_control_module(sim_mode=True)
+
+    for counter in range(10):
+        time.sleep(0.1)
+        Controller.start()
+        vals_start = Controller.get_sensors()
+        time.sleep(0.2)
+        Controller.stop() 
+        vals_stop = Controller.get_sensors()
+        assert vals_stop.loop_counter > vals_start.loop_counter
 
 
+
+
+
+
+
+
+######################################################################
+#########################   TEST 2  ##################################
+######################################################################
+#
+#   Make sure the controller controlls, and the controll values look 
+#   good. (i.e. close to target within narrow margins).
+#
 def test_control_dynamical():
     ''' 
     This tests whether the controller is controlling pressure as intended.
@@ -50,21 +83,22 @@ def test_control_dynamical():
 
     vals_start = Controller.get_sensors()
 
-    v_peep = random.randint(5, 15)
-    command = ControlSetting(name=ControlSettingName.PEEP, value=v_peep, min_value=v_peep-1, max_value=v_peep+1, timestamp=time.time())
+    v_peep = random.randint(5, 10)
+    command = ControlSetting(name=ControlSettingName.PEEP, value=v_peep, min_value=v_peep-2, max_value=v_peep+2, timestamp=time.time())
     Controller.set_control(command)
 
-    v_pip = random.randint(15, 25)
-    command = ControlSetting(name=ControlSettingName.PIP, value=v_pip, min_value=v_pip-1, max_value=v_pip+1, timestamp=time.time())
+    v_pip = random.randint(15, 30)
+    command = ControlSetting(name=ControlSettingName.PIP, value=v_pip, min_value=v_pip-2, max_value=v_pip+2, timestamp=time.time())
     Controller.set_control(command)
 
-    v_bpm = random.randint(6, 25)
+    v_bpm = random.randint(6, 20)
     command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=v_bpm, min_value=v_bpm-1, max_value=v_bpm+1, timestamp=time.time()) 
     Controller.set_control(command)
 
     v_iphase = (0.3 + np.random.random()*0.5) * 60/v_bpm
     command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=v_iphase, min_value=v_iphase-1, max_value=v_iphase+1, timestamp=time.time()) 
     Controller.set_control(command)
+
 
     Controller.start()
     time.sleep(0.1)
@@ -79,8 +113,8 @@ def test_control_dynamical():
     vals_stop = Controller.get_sensors()
     
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
-    assert np.abs(vals_stop.peep - v_peep)                     < 2    # PIP error correct within 2 cmH2O
-    assert np.abs(vals_stop.pip - v_pip)                       < 2    # PIP error correct within 2 cmH2O
+    assert np.abs(vals_stop.peep - v_peep)                     < .5    # PIP error correct within 2 cmH2O
+    assert np.abs(vals_stop.pip - v_pip)                       < .5    # PIP error correct within 2 cmH2O
     assert np.abs(vals_stop.breaths_per_minute - v_bpm)        < 1    # Breaths per minute correct within 1 bpm
     assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < 0.2  # Inspiration time   correct within 0.2 sec
 
@@ -115,23 +149,17 @@ def test_control_dynamical():
 
 
 
-def test_restart_controller():
-    '''
-    This tests whether the controller can be started and stopped 10 times without problems
-    '''
-    Controller = get_control_module(sim_mode=True)
-
-    for counter in range(10):
-        time.sleep(0.1)
-        Controller.start()
-        vals_start = Controller.get_sensors()
-        time.sleep(0.2)
-        Controller.stop() 
-        vals_stop = Controller.get_sensors()
-        assert vals_stop.loop_counter > vals_start.loop_counter
 
 
 
+
+######################################################################
+#########################   TEST 3  ##################################
+######################################################################
+#
+#   More involved test, triggers a series of alarms and makes sure they
+#   are raised correctly.
+#
 def test_alarm():
     '''
         This is a function to test the alarm functions. It triggers a series of alarms, that remain active for a while, and then are deactivated.
@@ -162,7 +190,7 @@ def test_alarm():
         if t == 23:    #resolve the PIP alarm
             command = ControlSetting(name=ControlSettingName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
             Controller.set_control(command)
-        if (t > 8+(60/17)) and (t<23):  #T est whether it is active
+        if (t > 8+(60/17)) and (t<23):  #Test whether it is active
             activealarms = Controller.get_active_alarms()
             assert len(activealarms.keys()) >= 1
             assert 'PIP' in activealarms.keys()
@@ -198,7 +226,7 @@ def test_alarm():
         if (t > 17+(60/17)) and (t<2):
             activealarms = Controller.get_active_alarms()
             assert len(activealarms.keys()) >= 1
-            assert 'BREATHS_PER_MINUTE' in activealarms.keys()
+            assert 'INSPIRATION_TIME_SEC' in activealarms.keys()
 
 
         time.sleep(0.05)
@@ -233,9 +261,4 @@ def test_alarm():
     waveformlist_2 = Controller.get_past_waveforms()
 
     assert len([s for s in waveformlist_1 if s is not None]) > len([s for s in waveformlist_2 if s is not None])   #Test: calling the past_waveforms clears ring buffer.
-
-# # Still to check:
-# # test _PID update?
-# # Good and bad values. Make sure that it works
-
 

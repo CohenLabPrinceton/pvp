@@ -1,7 +1,8 @@
 import time
 import threading
-from typing import List
+from typing import List, Dict
 
+import vent
 from vent.common.message import SensorValues, ControlSetting, Alarm, ControlSettingName, IPCMessageCommand
 from vent.controller.control_module import get_control_module
 from vent.coordinator.ipc import IPC
@@ -11,12 +12,14 @@ from vent.coordinator.process_manager import ProcessManager
 class CoordinatorBase:
     def __init__(self, sim_mode=False):
         # get_ui_control_module handles single_process flag
-        self.control_module = get_control_module(sim_mode)
-        self.sensor_values = None
-        self.alarms = None
-        self.control_settings = {}
-        self.tentative_control_settings = {}
-        self.last_message_timestamp = None
+        # TODO: SHARED_ is a better prefix than COPY_, as not all fields are copy
+        self.control_module = vent.controller.control_module.get_control_module(sim_mode)
+        self.COPY_sensor_values = None
+        self.COPY_active_alarms = {}
+        self.COPY_logged_alarms = []
+        self.COPY_control_settings = {}
+        self.COPY_tentative_control_settings = {}
+        self.COPY_last_message_timestamp = None
 
     def get_sensors(self) -> SensorValues:
         # returns SensorValues struct
@@ -26,7 +29,8 @@ class CoordinatorBase:
     #     # returns list of Alarm structs
     #     pass
 
-    def get_active_alarms(self) -> List[Alarm]:
+    def get_active_alarms(self) -> Dict[str, Alarm]:
+        # TODO: the dict key should be better as class instead of str
         pass
 
     def get_logged_alarms(self) -> List[Alarm]:
@@ -70,29 +74,36 @@ class CoordinatorLocal(CoordinatorBase):
 
     def set_control(self, control_setting: ControlSetting):
         self.lock.acquire()
-        self.tentative_control_settings[control_setting.name] = control_setting
+        self.COPY_tentative_control_settings[control_setting.name] = control_setting
         self.lock.release()
 
     def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         self.lock.acquire()
-        control_setting = self.control_settings[control_setting_name]
+        control_setting = self.COPY_control_settings[control_setting_name]
         self.lock.release()
         return control_setting
 
     def get_sensors(self) -> SensorValues:
         self.lock.acquire()
-        sensor_values = self.sensor_values
+        sensor_values = self.COPY_sensor_values
         self.lock.release()
         return sensor_values
 
     def get_logged_alarms(self) -> List[Alarm]:
-        return self.control_module.get_logged_alarms()
+        self.lock.acquire()
+        logged_alarms = self.COPY_logged_alarms.copy()  # Make sure to return a copy
+        self.lock.release()
+        return logged_alarms
 
-    def get_active_alarms(self) -> List[Alarm]:
-        return self.control_module.get_active_alarms()
+    def get_active_alarms(self) -> Dict[str, Alarm]:
+        self.lock.acquire()
+        active_alarms = self.COPY_active_alarms.copy()  # Make sure to return a copy
+        self.lock.release()
+        return active_alarms
 
     def clear_logged_alarms(self):
-        return self.control_module.clear_logged_alarms()
+        # TODO: do we still need this api? I assume the logged_alarms will always store on persist device
+        pass
 
     def get_msg_timestamp(self):
         self.lock.acquire()
@@ -107,7 +118,7 @@ class CoordinatorLocal(CoordinatorBase):
         while True:
             sensor_values = self.control_module.get_sensors()
             self.lock.acquire()
-            self.sensor_values = sensor_values
+            self.COPY_sensor_values = sensor_values
             self.last_message_timestamp = sensor_values.timestamp
             self.lock.release()
             for name in [ControlSettingName.PIP,
@@ -116,25 +127,25 @@ class CoordinatorLocal(CoordinatorBase):
                          ControlSettingName.BREATHS_PER_MINUTE,
                          ControlSettingName.INSPIRATION_TIME_SEC]:
                 self.lock.acquire()
-                if (name not in self.control_settings):
-                    self.lock.release()
+                in_control_settings = name not in self.COPY_control_settings
+                self.lock.release()
+                if in_control_settings:
                     control_setting = self.control_module.get_control(name)
                     self.lock.acquire()
-                    self.control_settings[name] = control_setting
-                    self.lock.release()
-                else:
+                    self.COPY_control_settings[name] = control_setting
                     self.lock.release()
 
                 self.lock.acquire()
-                if name in self.tentative_control_settings and self.tentative_control_settings[name] != self.control_settings[
-                            name]:
-                    tentative_control_setting = self.tentative_control_settings[name]
+                disagreed_tentative = name in self.COPY_tentative_control_settings and self.COPY_tentative_control_settings[name] != self.COPY_control_settings[
+                            name]
+                self.lock.release()
+                if disagreed_tentative:
+                    self.lock.acquire()
+                    tentative_control_setting = self.COPY_tentative_control_settings[name]
                     self.lock.release()
                     self.control_module.set_control(tentative_control_setting)
                     self.lock.acquire()
-                    self.control_settings[name] = self.control_module.get_control(name)
-                    self.lock.release()
-                else:
+                    self.COPY_control_settings[name] = self.control_module.get_control(name)
                     self.lock.release()
             # sleep 10 ms
             time.sleep(0.01)

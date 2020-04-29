@@ -13,13 +13,13 @@ class P4vMini(AnalogSensor):
     from the sensor's maximum output of 20 in(h20), and we want sensor 
     readings in cm h20: (2.54 cm/in * 20" h20) * read() = observed cmh20
     '''
-    _default_offset_voltage = 0.25
-    _default_output_span    = 4
+    _DEFAULT_OFFSET_VOLTAGE = 0.25
+    _DEFAULT_OUTPUT_SPAN    = 4
     '''  '''
-    _conversion_factor      = 2.54*20 
+    _CONVERSION_FACTOR      = 2.54*20 
 
-    def __init__(self,adc,channel,calibration = (_default_offset_voltage,
-				 _default_output_span ),gain=1,data_rate=860,mode=None):
+    def __init__(self,adc,channel,calibration = (_DEFAULT_OFFSET_VOLTAGE,
+				 _DEFAULT_OUTPUT_SPAN ),gain=1,data_rate=860,mode=None):
         super().__init__(	adc,
 							channel,
 							calibration,
@@ -33,7 +33,7 @@ class P4vMini(AnalogSensor):
     def read(self):
 		''' Overloaded to convert the superclass normalized output into 
 		the desired units: cm(h20)'''
-        return self._conversion_factor*super()._read()
+        return self._CONVERSION_FACTOR*super()._read()
 
 
 class OxygenSensor(AnalogSensor):

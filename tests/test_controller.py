@@ -173,11 +173,10 @@ def test_alarm():
         if t == 0:
             command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=30, timestamp=time.time())
             Controller.set_control(command)
+            command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=2, timestamp=time.time())
+            Controller.set_control(command)
         if t == 3:
             command = ControlSetting(name=ControlSettingName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
-            Controller.set_control(command)
-        if t == 7:
-            command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=2, timestamp=time.time())
             Controller.set_control(command)
         if t == 10:
             command = ControlSetting(name=ControlSettingName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())

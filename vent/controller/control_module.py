@@ -29,6 +29,7 @@ class ControlModuleBase:
         get_active_alarms():               Returns a Dictionary of all currently active alarms.
         get_logged_alarms():               Returns a List of logged alarms, up to maximum lengh of self._RINGBUFFER_SIZE
         get_control(ControlSetting):       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
+        get_past_waveforms():              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self._RINGBUFFER_SIZE, AND clears this archive.
         start():                           Starts the main-loop of the controller
         stop():                            Stops the main-loop of the controller
     """
@@ -44,8 +45,7 @@ class ControlModuleBase:
         #########################  Control management  #########################
 
         # This is what the machine has controll over
-        self._Qin = 0              # State of a valve on the inspiratory side
-        self._Qout = 0             # State of a valve on the expiratory side
+        self._control_signal = 0              # State of a valve on the inspiratory side
 
         # Internal Control variables. "SET" indicates that this is set.
         self.__SET_PIP = 22         # Target PIP pressure
@@ -72,6 +72,9 @@ class ControlModuleBase:
         self.__DATA_LAST_PEEP = None  # Last time of PEEP - by definition end of breath cycle
         self._DATA_BPM = None         # Measured breathing rate, by definition 60sec / length_of_breath_cycle
         self._DATA_VTE = None         # Maximum air displacement in last breath cycle
+        self._DATA_P = 0              # Last measurements of the proportional term for PID-control
+        self._DATA_I = 0              # Last measurements of the integral term for PID-control
+        self._DATA_D = 0              # Last measurements of the differential term for PID-control
 
         # Parameters to keep track of breath-cycle
         self.__cycle_start = time.time()
@@ -81,6 +84,9 @@ class ControlModuleBase:
         # These are measurements that change from timepoint to timepoint
         self._DATA_PRESSURE = 0
         self.__DATA_VOLUME = 0
+        self._DATA_Qin = 0            # Measurement of the airflow in
+        self._DATA_Qout = 0           # Measurement of the airflow out
+        self._DATA_dpdt = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
         self._last_update = time.time()
 
 
@@ -370,6 +376,36 @@ class ControlModuleBase:
 
         return return_value
 
+
+    def __get_PID_error(self, ytarget, yis, dt):
+        error_new = ytarget - yis                   # New value of the error
+
+        RC = 0.5  # Time constant in seconds
+        s = dt / (dt + RC)
+        self._DATA_I = self._DATA_I + s*(error_new - self._DATA_I)     # Integral term on some timescale RC
+        self._DATA_D = error_new - self._DATA_P
+        self._DATA_P = error_new
+
+    def __calculate_control_signal(self):
+        self.control_signal  = 160            # Some setting for the maximum flow.
+        self.control_signal -= 40*self._DATA_P
+        self.control_signal -=  0*self._DATA_I
+        self.control_signal -=  0*self._DATA_D
+
+    def _get_control_signal(self):
+        return self.control_signal
+
+    def __get_pressure_derivative(self, dt):
+        if self.__cycle_waveform is None:
+            sample_dPdt = 0
+        else:
+            latest_sample = self.__cycle_waveform[-1]  #Format of the last sample: [time|pressure|volume]
+            sample_dPdt = (self._DATA_PRESSURE - latest_sample[1])/dt     # this is dP/dt at one moment in time
+
+        s = dt / (0.02 + dt)  #send this through 20ms LP filter
+        self._DATA_dpdt = self._DATA_dpdt + s * (sample_dPdt - self._DATA_dpdt)
+
+
     def _PID_update(self, dt):
         ''' 
         This instantiates the control algorithms.
@@ -383,47 +419,60 @@ class ControlModuleBase:
 
             dt: Time since last update in seconds 
 
-        RIGHT NOW THIS IS NOT A PID CONTROLLER!
         '''
         now = time.time()
         cycle_phase = now - self.__cycle_start
         next_cycle = False
 
-        self.__DATA_VOLUME += dt * ( self._Qin - self._Qout )  # Integrate what has happened within the last few seconds
-        # NOTE: As Qin and Qout are set, this is what the controllr believes has happened. NOT A MEASUREMENT, MIGHT NOT BE REALITY!
+        self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
 
-        if cycle_phase < self.__SET_PIP_TIME:  # ADD CONTROL dP/dt
-            # to PIP, air in as fast as possible
-            self._Qin = 1
-            self._Qout = 0
-            if self._DATA_PRESSURE > self.__SET_PIP:
-                self._Qin = 0
-        elif cycle_phase < self.__SET_I_PHASE:  # ADD CONTROL P
-            # keep PIP plateau, let air in if below
-            self._Qin = 0
-            self._Qout = 0
-            if self._DATA_PRESSURE < self.__SET_PIP:
-                self._Qin = 1
-        elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:
-            # to PEEP, open exit valve
-            self._Qin = 0
-            self._Qout = 1
+        if cycle_phase < self.__SET_PIP_TIME:
+            self.__get_pressure_derivative(dt = dt)
+            target_slope = (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PIP_TIME
+            self.__get_PID_error(yis = self._DATA_dpdt, ytarget = target_slope, dt = dt)   # here, we control dP/dt   
+            self.__calculate_control_signal()
+
+            # STATE CONTROL: to PIP, air in as fast as possible
+            # self._Qin = 1
+            # self._Qout = 0
+            # if self._DATA_PRESSURE > self.__SET_PIP:
+            #     self._Qin = 0
+        elif cycle_phase < self.__SET_I_PHASE:                          # then, we control PIP 
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt)
+            self.__calculate_control_signal()
+
+            # STATE CONTROL: keep PIP plateau, let air in if below
+            # self._Qin = 0
+            # self._Qout = 0
+            # if self._DATA_PRESSURE < self.__SET_PIP:
+            #     self._Qin = 1
+        elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:  # then, we drop pressure as fast as possible
+            self.control_signal = np.inf
             if self._DATA_PRESSURE < self.__SET_PEEP:
-                self._Qout = 0
-        elif cycle_phase < self.__SET_CYCLE_DURATION:
-            # keeping PEEP, let air in if below
-            self._Qin = 0
-            self._Qout = 0
-            if self._DATA_PRESSURE < self.__SET_PEEP:
-                self._Qin = 1
+                self.control_signal = 0
+
+            # self._Qin = 0
+            # self._Qout = 1
+            # if self._DATA_PRESSURE < self.__SET_PEEP:
+            #     self._Qout = 0
+        elif cycle_phase < self.__SET_CYCLE_DURATION:                   # and control around PEEP
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
+            self.__calculate_control_signal()
+
+            # STATE CONTROL: keeping PEEP, let air in if below
+            # self._Qin = 0
+            # self._Qout = 0
+            # if self._DATA_PRESSURE < self.__SET_PEEP:
+            #     self._Qin = 1
         else:
             self.__cycle_start = time.time()  # New cycle starts
             self.__DATA_VOLUME = 0            # ... start at zero volume in the lung
+            self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
         
         if next_cycle or (self.__cycle_waveform is None):  # if a new breath cycle has started, or program just started
             self.__cycle_waveform_archive.append( self.__cycle_waveform )
-            self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])  # add volume
+            self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])
             self.__analyze_last_waveform()    # Analyze last waveform
             self.__update_alarms()            # Run alarm detection over last cycle's waveform
             self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
@@ -559,6 +608,28 @@ class ControlModuleSimulator(ControlModuleBase):
         self.Balloon = Balloon_Simulator(leak=True, delay=False)          # This is the simulation
         self._sensor_to_COPY()
 
+        self._DATA_Qin    =    0.6  # Fixed flow of 0.6 l/min
+        self._DATA_Qout   =    0    # Later set by control
+
+    def __SimulatedPropValve(self, x, dt):
+        '''
+        This simulates the action of a proportional valve.
+        Flow-current-curve eye-balled from the datasheet of SMC PVQ31-5G-23-01N  
+        https://www.ocpneumatics.com/content/pdfs/PVQ.pdf
+        
+        x:  Input current [mA]
+        dt: Time since last setting in seconds [for the LP filter]
+        '''
+        RC = 0.05 # 50 ms delay
+        flow_new = 1.0*(np.tanh(0.03*(x - 130)) + 1)
+        if x>160:
+            flow_new = 1.72  #Maximum, ~100 l/min
+        if x<0:
+            flow_new = 0
+
+        s = dt / (RC + dt)
+        self._DATA_Qout = self._DATA_Qout + s * (flow_new - self._DATA_Qout)
+
     def _sensor_to_COPY(self):
         # And the sensor measurements
         self._lock.acquire()
@@ -586,12 +657,16 @@ class ControlModuleSimulator(ControlModuleBase):
             self._loop_counter += 1
             now = time.time()
 
-            # Only one sensor "is connected" and that is the pressure in the balloon
+            # Only three sensors "are connected". One to the pressure in the balloon, and two to flow-in and flow-out
             self.Balloon.update(dt = now - self._last_update)
             self._DATA_PRESSURE = self.Balloon.get_pressure()
 
-            self._PID_update(dt = now - self._last_update)
-            self.Balloon.set_flow(self._Qin, self._Qout)
+            self._PID_update(dt = now - self._last_update)  # Updates the PID Controller
+
+            x = self._get_control_signal()
+            self.__SimulatedPropValve(x, dt = now - self._last_update)
+            self.Balloon.set_flow(self._DATA_Qin, self._DATA_Qout)
+
             self._last_update = now
 
             if update_copies == 0:

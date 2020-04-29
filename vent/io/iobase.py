@@ -1,6 +1,6 @@
 from pigpio import pi as PigPi
 from abc import ABC, abstractmethod
-from numpy import zeros
+from numpy import zeros,float16,roll
 from collections import OrderedDict
 from struct import pack,unpack
 
@@ -27,24 +27,34 @@ class IODeviceBase(ABC):
         self._handle = self._pig.spi_open(channel,baudrate)
 
     def close(self):
-        self._pig.close(self._handle)
+        self._pig.close(self.handle)
 
 
 class i2cDevice(IODeviceBase):
     ''' A class wrapper for pigpio I2C handles. Defines several methods used for 
     reading from and writing to device registers. Defines helper classes Register
     and RegisterField for handling the manipulation of arbitrary registers.
+    
+    Note: The Raspberry Pi uses LE byte-ordering, while the outside
+    world tends to use BE (at least, the sensors in use so far all do). 
+    Thus, bytes need to be swapped from native (LE) ordering to BE 
+    prior to being written to an i2c device, and bytes recieved need to 
+    be swapped from BE into native (LE). All methods except read_device 
+    and write_device perform this automatically. The methods read_device
+    and write_device do NOT byteswap and return bytearrays rather than 
+    the unsigned 16-bit int used by the other read/write methods.
     '''
     def __init__(self, i2c_address, i2c_bus, pig=None):
         super().__init__(pig)
         self._i2c_bus = i2c_bus
         self.open_i2c(i2c_bus,i2c_address)
 
+
     def read_device(self,num_bytes):
         ''' Read a specified number of bytes directly from the the device 
         without changing the register. Does NOT perform LE/BE conversion
         '''
-        return self._pig.i2c_read_device(self.handle,num_bytes)
+        return self._pig.i2c_read_device(self.handle,num_bytes)[1]
 
     def write_device(self,data):
         ''' Write bytes to the device without specifying register.
@@ -52,13 +62,13 @@ class i2cDevice(IODeviceBase):
         '''
         self._pig.i2c_write_device(self.handle,data)
 
-    def read_word(self,signed=False):
+    def read_word(self):
         ''' Read two bytes directly from the the device without changing the register.'''
-        return self.__be16bytes_to_native(self._pig.i2c_read_device(self.handle),signed=signed)
+        return self.__be16bytes_to_native(self._pig.i2c_read_device(self.handle)[1])
 
-    def write_word(self,word,signed=False):
+    def write_word(self,wordbytes):
         ''' Write two bytes to the device without specifying register.'''
-        self._pig.i2c_write_data(self.handle,self.__native16_to_be(word,signed=signed))
+        self._pig.i2c_write_device(self.handle,self.__native16_to_be_bytes(wordbytes))
 
     def read_register(self,register,signed=False):
         ''' Read 2 bytes from the specified register(denoted by a single byte)'''
@@ -86,17 +96,24 @@ class i2cDevice(IODeviceBase):
         ''' Unpacks a bytearray of length 2 respecting big-endianness of
         the outside world and returns int
         '''
-        if len(data) != 2:
-            raise TypeError('Tried to call __byteswap on something that is most definitely not a two-complement')
         return unpack('>H',data)[0]
-
+        
+    def __native16_to_be_bytes(self,word):
+        ''' Packs an int into a bytearray while swapping big-endianness of
+        the pi and returns bytearray
+        '''
+        return pack('>H',word)
 
     class Register:
         ''' Describes a writable configuration register. Has Dynamically-defined
         attributes corresponding to the fields described by the passed arguments.
         Takes as arguments two tuples of equal length, the first of which
         names each field and the second being a tuple of tuples containing
-        the (human readable) possible settings/values for each field.  
+        the (human readable) possible settings/values for each field.
+        
+        Note: The intializer reverses the fields & their values because 
+        a human reads the register, as drawn in the datasheet, from left
+        to right - however, the fields furthest to the left  
         '''
         def __init__(self,fields,values):
             self._fields = fields
@@ -112,10 +129,9 @@ class i2cDevice(IODeviceBase):
             return OrderedDict(zip(self._fields, ( getattr(getattr(self,field), 'unpack' )(cfg) for field in self._fields )))
         
         def pack(self,cfg,**kwargs):
-            '''
-            Given an initial integer representation of a register and an
+            ''' Given an initial integer representation of a register and an
             arbitrary number of field=value settings, returns an integer
-            representation of the register incorporating the new settings
+            representation of the register incorporating the new settings.
             '''
             for field,value in kwargs.items():
                 if hasattr(self,field) and value is not None:
@@ -124,8 +140,7 @@ class i2cDevice(IODeviceBase):
 
 
         class RegisterField:
-            '''
-            Describes a configurable field in a writable register.
+            ''' Describes a configurable field in a writable register.
             '''
             def __init__(self,offset,mask,values):
                 self._offset    = offset
@@ -179,9 +194,9 @@ class Sensor(ABC):
     _DEFAULT_STORED_OBSERVATIONS = 128
     
     def __init__(self):
-        self._data  = zeros(_DEFAULT_STORED_OBSERVATIONS,dtype=np.float16)
+        self._data  = zeros(self._DEFAULT_STORED_OBSERVATIONS,dtype=float16)
         self._i     = 0
-        self._n     = _DEFAULT_STORED_OBSERVATIONS
+        self._n     = self._DEFAULT_STORED_OBSERVATIONS
         
     @property
     def data(self):
@@ -190,7 +205,7 @@ class Sensor(ABC):
         arranged oldest to newest. Result has length equal to the lessor
         of self.n and the number of observations made.
         '''
-        rolled = self._data.roll(self.n-self._i)
+        rolled = roll(self._data,self.n-self._i)
         return rolled[rolled.nonzero()]
         
     @property
@@ -221,9 +236,10 @@ class Sensor(ABC):
 
 
 class AnalogSensor(Sensor):
-    ''' Generalized class describing an aanlog sensor attached to an ADC.
+    ''' Generalized class describing an analog sensor attached to an ADC.
     If instantiated without a subclass, represents a voltmeter with range 0-1.0.
     '''
+# Change CONFIG fields to match convention 
     def __init__(   self, adc, channel,
                     calibration=(0,5,),
                     gain=None, data_rate=None, mode=None ):
@@ -231,9 +247,11 @@ class AnalogSensor(Sensor):
                 raise TypeError('arg calibration must be a tuple of the form (low,high)')
         super().__init__()
         self.channel    = channel
-        self.gain       = adc.gain if gain is None else gain
-        self.data_rate  = adc.data_rate if data_rate is None else data_rate
-        self.mode       = adc.mode if mode is None else mode
+        self.gain       = adc._config.PGA.unpack(adc.cfg) if gain is None else gain
+        self.data_rate  = adc._config.DR.unpack(adc.cfg) if data_rate is None else data_rate
+        self.mode       = adc._config.MODE.unpack(adc.cfg) if mode is None else mode
+        self.adc        = adc
+        self.calibrate(calibration)
         
     def read(self):
         ''' Returns a value in the range of 0 - 1 corresponding to a fraction
@@ -242,28 +260,29 @@ class AnalogSensor(Sensor):
         return self._convert(self._raw_read())
         
     def calibrate(self,calibration=None):
-        if calibration is not None:
-            if type(calibration) != tuple:
-                raise TypeError('arg calibration must be a tuple of the form (low,high)')
-            elif calibration is not None: 
-                self.calibration = calibration
-            else:
-                for i in range(50):
-                    self.read()
-                    print('Analog Sensor Calibration @ %6.4f V'%(self._DATA[self._N]),end='\r')
-                    time.sleep(.1)
-                self.calibration[0] = np.mean(self.data(50))
-                print('Calibrated low-end of Analog sensor  @ %6.4f V'%(self.calibration[0]))
+        if calibration is not None and type(calibration) != tuple:
+            raise TypeError('arg calibration must be a tuple of the form (low,high)')
+            
+            # FIX THIS
+        elif calibration is None: 
+            self.calibration = calibration
+        else:
+            for i in range(50):
+                self.read()
+                print('Analog Sensor Calibration @ %6.4f V'%(self._DATA[self._N]),end='\r')
+                time.sleep(.1)
+            self.calibration[0] = np.mean(self.data(50))
+            print('Calibrated low-end of Analog sensor  @ %6.4f V'%(self.calibration[0]))
 
     def _raw_read(self):
         ''' Returns raw voltage
         '''
-        return self.adc.get_voltage(self.channel,self.gain,self.data_rate,self.mode)
+        return self.adc.read(self.channel,self.gain,self.mode,self.data_rate)
 
     def _convert(self,raw):
         ''' Scales raw voltage into the range 0 - 1 
         '''
-        return raw - calibration[0]/(calibration[1]-calibration[0])
+        return raw - self.calibration[0]/(self.calibration[1]-self.calibration[0])
 
 
 class Pin(IODeviceBase):

@@ -40,7 +40,7 @@ class ads1115(i2cDevice):
     However, their function and usage are described in the datasheet. 
     '''
     
-    def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None,):
+    def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None):
         super().__init__(address,i2c_bus,pig)
         ''' Initializes registers: Pointer register is write only, 
         config is R/W. Sets initial value of _last_cfg to what is

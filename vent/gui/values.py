@@ -1,5 +1,5 @@
 from collections import OrderedDict as odict
-
+from vent.common.message import ValueName
 from vent.gui import styles
 
 class Value(object):
@@ -108,27 +108,27 @@ class Value(object):
 
 
 MONITOR = odict({
-    'fio2': Value(**{ 'name': 'FiO2',
+    ValueName.FIO2: Value(**{ 'name': 'FiO2',
         'units': '%',
         'abs_range': (0, 100),
         'safe_range': (60, 100),
         'decimals' : 1
     }),
-    'temperature': Value(**{
+    ValueName.TEMP: Value(**{
         'name': 'Temp',
         'units': '\N{DEGREE SIGN}C',
         'abs_range': (0, 50),
         'safe_range': (20, 30),
         'decimals': 1
     }),
-    'humidity': Value(**{
+    ValueName.HUMIDITY: Value(**{
         'name': 'Humidity',
         'units': '%',
         'abs_range': (0, 100),
         'safe_range': (20, 75),
         'decimals': 1
     }),
-    'vte': Value(**{
+    ValueName.VTE: Value(**{
         'name': 'VTE',
         'units': '%',
         'abs_range': (0, 100),
@@ -152,7 +152,7 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 
 
 CONTROL = odict({
-    'PIP': Value(**{
+    ValueName.PIP: Value(**{
         'name': 'PIP', # (Peak Inspiratory Pressure)
         'units': 'cmH2O',
         'abs_range': (10, 30), # FIXME
@@ -160,7 +160,7 @@ CONTROL = odict({
         'default': 22,           # FIXME
         'decimals': 1          # FIXME
     }),
-    'PIP_TIME': Value(**{
+    ValueName.PIP_TIME: Value(**{
         'name': 'PIPt', #  (Peak Inspiratory Pressure)
         'units': 'seconds',
         'abs_range': (0, 1),  # FIXME
@@ -168,7 +168,7 @@ CONTROL = odict({
         'default': 0.3,  # FIXME
         'decimals': 1  # FIXME
     }),
-    'PEEP': Value(**{
+    ValueName.PEEP: Value(**{
         'name': 'PEEP', #  (Positive End Expiratory Pressure)
         'units': 'cmH2O',
         'abs_range': (0, 10),  # FIXME
@@ -176,7 +176,7 @@ CONTROL = odict({
         'default': 5,            # FIXME
         'decimals': 1           # FIXME
     }),
-    'BREATHS_PER_MINUTE': Value(**{
+    ValueName.BREATHS_PER_MINUTE: Value(**{
         'name': 'Breath Rate',
         'units': 'breaths/min',
         'abs_range': (0, 50), # FIXME
@@ -184,7 +184,7 @@ CONTROL = odict({
         'default': 17,            # FIXME
         'decimals': 1           # FIXME
     }),
-    'INSPIRATION_TIME_SEC': Value(**{
+    ValueName.INSPIRATION_TIME_SEC: Value(**{
         'name': 'Inspiration Time',
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME

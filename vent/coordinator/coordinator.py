@@ -1,8 +1,9 @@
 import time
 import threading
-from typing import List
+from typing import List, Dict
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, ControlSettingName, IPCMessageCommand
+from vent.common.message import SensorValues, ControlSetting, Alarm, ValueName, IPCMessageCommand
+from vent.common.message import SensorValueNew
 from vent.controller.control_module import get_control_module
 from vent.coordinator.ipc import IPC
 from vent.coordinator.process_manager import ProcessManager
@@ -19,7 +20,7 @@ class CoordinatorBase:
         self.last_message_timestamp = None
         
 
-    def get_sensors(self) -> SensorValues:
+    def get_sensors(self) -> Dict[ValueName, SensorValueNew]:
         # returns SensorValues struct
         pass
 
@@ -40,7 +41,7 @@ class CoordinatorBase:
         # takes ControlSetting struct
         pass
 
-    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
+    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         pass
 
     def get_msg_timestamp(self):
@@ -84,7 +85,7 @@ class CoordinatorLocal(CoordinatorBase):
         self.tentative_control_settings[control_setting.name] = control_setting
         self.lock.release()
 
-    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
+    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         self.lock.acquire()
         control_setting = self.control_settings[control_setting_name]
         self.lock.release()
@@ -94,7 +95,18 @@ class CoordinatorLocal(CoordinatorBase):
         self.lock.acquire()
         sensor_values = self.sensor_values
         self.lock.release()
-        return sensor_values
+        res = {
+            ValueName.PIP: SensorValueNew(ValueName.PIP, sensor_values.pip, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.PEEP: SensorValueNew(ValueName.PEEP, sensor_values.peep, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.FIO2: SensorValueNew(ValueName.FIO2, sensor_values.fio2, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.TEMP: SensorValueNew(ValueName.TEMP, sensor_values.temp, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.HUMIDITY: SensorValueNew(ValueName.HUMIDITY, sensor_values.humidity, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.PRESSURE: SensorValueNew(ValueName.PRESSURE, sensor_values.pressure, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.VTE: SensorValueNew(ValueName.VTE, sensor_values.vte, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.BREATHS_PER_MINUTE: SensorValueNew(ValueName.BREATHS_PER_MINUTE, sensor_values.breaths_per_minute, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.INSPIRATION_TIME_SEC: SensorValueNew(ValueName.INSPIRATION_TIME_SEC, sensor_values.inspiration_time_sec, sensor_values.timestamp, sensor_values.loop_counter),
+        }
+        return res
 
     def get_logged_alarms(self) -> List[Alarm]:
         return self.control_module.get_logged_alarms()
@@ -126,11 +138,11 @@ class CoordinatorLocal(CoordinatorBase):
             self.sensor_values = sensor_values
             self.last_message_timestamp = sensor_values.timestamp
             self.lock.release()
-            for name in [ControlSettingName.PIP,
-                         ControlSettingName.PIP_TIME,
-                         ControlSettingName.PEEP,
-                         ControlSettingName.BREATHS_PER_MINUTE,
-                         ControlSettingName.INSPIRATION_TIME_SEC]:
+            for name in [ValueName.PIP,
+                         ValueName.PIP_TIME,
+                         ValueName.PEEP,
+                         ValueName.BREATHS_PER_MINUTE,
+                         ValueName.INSPIRATION_TIME_SEC]:
                 self.lock.acquire()
                 if (name not in self.control_settings):
                     self.lock.release()

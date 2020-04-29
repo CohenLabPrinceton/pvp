@@ -1,5 +1,5 @@
 import time
-from vent.common.message import ControlSetting, ControlSettingName
+from vent.common.message import ControlSetting, ValueName
 from vent.coordinator.coordinator import get_coordinator
 from vent.controller.control_module import get_control_module
 import numpy as np
@@ -7,11 +7,11 @@ import pytest
 import random
 
 
-@pytest.mark.parametrize("control_setting_name", [ControlSettingName.PIP,
-                                                  ControlSettingName.PIP_TIME,
-                                                  ControlSettingName.PEEP,
-                                                  ControlSettingName.BREATHS_PER_MINUTE,
-                                                  ControlSettingName.INSPIRATION_TIME_SEC])
+@pytest.mark.parametrize("control_setting_name", [ValueName.PIP,
+                                                  ValueName.PIP_TIME,
+                                                  ValueName.PEEP,
+                                                  ValueName.BREATHS_PER_MINUTE,
+                                                  ValueName.INSPIRATION_TIME_SEC])
 
 def test_single_process_simulation(control_setting_name):
     coordinator = get_coordinator(single_process=True, sim_mode=True)

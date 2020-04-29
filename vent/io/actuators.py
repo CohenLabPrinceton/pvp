@@ -1,6 +1,5 @@
 from .iobase import OutputPin, PWMOutput
-'''
-Class definitions for specific actuators / output devices
+''' Class definitions for specific actuators / output devices
 '''
 
 class SolenoidValve(OutputPin):
@@ -12,7 +11,8 @@ class SolenoidValve(OutputPin):
 	
 	@property
 	def form(self):
-		'''Returns the human-readable form of the valve '''
+		''' Returns the human-readable form of the valve
+		'''
 		return map(reversed,self._FORMS.items())[ self._form ]
 		
 	@form.setter
@@ -22,16 +22,15 @@ class SolenoidValve(OutputPin):
 		else: self._form = self._FORMS[f]
 	
 	def open(self):
-		''' 
-		-Energizes valve if Normally Closed. 
-		-De-energizes if Normally Open'''
+		''' Energizes valve if Normally Closed. De-energizes if
+		Normally Open
+		 '''
 		if self._form: self.off()
 		else: self.on()
 		
 	def close(self):
-		''' 
-		-De-energizes valve if Normally Closed. 
-		-Energizes if Normally Open'''
+		''' De-energizes valve if Normally Closed. Energizes if
+		Normally Open'''
 		if not self._form: self.off()
 		else: self.on()
 

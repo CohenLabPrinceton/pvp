@@ -1,12 +1,12 @@
 from pigpio import pi as PigPi
 from abc import ABC, abstractmethod
-import numpy as np
+from numpy import zeros
 from collections import OrderedDict
 from struct import pack,unpack
 
+
 class Ventilator:
-    '''
-    Class representation of the physical ventilator device
+    ''' Class representation of the physical ventilator device
     '''
     def __init__(self):
         #self.pig = PigPi()
@@ -22,9 +22,9 @@ class Ventilator:
     def calibrate(self):
         pass
 
+
 class IODeviceBase(ABC):
-    '''
-    Abstract base Class for pigpio handles (or whatever other GPIO library
+    ''' Abstract base Class for pigpio handles (or whatever other GPIO library
     we end up using)
     '''
 
@@ -47,9 +47,11 @@ class IODeviceBase(ABC):
     def close(self):
         self._pig.close(self._handle)
 
+
 class i2cDevice(IODeviceBase):
-    '''
-    A class wrapper for pigpio I2C handles 
+    ''' A class wrapper for pigpio I2C handles. Defines several methods used for 
+    reading from and writing to device registers. Defines helper classes Register
+    and RegisterField for handling the manipulation of arbitrary registers.
     '''
     def __init__(self, i2c_address, i2c_bus, pig=None):
         super().__init__(pig)
@@ -57,62 +59,58 @@ class i2cDevice(IODeviceBase):
         self.open_i2c(i2c_bus,i2c_address)
 
     def read_device(self,num_bytes):
-        '''
-        Read a specified number of bytes directly from the the device 
+        ''' Read a specified number of bytes directly from the the device 
         without changing the register. Does NOT perform LE/BE conversion
         '''
         return self._pig.i2c_read_device(self.handle,num_bytes)
 
     def write_device(self,data):
-        '''
-        Write bytes to the device without specifying register.
+        ''' Write bytes to the device without specifying register.
         Does NOT perform LE/BE conversion
         '''
         self._pig.i2c_write_device(self.handle,data)
 
-    def read_word(self,signed=True):
-        '''
-        Read two bytes directly from the the device 
-        without changing the register. 
-        '''
+    def read_word(self,signed=False):
+        ''' Read two bytes directly from the the device without changing the register.'''
         return self.__be16bytes_to_native(self._pig.i2c_read_device(self.handle),signed=signed)
 
-    def write_word(self,word):
-        '''
-        Write two bytes to the device without specifying register.
-        '''
-        self._pig.i2c_write_data(self.handle,self.__native16_to_be(word))
+    def write_word(self,word,signed=False):
+        ''' Write two bytes to the device without specifying register.'''
+        self._pig.i2c_write_data(self.handle,self.__native16_to_be(word,signed=signed))
 
-    def read_register(self,register,signed=True):
-        '''
-        Read 2 bytes from the specified register(denoted by a single byte)
-        '''
+    def read_register(self,register,signed=False):
+        ''' Read 2 bytes from the specified register(denoted by a single byte)'''
         return self.__be16_to_native(self._pig.i2c_read_word_data(self.handle,register),signed=signed)
 
-    def write_register(self,register,word):
-        '''
-        Write 2 bytes to the specified register (denoted by a single byte)
-        '''
-        self._pig.i2c_write_word_data(self.handle,register,self.__native16_to_be(word))
+    def write_register(self,register,word,signed=False):
+        ''' Write 2 bytes to the specified register (denoted by a single byte)'''
+        self._pig.i2c_write_word_data(self.handle,register,self.__native16_to_be(word,signed=signed))
 
     def __be16_to_native(self,word,signed):
-        '''BigEndian to Native-endian conversion for signed 2 Byte integers (2 complement).'''
+        ''' BigEndian to Native-endian conversion for signed 2 Byte
+        integers (2 complement).
+        '''
         if signed:  return unpack('@h',pack('>h',word))[0]
         else:       return unpack('@H',pack('>H',word))[0]
 
-    def __native16_to_be(self,word):
-        '''Little Endian to BigEndian conversion for unsigned 2Byte integers (2 complement).'''
-        return unpack('@H',pack('>H',word))[0]
+    def __native16_to_be(self,word,signed = False):
+        ''' Little Endian to BigEndian conversion for unsigned 2Byte
+        integers (2 complement).
+        '''
+        if signed: return unpack('@h',pack('>h',word))[0]
+        else: return unpack('@H',pack('>H',word))[0]
 
     def __be16bytes_to_native(self,data):
-        '''UNpacks a bytearray of length 2 respecting big-endianness of the outside world and returns int '''
+        ''' Unpacks a bytearray of length 2 respecting big-endianness of
+        the outside world and returns int
+        '''
         if len(data) != 2:
             raise TypeError('Tried to call __byteswap on something that is most definitely not a two-complement')
         return unpack('>H',data)[0]
 
+
     class Register:
-        '''
-        Describes a writable configuration register. Has Dynamically-defined
+        ''' Describes a writable configuration register. Has Dynamically-defined
         attributes corresponding to the fields described by the passed arguments.
         Takes as arguments two tuples of equal length, the first of which
         names each field and the second being a tuple of tuples containing
@@ -120,16 +118,14 @@ class i2cDevice(IODeviceBase):
         '''
         def __init__(self,fields,values):
             self._fields = fields
-            
-            ''' Dynamically initialize attributes'''
             offset = 0
             for f,v in zip(reversed(fields),reversed(values)):
-                setattr( self, f, self.ConfigField(offset, len(v)-1, OrderedDict(zip( v, range(len(v)) )) ) )
+                setattr( self, f, self.RegisterField(offset, len(v)-1, OrderedDict(zip( v, range(len(v)) )) ) )
                 offset += (len(v)-1).bit_length()
                 
         def unpack(self,cfg):
-            '''
-            Given the contents of a register in integer form, returns a dict of fields and their current settings
+            ''' Given the contents of a register in integer form, 
+            returns a dict of fields and their current settings
             '''
             return OrderedDict(zip(self._fields, ( getattr(getattr(self,field), 'unpack' )(cfg) for field in self._fields )))
         
@@ -144,42 +140,44 @@ class i2cDevice(IODeviceBase):
                     cfg = getattr( getattr(self,field), 'insert' )(cfg,value)
             return cfg
 
-        class ConfigField:
+
+        class RegisterField:
             '''
             Describes a configurable field in a writable register.
             '''
             def __init__(self,offset,mask,values):
-                self._OFFSET    = offset
-                self._MASK      = mask
-                self._VALUES    = values
+                self._offset    = offset
+                self._mask      = mask
+                self._values    = values
                 
             def offset(self):
-                return self._OFFSET
+                return self._offset
 
             def info(self):
                 ''' Returns a list containing stuff '''
-                return [ self._OFFSET, self._MASK, self._VALUES ]
+                return [ self._offset, self._mask, self._values ]
             
             def unpack(self,cfg):
                 ''' Extracts setting from passed 16-bit config & returns human readable result '''
-                return OrderedDict(map(reversed,self._VALUES.items()))[ self.extract(cfg) ]
+                return OrderedDict(map(reversed,self._values.items()))[ self.extract(cfg) ]
             
             def pack(self,value):
                 '''Takes a human-readable setting and returns a bit-shifted integer'''
-                return self._VALUES[value] << self._OFFSET
+                return self._values[value] << self._offset
                 
             def insert(self,cfg,value):
                 ''' 
                 Performs validation and then does a bitwise replacement on passed config with
                 the passed value. Returns integer representation of the new config.
                 '''
-                if value not in self._VALUES.keys():
-                    raise ValueError("ConfigField must be one of: {}".format(self._VALUES.keys()))
-                return ( cfg & ~(self._MASK<<self._OFFSET) )|( self._VALUES[value] << self._OFFSET )
+                if value not in self._values.keys():
+                    raise ValueError("RegisterField must be one of: {}".format(self._values.keys()))
+                return ( cfg & ~(self._mask<<self._offset) )|( self._values[value] << self._offset )
                 
             def extract(self,cfg):
                 '''Extracts setting from passed 16-bit config & returns integer representation'''
-                return ( cfg & (self._MASK<<self._OFFSET) )>>self._OFFSET
+                return ( cfg & (self._mask<<self._offset) )>>self._offset
+
 
 class spiDevice(IODeviceBase):
     '''
@@ -187,16 +185,21 @@ class spiDevice(IODeviceBase):
     '''
     def __init(self,pig,channel,baudrate):
         super().__init__(pig)
-        self.open_spi(hannel,baudrate)
+        self.open_spi(channel,baudrate)
+
 
 class Sensor(ABC):
     '''
-    Abstract base Class describing generalized sensors
+    Abstract base Class describing generalized sensors. Defines a mechanism
+    for limited internal storage of recent observations and methods to
+    pull that data out for external use. 
     '''
+    _DEFAULT_STORED_OBSERVATIONS = 128
+    
     def __init__(self):
-        self._DATA  = np.zeros(128,dtype=np.float16)
-        self._I     = 0
-        self._N      = 128
+        self._data  = zeros(_DEFAULT_STORED_OBSERVATIONS,dtype=np.float16)
+        self._i     = 0
+        self._n     = _DEFAULT_STORED_OBSERVATIONS
         
     @property
     def data(self):
@@ -205,30 +208,96 @@ class Sensor(ABC):
         arranged oldest to newest. Result has length equal to the lessor
         of self.n and the number of observations made.
         '''
-        rolled = self._DATA.roll(self.n-self._I)
+        rolled = self._data.roll(self.n-self._i)
         return rolled[rolled.nonzero()]
         
     @property
     def n(self):
-        return self._N
+        '''
+        Returns the number of observations temporarily kept in the Sensor's
+        internal np.ndarray. Once the ndarray has been filled, the sensor 
+        begins overwriting the oldest elements of the ndarray with new
+        observations such that the size of the internal storage stays 
+        constant.
+        '''
+        return self._n
     
     @n.setter
     def n(self,new_n):
         ''' Set a new length for stored observations. Clears existing 
         observations and resets. '''
-        self._N = new_n
+        self._n = new_n
         self.reset()
         
     @abstractmethod
     def read(self):
-        self._I = (self._I + 1)%self.n
+        self._i = (self._i + 1)%self.n
     
     def reset(self):
-        self._DATA  = np.zeros(self.n)
-        self._I     = 0
+        self._data  = zeros(self.n)
+        self._i     = 0
+
+
+class AnalogSensor(Sensor):
+    ''' Generalized class describing an aanlog sensor attached to an ADC.
+    If instantiated without a subclass, represents a voltmeter with range 0-1.0.
+    '''
+    def __init__(   self, adc, channel,
+                    calibration=(0,5,),
+                    gain=None, data_rate=None, mode=None ):
+        if type(calibration) != tuple:
+                raise TypeError('arg calibration must be a tuple of the form (low,high)')
+        super().__init__()
+        self.channel    = channel
+        self.gain       = adc.gain if gain is None else gain
+        self.data_rate  = adc.data_rate if data_rate is None else data_rate
+        self.mode       = adc.mode if mode is None else mode
+        
+    def read(self):
+        ''' Returns a value in the range of 0 - 1 corresponding to a fraction
+        of the full input range of the sensor
+        '''
+        return self._convert(self._raw_read())
+        
+    def calibrate(self,calibration=None):
+        if calibration is not None:
+            if type(calibration) != tuple:
+                raise TypeError('arg calibration must be a tuple of the form (low,high)')
+            elif calibration is not None: 
+                self.calibration = calibration
+            else:
+                for i in range(50):
+                    self.read()
+                    print('Analog Sensor Calibration @ %6.4f V'%(self._DATA[self._N]),end='\r')
+                    time.sleep(.1)
+                self.calibration[0] = np.mean(self.data(50))
+                print('Calibrated low-end of Analog sensor  @ %6.4f V'%(self.calibration[0]))
+
+    def _raw_read(self):
+        ''' Returns raw voltage
+        '''
+        return self.adc.get_voltage(self.channel,self.gain,self.data_rate,self.mode)
+
+    def _convert(self,raw):
+        ''' Scales raw voltage into the range 0 - 1 
+        '''
+        return raw - calibration[0]/(calibration[1]-calibration[0])
+
 
 class Pin(IODeviceBase):
+    '''
+    Base Class wrapping pigpio methods for interacting with GPIO pins on
+    the raspberry pi. Subclasses include InputPin, OutputPin; along with
+    any specialized pins or specific devices defined in vent.io.actuators
+    & vent.io.sensors (note: actuators and sensors do not need to be tied 
+    to a GPIO pin and may instead be interfaced through an ADC or I2C).
     
+    When this class is initialized without a subclass, it represents a 
+    fully-functional binary digital GPIO pin. The subclasses InputPin and
+    OutputPin overload some functionaly of Pin in order to ensure the user
+    is warned when they call methods that are not consistent with the 
+    declared use (i.e. calling .set() on an InputPin).
+    '''
     _PIGPIO_MODES = {   'INPUT'     : 0,
                         'OUTPUT'    : 1,
                         'ALT5'      : 2,
@@ -266,7 +335,14 @@ class Pin(IODeviceBase):
         if value not in (0,1): raise ValueError('Cannot set a value other than 0 or 1 to a Pin')
         self._pig.write(self.pin,value)
 
+
 class InputPin(Pin):
+    '''
+    Subclass of Pin that should be used when calls to the pin should be  
+    read-only during normal operation.
+    That is, if a call is made to set the value on an InputPin, it will
+    throw a runtime warning.
+    '''
     def __init__(self,pin,pig=None):
         super().__init__(pin,pig)
         self.mode = 'INPUT'
@@ -275,27 +351,40 @@ class InputPin(Pin):
         raise RuntimeWarning('set() was called on an InputPin')
         super().set(value)
 
+
 class OutputPin(Pin):
+    '''
+    Subclass of Pin that should be used when calls to the pin should be  
+    write-only during normal operation.
+    That is, if a call is made to get the value of an OutputPin, it will
+    throw a runtime warning.
+    '''
     def __init__(self,pin,pig=None):
         super().__init__(pin,pig)
         self.mode = 'OUTPUT'
 
     def on(self):
-        self._pig.write(self.pin,level=1)
+        self.set(1)
     
     def off(self):
-        self._pig.write(self.pin,level=0)
+        self.set(0)
         
     def toggle(self):
-        self._pig.write(self.pin,not self._pig.read(12))
+        self.set(not self._pig.read(self.pin))
         
     def get(self):
-        super().get(value)
+        raise RuntimeWarning('get() was called on an OutputPin')
+        super().get()
+
 
 class PWMOutput(OutputPin):
+    '''
+    I am a Special Pin!
+    '''
     _DEFAULT_FREQUENCY      = 20000
     _DEFAULT_SOFT_FREQ      = 2000
     _HARDWARE_PWM_PINS      = (12, 13, 18, 19)
+    
     def __init__(self,pin,initial_duty=0,frequency=None,pig=None):
         super().__init__(pin,pig)
         if pin not in self._HARDWARE_PWM_PINS:

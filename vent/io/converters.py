@@ -1,18 +1,19 @@
 from .iobase import i2cDevice
 from time import sleep
 
-'''
-Class definitions for Analog to Digital Converters (ADCs), Digital to Analog Converters (DACs), and the like
+''' Class definitions for Analog to Digital Converters (ADCs), Digital to Analog Converters (DACs), and the like
 '''
 
 class ads1115(i2cDevice):  
     ''' Description:
     Class for the ADS1115 16 bit, 4 Channel ADC.
     Datasheet:
-        http://www.ti.com/lit/ds/symlink/ads1114.pdf?ts=1587872241912'''
-    ''' Default Values: 
-    Default configuration for vent:     0xC3E3
-    Default configuration on power-up:  0x8583 '''
+     http://www.ti.com/lit/ds/symlink/ads1114.pdf?ts=1587872241912
+        
+    Default Values: 
+     Default configuration for vent:     0xC3E3
+     Default configuration on power-up:  0x8583
+    '''
     _DEFAULT_ADDRESS        = 0x48
     _DEFAULT_VALUES         = {'MUX':0, 'PGA':4.096, 'MODE':'SINGLE', 'DR':860}
     
@@ -41,61 +42,94 @@ class ads1115(i2cDevice):
     
     def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None,):
         super().__init__(address,i2c_bus,pig)
-        ''' Description:
-        -Initializes registers: Pointer register is write only, config is R/W.
-        -Sets initial value of _LAST_CFG to what is actually on the ADS
-        -Packs default settings into _CFG, but do not actually write to ADC 
-         until read() is called'''
+        ''' Initializes registers: Pointer register is write only, 
+        config is R/W. Sets initial value of _last_cfg to what is
+        actually on the ADS.Packs default settings into _cfg, but does
+        not actually write to ADC - that occurs when read() is called.
+        '''
         self.pointer    = self.Register(self._POINTER_FIELDS,self._POINTER_VALUES)
-        self.config     = self.Register(self._CONFIG_FIELDS,self._CONFIG_VALUES)
-        
-        self._LAST_CFG  = self.readCFG()
-        
-        self._CFG       = self.config.pack( cfg     = self._LAST_CFG,
-                                            MUX     = self._DEFAULT_VALUES['MUX'],
-                                            PGA     = self._DEFAULT_VALUES['PGA'],
-                                            MODE    = self._DEFAULT_VALUES['MODE'],
-                                            DR      = self._DEFAULT_VALUES['DR'] )
+        self._config    = self.Register(self._CONFIG_FIELDS,self._CONFIG_VALUES)
+        self._last_cfg  = self._read_last_cfg()
+        self._cfg       = self._config.pack(cfg  = self._last_cfg,
+											MUX  = self._DEFAULT_VALUES['MUX'],
+											PGA  = self._DEFAULT_VALUES['PGA'],
+											MODE = self._DEFAULT_VALUES['MODE'],
+											DR   = self._DEFAULT_VALUES['DR'] )
                                             
     def read(self,channel=None,gain=None,mode=None,data_rate=None):
-        ''' Performs a raw_read and converts the result to voltage '''
-        return self.raw_read(channel=channel,gain=gain,mode=mode,data_rate=data_rate)*self.config.PGA.unpack(self._CFG) / 32767
-    
-    def raw_read(self,channel=None,gain=None,mode=None,data_rate=None):
-        ''' Description:
-        -Packs any new values passed as arguments into a new cfg. 
-        -If new cfg differs from the last, or if single-shot mode is specified,
-         write new cfg to config register and wait for conversion before reading.
-        -Otherwise, read the conversion value immediately. 
-        -In continuous mode, data can be read from the conversion register
-         of the  ADS1115 at any time and always reflects the most recently
-         completed conversion.
-        
-        So says the datasheet.
+        ''' Returns a voltage (expressed as a float) corresponding to a
+        channel on the ADC. The channel to read from, along with the
+        gain, mode, and sample rate of the conversion may be may be
+        specified as optional parameters. If read() is called with no
+        parameters, the resulting voltage corresponds to the channel
+        last read from and the same conversion settings.
         '''
-        self._CFG = self.config.pack(self._CFG,MUX=channel,PGA=gain,MODE=mode,DR=data_rate)
-        mode = self.config.MODE.unpack(self._CFG)
-        if self._CFG != self._LAST_CFG or mode == 'SINGLE':
-            self.write_register(self.pointer.P.pack('CONFIG'), self._CFG)
-            data_rate = self.config.DR.unpack(self._CFG)
-            while not ( self.ready() or  mode == 'CONTINUOUS' ):
+        return self._read(  channel=channel,
+                            gain=gain,
+                            mode=mode,
+                            data_rate=data_rate) * self._config.PGA.unpack(self._cfg) / 32767
+
+    @property
+    def config(self):
+        ''' Returns the human-readable configuration for the next read.    
+        '''
+        return self._config.unpack(self._cfg)
+
+    @property
+    def cfg(self):
+        ''' Returns the contents (as a 16-bit unsigned integer) of the 
+        configuration that will be written to the config register when
+        read() is next called.
+        '''
+        return self._cfg
+
+    def _read(self,channel=None,gain=None,mode=None,data_rate=None):
+        ''' Backend for read(). Returns the contents of the 16-bit
+        conversion register as an unsigned integer.
+        
+        If no parameters are passed, one of two things can happen:
+        
+            1)  If the ADC is in single-shot (mode='SINGLE') conversion 
+                mode, _last_cfg is written to the config register; once 
+                the ADC indicates it is ready, the contents of the 
+                conversion register are read and the result is returned.  
+            2)  If the ADC is in CONTINUOUS mode, the contents of the
+                conversion register are read immediately and returned.
+                
+        If any of channel, gain, mode, or data_rate are specified as 
+        parameters, a new _cfg is packed and written to the config
+        register; once the ADC indicates it is ready, the contents of 
+        the conversion register are read and the result is returned. 
+                
+        Note: In continuous mode, data can be read from the conversion
+        register of the ADS1115 at any time and always reflects the
+        most recently completed conversion. So says the datasheet.
+        '''
+        self._cfg = self._config.pack(  cfg  = self._cfg,
+                                        MUX  = channel,
+                                        PGA  = gain,
+                                        MODE = mode,
+                                        DR   = data_rate)
+        mode = self._config.MODE.unpack(self._cfg)
+        if self._cfg != self._last_cfg or mode == 'SINGLE':
+            self.write_register(self.pointer.P.pack('CONFIG'), self._cfg)
+            self._last_cfg  = self._cfg
+            data_rate = self._config.DR.unpack(self._cfg)
+            while not ( self._ready() or  mode == 'CONTINUOUS' ):
                 tick = self._pig.get_current_tick()
-                while ( ( self._pig.get_current_tick() - tick ) < 1000000/data_rate):
+                while ((self._pig.get_current_tick() - tick) < 1000000/data_rate):
                     pass
-        self._LAST_CFG  = self._CFG
-        self._tick      = self._pig.get_current_tick()
-        return self.read_register(self.pointer.P.pack('CONVERSION'),signed=False)
+        return self.read_register(self.pointer.P.pack('CONVERSION'))
 
-    def readCFG(self):
-        #comment me later
-        return self.read_register(self.pointer.P.pack('CONFIG'),signed=False)
-
-    def printConfig(self):
-        #comment me later
-        return self.config.unpack(self.readCFG())
-    
-    def ready(self):
+    def _read_last_cfg(self):
+        ''' Reads the config register and returns the contents as a
+        16-bit unsigned integer; updates internal record _last_cfg. 
+        '''
+        self._last_cfg = self.read_register(self.pointer.P.pack('CONFIG'))
+        return self._last_cfg
+        
+    def _ready(self):
         ''' Return status of ADC conversion. '''
         # OS = 0: Device is currently performing a conversion
         # OS = 1: Device is not currently performing a conversion
-        return self.read_register(self.pointer.P.pack('CONFIG'),signed=False) >> 15
+        return self.read_register(self.pointer.P.pack('CONFIG')) >> 15

@@ -178,7 +178,7 @@ def test_alarm():
         if t == 3:
             command = ControlSetting(name=ControlSettingName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
             Controller.set_control(command)
-        if t == 10:
+        if t == 6:
             command = ControlSetting(name=ControlSettingName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
             Controller.set_control(command)
 

@@ -35,18 +35,11 @@ class ControlModuleBase:
 
     def __init__(self):
 
-        #########################  Algorithm/Program management  ###############
+        #####################  Algorithm/Program parameters  ##################
         # Hyper-Parameters
         self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec
         self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      # After every 10 main control loop iterations, update COPYs.
         self._RINGBUFFER_SIZE                    = 100     # Maximum number of breath cycles kept in memory
-
-        # Run the start() method as a thread
-        self._loop_counter = 0
-        self._running = False
-        self._lock = threading.Lock()
-        self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
-        self.__thread.start()
 
         #########################  Control management  #########################
 
@@ -117,8 +110,18 @@ class ControlModuleBase:
         self.COPY_active_alarms = {}
         self.COPY_logged_alarms = list(self.__logged_alarms)
         self.COPY_sensor_values = SensorValues()
-        self._alarm_to_COPY()
+
+        ###########################  Threading init  #########################
+        # Run the start() method as a thread
+        self._loop_counter = 0
+        self._running = False
+        self._lock = threading.Lock()
+        self._alarm_to_COPY()  #These require the lock
         self._initialize_set_to_COPY()
+
+        self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
+        self.__thread.start()
+
 
     def _initialize_set_to_COPY(self):
         self._lock.acquire()

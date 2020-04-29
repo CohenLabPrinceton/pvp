@@ -103,8 +103,7 @@ def test_control_dynamical():
     Controller.start()
     time.sleep(0.1)
     vals_start = Controller.get_sensors()
-    time.sleep(20)                                                   # Let this run for 20 sec
-    vals_stop = Controller.get_sensors()
+    time.sleep(30)                                                   # Let this run for half a minute
 
     Controller.stop() # consecutive stops should be ignored
     Controller.stop() 
@@ -113,8 +112,8 @@ def test_control_dynamical():
     vals_stop = Controller.get_sensors()
     
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
-    assert np.abs(vals_stop.peep - v_peep)                     < .5    # PIP error correct within 2 cmH2O
-    assert np.abs(vals_stop.pip - v_pip)                       < .5    # PIP error correct within 2 cmH2O
+    assert np.abs(vals_stop.peep - v_peep)                     < 2    # PIP error correct within 2 cmH2O
+    assert np.abs(vals_stop.pip - v_pip)                       < 2    # PIP error correct within 2 cmH2O
     assert np.abs(vals_stop.breaths_per_minute - v_bpm)        < 1    # Breaths per minute correct within 1 bpm
     assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < 0.2  # Inspiration time   correct within 0.2 sec
 
@@ -166,8 +165,9 @@ def test_alarm():
     '''
     Controller = get_control_module(sim_mode=True)
     Controller.start()
+    time.sleep(1)
 
-    for t in np.arange(0, 40,0.05):
+    for t in np.arange(0, 30, 0.05):
 
         ### Make a cascade of changes that will not trigger alarms
         if t == 0:
@@ -222,10 +222,10 @@ def test_alarm():
         if t == 22:    # resolve it
             command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=3, timestamp=time.time())
             Controller.set_control(command)
-        if (t > 17+(60/17)) and (t<2):
+        if (t > 17+(60/17)) and (t<22):
             activealarms = Controller.get_active_alarms()
             assert len(activealarms.keys()) >= 1
-            assert 'INSPIRATION_TIME_SEC' in activealarms.keys()
+            assert 'I_PHASE' in activealarms.keys()
 
 
         time.sleep(0.05)

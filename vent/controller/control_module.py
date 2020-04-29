@@ -251,8 +251,8 @@ class ControlModuleBase:
             self._DATA_PIP  = np.percentile(pressure[ pressure > np.mean(pressure)], 80 )
 
             # measure time of reaching PIP, and leaving PIP
-            self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP))]
-            self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP))]
+            self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP*0.9))]
+            self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP*0.9))]
 
             # and measure the breaths per minute
             self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform

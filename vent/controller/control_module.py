@@ -468,7 +468,10 @@ class ControlModuleBase:
         elif cycle_phase < self.__SET_CYCLE_DURATION:                   # and control around PEEP
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
             self.__calculate_control_signal_in()
-            self.__control_signal_out = 0
+            if self._DATA_PRESSURE > 1.1*self.__SET_PEEP:
+                self.__control_signal_out = 1
+            else:
+                self.__control_signal_out = 0
 
             # STATE CONTROL: keeping PEEP, let air in if below
             # self._Qin = 0

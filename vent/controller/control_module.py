@@ -5,7 +5,7 @@ import numpy as np
 import copy
 from collections import deque
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ControlSettingName
+from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ValueName
 
 
 
@@ -32,6 +32,7 @@ class ControlModuleBase:
         get_past_waveforms():              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self._RINGBUFFER_SIZE, AND clears this archive.
         start():                           Starts the main-loop of the controller
         stop():                            Stops the main-loop of the controller
+
     """
 
     def __init__(self):
@@ -300,31 +301,31 @@ class ControlModuleBase:
         ''' Updates the entry of COPY contained in the control settings'''
         self._lock.acquire()
 
-        if control_setting.name == ControlSettingName.PIP:
+        if control_setting.name == ValueName.PIP:
             self.COPY_SET_PIP = control_setting.value
             self.COPY_PIP_min = control_setting.min_value
             self.COPY_PIP_max = control_setting.max_value
             self.COPY_PIP_lastset = control_setting.timestamp
 
-        elif control_setting.name == ControlSettingName.PIP_TIME:
+        elif control_setting.name == ValueName.PIP_TIME:
             self.COPY_SET_PIP_TIME = control_setting.value
             self.COPY_PIP_time_min = control_setting.min_value
             self.COPY_PIP_time_max = control_setting.max_value
             self.COPY_PIP_time_lastset = control_setting.timestamp
 
-        elif control_setting.name == ControlSettingName.PEEP:
+        elif control_setting.name == ValueName.PEEP:
             self.COPY_SET_PEEP = control_setting.value
             self.COPY_PEEP_min = control_setting.min_value
             self.COPY_PEEP_max = control_setting.max_value
             self.COPY_PEEP_lastset = control_setting.timestamp
 
-        elif control_setting.name == ControlSettingName.BREATHS_PER_MINUTE:
+        elif control_setting.name == ValueName.BREATHS_PER_MINUTE:
             self.COPY_SET_BPM = control_setting.value
             self.COPY_bpm_min = control_setting.min_value
             self.COPY_bpm_max = control_setting.max_value
             self.COPY_bpm_lastset = control_setting.timestamp
 
-        elif control_setting.name == ControlSettingName.INSPIRATION_TIME_SEC:
+        elif control_setting.name == ValueName.INSPIRATION_TIME_SEC:
             self.COPY_SET_I_PHASE = control_setting.value
             self.COPY_I_phase_min = control_setting.min_value
             self.COPY_I_phase_max = control_setting.max_value
@@ -335,35 +336,35 @@ class ControlModuleBase:
 
         self._lock.release()
 
-    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
+    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         ''' Gets values of the COPY of the control settings. '''
         
         self._lock.acquire()
-        if control_setting_name == ControlSettingName.PIP:
+        if control_setting_name == ValueName.PIP:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_PIP,
                                   self.COPY_PIP_min,
                                   self.COPY_PIP_max,
                                   self.COPY_PIP_lastset)
-        elif control_setting_name == ControlSettingName.PIP_TIME:
+        elif control_setting_name == ValueName.PIP_TIME:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_PIP_TIME,
                                   self.COPY_PIP_time_min,
                                   self.COPY_PIP_time_max,
                                   self.COPY_PIP_time_lastset, )
-        elif control_setting_name == ControlSettingName.PEEP:
+        elif control_setting_name == ValueName.PEEP:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_PEEP,
                                   self.COPY_PEEP_min,
                                   self.COPY_PEEP_max,
                                   self.COPY_PEEP_lastset)
-        elif control_setting_name == ControlSettingName.BREATHS_PER_MINUTE:
+        elif control_setting_name == ValueName.BREATHS_PER_MINUTE:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_BPM,
                                   self.COPY_bpm_min,
                                   self.COPY_bpm_max,
                                   self.COPY_bpm_lastset)
-        elif control_setting_name == ControlSettingName.INSPIRATION_TIME_SEC:
+        elif control_setting_name == ValueName.INSPIRATION_TIME_SEC:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_I_PHASE,
                                   self.COPY_I_phase_min,

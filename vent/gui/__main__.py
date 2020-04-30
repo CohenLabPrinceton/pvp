@@ -1,7 +1,6 @@
 import argparse
 import sys
-from vent.gui import styles
-from vent.gui import Vent_Gui
+from vent.gui import styles, Vent_Gui
 
 # Using PySide (Qt) to build GUI
 from PySide2 import QtCore, QtGui, QtWidgets

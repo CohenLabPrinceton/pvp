@@ -256,7 +256,7 @@ class SFM3200(Sensor,I2CDevice):
         and returns a signed int converted from the big endian two
         complement that remains.
         '''
-        return _be16_to_native(self.read_device(4)[:2])
+        return be16_to_native(self.read_device(4)[:2])
 
 
 #class HumiditySensor(Sensor):

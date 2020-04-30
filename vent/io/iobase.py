@@ -59,11 +59,11 @@ class IODeviceBase(ABC):
             return
 
 
-def be16_to_native(data, signed=False):
+def be16_to_native(data, signed=False, count=2):
     ''' Unpacks a bytearray respecting big-endianness of outside world
     and returns an int according to signed.
     '''
-    return int.from_bytes(data[1],'big',signed=signed)
+    return int.from_bytes(data[:count],'big',signed=signed)
 
 
 def native16_to_be(word, signed=False, count=2):

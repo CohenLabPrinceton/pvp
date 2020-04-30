@@ -1,9 +1,9 @@
-from .iobase import Sensor, AnalogSensor, i2cDevice, spiDevice, OutputPin, PWMOutput
-from time import sleep
-
 '''
 Subclass implementations of specific sensor devices.
 '''
+from .iobase import Sensor, AnalogSensor, i2cDevice, spiDevice, OutputPin, PWMOutput
+from time import sleep
+import struct
 
 
 class ads1115(i2cDevice):
@@ -39,7 +39,7 @@ class ads1115(i2cDevice):
     The Conversion Register is read-only and contains a 16bit
     representation of the requested value (provided the conversion is
     ready).
-    
+
     The Lo-thresh & Hi-thresh Registers are not Utilized here. However,
     their function and usage are described in the datasheet. Should you
     want to extend the functionality implemented here.
@@ -57,7 +57,10 @@ class ads1115(i2cDevice):
         self._config    = self.Register(self._CONFIG_FIELDS,self._CONFIG_VALUES)
         self._last_cfg  = self._read_last_cfg()
         self._cfg       = self._config.pack(cfg  = self._last_cfg,
-                                            self._DEFAULT_VALUES )
+                                            MUX  = self._DEFAULT_VALUES['MUX'],
+                                            PGA  = self._DEFAULT_VALUES['PGA'],
+                                            MODE = self._DEFAULT_VALUES['MODE'],
+                                            DR   = self._DEFAULT_VALUES['DR'] )
 
     def read_conversion(self,channel=None,gain=None,mode=None,data_rate=None):
         ''' Returns a voltage (expressed as a float) corresponding to a
@@ -72,11 +75,16 @@ class ads1115(i2cDevice):
                             mode=mode,
                             data_rate=data_rate) * self._config.PGA.unpack(self._cfg) / 32767
 
-    @property
-    def config(self):
+    def print_config(self):
         ''' Returns the human-readable configuration for the next read.
         '''
         return self._config.unpack(self._cfg)
+
+    @property
+    def config(self):
+        ''' Returns the Register object of the config register.
+        '''
+        return self._config
 
     @property
     def cfg(self):
@@ -132,9 +140,10 @@ class ads1115(i2cDevice):
         return self._last_cfg
 
     def _ready(self):
-        ''' Return status of ADC conversion. '''
-        # OS = 0: Device is currently performing a conversion
-        # OS = 1: Device is not currently performing a conversion
+        ''' Return status of ADC conversion.
+        OS = 0: Device is currently performing a conversion
+        OS = 1: Device is not currently performing a conversion
+        '''
         return self.read_register(self.pointer.P.pack('CONFIG')) >> 15
 
 class P4vMini(AnalogSensor):
@@ -162,7 +171,8 @@ class P4vMini(AnalogSensor):
                     ):
         super().__init__(   adc,
                             channel,
-                            calibration,
+                            offset_voltage,
+                            output_span,
                             gain,
                             data_rate,
                             mode
@@ -174,15 +184,15 @@ class P4vMini(AnalogSensor):
     def _convert(self,raw):
         ''' Overloaded to map AnalogSensor's normalized output into the
         desired units of cm(h20)'''
-        return self._CONVERSION_FACTOR*super().convert(raw)
+        return self._CONVERSION_FACTOR*super()._convert(raw)
 
 
 class OxygenSensor(AnalogSensor):
     ''' Not yet implemented. Would need to define calibration and
     overload _convert() to add unit conversion.
-    '''
-    def __init__(self):
-        raise NotImplementedError
+    '''  
+#    def __init__(self):
+#        raise NotImplementedError
 
 
 class SFM3200(Sensor,i2cDevice):
@@ -195,8 +205,8 @@ class SFM3200(Sensor,i2cDevice):
     _FLOW_SCALE_FACTOR   = 120
 
     def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None):
-        iobase.i2cDevice.__init__(self,address,i2c_bus,pig)
-        iobase.Sensor.__init__(self)
+        i2cDevice.__init__(self,address,i2c_bus,pig)
+        Sensor.__init__(self)
         self.reset()
         self._start()
 
@@ -223,7 +233,7 @@ class SFM3200(Sensor,i2cDevice):
         '''
         return True
 
-    def _convert(self,value):
+    def _convert(self,raw):
         ''' Overloaded to replace with device-specific protocol.
         Convert raw int to a flow reading having type float with
         units slm. Implementation differs from parent for clarity and
@@ -233,7 +243,7 @@ class SFM3200(Sensor,i2cDevice):
           https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/ ...
             ... 5_Mass_Flow_Meters/Application_Notes/Sensirion_Mass_Flo_Meters_SFM3xxx_I2C_Functional_Description.pdf
         '''
-        return (unpack('>H',value[:2])[0] - self._FLOW_OFFSET) / self._FLOW_SCALE_FACTOR
+        return (struct.unpack('>H',value[:2])[0] - self._FLOW_OFFSET) / self._FLOW_SCALE_FACTOR
 
     def _raw_read(self):
         ''' Performs an read on the sensor, converts recieved bytearray,
@@ -247,18 +257,22 @@ class SFM3200(Sensor,i2cDevice):
 class HumiditySensor(Sensor):
     ''' Not yet implemented.
     '''
-    def __init__(self):
-        raise NotImplementedError
+    #def __init__(self):
+    #    raise NotImplementedError
 
 
 class TemperatureSensor(spiDevice):
     ''' Not yet implemented
     '''
-    def __init__(self):
-        raise NotImplementedError
+    #def __init__(self):
+    #    raise NotImplementedError
 
 
 class SolenoidValve(OutputPin):
+    ''' An extension of OutputPin which uses valve terminology for its 
+    methods. Also allows configuring both normally open and normally
+    closed valves (called the "form" of the valve).
+    '''
     _FORMS = {  'Normally Closed'   : 0,
                 'Normally Open'     : 1 }
     def __init__( self, pin, form='Normally Closed', pig=None ):
@@ -269,10 +283,12 @@ class SolenoidValve(OutputPin):
     def form(self):
         ''' Returns the human-readable form of the valve
         '''
-        return map(reversed,self._FORMS.items())[ self._form ]
+        return dict(map(reversed,self._FORMS.items()))[self._form]
 
     @form.setter
     def form(self,f):
+        ''' Performs validation on requested form and then sets it.
+        '''
         if f not in self._FORMS:
             raise ValueError('form must be either NC for Normally Closed or NO for Normally Open')
         else: self._form = self._FORMS[f]
@@ -292,11 +308,15 @@ class SolenoidValve(OutputPin):
 
 
 class PWMControlValve(PWMOutput):
+    ''' An extension of PWMOutput which incorporates linear 
+    compensation of the valve's response. 
+    '''
     # or DAC out if it comes to that
     def __init__(self,pin,form='Normally Closed',initial_duty=0,frequency=None,pig=None):
         super().__init__(pin,initial_duty,frequency,pig)
-        self.last
-
+        
+        # TODO: sort out API commonality w solenoid valve.
+        
         def get(self):
             '''Overloaded to return the linearized setpoint corresponding
             to the current duty cycle according to the valve's response curve'''

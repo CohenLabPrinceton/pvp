@@ -72,26 +72,15 @@ def test_restart_controller():
 #########################   TEST 2  ##################################
 ######################################################################
 #
-#   Make sure the controller controlls in PID and in state-control model
-#   I.e. make sure the control values look good.
-#  (i.e. close to target within narrow margins).
+#   Make sure the controller controlls, and the controll values look 
+#   good. (i.e. close to target within narrow margins).
 #
-@pytest.mark.parametrize("control_type", ["PID", "STATE"])
-
-def test_control_dynamical(control_type):
+def test_control_dynamical():
     ''' 
     This tests whether the controller is controlling pressure as intended.
     Start controller, set control values, measure whether actually there.
     '''
     Controller = get_control_module(sim_mode=True)
-    if control_type == "PID":
-        Controller.do_pid_control()
-        Controller.do_pid_control()
-        Inspiration_CI = 0.4
-    else:
-        Controller.do_state_control()
-        Controller.do_state_control()
-        Inspiration_CI = 0.8    # State control is not that precise, slightly wider confidence regions.
 
     vals_start = Controller.get_sensors()
 
@@ -128,7 +117,7 @@ def test_control_dynamical(control_type):
     assert np.abs(vals_stop.peep - v_peep)                     < 3    # PIP error correct within 3 cmH2O
     assert np.abs(vals_stop.pip - v_pip)                       < 3    # PIP error correct within 3 cmH2O
     assert np.abs(vals_stop.breaths_per_minute - v_bpm)        < 3    # Breaths per minute correct within 3 bpm
-    assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < Inspiration_CI
+    assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < 0.3  # Inspiration time   correct within 0.3 sec
 
     # Test whether get_sensors() return the right values
     COPY_peep     = Controller.COPY_sensor_values.peep

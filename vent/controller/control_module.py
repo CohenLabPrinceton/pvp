@@ -6,7 +6,7 @@ import copy
 from collections import deque
 
 from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ValueName
-
+from vent.gui.values import CONTROL
 
 
 class ControlModuleBase:
@@ -48,15 +48,15 @@ class ControlModuleBase:
         # This is what the machine has controll over:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close
-        self._pid_control_flag  = True             # Default is: use PID control
+        self._pid_control_flag    = True           # Default is: use PID control
 
         # Internal Control variables. "SET" indicates that this is set.
-        self.__SET_PIP = 22         # Target PIP pressure
-        self.__SET_PIP_TIME = 0.8   # Target time to reach PIP in seconds
-        self.__SET_PEEP = 5         # Target PEEP pressure
-        self.__SET_PEEP_TIME = 0.5  # Target time to reach PEEP from PIP plateau
-        self.__SET_BPM = 15         # Target breaths per minute
-        self.__SET_I_PHASE = 1.3    # Target duration of inspiratory phase
+        self.__SET_PIP       = CONTROL[ValueName.PIP].default                     # Target PIP pressure
+        self.__SET_PIP_TIME  = CONTROL[ValueName.PIP_TIME].default                # Target time to reach PIP in seconds
+        self.__SET_PEEP      = CONTROL[ValueName.PEEP].default                    # Target PEEP pressure
+        self.__SET_PEEP_TIME = CONTROL[ValueName.PEEP_TIME].default               # Target time to reach PEEP from PIP plateau
+        self.__SET_BPM       = CONTROL[ValueName.BREATHS_PER_MINUTE].default      # Target breaths per minute
+        self.__SET_I_PHASE   = CONTROL[ValueName.INSPIRATION_TIME_SEC].default    # Target duration of inspiratory phase
 
         # Derived internal control variables - fully defined by numbers above
         self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
@@ -85,11 +85,11 @@ class ControlModuleBase:
 
         # These are measurements that change from timepoint to timepoint
         self._DATA_PRESSURE = 0
-        self.__DATA_VOLUME = 0
-        self._DATA_Qin = 0            # Measurement of the airflow in
-        self._DATA_Qout = 0           # Measurement of the airflow out
-        self._DATA_dpdt = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
-        self._last_update = time.time()
+        self.__DATA_VOLUME  = 0
+        self._DATA_Qin      = 0           # Measurement of the airflow in
+        self._DATA_Qout     = 0           # Measurement of the airflow out
+        self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
+        self._last_update   = time.time()
 
 
         #########################  Alarm management  #########################
@@ -97,21 +97,21 @@ class ControlModuleBase:
         self.__logged_alarms = deque(maxlen = self._RINGBUFFER_SIZE)     # List of all resolved alarms
 
         # Variable limits to raise alarms, initialized as small deviation of what the controller initializes
-        self.__PIP_min = self.__SET_PIP - 3
-        self.__PIP_max = self.__SET_PIP + 3
-        self.__PIP_lastset = time.time()
-        self.__PIP_time_min = self.__SET_PIP_TIME - 0.6
-        self.__PIP_time_max = self.__SET_PIP_TIME + 0.6
+        self.__PIP_min          = CONTROL[ValueName.PIP].safe_range[0]
+        self.__PIP_max          = CONTROL[ValueName.PIP].safe_range[1]
+        self.__PIP_lastset      = time.time()
+        self.__PIP_time_min     = CONTROL[ValueName.PIP_TIME].safe_range[0]
+        self.__PIP_time_max     = CONTROL[ValueName.PIP_TIME].safe_range[1]
         self.__PIP_time_lastset = time.time()
-        self.__PEEP_min = self.__SET_PEEP - 3
-        self.__PEEP_max = self.__SET_PEEP + 3
-        self.__PEEP_lastset = time.time()
-        self.__bpm_min = self.__SET_BPM * 0.9
-        self.__bpm_max = self.__SET_BPM * 1.1
-        self.__bpm_lastset = time.time()
-        self.__I_phase_min = self.__SET_I_PHASE  - 0.5
-        self.__I_phase_max = self.__SET_I_PHASE  - 0.5
-        self.__I_phase_lastset = time.time()
+        self.__PEEP_min         = CONTROL[ValueName.PEEP].safe_range[0]
+        self.__PEEP_max         = CONTROL[ValueName.PEEP].safe_range[1]
+        self.__PEEP_lastset     = time.time()
+        self.__bpm_min          = CONTROL[ValueName.BREATHS_PER_MINUTE].safe_range[0]
+        self.__bpm_max          = CONTROL[ValueName.BREATHS_PER_MINUTE].safe_range[1]
+        self.__bpm_lastset      = time.time()
+        self.__I_phase_min      = CONTROL[ValueName.INSPIRATION_TIME_SEC].safe_range[0]
+        self.__I_phase_max      = CONTROL[ValueName.INSPIRATION_TIME_SEC].safe_range[1]
+        self.__I_phase_lastset  = time.time()
 
         ############### Initialize COPY variables for threads  ##############
         # COPY variables that later updated on a regular basis

@@ -550,7 +550,6 @@ class ControlModuleBase:
         return self._loop_counter
 
 
-
 class ControlModuleDevice(ControlModuleBase):
     # Implement ControlModuleBase functions
     pass
@@ -727,10 +726,6 @@ class ControlModuleSimulator(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
-
-    def heartbeat(self):
-        '''only used for fiddling'''
-        return self._loop_counter
 
 
 

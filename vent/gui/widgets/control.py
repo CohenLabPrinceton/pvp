@@ -170,7 +170,6 @@ class Control(QtWidgets.QWidget):
             self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
             self.layout.removeItem(self.slider_layout)
             self.adjustSize()
-        pass
 
 
     def update_value(self, new_value):

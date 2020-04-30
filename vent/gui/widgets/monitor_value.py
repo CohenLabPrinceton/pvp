@@ -32,13 +32,14 @@ class Monitor_Value(QtWidgets.QWidget):
         self.timed_update()
 
     def init_ui(self):
-        self.layout = QtWidgets.QHBoxLayout()
+        self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
 
         #########
         # create widgets
         # make range slider
-        self.range_slider = RangeSlider(self.abs_range, self.safe_range)
+        self.range_slider = RangeSlider(self.abs_range, self.safe_range,
+                                        orientation=QtCore.Qt.Orientation.Horizontal)
 
         # make comboboxes to display numerical value
         self.max_safe = QtWidgets.QSpinBox()
@@ -69,6 +70,19 @@ class Monitor_Value(QtWidgets.QWidget):
         self.units_label.setText(self.units)
         self.units_label.setAlignment(QtCore.Qt.AlignRight)
 
+        # toggle button to expand control
+        self.toggle_button = QtWidgets.QToolButton(checkable=True,
+                                                   checked=False)
+        self.toggle_button.setStyleSheet(styles.DISPLAY_NAME)
+
+        self.toggle_button.toggled.connect(self.toggle_control)
+        self.toggle_button.setToolButtonStyle(
+            QtCore.Qt.ToolButtonIconOnly
+        )
+        self.toggle_button.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                         QtWidgets.QSizePolicy.Expanding)
+        self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
+
         #########
         # connect widgets
 
@@ -87,23 +101,52 @@ class Monitor_Value(QtWidgets.QWidget):
 
         #########
         # layout widgets
-        self.layout.addWidget(self.range_slider, 2)
 
-        box_layout = QtWidgets.QVBoxLayout()
-        box_layout.addWidget(QtWidgets.QLabel('Max:'))
-        box_layout.addWidget(self.max_safe)
-        box_layout.addStretch()
-        box_layout.addWidget(QtWidgets.QLabel('Min:'))
-        box_layout.addWidget(self.min_safe)
-        self.layout.addLayout(box_layout, 1)
-
-        label_layout = QtWidgets.QVBoxLayout()
+        # first make label layout
+        label_layout = QtWidgets.QGridLayout()
         label_layout.setContentsMargins(0,0,0,0)
-        label_layout.addWidget(self.value_label)
-        label_layout.addWidget(self.name_label)
-        label_layout.addWidget(self.units_label)
-        label_layout.addStretch()
+        label_layout.addWidget(self.toggle_button, 0,0,2,1)
+        label_layout.addWidget(self.value_label, 0,1,2,1)
+        label_layout.addWidget(self.name_label, 0,2,1,1)
+        label_layout.addWidget(self.units_label, 1,2,1,1)
+        # label_layout.addStretch()
         self.layout.addLayout(label_layout, 5)
+
+        # then combine sliders and boxes
+        self.slider_layout = QtWidgets.QVBoxLayout()
+
+        minmax_layout = QtWidgets.QHBoxLayout()
+        minmax_layout.addWidget(QtWidgets.QLabel('Max:'))
+        minmax_layout.addWidget(self.max_safe)
+        minmax_layout.addStretch()
+        minmax_layout.addWidget(QtWidgets.QLabel('Min:'))
+        minmax_layout.addWidget(self.min_safe)
+        self.slider_layout.addLayout(minmax_layout)
+
+        self.slider_layout.addWidget(self.range_slider)
+
+        # and wrap them in a widget so we can show/hide more robustly
+        self.slider_frame = QtWidgets.QFrame()
+        self.slider_frame.setLayout(self.slider_layout)
+        self.slider_frame.setVisible(False)
+
+
+        #self.layout.addLayout(self.slider_layout)
+
+
+
+    @QtCore.Slot(bool)
+    def toggle_control(self, state):
+        if state == True:
+            self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
+            self.layout.addWidget(self.slider_frame)
+            self.slider_frame.setVisible(True)
+            self.adjustSize()
+        else:
+            self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
+            self.layout.removeWidget(self.slider_frame)
+            self.slider_frame.setVisible(False)
+            self.adjustSize()
 
 
     def update_boxes(self, new_values):
@@ -119,7 +162,7 @@ class Monitor_Value(QtWidgets.QWidget):
         self.value = new_value
         self.check_alarm()
         new_value = np.clip(new_value, self.abs_range[0], self.abs_range[1])
-        self.range_slider.update_indicator(new_value)
+        #self.range_slider.update_indicator(new_value)
 
     @QtCore.Slot(tuple)
     def update_limits(self, new_limits):

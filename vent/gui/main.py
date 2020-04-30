@@ -2,6 +2,7 @@ import time
 import sys
 import threading
 import pdb
+import os
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
@@ -341,11 +342,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         ####################
         # Controls
-        controls_box = QtWidgets.QGroupBox("Ventilator Controls")
-        controls_box.setStyleSheet(styles.CONTROL_BOX)
-        controls_box.setContentsMargins(0,0,0,0)
+        self.controls_box = QtWidgets.QGroupBox("Ventilator Controls")
+        # set name so it catches the stylesheet
+        self.controls_box.setObjectName('CONTROLBOX')
+        # controls_box.setStyleSheet(styles.CONTROL_BOX)
 
-
+        self.controls_box.setContentsMargins(0,0,0,0)
 
         self.controls_layout = QtWidgets.QVBoxLayout()
         self.controls_layout.setContentsMargins(0,0,0,0)
@@ -357,11 +359,21 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.controls_layout.addWidget(widgets.components.QHLine())
 
         self.controls_layout.addStretch()
-        controls_box.setLayout(self.controls_layout)
+        self.controls_box.setLayout(self.controls_layout)
 
-        self.main_layout.addWidget(controls_box, self.control_width)
+
+        #pdb.set_trace()
+        self.main_layout.addWidget(self.controls_box, self.control_width)
+
+
+
 
         self.layout.addLayout(self.main_layout, self.main_height)
+
+        control_pal = self.controls_box.palette()
+        control_pal.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(styles.CONTROL_BACKGROUND))
+        self.controls_box.setAutoFillBackground(True)
+        self.controls_box.setPalette(control_pal)
 
 
         ######################
@@ -398,7 +410,13 @@ def launch_gui(coordinator):
 
     # just for testing, should be run from main
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(styles.GLOBAL)
+    app.setStyle('Fusion')
+    style_loc = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'dark_style.qss')
+    with open(style_loc, 'r') as dark_style:
+        app.setStyleSheet(dark_style.read())
+    app = styles.set_dark_palette(app)
     gui = Vent_Gui(coordinator)
 
     return app, gui

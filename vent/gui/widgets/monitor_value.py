@@ -9,14 +9,20 @@ class Monitor_Value(QtWidgets.QWidget):
     alarm = QtCore.Signal()
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, name, units, abs_range, safe_range, decimals, update_period=0.1):
+    def __init__(self, value, update_period=0.1):
+        """
+
+        Args:
+            value (:class:`~vent.values.Value`):
+            update_period (float): update period of monitor in s
+        """
         super(Monitor_Value, self).__init__()
 
-        self.name = name
-        self.units = units
-        self.abs_range = abs_range
-        self.safe_range = safe_range
-        self.decimals = decimals
+        self.name = value.name
+        self.units = value.units
+        self.abs_range = value.abs_range
+        self.safe_range = value.safe_range
+        self.decimals = value.decimals
         self.update_period = update_period
 
         self.value = None

@@ -1,25 +1,26 @@
 # TODO: this is a unit test, need to add integration test
 import time
 from unittest.mock import patch, Mock
-import pytest
-from vent.common.message import ControlSetting, ControlSettingName, SensorValues
-from vent.controller.control_module import ControlModuleBase
+from vent.common.message import ControlSetting, ValueName, SensorValues
 from vent.coordinator.coordinator import get_coordinator
+from vent.controller.control_module import get_control_module, ControlModuleBase
+import numpy as np
+import pytest
 import random
 
 
 class ControlModuleMock(ControlModuleBase):
     def __init__(self):
-        self.control_setting = {name: ControlSetting(name, -1, -1, -1, -1) for name in (ControlSettingName.PIP,
-                                                                                        ControlSettingName.PIP_TIME,
-                                                                                        ControlSettingName.PEEP,
-                                                                                        ControlSettingName.BREATHS_PER_MINUTE,
-                                                                                        ControlSettingName.INSPIRATION_TIME_SEC)}
+        self.control_setting = {name: ControlSetting(name, -1, -1, -1, -1) for name in (ValueName.PIP,
+                                                                                        ValueName.PIP_TIME,
+                                                                                        ValueName.PEEP,
+                                                                                        ValueName.BREATHS_PER_MINUTE,
+                                                                                        ValueName.INSPIRATION_TIME_SEC)}
 
     def get_sensors(self):
         return SensorValues()
 
-    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
+    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         return self.control_setting[control_setting_name]
 
     def set_control(self, control_setting: ControlSetting):
@@ -30,13 +31,16 @@ def mock_get_control_module(sim_mode):
     return ControlModuleMock()
 
 
-@pytest.mark.parametrize("control_setting_name", [ControlSettingName.PIP,
-                                                  ControlSettingName.PIP_TIME,
-                                                  ControlSettingName.PEEP,
-                                                  ControlSettingName.BREATHS_PER_MINUTE,
-                                                  ControlSettingName.INSPIRATION_TIME_SEC])
+@pytest.mark.parametrize("control_setting_name", [ValueName.PIP,
+                                                  ValueName.PIP_TIME,
+                                                  ValueName.PEEP,
+                                                  ValueName.BREATHS_PER_MINUTE,
+                                                  ValueName.INSPIRATION_TIME_SEC])
+                                                  
 @patch('vent.controller.control_module.get_control_module', mock_get_control_module, Mock())
+
 def test_coordinator(control_setting_name):
+
     coordinator = get_coordinator(single_process=True, sim_mode=True)
     t = time.time()
     v = random.randint(10, 100)

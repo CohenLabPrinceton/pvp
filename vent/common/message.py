@@ -1,6 +1,29 @@
 from enum import Enum, auto
 
 
+# TODO: Zhenyu's job is to make sure the print value is an intepretable string
+class ValueName(Enum):
+    #Setting that are likely important for future adjustements
+    PIP = auto()       # PIP pressure
+    PIP_TIME = auto()  # time to reach PIP
+    PEEP = auto()      # PEEP pressure
+    BREATHS_PER_MINUTE = auto()
+    INSPIRATION_TIME_SEC = auto()
+    #Settings that are read out, but can not be controlled by software
+    FIO2 = auto()
+    TEMP = auto()
+    HUMIDITY = auto()
+    VTE = auto()
+    PRESSURE = auto()
+
+class SensorValueNew:
+    def __init__(self, name, value, timestamp, loop_counter):
+        self.name = name
+        self.value = value
+        self.timestamp = timestamp
+        self.loop_counter = loop_counter
+
+
 class SensorValues:
     def __init__(self, pip=None, peep=None, fio2=None, temp=None, humidity=None, pressure=None, vte=None, breaths_per_minute=None,
                  inspiration_time_sec=None, timestamp=None, loop_counter = None):
@@ -17,25 +40,13 @@ class SensorValues:
         self.loop_counter = loop_counter
 
 
-class ControlSettingName(Enum):
-    #Setting that are likely important for future adjustements
-    PIP = auto()       # PIP pressure
-    PIP_TIME = auto()  # time to reach PIP
-    PEEP = auto()      # PEEP pressure
-    BREATHS_PER_MINUTE = auto()
-    INSPIRATION_TIME_SEC = auto()
-    #Settings that are read out, but can not be controlled by software
-    FIO2 = auto()
-    TEMP = auto()
-    HUMIDITY = auto()
-    VTE = auto()
 
 
 class ControlSetting:
     def __init__(self, name, value, min_value, max_value, timestamp):
         """
         TODO: if enum is hard to use, we may just use a predefined set, e.g. {'PIP', 'PEEP', ...}
-        :param name: enum belong to ControlSettingName
+        :param name: enum belong to ValueName
         :param value:
         :param min_value:
         :param max_value:

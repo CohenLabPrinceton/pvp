@@ -3,7 +3,8 @@ import threading
 from typing import List, Dict
 
 import vent
-from vent.common.message import SensorValues, ControlSetting, Alarm, ControlSettingName, IPCMessageCommand
+from vent.common.message import SensorValues, ControlSetting, Alarm, ValueName, IPCMessageCommand
+from vent.common.message import SensorValueNew
 from vent.controller.control_module import get_control_module
 from vent.coordinator.ipc import IPC
 from vent.coordinator.process_manager import ProcessManager
@@ -13,15 +14,16 @@ class CoordinatorBase:
     def __init__(self, sim_mode=False):
         # get_ui_control_module handles single_process flag
         # TODO: SHARED_ is a better prefix than COPY_, as not all fields are copy
-        self.control_module = vent.controller.control_module.get_control_module(sim_mode)
+        self.control_module = get_control_module(sim_mode)
         self.COPY_sensor_values = None
+        self.COPY_alarms = None
         self.COPY_active_alarms = {}
         self.COPY_logged_alarms = []
         self.COPY_control_settings = {}
         self.COPY_tentative_control_settings = {}
         self.COPY_last_message_timestamp = None
-
-    def get_sensors(self) -> SensorValues:
+        
+    def get_sensors(self) -> Dict[ValueName, SensorValueNew]:
         # returns SensorValues struct
         pass
 
@@ -43,7 +45,7 @@ class CoordinatorBase:
         # takes ControlSetting struct
         pass
 
-    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
+    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         pass
 
     def get_msg_timestamp(self):
@@ -63,7 +65,17 @@ class CoordinatorBase:
 
 class CoordinatorLocal(CoordinatorBase):
     def __init__(self, sim_mode=False):
+        """
+
+        Args:
+            sim_mode:
+
+        Attributes:
+            stopping (:class:`threading.Event`): ``.set()`` when thread should stop
+
+        """
         super().__init__(sim_mode=sim_mode)
+        self.stopping = threading.Event()
         self.lock = threading.Lock()
         self.thread = threading.Thread(target=self.start, daemon=True)
         self.thread.start()
@@ -77,7 +89,7 @@ class CoordinatorLocal(CoordinatorBase):
         self.COPY_tentative_control_settings[control_setting.name] = control_setting
         self.lock.release()
 
-    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
+    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         self.lock.acquire()
         control_setting = self.COPY_control_settings[control_setting_name]
         self.lock.release()
@@ -87,7 +99,18 @@ class CoordinatorLocal(CoordinatorBase):
         self.lock.acquire()
         sensor_values = self.COPY_sensor_values
         self.lock.release()
-        return sensor_values
+        res = {
+            ValueName.PIP: SensorValueNew(ValueName.PIP, sensor_values.pip, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.PEEP: SensorValueNew(ValueName.PEEP, sensor_values.peep, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.FIO2: SensorValueNew(ValueName.FIO2, sensor_values.fio2, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.TEMP: SensorValueNew(ValueName.TEMP, sensor_values.temp, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.HUMIDITY: SensorValueNew(ValueName.HUMIDITY, sensor_values.humidity, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.PRESSURE: SensorValueNew(ValueName.PRESSURE, sensor_values.pressure, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.VTE: SensorValueNew(ValueName.VTE, sensor_values.vte, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.BREATHS_PER_MINUTE: SensorValueNew(ValueName.BREATHS_PER_MINUTE, sensor_values.breaths_per_minute, sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.INSPIRATION_TIME_SEC: SensorValueNew(ValueName.INSPIRATION_TIME_SEC, sensor_values.inspiration_time_sec, sensor_values.timestamp, sensor_values.loop_counter),
+        }
+        return res
 
     def get_logged_alarms(self) -> List[Alarm]:
         self.lock.acquire()
@@ -115,17 +138,22 @@ class CoordinatorLocal(CoordinatorBase):
         super().do_process(command)
 
     def start(self):
-        while True:
+
+        if not self.control_module.running():
+            self.do_process(IPCMessageCommand.START)
+
+
+        while not self.stopping.is_set():
             sensor_values = self.control_module.get_sensors()
             self.lock.acquire()
             self.COPY_sensor_values = sensor_values
             self.last_message_timestamp = sensor_values.timestamp
             self.lock.release()
-            for name in [ControlSettingName.PIP,
-                         ControlSettingName.PIP_TIME,
-                         ControlSettingName.PEEP,
-                         ControlSettingName.BREATHS_PER_MINUTE,
-                         ControlSettingName.INSPIRATION_TIME_SEC]:
+            for name in [ValueName.PIP,
+                         ValueName.PIP_TIME,
+                         ValueName.PEEP,
+                         ValueName.BREATHS_PER_MINUTE,
+                         ValueName.INSPIRATION_TIME_SEC]:
                 self.lock.acquire()
                 in_control_settings = name not in self.COPY_control_settings
                 self.lock.release()
@@ -149,6 +177,9 @@ class CoordinatorLocal(CoordinatorBase):
                     self.lock.release()
             # sleep 10 ms
             time.sleep(0.01)
+
+    def stop(self):
+        self.stopping.set()
 
 
 class CoordinatorRemote(CoordinatorBase):

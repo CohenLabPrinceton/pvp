@@ -9,7 +9,7 @@ import pyqtgraph as pg
 
 from vent.gui import styles
 from vent.gui import mono_font
-from vent.gui import get_instance
+from vent.gui import get_gui_instance
 
 PLOT_TIMER = None
 """
@@ -189,7 +189,7 @@ class TimedPlotCurveItem(pg.PlotCurveItem):
         if globals()['PLOT_TIMER'] is None:
             globals()['PLOT_TIMER'] = QtCore.QTimer()
 
-            get_instance().gui_closing.connect(globals()['PLOT_TIMER'].stop)
+            get_gui_instance().gui_closing.connect(globals()['PLOT_TIMER'].stop)
 
         self.timer = globals()['PLOT_TIMER']
         # stop timer, add ourselves, restart

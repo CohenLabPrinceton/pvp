@@ -5,7 +5,7 @@ import numpy as np
 import copy
 from collections import deque
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ValueName
+from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ControlSettingName
 
 
 
@@ -32,7 +32,6 @@ class ControlModuleBase:
         get_past_waveforms():              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self._RINGBUFFER_SIZE, AND clears this archive.
         start():                           Starts the main-loop of the controller
         stop():                            Stops the main-loop of the controller
-
     """
 
     def __init__(self):
@@ -301,31 +300,31 @@ class ControlModuleBase:
         ''' Updates the entry of COPY contained in the control settings'''
         self._lock.acquire()
 
-        if control_setting.name == ValueName.PIP:
+        if control_setting.name == ControlSettingName.PIP:
             self.COPY_SET_PIP = control_setting.value
             self.COPY_PIP_min = control_setting.min_value
             self.COPY_PIP_max = control_setting.max_value
             self.COPY_PIP_lastset = control_setting.timestamp
 
-        elif control_setting.name == ValueName.PIP_TIME:
+        elif control_setting.name == ControlSettingName.PIP_TIME:
             self.COPY_SET_PIP_TIME = control_setting.value
             self.COPY_PIP_time_min = control_setting.min_value
             self.COPY_PIP_time_max = control_setting.max_value
             self.COPY_PIP_time_lastset = control_setting.timestamp
 
-        elif control_setting.name == ValueName.PEEP:
+        elif control_setting.name == ControlSettingName.PEEP:
             self.COPY_SET_PEEP = control_setting.value
             self.COPY_PEEP_min = control_setting.min_value
             self.COPY_PEEP_max = control_setting.max_value
             self.COPY_PEEP_lastset = control_setting.timestamp
 
-        elif control_setting.name == ValueName.BREATHS_PER_MINUTE:
+        elif control_setting.name == ControlSettingName.BREATHS_PER_MINUTE:
             self.COPY_SET_BPM = control_setting.value
             self.COPY_bpm_min = control_setting.min_value
             self.COPY_bpm_max = control_setting.max_value
             self.COPY_bpm_lastset = control_setting.timestamp
 
-        elif control_setting.name == ValueName.INSPIRATION_TIME_SEC:
+        elif control_setting.name == ControlSettingName.INSPIRATION_TIME_SEC:
             self.COPY_SET_I_PHASE = control_setting.value
             self.COPY_I_phase_min = control_setting.min_value
             self.COPY_I_phase_max = control_setting.max_value
@@ -336,35 +335,35 @@ class ControlModuleBase:
 
         self._lock.release()
 
-    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
+    def get_control(self, control_setting_name: ControlSettingName) -> ControlSetting:
         ''' Gets values of the COPY of the control settings. '''
         
         self._lock.acquire()
-        if control_setting_name == ValueName.PIP:
+        if control_setting_name == ControlSettingName.PIP:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_PIP,
                                   self.COPY_PIP_min,
                                   self.COPY_PIP_max,
                                   self.COPY_PIP_lastset)
-        elif control_setting_name == ValueName.PIP_TIME:
+        elif control_setting_name == ControlSettingName.PIP_TIME:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_PIP_TIME,
                                   self.COPY_PIP_time_min,
                                   self.COPY_PIP_time_max,
                                   self.COPY_PIP_time_lastset, )
-        elif control_setting_name == ValueName.PEEP:
+        elif control_setting_name == ControlSettingName.PEEP:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_PEEP,
                                   self.COPY_PEEP_min,
                                   self.COPY_PEEP_max,
                                   self.COPY_PEEP_lastset)
-        elif control_setting_name == ValueName.BREATHS_PER_MINUTE:
+        elif control_setting_name == ControlSettingName.BREATHS_PER_MINUTE:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_BPM,
                                   self.COPY_bpm_min,
                                   self.COPY_bpm_max,
                                   self.COPY_bpm_lastset)
-        elif control_setting_name == ValueName.INSPIRATION_TIME_SEC:
+        elif control_setting_name == ControlSettingName.INSPIRATION_TIME_SEC:
             return_value = ControlSetting(control_setting_name,
                                   self.COPY_SET_I_PHASE,
                                   self.COPY_I_phase_min,
@@ -545,9 +544,6 @@ class ControlModuleBase:
             print("Already running State control.")
         self._pid_control_flag = False
 
-    def heartbeat(self):
-        '''only used for fiddling'''
-        return self._loop_counter
 
 
 class ControlModuleDevice(ControlModuleBase):
@@ -700,23 +696,20 @@ class ControlModuleSimulator(ControlModuleBase):
             time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
-            dt = now - self._last_update                            # Time sincle last cycle of main-loop
 
-            self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
-            self._DATA_PRESSURE = self.Balloon.get_pressure()       # Get a pressure measurement from balloon and tell controller             --- SENSOR 1
+            # Only three sensors "are connected". One to the pressure in the balloon, and two to flow-in and flow-out
+            self.Balloon.update(dt = now - self._last_update)
+            self._DATA_PRESSURE = self.Balloon.get_pressure()
 
-            self._PID_update(dt = dt)                               # Update the PID Controller
+            self._PID_update(dt = now - self._last_update)  # Updates the PID Controller
 
-            x = self._get_control_signal_in()                       # Inspiratory side: get control signal for PropValve
-            Qin = self.__SimulatedPropValve(x, dt = dt)             # And calculate the produced flow Qin
+            x = self._get_control_signal_in()               # Inspiratory side: PropValve
+            self._DATA_Qin = self.__SimulatedPropValve(x, dt = now - self._last_update)
 
-            y = self._get_control_signal_out()                      # Expiratory side: get control signal for Solenoid
-            Qout = self.__SimulatedSolenoid(y)                      # Set expiratory flow rate, Qout
+            y = self._get_control_signal_out()             # Expiratory side: Solenoid
+            self._DATA_Qout = self.__SimulatedSolenoid(y)
 
-            self.Balloon.set_flow(Qin, Qout)                        # Set the flow rates for the Balloon simulator
-
-            self._DATA_Qout = Qout                                  # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
-            self._DATA_Qin = Qin                                    # Tell controller the expiratory flow rate, _DATA_Qin                     --- SENSOR 3
+            self.Balloon.set_flow(self._DATA_Qin, self._DATA_Qout)
             self._last_update = now
 
             if update_copies == 0:
@@ -726,6 +719,10 @@ class ControlModuleSimulator(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
+
+    def heartbeat(self):
+        '''only used for fiddling'''
+        return self._loop_counter
 
 
 

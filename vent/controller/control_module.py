@@ -48,7 +48,7 @@ class ControlModuleBase:
         # This is what the machine has controll over:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close
-        self._pid_control_flag  = False             # Default is: use PID control
+        self._pid_control_flag  = True             # Default is: use PID control
 
         # Internal Control variables. "SET" indicates that this is set.
         self.__SET_PIP = 22         # Target PIP pressure

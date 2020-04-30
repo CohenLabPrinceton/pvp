@@ -9,15 +9,15 @@ class Control(QtWidgets.QWidget):
 
     value_changed = QtCore.Signal(float)
 
-    def __init__(self, name, units, abs_range, safe_range, value, decimals):
+    def __init__(self, value):
         super(Control, self).__init__()
 
-        self.name = name
-        self.units = units
-        self.abs_range = abs_range
-        self.safe_range = safe_range
-        self.value = value
-        self.decimals = decimals
+        self.name = value.name
+        self.units = value.units
+        self.abs_range = value.abs_range
+        self.safe_range = value.safe_range
+        self.value = value.default
+        self.decimals = value.decimals
 
         self.init_ui()
 
@@ -181,6 +181,9 @@ class Control(QtWidgets.QWidget):
             self.value = new_value
 
             self.value_changed.emit(self.value)
+        else:
+            # TODO: Log this
+            pass
 
         # still draw regardless in case an invalid value was given
         value_str = str(np.round(self.value, self.decimals))

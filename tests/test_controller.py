@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import random
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ControlSettingName
+from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ValueName
 from vent.coordinator.coordinator import get_coordinator
 from vent.controller.control_module import get_control_module
 
@@ -14,11 +14,12 @@ from vent.controller.control_module import get_control_module
 #   Make sure the controller remembers settings, and can be started
 #   and stopped repeatedly a couple of times.
 #
-@pytest.mark.parametrize("control_setting_name", [ControlSettingName.PIP,
-                                                  ControlSettingName.PIP_TIME,
-                                                  ControlSettingName.PEEP,
-                                                  ControlSettingName.BREATHS_PER_MINUTE,
-                                                  ControlSettingName.INSPIRATION_TIME_SEC])
+
+@pytest.mark.parametrize("control_setting_name", [ValueName.PIP,
+                                                  ValueName.PIP_TIME,
+                                                  ValueName.PEEP,
+                                                  ValueName.BREATHS_PER_MINUTE,
+                                                  ValueName.INSPIRATION_TIME_SEC])
 
 def test_control_settings(control_setting_name):
     '''
@@ -84,19 +85,20 @@ def test_control_dynamical():
     vals_start = Controller.get_sensors()
 
     v_peep = random.randint(5, 10)
-    command = ControlSetting(name=ControlSettingName.PEEP, value=v_peep, min_value=v_peep-2, max_value=v_peep+2, timestamp=time.time())
+    command = ControlSetting(name=ValueName.PEEP, value=v_peep, min_value=v_peep-2, max_value=v_peep+2, timestamp=time.time())
     Controller.set_control(command)
 
     v_pip = random.randint(15, 30)
-    command = ControlSetting(name=ControlSettingName.PIP, value=v_pip, min_value=v_pip-2, max_value=v_pip+2, timestamp=time.time())
+    command = ControlSetting(name=ValueName.PIP, value=v_pip, min_value=v_pip-2, max_value=v_pip+2, timestamp=time.time())
     Controller.set_control(command)
 
     v_bpm = random.randint(6, 20)
-    command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=v_bpm, min_value=v_bpm-1, max_value=v_bpm+1, timestamp=time.time()) 
+    command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=v_bpm, min_value=v_bpm-1, max_value=v_bpm+1, timestamp=time.time()) 
+
     Controller.set_control(command)
 
     v_iphase = (0.3 + np.random.random()*0.5) * 60/v_bpm
-    command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=v_iphase, min_value=v_iphase-1, max_value=v_iphase+1, timestamp=time.time()) 
+    command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=v_iphase, min_value=v_iphase - 1, max_value=v_iphase + 1, timestamp=time.time())
     Controller.set_control(command)
 
 
@@ -171,23 +173,23 @@ def test_alarm():
 
         ### Make a cascade of changes that will not trigger alarms
         if t == 0:
-            command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=30, timestamp=time.time())
+            command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=30, timestamp=time.time())
             Controller.set_control(command)
-            command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=2, timestamp=time.time())
+            command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=2, timestamp=time.time())
             Controller.set_control(command)
         if t == 3:
-            command = ControlSetting(name=ControlSettingName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
+            command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
             Controller.set_control(command)
         if t == 6:
-            command = ControlSetting(name=ControlSettingName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
+            command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
             Controller.set_control(command)
 
         ### Make a cascade of changes to trigger four alarms
         if t == 8:    # trigger a PIP alarm
-            command = ControlSetting(name=ControlSettingName.PIP, value=25, min_value=0, max_value=5, timestamp=time.time())
+            command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=5, timestamp=time.time())
             Controller.set_control(command)
         if t == 23:    #resolve the PIP alarm
-            command = ControlSetting(name=ControlSettingName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
+            command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
             Controller.set_control(command)
         if (t > 8+(60/17)) and (t<23):  #Test whether it is active
             activealarms = Controller.get_active_alarms()
@@ -195,10 +197,10 @@ def test_alarm():
             assert 'PIP' in activealarms.keys()
 
         if t == 12:    # trigger a PEEP alarm
-            command = ControlSetting(name=ControlSettingName.PEEP, value=10, min_value=0, max_value=5, timestamp=time.time())
+            command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=5, timestamp=time.time())
             Controller.set_control(command)
         if t == 23:    # resolve it
-            command = ControlSetting(name=ControlSettingName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
+            command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
             Controller.set_control(command)
         if (t > 12+(60/17)) and (t<23):
             activealarms = Controller.get_active_alarms()
@@ -206,10 +208,10 @@ def test_alarm():
             assert 'PEEP' in activealarms.keys()
 
         if t == 15:    # trigger a BPM alarm
-            command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=5, timestamp=time.time())
+            command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=5, timestamp=time.time())
             Controller.set_control(command)
         if t == 20:    # resolve it
-            command = ControlSetting(name=ControlSettingName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=20, timestamp=time.time())
+            command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=20, timestamp=time.time())
             Controller.set_control(command)
         if (t > 15+(60/17)) and (t<20):
             activealarms = Controller.get_active_alarms()
@@ -217,10 +219,10 @@ def test_alarm():
             assert 'BREATHS_PER_MINUTE' in activealarms.keys()
 
         if t == 17:    # Trigger a INSPIRATION_TIME_SEC alarm
-            command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=1, timestamp=time.time())
+            command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=1, timestamp=time.time())
             Controller.set_control(command)
         if t == 22:    # resolve it
-            command = ControlSetting(name=ControlSettingName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=3, timestamp=time.time())
+            command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=3, timestamp=time.time())
             Controller.set_control(command)
         if (t > 17+(60/17)) and (t<22):
             activealarms = Controller.get_active_alarms()

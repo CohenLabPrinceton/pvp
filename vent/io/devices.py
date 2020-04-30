@@ -261,7 +261,7 @@ class HumiditySensor(Sensor):
     #    raise NotImplementedError
 
 
-class TemperatureSensor(spiDevice):
+class TemperatureSensor(Sensor,spiDevice):
     ''' Not yet implemented
     '''
     #def __init__(self):

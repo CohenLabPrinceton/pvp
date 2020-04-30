@@ -544,6 +544,9 @@ class ControlModuleBase:
             print("Already running State control.")
         self._pid_control_flag = False
 
+    def heartbeat(self):
+        '''only used for fiddling'''
+        return self._loop_counter
 
 
 class ControlModuleDevice(ControlModuleBase):
@@ -696,20 +699,23 @@ class ControlModuleSimulator(ControlModuleBase):
             time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
+            dt = now - self._last_update                            # Time sincle last cycle of main-loop
 
-            # Only three sensors "are connected". One to the pressure in the balloon, and two to flow-in and flow-out
-            self.Balloon.update(dt = now - self._last_update)
-            self._DATA_PRESSURE = self.Balloon.get_pressure()
+            self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
+            self._DATA_PRESSURE = self.Balloon.get_pressure()       # Get a pressure measurement from balloon and tell controller             --- SENSOR 1
 
-            self._PID_update(dt = now - self._last_update)  # Updates the PID Controller
+            self._PID_update(dt = dt)                               # Update the PID Controller
 
-            x = self._get_control_signal_in()               # Inspiratory side: PropValve
-            self._DATA_Qin = self.__SimulatedPropValve(x, dt = now - self._last_update)
+            x = self._get_control_signal_in()                       # Inspiratory side: get control signal for PropValve
+            Qin = self.__SimulatedPropValve(x, dt = dt)             # And calculate the produced flow Qin
 
-            y = self._get_control_signal_out()             # Expiratory side: Solenoid
-            self._DATA_Qout = self.__SimulatedSolenoid(y)
+            y = self._get_control_signal_out()                      # Expiratory side: get control signal for Solenoid
+            Qout = self.__SimulatedSolenoid(y)                      # Set expiratory flow rate, Qout
 
-            self.Balloon.set_flow(self._DATA_Qin, self._DATA_Qout)
+            self.Balloon.set_flow(Qin, Qout)                        # Set the flow rates for the Balloon simulator
+
+            self._DATA_Qout = Qout                                  # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
+            self._DATA_Qin = Qin                                    # Tell controller the expiratory flow rate, _DATA_Qin                     --- SENSOR 3
             self._last_update = now
 
             if update_copies == 0:
@@ -719,10 +725,6 @@ class ControlModuleSimulator(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
-
-    def heartbeat(self):
-        '''only used for fiddling'''
-        return self._loop_counter
 
 
 

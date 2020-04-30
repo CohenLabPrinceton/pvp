@@ -30,19 +30,20 @@ class Status_Bar(QtWidgets.QWidget):
 
         self.log_console = Message_Display()
         self.layout.addWidget(self.log_console)
+        self.layout.setContentsMargins(5,5,5,5)
 
         self.heartbeat = HeartBeat()
         self.heartbeat.start_timer()
         self.layout.addWidget(self.heartbeat)
 
-        self.layout.setContentsMargins(5,5,5,5)
 
         self.setLayout(self.layout)
 
         style = self.style()
         size = style.pixelMetric(QtWidgets.QStyle.PM_MessageBoxIconSize, None, self)
 
-        self.setMaximumHeight(size*1.5)
+        # self.setMaximumHeight(size*1.5)
+        self.setContentsMargins(0,0,0,0)
         #
         # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
         #                    QtWidgets.QSizePolicy.Expanding)
@@ -64,6 +65,7 @@ class Message_Display(QtWidgets.QFrame):
         self.icons = {}
         self.messages = {}
         self.current_msg = None
+        self.setContentsMargins(0,0,0,0)
 
         self.make_icons()
         self.init_ui()
@@ -310,55 +312,13 @@ class HeartBeat(QtWidgets.QFrame):
 
         self.check_timeout()
 
+class Power_Button(QtWidgets.QPushButton):
 
-class QTextEditLogger(logging.Handler):
-    """
-    https://stackoverflow.com/a/51641943
-    """
-    def __init__(self, parent):
-        super().__init__()
-        self.widget = QtWidgets.QPlainTextEdit(parent)
-        self.widget.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                           QtWidgets.QSizePolicy.Expanding)
-        self.widget.setReadOnly(True)
+    def __init__(self):
 
-    def emit(self, record):
-        msg = self.format(record)
-        self.widget.appendPlainText(msg)
+        super(Power_Button, self).__init__()
+        self.init_ui()
 
+    def init_ui(self):
+        pass
 
-class Log_Console(QtWidgets.QPlainTextEdit):
-    """
-    https://stackoverflow.com/a/51641943
-    """
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        logTextBox = QTextEditLogger(self)
-        # You can format what is printed to text box
-        logTextBox.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-        logging.getLogger().addHandler(logTextBox)
-        # You can control the logging level
-        logging.getLogger().setLevel(logging.DEBUG)
-
-        self._button = QtWidgets.QPushButton(self)
-        self._button.setText('Test Me')
-
-        layout = QtWidgets.QHBoxLayout()
-        # Add the new logging box widget to the layout
-        layout.addWidget(logTextBox.widget)
-        layout.addWidget(self._button)
-        self.setLayout(layout)
-
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                           QtWidgets.QSizePolicy.Expanding)
-
-        # Connect signal to slot
-        self._button.clicked.connect(self.test)
-        #self.test()
-
-    def test(self):
-        logging.debug('damn, a bug')
-        logging.info('something to remember')
-        logging.warning('that\'s not right')
-        logging.error('foobar')

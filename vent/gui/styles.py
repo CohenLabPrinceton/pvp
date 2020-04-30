@@ -11,6 +11,7 @@ SUBWAY_COLORS = {
 
 BACKGROUND_COLOR = "#111111"
 TEXT_COLOR = "#EEEEEE"
+CONTROL_BACKGROUND = "#AAAAAA"
 HANDLE_HEIGHT = 10
 SLIDER_WIDTH = 80
 INDICATOR_WIDTH = SLIDER_WIDTH/3
@@ -22,12 +23,12 @@ VALUE_SIZE = 72
 NAME_SIZE = 20
 UNIT_SIZE = 12
 
-GLOBAL = """
+GLOBAL = f"""
 QWidget {{
     font-size: 20pt;
-    color: {textcolor};
+    color: {TEXT_COLOR};
 }}
-""".format(textcolor=TEXT_COLOR)
+"""
 
 RANGE_SLIDER = """
 QSlider {{
@@ -101,6 +102,22 @@ QLineEdit {{
 """.format(textcolor=TEXT_COLOR,
              display_value=VALUE_SIZE)
 
+CONTROL_BOX = f"""
+QGroupBox {{
+    background-color: {CONTROL_BACKGROUND};
+    border: 1px solid #000000;
+    border-radius: 4px;
+    margin-top: 20px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  left: 3px;
+  top: -5px;
+}}
+"""
+
 TITLE_STYLE = """
 font-size: 32pt;
 color: {text_color};
@@ -149,5 +166,11 @@ QRadioButton::indicator {{
 
 QLabel {{
     color: {SUBWAY_COLORS['red']};
+}}
+"""
+
+STATUS_BOX = f"""
+QWidget {{
+    background-color: {BACKGROUND_COLOR};
 }}
 """

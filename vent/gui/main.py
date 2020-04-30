@@ -1,8 +1,9 @@
 import time
 import sys
 import threading
+import pdb
 
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 
 from vent import values
 from vent.common.message import ControlSetting, ControlSettingName
@@ -76,7 +77,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     """
 
     display_width = 2
-    plot_width = 2
+    plot_width = 4
     control_width = 2
     total_width = display_width+plot_width+control_width
     """
@@ -238,6 +239,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         self.main_widget = QtWidgets.QWidget()
+        self.main_widget.setContentsMargins(0,0,0,0)
         #
         self.setCentralWidget(self.main_widget)
 
@@ -255,24 +257,42 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.main_layout = QtWidgets.QHBoxLayout()
         self.main_layout.setContentsMargins(0,0,0,0)
 
-        ##########
+        ############
         # Status Bar
+        status_box = QtWidgets.QGroupBox('System Status')
+        status_box.setStyleSheet(styles.STATUS_BOX)
+        status_layout = QtWidgets.QHBoxLayout()
         self.status_bar = widgets.Status_Bar()
-        self.layout.addWidget(self.status_bar, self.status_height)
+        status_layout.addWidget(self.status_bar)
+        status_layout.setContentsMargins(0,0,0,0)
+        status_box.setLayout(status_layout)
+
+        self.layout.addWidget(status_box, self.status_height)
 
         #########
         # display values
+        monitor_box = QtWidgets.QGroupBox("Sensor Monitor")
+        monitor_layout = QtWidgets.QHBoxLayout()
+        monitor_layout.setContentsMargins(0, 0, 0, 0)
+        monitor_box.setLayout(monitor_layout)
+
+
         self.display_layout = QtWidgets.QVBoxLayout()
+        self.display_layout.setContentsMargins(0,0,0,0)
 
         for display_key, display_params in self.MONITOR.items():
             self.monitor[display_key] = widgets.Monitor_Value(display_params, update_period = self.update_period)
             self.display_layout.addWidget(self.monitor[display_key])
             self.display_layout.addWidget(widgets.components.QHLine())
-        self.main_layout.addLayout(self.display_layout, self.display_width)
 
+        monitor_layout.addLayout(self.display_layout, self.display_width)
+        #self.main_layout.addWidget(display_box, self.display_width)
+        #self.main_layout.addLayout(self.display_layout, self.display_width)
+        #pdb.set_trace()
         ###########
         # plots
         self.plot_layout = QtWidgets.QVBoxLayout()
+        self.plot_layout.setContentsMargins(0,0,0,0)
 
         # button to set plot history
         button_box = QtWidgets.QGroupBox("Plot History")
@@ -301,13 +321,16 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         button_box.setLayout(button_layout)
         self.plot_layout.addWidget(button_box)
-
+        #pdb.set_trace()
 
         for plot_key, plot_params in self.PLOTS.items():
             self.plots[plot_key] = widgets.Plot(**plot_params)
             self.plot_layout.addWidget(self.plots[plot_key])
 
-        self.main_layout.addLayout(self.plot_layout,5)
+        #self.main_layout.addLayout(self.plot_layout,5)
+        monitor_layout.addLayout(self.plot_layout, self.plot_width)
+
+        self.main_layout.addWidget(monitor_box, self.plot_width+self.display_width)
 
 
         # connect displays to plots
@@ -318,8 +341,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         ####################
         # Controls
+        controls_box = QtWidgets.QGroupBox("Ventilator Controls")
+        controls_box.setStyleSheet(styles.CONTROL_BOX)
+        controls_box.setContentsMargins(0,0,0,0)
+
+
 
         self.controls_layout = QtWidgets.QVBoxLayout()
+        self.controls_layout.setContentsMargins(0,0,0,0)
         for control_name, control_params in self.CONTROL.items():
             self.controls[control_name] = widgets.Control(control_params)
             self.controls[control_name].setObjectName(control_name)
@@ -328,8 +357,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.controls_layout.addWidget(widgets.components.QHLine())
 
         self.controls_layout.addStretch()
+        controls_box.setLayout(self.controls_layout)
 
-        self.main_layout.addLayout(self.controls_layout, 1)
+        self.main_layout.addWidget(controls_box, self.control_width)
 
         self.layout.addLayout(self.main_layout, self.main_height)
 

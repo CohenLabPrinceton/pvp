@@ -3,7 +3,8 @@ import threading
 from typing import List, Dict
 
 import vent
-from vent.common.message import SensorValues, ControlSetting, Alarm, ValueName, IPCMessageCommand
+from vent.common.message import SensorValues, ControlSetting, Alarm, IPCMessageCommand
+from vent.common.values import ValueName
 from vent.common.message import SensorValueNew
 from vent.controller.control_module import get_control_module
 from vent.coordinator.ipc import IPC
@@ -75,6 +76,7 @@ class CoordinatorLocal(CoordinatorBase):
 
         """
         super().__init__(sim_mode=sim_mode)
+        # TODO: is this thread safe?
         self.stopping = threading.Event()
         self.lock = threading.Lock()
         self.thread = threading.Thread(target=self.start, daemon=True)
@@ -138,11 +140,9 @@ class CoordinatorLocal(CoordinatorBase):
         super().do_process(command)
 
     def start(self):
-
-        if not self.control_module.running():
-            self.do_process(IPCMessageCommand.START)
-
-
+        # TODO: why add this? Local model doesn't need IPC
+        # if not self.control_module.running():
+        #     self.do_process(IPCMessageCommand.START)
         while not self.stopping.is_set():
             sensor_values = self.control_module.get_sensors()
             self.lock.acquire()

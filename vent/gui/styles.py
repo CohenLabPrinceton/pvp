@@ -12,8 +12,9 @@ SUBWAY_COLORS = {
 }
 
 BACKGROUND_COLOR = "#111111"
+BOX_BACKGROUND = "#333333"
 TEXT_COLOR = "#EEEEEE"
-CONTROL_BACKGROUND = "#FF0000"
+CONTROL_BACKGROUND = "#AAAAAA"
 HANDLE_HEIGHT = 10
 SLIDER_WIDTH = 80
 SLIDER_HEIGHT = 40
@@ -207,6 +208,169 @@ QWidget {{
 }}
 """
 
+DARK_THEME =  f"""
+/*
+adapted from https://github.com/gmarull/qtmodern/blob/master/qtmodern/resources/style.qss
+*/
+
+/*
+ * QGroupBox
+ */
+
+
+QGroupBox {{
+  background-color: palette(alternate-base);
+  border: 1px solid palette(midlight);
+  margin-top: 25px;
+}}
+
+QGroupBox::title {{
+    background-color: transparent;
+}}
+
+QGroupBox#CONTROLBOX {{
+    background-color: {CONTROL_BACKGROUND};
+}}
+
+/*
+ * QToolBar
+ */
+
+QToolBar {{
+  border: none;
+}}
+
+/*
+ * QTabBar
+ */
+
+QTabBar{{
+  background-color: transparent;
+}}
+
+QTabBar::tab{{
+  padding: 4px 6px;
+  background-color: transparent;
+  border-bottom: 2px solid transparent;
+}}
+
+QTabBar::tab:selected, QTabBar::tab:hover {{
+  color: palette(text);
+  border-bottom: 2px solid palette(highlight);
+}}
+
+QTabBar::tab:selected:disabled {{
+  border-bottom: 2px solid palette(light);
+}}
+
+/*
+ * QScrollBar
+ */
+
+QScrollBar:vertical {{
+  background: palette(base);
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  width: 16px;
+  margin: 0px;
+}}
+
+QScrollBar::handle:vertical {{
+  background-color: palette(alternate-base);
+  border-radius: 2px;
+  min-height: 20px;
+  margin: 2px 4px 2px 4px;
+}}
+
+QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:pressed, QScrollBar::handle:horizontal:pressed {{
+  background-color:palette(midlight);
+}}
+
+QScrollBar::add-line:vertical {{
+  background: none;
+  height: 0px;
+  subcontrol-position: right;
+  subcontrol-origin: margin;
+}}
+
+QScrollBar::sub-line:vertical {{
+  background: none;
+  height: 0px;
+  subcontrol-position: left;
+  subcontrol-origin: margin;
+}}
+
+QScrollBar:horizontal{{
+  background: palette(base);
+  height: 16px;
+  margin: 0px;
+}}
+
+QScrollBar::handle:horizontal {{
+  background-color: palette(alternate-base);
+  border-radius: 2px;
+  min-width: 20px;
+  margin: 4px 2px 4px 2px;
+}}
+
+
+QScrollBar::add-line:horizontal {{
+  background: none;
+  width: 0px;
+  subcontrol-position: bottom;
+  subcontrol-origin: margin;
+}}
+
+QScrollBar::sub-line:horizontal {{
+  background: none;
+  width: 0px;
+  subcontrol-position: top;
+  subcontrol-origin: margin;
+}}
+
+/*
+ * QScrollArea
+ */
+
+QScrollArea {{
+  border-style: none;
+}}
+
+QScrollArea > QWidget > QWidget {{
+  background-color: palette(alternate-base);
+}}
+
+/*
+ * QSlider
+ */
+
+QSlider::handle:horizontal {{
+  border-radius: 5px;
+  background-color: palette(light);
+  max-height: 20px;
+}}
+
+QSlider::add-page:horizontal {{
+  background: palette(base);
+}}
+
+QSlider::sub-page:horizontal {{
+  background: palette(highlight);
+}}
+
+QSlider::sub-page:horizontal:disabled {{
+  background-color: palette(light);
+}}
+
+QTableView {{
+  background-color: palette(link-visited);
+  alternate-background-color: palette(midlight);
+}}
+
+QWidget {{
+    font-size: 20pt;
+}}"""
+
 
 def set_dark_palette(app):
     """ Apply Dark Theme to the Qt application instance.
@@ -233,7 +397,7 @@ def set_dark_palette(app):
     darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
     darkPalette.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor(180, 180, 180))
     darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(56, 252, 196))
-    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(66, 66, 66))
+    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(BOX_BACKGROUND))
     darkPalette.setColor(QtGui.QPalette.ToolTipBase, QtGui.QColor(53, 53, 53))
     darkPalette.setColor(QtGui.QPalette.ToolTipText, QtGui.QColor(180, 180, 180))
     darkPalette.setColor(QtGui.QPalette.LinkVisited, QtGui.QColor(80, 80, 80))

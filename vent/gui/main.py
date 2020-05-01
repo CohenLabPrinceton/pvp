@@ -411,11 +411,7 @@ def launch_gui(coordinator):
     # just for testing, should be run from main
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('Fusion')
-    style_loc = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'dark_style.qss')
-    with open(style_loc, 'r') as dark_style:
-        app.setStyleSheet(dark_style.read())
+    app.setStyleSheet(styles.DARK_THEME)
     app = styles.set_dark_palette(app)
     gui = Vent_Gui(coordinator)
 

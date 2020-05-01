@@ -192,6 +192,14 @@ CONTROL = odict({
         'default': 2.0,  # FIXME
         'decimals': 1  # FIXME
     }),
+    ValueName.PEEP_TIME: Value(**{
+        'name': 'Time to reach PEEP',
+        'units': 'seconds',
+        'abs_range': (0, 2),  # FIXME
+        'safe_range': (0, 1.0),  # FIXME
+        'default': 0.5,  # FIXME
+        'decimals': 1  # FIXME
+    })
     # 'ie': Value(**{
     #     'name': 'I:E',
     #     'units': '',

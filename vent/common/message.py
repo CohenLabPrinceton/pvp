@@ -7,6 +7,8 @@ class ValueName(Enum):
     PIP = auto()       # PIP pressure
     PIP_TIME = auto()  # time to reach PIP
     PEEP = auto()      # PEEP pressure
+    PEEP_TIME = auto() # time to reach PEEP
+
     BREATHS_PER_MINUTE = auto()
     INSPIRATION_TIME_SEC = auto()
     #Settings that are read out, but can not be controlled by software

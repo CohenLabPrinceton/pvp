@@ -1,6 +1,42 @@
 from collections import OrderedDict as odict
+from enum import Enum, auto
 
 from vent.gui import styles
+
+
+# TODO: Zhenyu's job is to make sure the print value is an intepretable string
+class ValueName(Enum):
+    #Setting that are likely important for future adjustements
+    PIP = auto()       # PIP pressure
+    PIP_TIME = auto()  # time to reach PIP
+    PEEP = auto()      # PEEP pressure
+    PEEP_TIME = auto() # time to reach PEEP
+    BREATHS_PER_MINUTE = auto()
+    INSPIRATION_TIME_SEC = auto()
+    #Settings that are read out, but can not be controlled by software
+    FIO2 = auto()
+    TEMP = auto()
+    HUMIDITY = auto()
+    VTE = auto()
+    PRESSURE = auto()
+
+controllable_values = {
+    ValueName.PIP,
+    ValueName.PIP_TIME,
+    ValueName.PEEP,
+    ValueName.PEEP_TIME,
+    ValueName.BREATHS_PER_MINUTE,
+    ValueName.INSPIRATION_TIME_SEC,
+}
+
+non_controllable_values = {
+    ValueName.FIO2,
+    ValueName.TEMP,
+    ValueName.HUMIDITY,
+    ValueName.VTE,
+    ValueName.PRESSURE,
+}
+
 
 class Value(object):
 
@@ -100,35 +136,38 @@ class Value(object):
     def __getitem__(self, key):
         return self.__getattribute__(key)
 
+
+
+
 SENSOR = odict({
-    'fio2': Value(**{ 'name': 'FiO2',
+    ValueName.FIO2: Value(**{ 'name': 'FiO2',
         'units': '%',
         'abs_range': (0, 100),
         'safe_range': (60, 100),
         'decimals' : 1
     }),
-    'temp': Value(**{
+    ValueName.TEMP: Value(**{
         'name': 'Temp',
         'units': '\N{DEGREE SIGN}C',
         'abs_range': (0, 50),
         'safe_range': (20, 30),
         'decimals': 1
     }),
-    'humidity': Value(**{
+    ValueName.HUMIDITY: Value(**{
         'name': 'Humidity',
         'units': '%',
         'abs_range': (0, 100),
         'safe_range': (20, 75),
         'decimals': 1
     }),
-    'vte': Value(**{
+    ValueName.VTE: Value(**{
         'name': 'VTE',
         'units': '%',
         'abs_range': (0, 100),
         'safe_range': (20, 80),
         'decimals': 1
     }),
-    'pressure': Value(**{
+    ValueName.PRESSURE: Value(**{
         'name': 'Pressure',
         'units': 'mmH2O',
         'abs_range': (0,100),
@@ -152,7 +191,7 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 
 
 CONTROL = odict({
-    'pip': Value(**{
+    ValueName.PIP: Value(**{
         'name': 'PIP', # (Peak Inspiratory Pressure)
         'units': 'cmH2O',
         'abs_range': (10, 30), # FIXME
@@ -160,7 +199,7 @@ CONTROL = odict({
         'default': 22,           # FIXME
         'decimals': 1          # FIXME
     }),
-    'pipt': Value(**{
+    ValueName.PIP_TIME: Value(**{
         'name': 'PIPt', #  (Peak Inspiratory Pressure)
         'units': 'seconds',
         'abs_range': (0, 1),  # FIXME
@@ -168,7 +207,7 @@ CONTROL = odict({
         'default': 0.3,  # FIXME
         'decimals': 1  # FIXME
     }),
-    'peep': Value(**{
+    ValueName.PEEP: Value(**{
         'name': 'PEEP', #  (Positive End Expiratory Pressure)
         'units': 'cmH2O',
         'abs_range': (0, 10),  # FIXME
@@ -176,7 +215,7 @@ CONTROL = odict({
         'default': 5,            # FIXME
         'decimals': 1           # FIXME
     }),
-    'breaths_per_minute': Value(**{
+    ValueName.BREATHS_PER_MINUTE: Value(**{
         'name': 'Breath Rate',
         'units': 'breaths/min',
         'abs_range': (0, 50), # FIXME
@@ -184,7 +223,7 @@ CONTROL = odict({
         'default': 17,            # FIXME
         'decimals': 1           # FIXME
     }),
-    'inspiration_time_sec': Value(**{
+    ValueName.INSPIRATION_TIME_SEC: Value(**{
         'name': 'Inspiration Time',
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME
@@ -192,6 +231,14 @@ CONTROL = odict({
         'default': 2.0,  # FIXME
         'decimals': 1  # FIXME
     }),
+    ValueName.PEEP_TIME: Value(**{
+        'name': 'Time to reach PEEP',
+        'units': 'seconds',
+        'abs_range': (0, 2),  # FIXME
+        'safe_range': (0, 1.0),  # FIXME
+        'default': 0.5,  # FIXME
+        'decimals': 1  # FIXME
+    })
     # 'ie': Value(**{
     #     'name': 'I:E',
     #     'units': '',

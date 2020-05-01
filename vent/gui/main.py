@@ -6,10 +6,10 @@ import os
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
-from vent import values
-from vent.common.message import ControlSetting, ControlSettingName
+from vent.common.message import ControlSetting
+from vent.common.values import ValueName
 from vent.gui import widgets, set_gui_instance, get_gui_instance, styles
-from vent.controller.control_module import get_control_module
+from vent.common import values
 
 
 class Vent_Gui(QtWidgets.QMainWindow):
@@ -186,11 +186,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
             value_name = self.sender().objectName()
 
 
-        control_object = ControlSetting(name=getattr(ControlSettingName, value_name),
-                                         value=new_value,
-                                         min_value = self.CONTROL[value_name]['safe_range'][0],
-                                         max_value = self.CONTROL[value_name]['safe_range'][1],
-                                         timestamp = time.time())
+        control_object = ControlSetting(name=getattr(ValueName, value_name),
+                                        value=new_value,
+                                        min_value = self.CONTROL[value_name]['safe_range'][0],
+                                        max_value = self.CONTROL[value_name]['safe_range'][1],
+                                        timestamp = time.time())
         self.coordinator.set_control(control_object)
 
 

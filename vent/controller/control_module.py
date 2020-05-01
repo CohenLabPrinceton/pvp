@@ -5,8 +5,8 @@ import numpy as np
 import copy
 from collections import deque
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity, ValueName
-from vent.gui.values import CONTROL
+from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
+from vent.common.values import CONTROL, ValueName
 
 
 class ControlModuleBase:

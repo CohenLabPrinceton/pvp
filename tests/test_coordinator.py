@@ -1,7 +1,8 @@
 # TODO: this is a unit test, need to add integration test
 import time
 from unittest.mock import patch, Mock
-from vent.common.message import ControlSetting, ValueName, SensorValues
+from vent.common.message import ControlSetting, SensorValues
+from vent.common.values import ValueName
 from vent.coordinator.coordinator import get_coordinator
 from vent.controller.control_module import get_control_module, ControlModuleBase
 import numpy as np

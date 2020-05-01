@@ -3,8 +3,10 @@ import sys
 
 from PySide2 import QtWidgets, QtCore
 
-from vent.common.message import ControlSetting, ValueName
-from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, values
+from vent.common.message import ControlSetting
+from vent.common.values import ValueName
+from vent.gui import widgets, set_gui_instance, get_gui_instance, styles
+from vent.common import values
 
 
 class Vent_Gui(QtWidgets.QMainWindow):

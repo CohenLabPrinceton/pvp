@@ -1,6 +1,42 @@
 from collections import OrderedDict as odict
-from vent.common.message import ValueName
+from enum import Enum, auto
+
 from vent.gui import styles
+
+
+# TODO: Zhenyu's job is to make sure the print value is an intepretable string
+class ValueName(Enum):
+    #Setting that are likely important for future adjustements
+    PIP = auto()       # PIP pressure
+    PIP_TIME = auto()  # time to reach PIP
+    PEEP = auto()      # PEEP pressure
+    PEEP_TIME = auto() # time to reach PEEP
+    BREATHS_PER_MINUTE = auto()
+    INSPIRATION_TIME_SEC = auto()
+    #Settings that are read out, but can not be controlled by software
+    FIO2 = auto()
+    TEMP = auto()
+    HUMIDITY = auto()
+    VTE = auto()
+    PRESSURE = auto()
+
+controllable_values = {
+    ValueName.PIP,
+    ValueName.PIP_TIME,
+    ValueName.PEEP,
+    ValueName.PEEP_TIME,
+    ValueName.BREATHS_PER_MINUTE,
+    ValueName.INSPIRATION_TIME_SEC,
+}
+
+non_controllable_values = {
+    ValueName.FIO2,
+    ValueName.TEMP,
+    ValueName.HUMIDITY,
+    ValueName.VTE,
+    ValueName.PRESSURE,
+}
+
 
 class Value(object):
 
@@ -99,10 +135,6 @@ class Value(object):
 
     def __getitem__(self, key):
         return self.__getattribute__(key)
-
-
-
-
 
 
 

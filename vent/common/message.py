@@ -1,22 +1,6 @@
 from enum import Enum, auto
 
 
-# TODO: Zhenyu's job is to make sure the print value is an intepretable string
-class ValueName(Enum):
-    #Setting that are likely important for future adjustements
-    PIP = auto()       # PIP pressure
-    PIP_TIME = auto()  # time to reach PIP
-    PEEP = auto()      # PEEP pressure
-    PEEP_TIME = auto() # time to reach PEEP
-
-    BREATHS_PER_MINUTE = auto()
-    INSPIRATION_TIME_SEC = auto()
-    #Settings that are read out, but can not be controlled by software
-    FIO2 = auto()
-    TEMP = auto()
-    HUMIDITY = auto()
-    VTE = auto()
-    PRESSURE = auto()
 
 class SensorValueNew:
     def __init__(self, name, value, timestamp, loop_counter):

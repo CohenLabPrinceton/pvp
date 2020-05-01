@@ -3,7 +3,8 @@ import threading
 from typing import List, Dict
 
 import vent
-from vent.common.message import SensorValues, ControlSetting, Alarm, ValueName, IPCMessageCommand
+from vent.common.message import SensorValues, ControlSetting, Alarm, IPCMessageCommand
+from vent.common.values import ValueName
 from vent.common.message import SensorValueNew
 from vent.controller.control_module import get_control_module
 from vent.coordinator.ipc import IPC

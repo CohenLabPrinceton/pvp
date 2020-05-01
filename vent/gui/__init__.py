@@ -7,6 +7,7 @@ import os
 from PySide2 import QtGui
 
 
+
 ########################
 
 _GUI_INSTANCE = None
@@ -106,3 +107,5 @@ def load_mono_font():
     # app.setStyleSheet(styles.GLOBAL)
     # gui = Vent_Gui(test=gui_test)
     # sys.exit(app.exec_())
+
+from vent.gui.main import Vent_Gui, launch_gui, get_gui_instance

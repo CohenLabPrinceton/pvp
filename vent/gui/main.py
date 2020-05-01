@@ -282,7 +282,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.display_layout.setContentsMargins(0,0,0,0)
 
         for display_key, display_params in self.MONITOR.items():
-            self.monitor[display_key] = widgets.Monitor_Value(display_params, update_period = self.update_period)
+            self.monitor[display_key] = widgets.Monitor(display_params, update_period = self.update_period)
             self.display_layout.addWidget(self.monitor[display_key])
             self.display_layout.addWidget(widgets.components.QHLine())
 

@@ -5,7 +5,7 @@ from vent.gui import styles, mono_font
 from vent.gui.widgets.components import RangeSlider
 
 
-class Monitor_Value(QtWidgets.QWidget):
+class Monitor(QtWidgets.QWidget):
     alarm = QtCore.Signal()
     limits_changed = QtCore.Signal(tuple)
 
@@ -16,7 +16,7 @@ class Monitor_Value(QtWidgets.QWidget):
             value (:class:`~vent.values.Value`):
             update_period (float): update period of monitor in s
         """
-        super(Monitor_Value, self).__init__()
+        super(Monitor, self).__init__()
 
         self.name = value.name
         self.units = value.units

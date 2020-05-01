@@ -50,15 +50,15 @@ def test_coordinator(control_setting_name):
     # TODO: add test for start/stop
     # TODO: add test for test reference
 
-    # c = ControlSetting(name=control_setting_name, value=v, min_value=v_min, max_value=v_max, timestamp=t)
-    # coordinator.set_control(c)
+    c = ControlSetting(name=control_setting_name, value=v, min_value=v_min, max_value=v_max, timestamp=t)
+    coordinator.set_control(c)
 
     # TODO: this should be tight
     time.sleep(0.1)
 
-    # c_read = coordinator.get_control(control_setting_name)
-    # assert c_read.name == c.name
-    # assert c_read.value == c.value
-    # assert c_read.min_value == c.min_value
-    # assert c_read.max_value == c.max_value
-    # assert c_read.timestamp == c.timestamp
+    c_read = coordinator.get_control(control_setting_name)
+    assert c_read.name == c.name
+    assert c_read.value == c.value
+    assert c_read.min_value == c.min_value
+    assert c_read.max_value == c.max_value
+    assert c_read.timestamp == c.timestamp

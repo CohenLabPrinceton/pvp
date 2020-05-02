@@ -14,19 +14,25 @@ SUBWAY_COLORS = {
 BACKGROUND_COLOR = "#111111"
 BOX_BACKGROUND = "#333333"
 TEXT_COLOR = "#EEEEEE"
-CONTROL_BACKGROUND = "#AAAAAA"
+CONTROL_BACKGROUND = "#EEEEEE"
+CONTROL_TEXT = BACKGROUND_COLOR
 HANDLE_HEIGHT = 10
 SLIDER_WIDTH = 80
-SLIDER_HEIGHT = 40
+SLIDER_HEIGHT = 50
 INDICATOR_WIDTH = SLIDER_WIDTH/3
 SLIDER_COLOR = TEXT_COLOR
 INDICATOR_COLOR = SUBWAY_COLORS['blue']
 ALARM_COLOR = "#FF0000"
 
 VALUE_SIZE = 72
-NAME_SIZE = 20
-UNIT_SIZE = 12
+NAME_SIZE = 36
+UNIT_SIZE = 18
 TICK_SIZE = 12
+
+MONITOR_UPDATE_INTERVAL = 0.5
+"""
+(float): inter-update interval (seconds) for :class:`~vent.gui.widgets.monitor.Monitor`
+"""
 
 GLOBAL = f"""
 QWidget {{
@@ -116,28 +122,28 @@ DISPLAY_WIDGET = """
 border-bottom: 2px solid white;
 """
 
-CONTROL_LABEL = """
-QLabel {
+CONTROL_LABEL = f"""
+QLabel {{
     font-size: 12px;
-}
+    color: {BACKGROUND_COLOR};
+}}
 """
 
-CONTROL_VALUE =  """
+CONTROL_VALUE =  f"""
 QLabel {{ 
-    color: {textcolor}; 
-    font-size: {display_value}pt;
+    color: {BACKGROUND_COLOR}; 
+    font-size: {VALUE_SIZE}pt;
 }}
 QLineEdit {{ 
-    color: {textcolor}; 
-    font-size: {display_value}pt;
+    color: {TEXT_COLOR}; 
+    font-size: {VALUE_SIZE}pt;
 }}
 
-""".format(textcolor=TEXT_COLOR,
-             display_value=VALUE_SIZE)
+"""
 
 CONTROL_BOX = f"""
 QGroupBox {{
-    background-color: {CONTROL_BACKGROUND};
+    background-color: {TEXT_COLOR};
     border: 1px solid #000000;
     border-radius: 4px;
     margin-top: 20px;
@@ -150,6 +156,18 @@ QGroupBox::title {{
   top: -5px;
 }}
 """
+
+CONTROL_NAME = f"""
+QLabel {{ 
+    color: {BACKGROUND_COLOR}; 
+    font-size: {NAME_SIZE}pt;
+}}"""
+
+CONTROL_UNITS = f"""
+QLabel {{ 
+    color: {BACKGROUND_COLOR}; 
+    font-size: {UNIT_SIZE}pt;
+}}"""
 
 TITLE_STYLE = """
 font-size: 32pt;

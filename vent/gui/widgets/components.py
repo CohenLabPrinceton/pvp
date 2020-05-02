@@ -181,11 +181,11 @@ class RangeSlider(QtWidgets.QSlider):
             # pdb.set_trace()
             # Only draw the groove for the first slider so it doesn't get drawn
             # on top of the existing ones every time
-            if i == 0:
+            if i == 1:
                 opt.subControls = style.SC_SliderGroove | style.SC_SliderHandle
             else:
-                #opt.subControls = QtWidgets.QStyle.SC_SliderHandle
-                opt.subControls = style.SC_SliderHandle
+                opt.subControls = QtWidgets.QStyle.SC_SliderHandle
+                # opt.subControls = style.SC_SliderHandle
 
 
             if self.tickPosition() != self.NoTicks:
@@ -365,7 +365,7 @@ class EditableLabel(QtWidgets.QWidget):
         self.label = QtWidgets.QLabel(self)
         self.label.setObjectName("label")
         # self.label.setStyleSheet(styles.CONTROL_VALUE)
-        self.label.setMinimumHeight(styles.VALUE_SIZE)
+        # self.label.setMinimumHeight(styles.VALUE_SIZE)
 
 
         self.mainLayout.addWidget(self.label)

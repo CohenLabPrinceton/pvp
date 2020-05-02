@@ -24,8 +24,8 @@ class Control(QtWidgets.QWidget):
 
     def init_ui(self):
         self.layout = QtWidgets.QGridLayout()
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                  QtWidgets.QSizePolicy.Expanding)
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                           QtWidgets.QSizePolicy.Expanding)
 
         # Value, Controller
         #        min,   max
@@ -63,19 +63,20 @@ class Control(QtWidgets.QWidget):
 
 
         self.name_label = QtWidgets.QLabel()
-        self.name_label.setStyleSheet(styles.DISPLAY_NAME)
+        self.name_label.setStyleSheet(styles.CONTROL_NAME)
         self.name_label.setText(self.name)
-        self.name_label.setAlignment(QtCore.Qt.AlignRight)
-        self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                    QtWidgets.QSizePolicy.Maximum)
         self.name_label.setWordWrap(True)
+        self.name_label.setAlignment(QtCore.Qt.AlignRight)
+        # self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                             QtWidgets.QSizePolicy.Expanding)
+
 
         self.units_label = QtWidgets.QLabel()
-        self.units_label.setStyleSheet(styles.DISPLAY_UNITS)
+        self.units_label.setStyleSheet(styles.CONTROL_UNITS)
         self.units_label.setText(self.units)
         self.units_label.setAlignment(QtCore.Qt.AlignRight)
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                    QtWidgets.QSizePolicy.Maximum)
+                                    QtWidgets.QSizePolicy.Expanding)
 
         # Expand drawer button
         self.toggle_button = QtWidgets.QToolButton(checkable=True,
@@ -92,13 +93,13 @@ class Control(QtWidgets.QWidget):
 
         ###
         # layout
-        self.layout.addWidget(self.value_label, 0, 0, 3, 1, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.value_label, 0, 0, 2, 1, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         #self.layout.addWidget(self.dial, 0, 1, 2, 2, alignment=QtCore.Qt.AlignVCenter)
         #self.layout.addWidget(self.slider_min, 2, 1, 1, 1)
         #self.layout.addWidget(self.slider_max, 2, 2, 1, 1)
-        self.layout.addWidget(self.name_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight)
-        self.layout.addWidget(self.units_label, 2, 1, 1, 1, alignment=QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
-        self.layout.addWidget(self.toggle_button, 0, 2, 3, 1, alignment=QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.name_label, 0, 1, 1, 1)
+        self.layout.addWidget(self.units_label, 1, 1, 1, 1)
+        self.layout.addWidget(self.toggle_button, 0, 2, 2, 1, alignment=QtCore.Qt.AlignRight)
 
         self.setLayout(self.layout)
 

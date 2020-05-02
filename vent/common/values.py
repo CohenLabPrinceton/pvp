@@ -210,11 +210,19 @@ CONTROL = odict({
         'decimals': 1          # FIXME
     }),
     ValueName.PIP_TIME: Value(**{
-        'name': 'PIPt', #  (Peak Inspiratory Pressure)
+        'name': 'PIPt',
         'units': 'seconds',
-        'abs_range': (0, 1),  # FIXME
+        'abs_range': (0, 5),  # FIXME
         'safe_range': (0.2, 0.5),  # FIXME
-        'default': 0.3,  # FIXME
+        'default': 1,  # FIXME
+        'decimals': 1  # FIXME
+    }),
+    ValueName.INSPIRATION_TIME_SEC: Value(**{
+        'name': 'INSPt',
+        'units': 'seconds',
+        'abs_range': (0, 5),  # FIXME
+        'safe_range': (1, 3.0),  # FIXME
+        'default': 2.0,  # FIXME
         'decimals': 1  # FIXME
     }),
     ValueName.PEEP: Value(**{
@@ -225,30 +233,24 @@ CONTROL = odict({
         'default': 10,            # FIXME
         'decimals': 1           # FIXME
     }),
+    ValueName.PEEP_TIME: Value(**{
+        'name': 'PEEPt',
+        'units': 'seconds',
+        'abs_range': (0, 2),  # FIXME
+        'safe_range': (0, 1.0),  # FIXME
+        'default': 0.5,  # FIXME
+        'decimals': 1  # FIXME
+    }),
     ValueName.BREATHS_PER_MINUTE: Value(**{
-        'name': 'Breath Rate',
+        'name': 'BPM',
         'units': 'breaths/min',
         'abs_range': (0, 50), # FIXME
         'safe_range': (10, 30), # Stanford's socshttps://www.vent4us.org/technical
         'default': 17,            # FIXME
         'decimals': 1           # FIXME
     }),
-    ValueName.INSPIRATION_TIME_SEC: Value(**{
-        'name': 'Inspiration Time',
-        'units': 'seconds',
-        'abs_range': (0, 5),  # FIXME
-        'safe_range': (1, 3.0),  # FIXME
-        'default': 2.0,  # FIXME
-        'decimals': 1  # FIXME
-    }),
-    ValueName.PEEP_TIME: Value(**{
-        'name': 'Time to reach PEEP',
-        'units': 'seconds',
-        'abs_range': (0, 2),  # FIXME
-        'safe_range': (0, 1.0),  # FIXME
-        'default': 0.5,  # FIXME
-        'decimals': 1  # FIXME
-    })
+
+
     # 'ie': Value(**{
     #     'name': 'I:E',
     #     'units': '',

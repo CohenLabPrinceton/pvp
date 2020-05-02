@@ -9,7 +9,7 @@ class Monitor(QtWidgets.QWidget):
     alarm = QtCore.Signal()
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, value, update_period=0.1):
+    def __init__(self, value, update_period=styles.MONITOR_UPDATE_INTERVAL):
         """
 
         Args:
@@ -59,16 +59,21 @@ class Monitor(QtWidgets.QWidget):
         self.value_label.setAlignment(QtCore.Qt.AlignRight)
         self.value_label.setMargin(0)
         self.value_label.setContentsMargins(0,0,0,0)
+        self.value_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                       QtWidgets.QSizePolicy.Expanding)
 
         self.name_label = QtWidgets.QLabel()
         self.name_label.setStyleSheet(styles.DISPLAY_NAME)
         self.name_label.setText(self.name)
         self.name_label.setAlignment(QtCore.Qt.AlignRight)
 
+
         self.units_label = QtWidgets.QLabel()
         self.units_label.setStyleSheet(styles.DISPLAY_UNITS)
         self.units_label.setText(self.units)
-        self.units_label.setAlignment(QtCore.Qt.AlignRight)
+        self.units_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                         QtWidgets.QSizePolicy.Expanding)
 
         # toggle button to expand control
         self.toggle_button = QtWidgets.QToolButton(checkable=True,
@@ -158,11 +163,9 @@ class Monitor(QtWidgets.QWidget):
     def update_value(self, new_value):
 
         # stash numerical value
-
+        new_value = np.clip(new_value, self.abs_range[0], self.abs_range[1])
         self.value = new_value
         self.check_alarm()
-        new_value = np.clip(new_value, self.abs_range[0], self.abs_range[1])
-        #self.range_slider.update_indicator(new_value)
 
     @QtCore.Slot(tuple)
     def update_limits(self, new_limits):
@@ -183,9 +186,12 @@ class Monitor(QtWidgets.QWidget):
         self.check_alarm()
         self.limits_changed.emit((self.min_safe.value(), self.max_safe.value()))
 
-    def check_alarm(self, signal=None):
-        if self.value:
-            if (self.value >= self.max_safe.value()) or (self.value <= self.min_safe.value()):
+    def check_alarm(self, signal=None, value=None):
+        if value is None:
+            value = self.value
+
+        if value:
+            if (value >= self.max_safe.value()) or (value <= self.min_safe.value()):
                 self.alarm.emit()
                 self.value_label.setStyleSheet(styles.DISPLAY_VALUE_ALARM)
                 self.range_slider.alarm = True

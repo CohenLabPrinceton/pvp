@@ -286,9 +286,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.display_layout.setContentsMargins(0,0,0,0)
 
         for display_key, display_params in self.MONITOR.items():
-            self.monitor[display_key.name] = widgets.Monitor(display_params, update_period = self.update_period)
+            self.monitor[display_key.name] = widgets.Monitor(display_params)
             self.display_layout.addWidget(self.monitor[display_key.name])
             self.display_layout.addWidget(widgets.components.QHLine())
+
+        self.display_layout.addStretch(10)
 
         monitor_layout.addLayout(self.display_layout, self.display_width)
         #self.main_layout.addWidget(display_box, self.display_width)
@@ -340,10 +342,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         # connect displays to plots
         # FIXME: Link in gui.defaults
-        self.monitor[ValueName.PRESSURE.name].limits_changed.connect(
-            self.plots[ValueName.PRESSURE.name].set_safe_limits)
-        self.plots[ValueName.PRESSURE.name].limits_changed.connect(
-            self.monitor[ValueName.PRESSURE.name].update_limits)
+
+
+        for value in ValueName:
+            if value.name in self.plots.keys():
+                self.monitor[value.name].limits_changed.connect(
+                    self.plots[value.name].set_safe_limits)
+                self.plots[value.name].limits_changed.connect(
+                    self.monitor[value.name].update_limits)
 
 
         ####################
@@ -364,7 +370,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.controls_layout.addWidget(self.controls[control_name.name])
             self.controls_layout.addWidget(widgets.components.QHLine())
 
-        self.controls_layout.addStretch()
+        self.controls_layout.addStretch(10)
         self.controls_box.setLayout(self.controls_layout)
 
 
@@ -378,6 +384,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         control_pal = self.controls_box.palette()
         control_pal.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(styles.CONTROL_BACKGROUND))
+        # control_pal.setColor(QtGui.QPalette.Text, QtGui.QColor(styles.CONTROL_TEXT))
         self.controls_box.setAutoFillBackground(True)
         self.controls_box.setPalette(control_pal)
 

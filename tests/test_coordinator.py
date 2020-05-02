@@ -7,6 +7,7 @@ import pytest
 
 from vent.common.message import ControlSetting, SensorValues
 from vent.common.values import ValueName
+from vent.common import values
 from vent.controller.control_module import ControlModuleBase
 from vent.coordinator.coordinator import get_coordinator
 
@@ -33,11 +34,7 @@ def mock_get_control_module(sim_mode):
     return ControlModuleMock()
 
 
-@pytest.mark.parametrize("control_setting_name", [ValueName.PIP,
-                                                  ValueName.PIP_TIME,
-                                                  ValueName.PEEP,
-                                                  ValueName.BREATHS_PER_MINUTE,
-                                                  ValueName.INSPIRATION_TIME_SEC])
+@pytest.mark.parametrize("control_setting_name", values.controllable_values)
 @patch('vent.controller.control_module.get_control_module', mock_get_control_module, Mock())
 def test_coordinator(control_setting_name):
     coordinator = get_coordinator(single_process=True, sim_mode=True)
@@ -64,3 +61,5 @@ def test_coordinator(control_setting_name):
     assert c_read.min_value == c.min_value
     assert c_read.max_value == c.max_value
     assert c_read.timestamp == c.timestamp
+
+# TODO: test racing condition

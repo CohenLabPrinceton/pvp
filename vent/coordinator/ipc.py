@@ -4,7 +4,8 @@ from enum import Enum, auto
 import pickle
 import socket
 
-socket_port = 9999
+socket_port = 9998
+buffer_size = 65536
 
 
 class IPCCommand(Enum):
@@ -32,9 +33,11 @@ class IPC:
     # Class for communicating between processes either by sockets
     # or named-pipes
     #   Functions:
-    def __init__(self, listen=False):
+    def __init__(self, listen):
+        self.listen = listen
         self.s = socket.socket()
         if listen:
+            self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.s.bind(('localhost', socket_port))
             self.s.listen()
             self.conn, self.addr = self.s.accept()
@@ -46,18 +49,26 @@ class IPC:
         # two msg queue
 
     def __del__(self):
-        # self.thread.join()
-        self.s.close()
+        if self.listen:
+            self.conn.close()
+        else:
+            self.s.close()
 
     def send_msg(self, msg: IPCMessage):
         pickled_msg = pickle.dumps(msg)
-        self.s.sendall(pickled_msg)
+        if self.listen:
+            self.conn.sendall(pickled_msg)
+        else:
+            self.s.sendall(pickled_msg)
 
     def recv_msg(self, timeout=None) -> IPCMessage:
         # set timeout=0 for non-blocking
         if timeout is not None:
             raise NotImplementedError
-        data = self.s.recv(4096)
+        if self.listen:
+            data = self.conn.recv(buffer_size)
+        else:
+            data = self.s.recv(buffer_size)
         unpicked_msg = pickle.loads(data)
         return unpicked_msg
     # def start(self):

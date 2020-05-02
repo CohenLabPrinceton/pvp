@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import argparse
 import sys
-from vent.coordinator.coordinator import get_coordinator
 from vent.gui.main import launch_gui
+from vent.coordinator.coordinator import get_coordinator
+
 from pudb.remote import set_trace
 
 

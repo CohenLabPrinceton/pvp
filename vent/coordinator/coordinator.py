@@ -101,18 +101,8 @@ class CoordinatorLocal(CoordinatorBase):
         self.lock.acquire()
         sensor_values = self.COPY_sensor_values
         self.lock.release()
-        res = {
-            ValueName.PIP: SensorValueNew(ValueName.PIP, sensor_values.pip, sensor_values.timestamp, sensor_values.loop_counter),
-            ValueName.PEEP: SensorValueNew(ValueName.PEEP, sensor_values.peep, sensor_values.timestamp, sensor_values.loop_counter),
-            ValueName.FIO2: SensorValueNew(ValueName.FIO2, sensor_values.fio2, sensor_values.timestamp, sensor_values.loop_counter),
-            ValueName.TEMP: SensorValueNew(ValueName.TEMP, sensor_values.temp, sensor_values.timestamp, sensor_values.loop_counter),
-            ValueName.HUMIDITY: SensorValueNew(ValueName.HUMIDITY, sensor_values.humidity, sensor_values.timestamp, sensor_values.loop_counter),
-            ValueName.PRESSURE: SensorValueNew(ValueName.PRESSURE, sensor_values.pressure, sensor_values.timestamp, sensor_values.loop_counter),
-            ValueName.VTE: SensorValueNew(ValueName.VTE, sensor_values.vte, sensor_values.timestamp, sensor_values.loop_counter),
-            ValueName.BREATHS_PER_MINUTE: SensorValueNew(ValueName.BREATHS_PER_MINUTE, sensor_values.breaths_per_minute, sensor_values.timestamp, sensor_values.loop_counter),
-            ValueName.INSPIRATION_TIME_SEC: SensorValueNew(ValueName.INSPIRATION_TIME_SEC, sensor_values.inspiration_time_sec, sensor_values.timestamp, sensor_values.loop_counter),
-        }
-        return res
+        # return res
+        return sensor_values
 
     def get_logged_alarms(self) -> List[Alarm]:
         self.lock.acquire()
@@ -141,8 +131,10 @@ class CoordinatorLocal(CoordinatorBase):
 
     def start(self):
         # TODO: why add this? Local model doesn't need IPC
-        # if not self.control_module.running():
-        #     self.do_process(IPCMessageCommand.START)
+        # regardless you have to start the control module... -jls
+        if not self.control_module.running:
+            self.do_process(IPCMessageCommand.START)
+
         while not self.stopping.is_set():
             sensor_values = self.control_module.get_sensors()
             self.lock.acquire()

@@ -139,6 +139,10 @@ class Control(QtWidgets.QWidget):
         self.slider_layout.addWidget(self.slider_min)
         self.slider_layout.addWidget(self.slider)
         self.slider_layout.addWidget(self.slider_max)
+
+        self.slider_frame = QtWidgets.QFrame()
+        self.slider_frame.setLayout(self.slider_layout)
+        self.slider_frame.setVisible(False)
         
         #
         # self.dial = QtWidgets.QDial()
@@ -164,12 +168,14 @@ class Control(QtWidgets.QWidget):
     def toggle_control(self, state):
         if state == True:
             self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
-            self.layout.addLayout(self.slider_layout, 3, 0, 1, 3)
-            self.adjustSize()
+            self.layout.addWidget(self.slider_frame, 3, 0, 1, 3)
+            self.slider_frame.setVisible(True)
+            #self.adjustSize()
         else:
             self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
-            self.layout.removeItem(self.slider_layout)
-            self.adjustSize()
+            self.layout.removeWidget(self.slider_frame)
+            self.slider_frame.setVisible(False)
+            #self.adjustSize()
 
 
     def update_value(self, new_value):

@@ -8,7 +8,7 @@ from PySide2 import QtWidgets, QtCore, QtGui
 
 from vent.common.message import ControlSetting
 from vent.common.values import ValueName
-from vent.gui import widgets, set_gui_instance, get_gui_instance, styles
+from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS
 from vent.common import values
 
 
@@ -72,7 +72,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     see :data:`.gui.defaults.CONTROL`
     """
 
-    PLOTS = values.PLOTS
+    PLOTS = PLOTS
     """
     see :data:`.gui.defaults.PLOTS`
     """
@@ -185,11 +185,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if value_name is None:
             value_name = self.sender().objectName()
 
+        elif not isinstance(value_name, str):
+            # TODO: More explicitly check for enum
+            value_name = value_name.name
+
 
         control_object = ControlSetting(name=getattr(ValueName, value_name),
                                         value=new_value,
-                                        min_value = self.CONTROL[value_name]['safe_range'][0],
-                                        max_value = self.CONTROL[value_name]['safe_range'][1],
+                                        min_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][0],
+                                        max_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][1],
                                         timestamp = time.time())
         self.coordinator.set_control(control_object)
 
@@ -282,8 +286,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.display_layout.setContentsMargins(0,0,0,0)
 
         for display_key, display_params in self.MONITOR.items():
-            self.monitor[display_key] = widgets.Monitor(display_params, update_period = self.update_period)
-            self.display_layout.addWidget(self.monitor[display_key])
+            self.monitor[display_key.name] = widgets.Monitor(display_params, update_period = self.update_period)
+            self.display_layout.addWidget(self.monitor[display_key.name])
             self.display_layout.addWidget(widgets.components.QHLine())
 
         monitor_layout.addLayout(self.display_layout, self.display_width)
@@ -325,8 +329,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         #pdb.set_trace()
 
         for plot_key, plot_params in self.PLOTS.items():
-            self.plots[plot_key] = widgets.Plot(**plot_params)
-            self.plot_layout.addWidget(self.plots[plot_key])
+            self.plots[plot_key.name] = widgets.Plot(**plot_params)
+            self.plot_layout.addWidget(self.plots[plot_key.name])
 
         #self.main_layout.addLayout(self.plot_layout,5)
         monitor_layout.addLayout(self.plot_layout, self.plot_width)
@@ -336,8 +340,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         # connect displays to plots
         # FIXME: Link in gui.defaults
-        self.monitor['vte'].limits_changed.connect(self.plots['pressure'].set_safe_limits)
-        self.plots['pressure'].limits_changed.connect(self.monitor['vte'].update_limits)
+        self.monitor[ValueName.PRESSURE.name].limits_changed.connect(
+            self.plots[ValueName.PRESSURE.name].set_safe_limits)
+        self.plots[ValueName.PRESSURE.name].limits_changed.connect(
+            self.monitor[ValueName.PRESSURE.name].update_limits)
 
 
         ####################
@@ -352,10 +358,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_layout = QtWidgets.QVBoxLayout()
         self.controls_layout.setContentsMargins(0,0,0,0)
         for control_name, control_params in self.CONTROL.items():
-            self.controls[control_name] = widgets.Control(control_params)
-            self.controls[control_name].setObjectName(control_name)
-            self.controls[control_name].value_changed.connect(self.set_value)
-            self.controls_layout.addWidget(self.controls[control_name])
+            self.controls[control_name.name] = widgets.Control(control_params)
+            self.controls[control_name.name].setObjectName(control_name.name)
+            self.controls[control_name.name].value_changed.connect(self.set_value)
+            self.controls_layout.addWidget(self.controls[control_name.name])
             self.controls_layout.addWidget(widgets.components.QHLine())
 
         self.controls_layout.addStretch()

@@ -6,7 +6,7 @@ import copy
 from collections import deque
 
 from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
-from vent.common.values import CONTROL, ValueName
+from vent.common.values import CONTROL, SENSOR, ValueName
 
 
 class ControlModuleBase:
@@ -549,6 +549,10 @@ class ControlModuleBase:
         '''only used for fiddling'''
         return self._loop_counter
 
+    @property
+    def running(self):
+        return self._running
+
 
 class ControlModuleDevice(ControlModuleBase):
     # Implement ControlModuleBase functions
@@ -677,17 +681,19 @@ class ControlModuleSimulator(ControlModuleBase):
     def _sensor_to_COPY(self):
         # And the sensor measurements
         self._lock.acquire()
-        self.COPY_sensor_values = SensorValues(pip=self._DATA_PIP,
-                                          peep=self._DATA_PEEP,
-                                          fio2=self.Balloon.fio2,
-                                          temp=self.Balloon.temperature,
-                                          humidity= self.Balloon.humidity,
-                                          pressure=self.Balloon.current_pressure,
-                                          vte=self._DATA_VTE,
-                                          breaths_per_minute=self._DATA_BPM,
-                                          inspiration_time_sec=self._DATA_I_PHASE,
-                                          timestamp=time.time(),
-                                          loop_counter = self._loop_counter)
+        self.COPY_sensor_values = SensorValues(**{
+            ValueName.PIP.name                  : self._DATA_PIP,
+            ValueName.PEEP.name                 : self._DATA_PEEP,
+            ValueName.FIO2.name                 : self.Balloon.fio2,
+            ValueName.TEMP.name                 : self.Balloon.temperature,
+            ValueName.HUMIDITY.name             : self.Balloon.humidity,
+            ValueName.PRESSURE.name             : self.Balloon.current_pressure,
+            ValueName.VTE.name                  : self._DATA_VTE, # FIXME: VTE should be a percentage not a proportion, no
+            ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+            ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+            'timestamp'                  : time.time(),
+            'loop_counter'             : self._loop_counter
+        })
         self._lock.release()
 
     def _start_mainloop(self):

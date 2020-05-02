@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from vent.common import values
 
 
 
@@ -23,15 +24,14 @@ class SensorValues:
         self.loop_counter = loop_counter
 
         # init all sensor values to none
-        for key in values.SENSOR.keys():
-            setattr(self, key, None)
-        for key in values.CONTROL.keys():
+        # use __members__ as the keys are strings rather than enums
+        for key in values.ValueName.__members__.keys():
             setattr(self, key, None)
 
         # assign kwargs as attributes,
         # check that all the kwargs are in values.SENSOR
         for key, value in kwargs.items():
-            if (key in values.SENSOR.keys()) or (key in values.CONTROL.keys()):
+            if (key in values.ValueName.__members__.keys()):
                 setattr(self, key, value)
             else:
                 raise KeyError(f'value {key} not declared in vent.values!!!')

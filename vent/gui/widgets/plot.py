@@ -26,11 +26,12 @@ class Plot(pg.PlotWidget):
 
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, name, buffer_size = 4092, plot_duration = 5, abs_range = None, safe_range = None, color=None):
+    def __init__(self, name, buffer_size = 4092, plot_duration = 5, abs_range = None, safe_range = None, color=None, units='', **kwargs):
         #super(Plot, self).__init__(axisItems={'bottom':TimeAxis(orientation='bottom')})
         # construct title html string
-        titlestr = "<h1 style=\"{title_style}\">{title_text}</h1>".format(title_style=styles.TITLE_STYLE,
-                                                                      title_text=name)
+        titlestr = "<h1 style=\"{title_style}\">{title_text} ({units})</h1>".format(title_style=styles.TITLE_STYLE,
+                                                                      title_text=name,
+                                                                        units =units)
 
 
         super(Plot, self).__init__(background=styles.BACKGROUND_COLOR,
@@ -40,6 +41,7 @@ class Plot(pg.PlotWidget):
         # TODO: Make @property to update buffer_size, preserving history
         self.plot_duration = plot_duration
 
+        self.units = units
 
 
         self._start_time = time.time()
@@ -118,7 +120,7 @@ class Plot(pg.PlotWidget):
                 self.late_curve.clear()
         except:
             # FIXME: Log this lol
-            print('error with value: {}, timestamp: {}'.format(new_value[1], new_value[0]))
+            print('error plotting value: {}, timestamp: {}'.format(new_value[1], new_value[0]))
 
         #self._last_time = this_time
 

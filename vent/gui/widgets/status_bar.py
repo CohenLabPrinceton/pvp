@@ -70,28 +70,6 @@ class Message_Display(QtWidgets.QFrame):
         self.make_icons()
         self.init_ui()
 
-
-        QtCore.QTimer.singleShot(2000, self.test_1)
-
-    def test_1(self):
-        self.update_message(('msg1', 'info', 'apples are ready'))
-        QtCore.QTimer.singleShot(2000, self.test_2)
-
-    def test_2(self):
-        self.update_message(('msg2', 'warning', 'apples are getting hot!'))
-        QtCore.QTimer.singleShot(2000, self.test_3)
-
-    def test_3(self):
-        self.update_message(('msg3', 'alarm', 'apples on fire!!!'))
-        QtCore.QTimer.singleShot(2000, self.test_4)
-
-    def test_4(self):
-        self.update_message(('msg4', 'info', 'and ur dog is wagging its tail'))
-        QtCore.QTimer.singleShot(2000, self.test_5)
-
-    def test_5(self):
-        self.update_message(('msg5', 'alarm', 'no srsly the apples!!!'))
-
     def make_icons(self):
 
         style = self.style()
@@ -116,7 +94,7 @@ class Message_Display(QtWidgets.QFrame):
 
         self.layout = QtWidgets.QHBoxLayout()
 
-        self.message = QtWidgets.QLabel('test nessage')
+        self.message = QtWidgets.QLabel('')
         self.message.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         self.message.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                            QtWidgets.QSizePolicy.Expanding)

@@ -116,11 +116,11 @@ class Monitor(QtWidgets.QWidget):
         self.slider_layout = QtWidgets.QVBoxLayout()
 
         minmax_layout = QtWidgets.QHBoxLayout()
-        minmax_layout.addWidget(QtWidgets.QLabel('Max:'))
-        minmax_layout.addWidget(self.max_safe)
-        minmax_layout.addStretch()
         minmax_layout.addWidget(QtWidgets.QLabel('Min:'))
         minmax_layout.addWidget(self.min_safe)
+        minmax_layout.addStretch()
+        minmax_layout.addWidget(QtWidgets.QLabel('Max:'))
+        minmax_layout.addWidget(self.max_safe)
         self.slider_layout.addLayout(minmax_layout)
 
         self.slider_layout.addWidget(self.range_slider)

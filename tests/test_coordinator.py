@@ -1,13 +1,14 @@
 # TODO: this is a unit test, need to add integration test
+import random
 import time
 from unittest.mock import patch, Mock
+
+import pytest
+
 from vent.common.message import ControlSetting, SensorValues
 from vent.common.values import ValueName
+from vent.controller.control_module import ControlModuleBase
 from vent.coordinator.coordinator import get_coordinator
-from vent.controller.control_module import get_control_module, ControlModuleBase
-import numpy as np
-import pytest
-import random
 
 
 class ControlModuleMock(ControlModuleBase):
@@ -37,12 +38,12 @@ def mock_get_control_module(sim_mode):
                                                   ValueName.PEEP,
                                                   ValueName.BREATHS_PER_MINUTE,
                                                   ValueName.INSPIRATION_TIME_SEC])
-                                                  
 @patch('vent.controller.control_module.get_control_module', mock_get_control_module, Mock())
-
 def test_coordinator(control_setting_name):
-
     coordinator = get_coordinator(single_process=True, sim_mode=True)
+    coordinator.start()
+    while not coordinator.is_running():
+        pass
     t = time.time()
     v = random.randint(10, 100)
     v_min = v - 5

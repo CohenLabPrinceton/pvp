@@ -23,7 +23,8 @@ class CoordinatorBase:
         self.COPY_control_settings = {}
         self.COPY_tentative_control_settings = {}
         self.COPY_last_message_timestamp = None
-        
+        self.lock = threading.Lock()
+
     def get_sensors(self) -> Dict[ValueName, SensorValueNew]:
         # returns SensorValues struct
         pass
@@ -53,15 +54,37 @@ class CoordinatorBase:
         # return timestamp of last message
         pass
 
-    def do_process(self, command: IPCMessageCommand):
-        # TODO: we need to test these
-        # start / stop / reset process
-        if command == IPCMessageCommand.START:
-            self.control_module.start()
-        elif command == IPCMessageCommand.STOP:
-            self.control_module.stop()
-        else:
-            raise KeyError("Error: undefined action" + str(command))
+    def start(self):
+        """
+        Start the coordinator.
+        This does a soft start (not allocating a process).
+        This function will return immediately
+        """
+        pass
+
+    def is_running(self) -> bool:
+        """
+        Test whether the whole system is running
+        """
+
+    def stop(self):
+        """
+        Stop the coordinator.
+        This does a soft stop (not kill a process)
+        This function will return immediately
+        :return:
+        """
+        pass
+
+    # def do_process(self, command: IPCMessageCommand):
+    #     # TODO: we need to test these
+    #     # start / stop / reset process
+    #     if command == IPCMessageCommand.START:
+    #         self.control_module.start()
+    #     elif command == IPCMessageCommand.STOP:
+    #         self.control_module.stop()
+    #     else:
+    #         raise KeyError("Error: undefined action" + str(command))
 
 
 class CoordinatorLocal(CoordinatorBase):
@@ -72,14 +95,13 @@ class CoordinatorLocal(CoordinatorBase):
             sim_mode:
 
         Attributes:
-            stopping (:class:`threading.Event`): ``.set()`` when thread should stop
+            __is_running (:class:`threading.Event`): ``.set()`` when thread should stop
 
         """
         super().__init__(sim_mode=sim_mode)
         # TODO: is this thread safe?
-        self.stopping = threading.Event()
-        self.lock = threading.Lock()
-        self.thread = threading.Thread(target=self.start, daemon=True)
+        self.__is_running = threading.Event()
+        self.thread = threading.Thread(target=self.__main_loop, daemon=True)
         self.thread.start()
         self.thread_id = self.thread.ident
 
@@ -136,14 +158,14 @@ class CoordinatorLocal(CoordinatorBase):
         self.lock.release()
         return last_message_timestamp
 
-    def do_process(self, command):
-        super().do_process(command)
+    # def do_process(self, command):
+    #     super().do_process(command)
 
-    def start(self):
+    def __main_loop(self):
         # TODO: why add this? Local model doesn't need IPC
         # if not self.control_module.running():
         #     self.do_process(IPCMessageCommand.START)
-        while not self.stopping.is_set():
+        while self.__is_running.wait():
             sensor_values = self.control_module.get_sensors()
             self.lock.acquire()
             self.COPY_sensor_values = sensor_values
@@ -178,17 +200,36 @@ class CoordinatorLocal(CoordinatorBase):
             # sleep 10 ms
             time.sleep(0.01)
 
+    def start(self):
+        self.__is_running.set()
+
     def stop(self):
-        self.stopping.set()
+        self.__is_running.clear()
+
+    def is_running(self) -> bool:
+        """
+        TODO: current implementation is not good. As we need also make sure the controller is running.
+        """
+        return self.__is_running.is_set()
 
 
 class CoordinatorRemote(CoordinatorBase):
+    def start(self):
+        # TODO: implement
+        pass
+
+    def stop(self):
+        # TODO: implement
+        pass
+
     def __init__(self, sim_mode=False):
         super().__init__(sim_mode=sim_mode)
         # TODO: pass max_heartbeat_interval
         self.process_manager = ProcessManager()
         self.rpc = IPC()
         raise NotImplementedError
+
+
 
 
 def get_coordinator(single_process=False, sim_mode=False):

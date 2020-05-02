@@ -239,7 +239,6 @@ class ControlModuleBase:
     def __analyze_last_waveform(self):
         ''' This goes through the last waveform, and updates VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
         if len(self.__cycle_waveform_archive) > 1:  # Only if there was a previous cycle
-
             data = self.__cycle_waveform_archive[-1]
             phase = data[:, 0]
             pressure = data[:, 1]
@@ -496,7 +495,7 @@ class ControlModuleBase:
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
         
-        if next_cycle: # or (self.__cycle_waveform is None):  # if a new breath cycle has started, or program just started
+        if next_cycle:                        # if a new breath cycle has started
             if len(self.__cycle_waveform) > 1:
                 self.__cycle_waveform_archive.append( self.__cycle_waveform )
             self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])

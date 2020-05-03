@@ -31,6 +31,7 @@ class CoordinatorBase:
             sensor_values = self.COPY_sensor_values
         if sensor_values is None:
             return None
+        # TODO: merge the API such that controller and coordinator use the same SensorValue class
         else:
             res = {
                 ValueName.PIP: SensorValueNew(ValueName.PIP, sensor_values.pip, sensor_values.timestamp,
@@ -128,6 +129,7 @@ class CoordinatorLocal(CoordinatorBase):
         self.thread = threading.Thread(target=self.__main_loop, daemon=True)
         self.thread.start()
         self.thread_id = self.thread.ident
+        self.start()
 
     def __main_loop(self):
         while self._is_running.wait():
@@ -160,21 +162,26 @@ class CoordinatorRemote(CoordinatorBase):
     def __init__(self, sim_mode=False):
         super().__init__(sim_mode=sim_mode)
         # TODO: according to documentation, pass max_heartbeat_interval
-        self.process_manager = ProcessManager(sim_mode=sim_mode)
         self.ipc = IPC(listen=True)
+        self.process_manager = ProcessManager(sim_mode, self.ipc.addr, self.ipc.port)
+        # TODO: make sure the ipc connection is setup. There should be a clever method
+        time.sleep(1)
         self.receive_thread = threading.Thread(target=self.__receive_loop, daemon=True)
         self.receive_thread.start()
         self.receive_thread_id = self.receive_thread.ident
         self.send_thread = threading.Thread(target=self.__send_loop, daemon=True)
         self.send_thread.start()
         self.send_thread_id = self.send_thread.ident
+        self.start()
 
     def start(self):
         # send start msg
         self.ipc.send_msg(IPCMessage(IPCCommand.START))
+        super().start()
 
     def stop(self):
         # send stop msg
+        super().stop()
         self.ipc.send_msg(IPCMessage(IPCCommand.STOP))
 
     def __receive_loop(self):
@@ -182,12 +189,16 @@ class CoordinatorRemote(CoordinatorBase):
         The key to prevent deadlock is this thread never blocking
         """
         while self._is_running.wait():
+            # TODO: we need have better logging!
+            # print('parent in receiving loop')
             msg = self.ipc.recv_msg()
+            # print(f'parent process received: {msg.command}')
             if msg.command == IPCCommand.GET_SENSORS:
                 sensor_values = msg.args
+                # print(f'parent process read sensor: {sensor_values}')
                 with self.lock:
                     self.COPY_sensor_values = sensor_values
-                    self.last_message_timestamp = sensor_values.timestamp
+                # TODO: set timestamp
             elif msg.command == IPCCommand.GET_CONTROL:
                 if msg.args is not None:
                     control_setting = msg.args
@@ -204,11 +215,13 @@ class CoordinatorRemote(CoordinatorBase):
     def __send_loop(self):
         while self._is_running.wait():
             # don't send GET_SENSOR command because assuming it will send periodically
+            # print('parent in sending loop')
             for name in values.controllable_values:
                 with self.lock:
                     not_in_control_settings = name not in self.COPY_control_settings
                 if not_in_control_settings:
                     self.ipc.send_msg(IPCMessage(IPCCommand.GET_CONTROL, name))
+                # print('testing disagree')
                 with self.lock:
                     disagreed_tentative = name in self.COPY_tentative_control_settings and \
                                           self.COPY_tentative_control_settings[name] != self.COPY_control_settings[
@@ -216,6 +229,7 @@ class CoordinatorRemote(CoordinatorBase):
                 if disagreed_tentative:
                     with self.lock:
                         tentative_control_setting = self.COPY_tentative_control_settings[name]
+                    # print('parent setting control')
                     self.ipc.send_msg(IPCMessage(IPCCommand.SET_CONTROL, tentative_control_setting))
                     self.ipc.send_msg(IPCMessage(IPCCommand.GET_CONTROL, name))
             # sleep 10 ms

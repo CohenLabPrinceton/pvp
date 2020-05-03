@@ -21,7 +21,7 @@ class ControlModuleMock(ControlModuleBase):
                                                                                         ValueName.INSPIRATION_TIME_SEC)}
 
     def get_sensors(self):
-        return SensorValues()
+        return SensorValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         return self.control_setting[control_setting_name]
@@ -34,13 +34,15 @@ def mock_get_control_module(sim_mode):
     return ControlModuleMock()
 
 
-@pytest.mark.parametrize("control_setting_name", values.controllable_values)
+@pytest.mark.parametrize("single_process,control_setting_name", ((single_process, name) for single_process in (True, False) for name in values.controllable_values))
 @patch('vent.controller.control_module.get_control_module', mock_get_control_module, Mock())
-def test_coordinator(control_setting_name):
-    coordinator = get_coordinator(single_process=True, sim_mode=True)
+def test_coordinator(single_process, control_setting_name):
+    coordinator = get_coordinator(single_process=single_process, sim_mode=True)
     coordinator.start()
-    while not coordinator.is_running():
-        pass
+    # TODO: why need this sleep time?
+    time.sleep(1)
+    # while not coordinator.is_running():
+    #     pass
     t = time.time()
     v = random.randint(10, 100)
     v_min = v - 5
@@ -53,7 +55,7 @@ def test_coordinator(control_setting_name):
     coordinator.set_control(c)
 
     # TODO: this should be tight
-    time.sleep(0.1)
+    time.sleep(1)
 
     c_read = coordinator.get_control(control_setting_name)
     assert c_read.name == c.name

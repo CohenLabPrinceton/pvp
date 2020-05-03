@@ -4,7 +4,6 @@ from enum import Enum, auto
 import pickle
 import socket
 
-socket_port = 9998
 buffer_size = 65536
 
 
@@ -33,28 +32,40 @@ class IPC:
     # Class for communicating between processes either by sockets
     # or named-pipes
     #   Functions:
-    def __init__(self, listen):
+    def __init__(self, listen, addr=None, port=None):
         self.listen = listen
         self.s = socket.socket()
         if listen:
+            # TODO: can start random port on testing, but deterministic port on deployment
             self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.s.bind(('localhost', socket_port))
-            self.s.listen()
-            self.conn, self.addr = self.s.accept()
+            self.s.bind(('', 0))
+            self.addr, self.port = self.s.getsockname()
+            # print(self.addr)
+            # print(self.port)
+            # print('listen socket created')
+            self.conn = None
+            self.connection_thread = threading.Thread(target=self.connect, daemon=True)
+            self.connection_thread.start()
         else:
-            self.s.connect(('localhost', socket_port))
+            self.s.connect((addr, port))
+            # print('connect socket created')
         # init as either listener or connector
         # self.thread = threading.Thread(target=self.start)
         # self.thread.start()
         # two msg queue
 
+    def connect(self):
+        self.s.listen()
+        self.conn, _ = self.s.accept()
+
     def __del__(self):
         if self.listen:
             self.conn.close()
-        else:
-            self.s.close()
+        self.s.close()
+
 
     def send_msg(self, msg: IPCMessage):
+        # print(f'sending IPC: {msg.command}')
         pickled_msg = pickle.dumps(msg)
         if self.listen:
             self.conn.sendall(pickled_msg)
@@ -70,6 +81,7 @@ class IPC:
         else:
             data = self.s.recv(buffer_size)
         unpicked_msg = pickle.loads(data)
+        # print(f'received IPC: {unpicked_msg.command}')
         return unpicked_msg
     # def start(self):
     #     while True:

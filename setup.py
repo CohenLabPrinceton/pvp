@@ -10,11 +10,8 @@ IS_RASPI = False
 ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
 if ret == 0:
     IS_RASPI = True
-
-    # get wheel name
-    external_files = os.listdir(os.path.join(os.getcwd(), 'external'))
-    pyside_wheel = [whl for whl in external_files if whl.endswith('.whl') and whl.startswith("PySide2")][0]
-    depend_links.append(os.path.join(os.getcwd(), 'external', pyside_wheel))
+    os.system("sudo +x INSTALL")
+    os.system("sudo ./INSTALL")
 
 setup(
     name="ventilator",
@@ -28,7 +25,8 @@ setup(
     install_requires=[
         'numpy',
         'PySide2',
-        'pyqtgraph>=0.11.0rc0'
+        'pyqtgraph>=0.11.0rc0',
+        'pigpio'
     ],
     dependency_links=depend_links
 )

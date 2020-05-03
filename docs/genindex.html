@@ -89,14 +89,11 @@
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="alarms.html">alarms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="controller.html">controller module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="controls.html">controls module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="helper.html">helper</a></li>
-<li class="toctree-l1"><a class="reference internal" href="main.html">main</a></li>
-<li class="toctree-l1"><a class="reference internal" href="main_control.html">main_control</a></li>
-<li class="toctree-l1"><a class="reference internal" href="sensors.html">sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -181,52 +178,199 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
- | <a href="#K"><strong>K</strong></a>
- | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
- | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#Y"><strong>Y</strong></a>
  
 </div>
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.Vent_Gui.__init__">__init__() (vent.gui.Vent_Gui method)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.__init__">[1]</a>
+      <li><a href="common.html#vent.common.message.Alarm.__init__">__init__() (vent.common.message.Alarm method)</a>, <a href="vent.common.html#vent.common.message.Alarm.__init__">[1]</a>
 
       <ul>
-        <li><a href="gui.html#vent.gui.widgets.HeartBeat.__init__">(vent.gui.widgets.HeartBeat method)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.__init__">[1]</a>
+        <li><a href="common.html#vent.common.message.ControlSetting.__init__">(vent.common.message.ControlSetting method)</a>, <a href="vent.common.html#vent.common.message.ControlSetting.__init__">[1]</a>
+</li>
+        <li><a href="common.html#vent.common.message.IPCMessage.__init__">(vent.common.message.IPCMessage method)</a>, <a href="vent.common.html#vent.common.message.IPCMessage.__init__">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.devices.ADS1115.__init__">(vent.io.devices.ADS1115 method)</a>, <a href="vent.io.html#vent.io.devices.ADS1115.__init__">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.AnalogSensor.__init__">(vent.io.iobase.AnalogSensor method)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor.__init__">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.I2CDevice.__init__">(vent.io.iobase.I2CDevice method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.__init__">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.I2CDevice.Register.__init__">(vent.io.iobase.I2CDevice.Register method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.__init__">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.IODeviceBase.__init__">(vent.io.iobase.IODeviceBase method)</a>, <a href="vent.io.html#vent.io.iobase.IODeviceBase.__init__">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.Pin.__init__">(vent.io.iobase.Pin method)</a>, <a href="vent.io.html#vent.io.iobase.Pin.__init__">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.Sensor.__init__">(vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor.__init__">[1]</a>
 </li>
       </ul></li>
-      <li><a href="gui.html#vent.gui.widgets.HeartBeat._heartbeat">_heartbeat() (vent.gui.widgets.HeartBeat method)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat._heartbeat">[1]</a>
+      <li><a href="io.html#vent.io.devices.ADS1115._abc_impl">_abc_impl (vent.io.devices.ADS1115 attribute)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._abc_impl">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.devices.P4vMini._abc_impl">(vent.io.devices.P4vMini attribute)</a>, <a href="vent.io.html#vent.io.devices.P4vMini._abc_impl">[1]</a>
 </li>
+        <li><a href="io.html#vent.io.devices.PWMControlValve._abc_impl">(vent.io.devices.PWMControlValve attribute)</a>, <a href="vent.io.html#vent.io.devices.PWMControlValve._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.devices.SFM3200._abc_impl">(vent.io.devices.SFM3200 attribute)</a>, <a href="vent.io.html#vent.io.devices.SFM3200._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.devices.SolenoidValve._abc_impl">(vent.io.devices.SolenoidValve attribute)</a>, <a href="vent.io.html#vent.io.devices.SolenoidValve._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.AnalogSensor._abc_impl">(vent.io.iobase.AnalogSensor attribute)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.I2CDevice._abc_impl">(vent.io.iobase.I2CDevice attribute)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.InputPin._abc_impl">(vent.io.iobase.InputPin attribute)</a>, <a href="vent.io.html#vent.io.iobase.InputPin._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.IODeviceBase._abc_impl">(vent.io.iobase.IODeviceBase attribute)</a>, <a href="vent.io.html#vent.io.iobase.IODeviceBase._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.OutputPin._abc_impl">(vent.io.iobase.OutputPin attribute)</a>, <a href="vent.io.html#vent.io.iobase.OutputPin._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.Pin._abc_impl">(vent.io.iobase.Pin attribute)</a>, <a href="vent.io.html#vent.io.iobase.Pin._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.PWMOutput._abc_impl">(vent.io.iobase.PWMOutput attribute)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.Sensor._abc_impl">(vent.io.iobase.Sensor attribute)</a>, <a href="vent.io.html#vent.io.iobase.Sensor._abc_impl">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.SPIDevice._abc_impl">(vent.io.iobase.SPIDevice attribute)</a>, <a href="vent.io.html#vent.io.iobase.SPIDevice._abc_impl">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="io.html#vent.io.devices.P4vMini._CALIBRATION">_CALIBRATION (vent.io.devices.P4vMini attribute)</a>, <a href="vent.io.html#vent.io.devices.P4vMini._CALIBRATION">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.AnalogSensor._check_and_set_attr">_check_and_set_attr() (vent.io.iobase.AnalogSensor method)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._check_and_set_attr">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.ADS1115._CONFIG_FIELDS">_CONFIG_FIELDS (vent.io.devices.ADS1115 attribute)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._CONFIG_FIELDS">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.ADS1115._CONFIG_VALUES">_CONFIG_VALUES (vent.io.devices.ADS1115 attribute)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._CONFIG_VALUES">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.P4vMini._CONVERSION_FACTOR">_CONVERSION_FACTOR (vent.io.devices.P4vMini attribute)</a>, <a href="vent.io.html#vent.io.devices.P4vMini._CONVERSION_FACTOR">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.iobase.AnalogSensor._CONVERSION_FACTOR">(vent.io.iobase.AnalogSensor attribute)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._CONVERSION_FACTOR">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="io.html#vent.io.devices.P4vMini._convert">_convert() (vent.io.devices.P4vMini method)</a>, <a href="vent.io.html#vent.io.devices.P4vMini._convert">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.devices.SFM3200._convert">(vent.io.devices.SFM3200 method)</a>, <a href="vent.io.html#vent.io.devices.SFM3200._convert">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.AnalogSensor._convert">(vent.io.iobase.AnalogSensor method)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._convert">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.Sensor._convert">(vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor._convert">[1]</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Monitor_Value._limits_changed">_limits_changed() (vent.gui.widgets.Monitor_Value method)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value._limits_changed">[1]</a>
+      <li><a href="io.html#vent.io.devices.ADS1115._DEFAULT_ADDRESS">_DEFAULT_ADDRESS (vent.io.devices.ADS1115 attribute)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._DEFAULT_ADDRESS">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.devices.SFM3200._DEFAULT_ADDRESS">(vent.io.devices.SFM3200 attribute)</a>, <a href="vent.io.html#vent.io.devices.SFM3200._DEFAULT_ADDRESS">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider._RangeSlider__pick">_RangeSlider__pick() (vent.gui.widgets.RangeSlider method)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider._RangeSlider__pick">[1]</a>
+      </ul></li>
+      <li><a href="io.html#vent.io.iobase.AnalogSensor._DEFAULT_CALIBRATION">_DEFAULT_CALIBRATION (vent.io.iobase.AnalogSensor attribute)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._DEFAULT_CALIBRATION">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider._RangeSlider__pixelPosToRangeValue">_RangeSlider__pixelPosToRangeValue() (vent.gui.widgets.RangeSlider method)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider._RangeSlider__pixelPosToRangeValue">[1]</a>
+      <li><a href="io.html#vent.io.iobase.PWMOutput._DEFAULT_FREQUENCY">_DEFAULT_FREQUENCY (vent.io.iobase.PWMOutput attribute)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput._DEFAULT_FREQUENCY">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.Plot._safe_limits_changed">_safe_limits_changed() (vent.gui.widgets.Plot method)</a>, <a href="vent.gui.html#vent.gui.widgets.Plot._safe_limits_changed">[1]</a>
+      <li><a href="io.html#vent.io.iobase.AnalogSensor._DEFAULT_OFFSET_VOLTAGE">_DEFAULT_OFFSET_VOLTAGE (vent.io.iobase.AnalogSensor attribute)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._DEFAULT_OFFSET_VOLTAGE">[1]</a>
 </li>
+      <li><a href="io.html#vent.io.iobase.AnalogSensor._DEFAULT_OUTPUT_SPAN">_DEFAULT_OUTPUT_SPAN (vent.io.iobase.AnalogSensor attribute)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._DEFAULT_OUTPUT_SPAN">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.PWMOutput._DEFAULT_SOFT_FREQ">_DEFAULT_SOFT_FREQ (vent.io.iobase.PWMOutput attribute)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput._DEFAULT_SOFT_FREQ">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.Sensor._DEFAULT_STORED_OBSERVATIONS">_DEFAULT_STORED_OBSERVATIONS (vent.io.iobase.Sensor attribute)</a>, <a href="vent.io.html#vent.io.iobase.Sensor._DEFAULT_STORED_OBSERVATIONS">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.ADS1115._DEFAULT_VALUES">_DEFAULT_VALUES (vent.io.devices.ADS1115 attribute)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._DEFAULT_VALUES">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.AnalogSensor._fill_attr">_fill_attr() (vent.io.iobase.AnalogSensor method)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._fill_attr">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.SFM3200._FLOW_OFFSET">_FLOW_OFFSET (vent.io.devices.SFM3200 attribute)</a>, <a href="vent.io.html#vent.io.devices.SFM3200._FLOW_OFFSET">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.SFM3200._FLOW_SCALE_FACTOR">_FLOW_SCALE_FACTOR (vent.io.devices.SFM3200 attribute)</a>, <a href="vent.io.html#vent.io.devices.SFM3200._FLOW_SCALE_FACTOR">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.SolenoidValve._FORMS">_FORMS (vent.io.devices.SolenoidValve attribute)</a>, <a href="vent.io.html#vent.io.devices.SolenoidValve._FORMS">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.PWMOutput._HARDWARE_PWM_PINS">_HARDWARE_PWM_PINS (vent.io.iobase.PWMOutput attribute)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput._HARDWARE_PWM_PINS">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.Pin._PIGPIO_MODES">_PIGPIO_MODES (vent.io.iobase.Pin attribute)</a>, <a href="vent.io.html#vent.io.iobase.Pin._PIGPIO_MODES">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.ADS1115._POINTER_FIELDS">_POINTER_FIELDS (vent.io.devices.ADS1115 attribute)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._POINTER_FIELDS">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.ADS1115._POINTER_VALUES">_POINTER_VALUES (vent.io.devices.ADS1115 attribute)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._POINTER_VALUES">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.PWMOutput._PWMOutput__hardware_pwm">_PWMOutput__hardware_pwm() (vent.io.iobase.PWMOutput method)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput._PWMOutput__hardware_pwm">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.PWMOutput._PWMOutput__pwm">_PWMOutput__pwm() (vent.io.iobase.PWMOutput method)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput._PWMOutput__pwm">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.PWMOutput._PWMOutput__software_pwm">_PWMOutput__software_pwm() (vent.io.iobase.PWMOutput method)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput._PWMOutput__software_pwm">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.SFM3200._raw_read">_raw_read() (vent.io.devices.SFM3200 method)</a>, <a href="vent.io.html#vent.io.devices.SFM3200._raw_read">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.iobase.AnalogSensor._raw_read">(vent.io.iobase.AnalogSensor method)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._raw_read">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.Sensor._raw_read">(vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor._raw_read">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="io.html#vent.io.iobase.AnalogSensor._read">_read() (vent.io.iobase.AnalogSensor method)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._read">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.iobase.Sensor._read">(vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor._read">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="io.html#vent.io.devices.ADS1115._read_conversion">_read_conversion() (vent.io.devices.ADS1115 method)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._read_conversion">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.ADS1115._read_last_cfg">_read_last_cfg() (vent.io.devices.ADS1115 method)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._read_last_cfg">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.ADS1115._ready">_ready() (vent.io.devices.ADS1115 method)</a>, <a href="vent.io.html#vent.io.devices.ADS1115._ready">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.Sensor._Sensor__store_last">_Sensor__store_last() (vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor._Sensor__store_last">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.SPIDevice._SPIDevice__init">_SPIDevice__init() (vent.io.iobase.SPIDevice method)</a>, <a href="vent.io.html#vent.io.iobase.SPIDevice._SPIDevice__init">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.SFM3200._start">_start() (vent.io.devices.SFM3200 method)</a>, <a href="vent.io.html#vent.io.devices.SFM3200._start">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.P4vMini._verify">_verify() (vent.io.devices.P4vMini method)</a>, <a href="vent.io.html#vent.io.devices.P4vMini._verify">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.devices.SFM3200._verify">(vent.io.devices.SFM3200 method)</a>, <a href="vent.io.html#vent.io.devices.SFM3200._verify">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.AnalogSensor._verify">(vent.io.iobase.AnalogSensor method)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor._verify">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.Sensor._verify">(vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor._verify">[1]</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Monitor_Value.alarm">alarm (vent.gui.widgets.Monitor_Value attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value.alarm">[1]</a>
+      <li><a href="io.html#vent.io.devices.ADS1115">ADS1115 (class in vent.io.devices)</a>, <a href="vent.io.html#vent.io.devices.ADS1115">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.Sensor.age">age() (vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor.age">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.alarm">alarm() (vent.gui.widgets.RangeSlider property)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.alarm">[1]</a>
+      <li><a href="common.html#vent.common.message.Alarm">Alarm (class in vent.common.message)</a>, <a href="vent.common.html#vent.common.message.Alarm">[1]</a>
+</li>
+      <li><a href="common.html#vent.common.message.AlarmSeverity">AlarmSeverity (class in vent.common.message)</a>, <a href="vent.common.html#vent.common.message.AlarmSeverity">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.AnalogSensor">AnalogSensor (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -234,7 +378,13 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.HeartBeat.beatheart">beatheart() (vent.gui.widgets.HeartBeat method)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.beatheart">[1]</a>
+      <li><a href="vent.controller.html#vent.controller.control_module.Balloon_Simulator">Balloon_Simulator (class in vent.controller.control_module)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="io.html#vent.io.iobase.be16_to_native">be16_to_native() (in module vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.be16_to_native">[1]</a>
+</li>
+      <li><a href="common.html#vent.common.message.ControlSettingName.BREATHS_PER_MINUTE">BREATHS_PER_MINUTE (vent.common.message.ControlSettingName attribute)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName.BREATHS_PER_MINUTE">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -242,29 +392,47 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Monitor_Value.check_alarm">check_alarm() (vent.gui.widgets.Monitor_Value method)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value.check_alarm">[1]</a>
+      <li><a href="io.html#vent.io.iobase.AnalogSensor.calibrate">calibrate() (vent.io.iobase.AnalogSensor method)</a>, <a href="vent.io.html#vent.io.iobase.AnalogSensor.calibrate">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.HeartBeat.check_timeout">check_timeout() (vent.gui.widgets.HeartBeat method)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.check_timeout">[1]</a>
+      <li><a href="io.html#vent.io.devices.ADS1115.cfg">cfg() (vent.io.devices.ADS1115 property)</a>, <a href="vent.io.html#vent.io.devices.ADS1115.cfg">[1]</a>
 </li>
-      <li><a href="helper.html#vent.helper.clamp">clamp() (in module vent.helper)</a>, <a href="vent.html#vent.helper.clamp">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.clear_message">clear_message() (vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.clear_message">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Control">Control (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.Control">[1]</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.defaults.CONTROL">CONTROL (in module vent.gui.defaults)</a>, <a href="vent.gui.html#vent.gui.defaults.CONTROL">[1]</a>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.clear_logged_alarms">clear_logged_alarms() (vent.controller.control_module.ControlModuleBase method)</a>
 
       <ul>
-        <li><a href="gui.html#vent.gui.Vent_Gui.CONTROL">(vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.CONTROL">[1]</a>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.clear_logged_alarms">(vent.coordinator.coordinator.CoordinatorBase method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorBase.clear_logged_alarms">[1]</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.clear_logged_alarms">(vent.coordinator.coordinator.CoordinatorLocal method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.clear_logged_alarms">[1]</a>
 </li>
       </ul></li>
-      <li><a href="gui.html#vent.gui.Vent_Gui.control_width">control_width (vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.control_width">[1]</a>
+      <li><a href="io.html#vent.io.devices.SolenoidValve.close">close() (vent.io.devices.SolenoidValve method)</a>, <a href="vent.io.html#vent.io.devices.SolenoidValve.close">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.iobase.I2CDevice.close">(vent.io.iobase.I2CDevice method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.close">[1]</a>
 </li>
-      <li><a href="gui.html#id2">controls (vent.gui.Vent_Gui attribute)</a>, <a href="gui.html#vent.gui.Vent_Gui.controls">[1]</a>, <a href="vent.gui.html#id2">[2]</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.controls">[3]</a>
+        <li><a href="io.html#vent.io.iobase.IODeviceBase.close">(vent.io.iobase.IODeviceBase method)</a>, <a href="vent.io.html#vent.io.iobase.IODeviceBase.close">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel.create_signals">create_signals() (vent.gui.widgets.EditableLabel method)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.create_signals">[1]</a>
+        <li><a href="io.html#vent.io.iobase.SPIDevice.close">(vent.io.iobase.SPIDevice method)</a>, <a href="vent.io.html#vent.io.iobase.SPIDevice.close">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="io.html#vent.io.devices.ADS1115.config">config() (vent.io.devices.ADS1115 property)</a>, <a href="vent.io.html#vent.io.devices.ADS1115.config">[1]</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase">ControlModuleBase (class in vent.controller.control_module)</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleDevice">ControlModuleDevice (class in vent.controller.control_module)</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator">ControlModuleSimulator (class in vent.controller.control_module)</a>
+</li>
+      <li><a href="common.html#vent.common.message.ControlSetting">ControlSetting (class in vent.common.message)</a>, <a href="vent.common.html#vent.common.message.ControlSetting">[1]</a>
+</li>
+      <li><a href="common.html#vent.common.message.ControlSettingName">ControlSettingName (class in vent.common.message)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName">[1]</a>
+</li>
+      <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase">CoordinatorBase (class in vent.coordinator.coordinator)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorBase">[1]</a>
+</li>
+      <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal">CoordinatorLocal (class in vent.coordinator.coordinator)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal">[1]</a>
+</li>
+      <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorRemote">CoordinatorRemote (class in vent.coordinator.coordinator)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorRemote">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -272,11 +440,19 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.Vent_Gui.display_width">display_width (vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.display_width">[1]</a>
+      <li><a href="io.html#vent.io.iobase.Sensor.data">data() (vent.io.iobase.Sensor property)</a>, <a href="vent.io.html#vent.io.iobase.Sensor.data">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.Sensor.data_length">data_length() (vent.io.iobase.Sensor property)</a>, <a href="vent.io.html#vent.io.iobase.Sensor.data_length">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.draw_state">draw_state() (vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.draw_state">[1]</a>
+      <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.do_process">do_process() (vent.coordinator.coordinator.CoordinatorBase method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorBase.do_process">[1]</a>
+
+      <ul>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.do_process">(vent.coordinator.coordinator.CoordinatorLocal method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.do_process">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="io.html#vent.io.iobase.PWMOutput.duty">duty() (vent.io.iobase.PWMOutput property)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput.duty">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -284,17 +460,111 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel">EditableLabel (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.QTextEditLogger.emit">emit() (vent.gui.widgets.QTextEditLogger method)</a>, <a href="vent.gui.html#vent.gui.widgets.QTextEditLogger.emit">[1]</a>
+      <li><a href="common.html#vent.common.message.Error">Error (class in vent.common.message)</a>, <a href="vent.common.html#vent.common.message.Error">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.KeyPressHandler.escapePressed">escapePressed (vent.gui.widgets.KeyPressHandler attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.KeyPressHandler.escapePressed">[1]</a>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.Register.RegisterField.extract">extract() (vent.io.iobase.I2CDevice.Register.RegisterField method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.RegisterField.extract">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel.escapePressedAction">escapePressedAction() (vent.gui.widgets.EditableLabel method)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.escapePressedAction">[1]</a>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="common.html#vent.common.message.ControlSettingName.FIO2">FIO2 (vent.common.message.ControlSettingName attribute)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName.FIO2">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.KeyPressHandler.eventFilter">eventFilter() (vent.gui.widgets.KeyPressHandler method)</a>, <a href="vent.gui.html#vent.gui.widgets.KeyPressHandler.eventFilter">[1]</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="io.html#vent.io.devices.SolenoidValve.form">form() (vent.io.devices.SolenoidValve property)</a>, <a href="vent.io.html#vent.io.devices.SolenoidValve.form">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.PWMOutput.frequency">frequency() (vent.io.iobase.PWMOutput property)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput.frequency">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="io.html#vent.io.iobase.OutputPin.get">get() (vent.io.iobase.OutputPin method)</a>, <a href="vent.io.html#vent.io.iobase.OutputPin.get">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.iobase.Pin.get">(vent.io.iobase.Pin method)</a>, <a href="vent.io.html#vent.io.iobase.Pin.get">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.PWMOutput.get">(vent.io.iobase.PWMOutput method)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput.get">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.Sensor.get">(vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor.get">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.get_active_alarms">get_active_alarms() (vent.controller.control_module.ControlModuleBase method)</a>
+
+      <ul>
+        <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_active_alarms">(vent.controller.control_module.ControlModuleSimulator method)</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_active_alarms">(vent.coordinator.coordinator.CoordinatorBase method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_active_alarms">[1]</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_active_alarms">(vent.coordinator.coordinator.CoordinatorLocal method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_active_alarms">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.get_alarms">get_alarms() (vent.controller.control_module.ControlModuleBase method)</a>
+
+      <ul>
+        <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_alarms">(vent.controller.control_module.ControlModuleSimulator method)</a>
+</li>
+      </ul></li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.get_control">get_control() (vent.controller.control_module.ControlModuleBase method)</a>
+
+      <ul>
+        <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_control">(vent.controller.control_module.ControlModuleSimulator method)</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_control">(vent.coordinator.coordinator.CoordinatorBase method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_control">[1]</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_control">(vent.coordinator.coordinator.CoordinatorLocal method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_control">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="vent.controller.html#vent.controller.control_module.get_control_module">get_control_module() (in module vent.controller.control_module)</a>
+</li>
+      <li><a href="coordinator.html#vent.coordinator.coordinator.get_coordinator">get_coordinator() (in module vent.coordinator.coordinator)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.get_coordinator">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.get_logged_alarms">get_logged_alarms() (vent.controller.control_module.ControlModuleBase method)</a>
+
+      <ul>
+        <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_logged_alarms">(vent.controller.control_module.ControlModuleSimulator method)</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_logged_alarms">(vent.coordinator.coordinator.CoordinatorBase method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_logged_alarms">[1]</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_logged_alarms">(vent.coordinator.coordinator.CoordinatorLocal method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_logged_alarms">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_msg_timestamp">get_msg_timestamp() (vent.coordinator.coordinator.CoordinatorBase method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_msg_timestamp">[1]</a>
+
+      <ul>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_msg_timestamp">(vent.coordinator.coordinator.CoordinatorLocal method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_msg_timestamp">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="vent.controller.html#vent.controller.control_module.Balloon_Simulator.get_pressure">get_pressure() (vent.controller.control_module.Balloon_Simulator method)</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.StateController.get_Qin">get_Qin() (vent.controller.control_module.StateController method)</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.StateController.get_Qout">get_Qout() (vent.controller.control_module.StateController method)</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.get_sensors">get_sensors() (vent.controller.control_module.ControlModuleBase method)</a>
+
+      <ul>
+        <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_sensors">(vent.controller.control_module.ControlModuleSimulator method)</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_sensors">(vent.coordinator.coordinator.CoordinatorBase method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_sensors">[1]</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_sensors">(vent.coordinator.coordinator.CoordinatorLocal method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_sensors">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="vent.controller.html#vent.controller.control_module.Balloon_Simulator.get_volume">get_volume() (vent.controller.control_module.Balloon_Simulator method)</a>
+</li>
+      <li><a href="common.html#vent.common.message.IPCMessageCommand.GETALARMS">GETALARMS (vent.common.message.IPCMessageCommand attribute)</a>, <a href="vent.common.html#vent.common.message.IPCMessageCommand.GETALARMS">[1]</a>
+</li>
+      <li><a href="common.html#vent.common.message.IPCMessageCommand.GETSENSORS">GETSENSORS (vent.common.message.IPCMessageCommand attribute)</a>, <a href="vent.common.html#vent.common.message.IPCMessageCommand.GETSENSORS">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -302,13 +572,13 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.HeartBeat">HeartBeat (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat">[1]</a>
+      <li><a href="io.html#vent.io.iobase.IODeviceBase.handle">handle() (vent.io.iobase.IODeviceBase property)</a>, <a href="vent.io.html#vent.io.iobase.IODeviceBase.handle">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.HeartBeat.heartbeat">heartbeat (vent.gui.widgets.HeartBeat attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.heartbeat">[1]</a>
+      <li><a href="coordinator.html#vent.coordinator.process_manager.ProcessManager.heartbeat">heartbeat() (vent.coordinator.process_manager.ProcessManager method)</a>, <a href="vent.coordinator.html#vent.coordinator.process_manager.ProcessManager.heartbeat">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.high">high() (vent.gui.widgets.RangeSlider property)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.high">[1]</a>
+      <li><a href="common.html#vent.common.message.ControlSettingName.HUMIDITY">HUMIDITY (vent.common.message.ControlSettingName attribute)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName.HUMIDITY">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -316,51 +586,29 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.Vent_Gui.init_ui">init_ui() (vent.gui.Vent_Gui method)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.init_ui">[1]</a>
-
-      <ul>
-        <li><a href="gui.html#vent.gui.widgets.Control.init_ui">(vent.gui.widgets.Control method)</a>, <a href="vent.gui.html#vent.gui.widgets.Control.init_ui">[1]</a>
+      <li><a href="io.html#vent.io.iobase.I2CDevice">I2CDevice (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice">[1]</a>
 </li>
-        <li><a href="gui.html#vent.gui.widgets.HeartBeat.init_ui">(vent.gui.widgets.HeartBeat method)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.init_ui">[1]</a>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.Register">I2CDevice.Register (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register">[1]</a>
 </li>
-        <li><a href="gui.html#vent.gui.widgets.Message_Display.init_ui">(vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.init_ui">[1]</a>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.Register.RegisterField">I2CDevice.Register.RegisterField (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.RegisterField">[1]</a>
 </li>
-        <li><a href="gui.html#vent.gui.widgets.Monitor_Value.init_ui">(vent.gui.widgets.Monitor_Value method)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value.init_ui">[1]</a>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.Register.RegisterField.info">info() (vent.io.iobase.I2CDevice.Register.RegisterField method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.RegisterField.info">[1]</a>
 </li>
-        <li><a href="gui.html#vent.gui.widgets.Status_Bar.init_ui">(vent.gui.widgets.Status_Bar method)</a>, <a href="vent.gui.html#vent.gui.widgets.Status_Bar.init_ui">[1]</a>
-</li>
-      </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="K">K</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.KeyPressHandler">KeyPressHandler (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.KeyPressHandler">[1]</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="L">L</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel.labelPressedEvent">labelPressedEvent() (vent.gui.widgets.EditableLabel method)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.labelPressedEvent">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel.labelUpdatedAction">labelUpdatedAction() (vent.gui.widgets.EditableLabel method)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.labelUpdatedAction">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.defaults.LIMITS">LIMITS (in module vent.gui.defaults)</a>, <a href="vent.gui.html#vent.gui.defaults.LIMITS">[1]</a>
+      <li><a href="io.html#vent.io.iobase.InputPin">InputPin (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.InputPin">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Monitor_Value.limits_changed">limits_changed (vent.gui.widgets.Monitor_Value attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value.limits_changed">[1]</a>
-
-      <ul>
-        <li><a href="gui.html#vent.gui.widgets.Plot.limits_changed">(vent.gui.widgets.Plot attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Plot.limits_changed">[1]</a>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.Register.RegisterField.insert">insert() (vent.io.iobase.I2CDevice.Register.RegisterField method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.RegisterField.insert">[1]</a>
 </li>
-      </ul></li>
-      <li><a href="gui.html#vent.gui.widgets.Log_Console">Log_Console (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.Log_Console">[1]</a>
+      <li><a href="common.html#vent.common.message.ControlSettingName.INSPIRATION_TIME_SEC">INSPIRATION_TIME_SEC (vent.common.message.ControlSettingName attribute)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName.INSPIRATION_TIME_SEC">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.low">low() (vent.gui.widgets.RangeSlider property)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.low">[1]</a>
+      <li><a href="io.html#vent.io.iobase.IODeviceBase">IODeviceBase (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.IODeviceBase">[1]</a>
+</li>
+      <li><a href="coordinator.html#vent.coordinator.ipc.IPC">IPC (class in vent.coordinator.ipc)</a>, <a href="vent.coordinator.html#vent.coordinator.ipc.IPC">[1]</a>
+</li>
+      <li><a href="common.html#vent.common.message.IPCMessage">IPCMessage (class in vent.common.message)</a>, <a href="vent.common.html#vent.common.message.IPCMessage">[1]</a>
+</li>
+      <li><a href="common.html#vent.common.message.IPCMessageCommand">IPCMessageCommand (class in vent.common.message)</a>, <a href="vent.common.html#vent.common.message.IPCMessageCommand">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -368,15 +616,9 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.Vent_Gui.main_height">main_height (vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.main_height">[1]</a>
+      <li><a href="vent.html#vent.main.main">main() (in module vent.main)</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.make_icons">make_icons() (vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.make_icons">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.message_cleared">message_cleared (vent.gui.widgets.Message_Display attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.message_cleared">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display">Message_Display (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.MESSAGE_PRIORITY">MESSAGE_PRIORITY (vent.gui.widgets.Message_Display attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.MESSAGE_PRIORITY">[1]</a>
+      <li><a href="io.html#vent.io.iobase.Pin.mode">mode() (vent.io.iobase.Pin property)</a>, <a href="vent.io.html#vent.io.iobase.Pin.mode">[1]</a>
 </li>
       <li>
     module
@@ -384,34 +626,74 @@
       <ul>
         <li><a href="vent.html#module-vent">vent</a>
 </li>
-        <li><a href="gui.html#module-vent.gui">vent.gui</a>, <a href="vent.gui.html#module-vent.gui">[1]</a>
+        <li><a href="common.html#module-vent.common">vent.common</a>, <a href="vent.common.html#module-vent.common">[1]</a>
 </li>
-        <li><a href="gui.html#module-vent.gui.defaults">vent.gui.defaults</a>, <a href="vent.gui.html#module-vent.gui.defaults">[1]</a>
+        <li><a href="common.html#module-vent.common.message">vent.common.message</a>, <a href="vent.common.html#module-vent.common.message">[1]</a>
 </li>
-        <li><a href="gui.html#module-vent.gui.styles">vent.gui.styles</a>, <a href="vent.gui.html#module-vent.gui.styles">[1]</a>
+        <li><a href="controller.html#module-vent.controller">vent.controller</a>, <a href="vent.controller.html#module-vent.controller">[1]</a>, <a href="vent.html#module-vent.controller">[2]</a>
 </li>
-        <li><a href="gui.html#module-vent.gui.widgets">vent.gui.widgets</a>, <a href="vent.gui.html#module-vent.gui.widgets">[1]</a>
+        <li><a href="vent.controller.html#module-vent.controller.control_module">vent.controller.control_module</a>
 </li>
-        <li><a href="helper.html#module-vent.helper">vent.helper</a>, <a href="vent.html#module-vent.helper">[1]</a>
+        <li><a href="coordinator.html#module-vent.coordinator">vent.coordinator</a>, <a href="vent.coordinator.html#module-vent.coordinator">[1]</a>
+</li>
+        <li><a href="coordinator.html#module-vent.coordinator.coordinator">vent.coordinator.coordinator</a>, <a href="vent.coordinator.html#module-vent.coordinator.coordinator">[1]</a>
+</li>
+        <li><a href="coordinator.html#module-vent.coordinator.ipc">vent.coordinator.ipc</a>, <a href="vent.coordinator.html#module-vent.coordinator.ipc">[1]</a>
+</li>
+        <li><a href="coordinator.html#module-vent.coordinator.process_manager">vent.coordinator.process_manager</a>, <a href="vent.coordinator.html#module-vent.coordinator.process_manager">[1]</a>
+</li>
+        <li><a href="io.html#module-vent.io">vent.io</a>, <a href="vent.io.html#module-vent.io">[1]</a>
+</li>
+        <li><a href="io.html#module-vent.io.devices">vent.io.devices</a>, <a href="vent.io.html#module-vent.io.devices">[1]</a>
+</li>
+        <li><a href="io.html#module-vent.io.iobase">vent.io.iobase</a>, <a href="vent.io.html#module-vent.io.iobase">[1]</a>
+</li>
+        <li><a href="vent.html#module-vent.main">vent.main</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="io.html#vent.io.iobase.native16_to_be">native16_to_be() (in module vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.native16_to_be">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="io.html#vent.io.iobase.OutputPin.off">off() (vent.io.iobase.OutputPin method)</a>, <a href="vent.io.html#vent.io.iobase.OutputPin.off">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.iobase.PWMOutput.off">(vent.io.iobase.PWMOutput method)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput.off">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.Register.RegisterField.offset">offset() (vent.io.iobase.I2CDevice.Register.RegisterField method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.RegisterField.offset">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.OutputPin.on">on() (vent.io.iobase.OutputPin method)</a>, <a href="vent.io.html#vent.io.iobase.OutputPin.on">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.iobase.PWMOutput.on">(vent.io.iobase.PWMOutput method)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput.on">[1]</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.monitor">monitor (in module vent.gui)</a>, <a href="vent.gui.html#vent.gui.monitor">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.defaults.MONITOR">MONITOR (in module vent.gui.defaults)</a>, <a href="vent.gui.html#vent.gui.defaults.MONITOR">[1]</a>
+      <li><a href="io.html#vent.io.devices.SolenoidValve.open">open() (vent.io.devices.SolenoidValve method)</a>, <a href="vent.io.html#vent.io.devices.SolenoidValve.open">[1]</a>
 
       <ul>
-        <li><a href="gui.html#vent.gui.Vent_Gui.MONITOR">(vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.MONITOR">[1]</a>
+        <li><a href="io.html#vent.io.iobase.I2CDevice.open">(vent.io.iobase.I2CDevice method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.open">[1]</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.SPIDevice.open">(vent.io.iobase.SPIDevice method)</a>, <a href="vent.io.html#vent.io.iobase.SPIDevice.open">[1]</a>
 </li>
       </ul></li>
-      <li><a href="gui.html#id0">monitor (vent.gui.Vent_Gui attribute)</a>, <a href="gui.html#vent.gui.Vent_Gui.monitor">[1]</a>, <a href="vent.gui.html#id0">[2]</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.monitor">[3]</a>
+      <li><a href="common.html#vent.common.message.AlarmSeverity.ORANGE">ORANGE (vent.common.message.AlarmSeverity attribute)</a>, <a href="vent.common.html#vent.common.message.AlarmSeverity.ORANGE">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.Monitor_Value">Monitor_Value (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value">[1]</a>
+      <li><a href="io.html#vent.io.iobase.OutputPin">OutputPin (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.OutputPin">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.mouseMoveEvent">mouseMoveEvent() (vent.gui.widgets.RangeSlider method)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.mouseMoveEvent">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.mousePressEvent">mousePressEvent() (vent.gui.widgets.RangeSlider method)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.mousePressEvent">[1]</a>
+      <li><a href="vent.controller.html#vent.controller.control_module.OUupdate">OUupdate() (in module vent.controller.control_module)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -419,33 +701,37 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.paintEvent">paintEvent() (vent.gui.widgets.RangeSlider method)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.paintEvent">[1]</a>
+      <li><a href="io.html#vent.io.devices.P4vMini">P4vMini (class in vent.io.devices)</a>, <a href="vent.io.html#vent.io.devices.P4vMini">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.Plot">Plot (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.Plot">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.Vent_Gui.plot_width">plot_width (vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.plot_width">[1]</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.defaults.PLOTS">PLOTS (in module vent.gui.defaults)</a>, <a href="vent.gui.html#vent.gui.defaults.PLOTS">[1]</a>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.Register.pack">pack() (vent.io.iobase.I2CDevice.Register method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.pack">[1]</a>
 
       <ul>
-        <li><a href="gui.html#vent.gui.Vent_Gui.PLOTS">(vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.PLOTS">[1]</a>
+        <li><a href="io.html#vent.io.iobase.I2CDevice.Register.RegisterField.pack">(vent.io.iobase.I2CDevice.Register.RegisterField method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.RegisterField.pack">[1]</a>
 </li>
       </ul></li>
-      <li><a href="gui.html#id1">plots (vent.gui.Vent_Gui attribute)</a>, <a href="gui.html#vent.gui.Vent_Gui.plots">[1]</a>, <a href="vent.gui.html#id1">[2]</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.plots">[3]</a>
+      <li><a href="vent.html#vent.main.parse_cmd_args">parse_cmd_args() (in module vent.main)</a>
 </li>
-  </ul></td>
-</tr></table>
-
-<h2 id="Q">Q</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.QHLine">QHLine (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.QHLine">[1]</a>
+      <li><a href="common.html#vent.common.message.ControlSettingName.PEEP">PEEP (vent.common.message.ControlSettingName attribute)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName.PEEP">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.IODeviceBase.pig">pig() (vent.io.iobase.IODeviceBase property)</a>, <a href="vent.io.html#vent.io.iobase.IODeviceBase.pig">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.IODeviceBase.pigpiod_ok">pigpiod_ok() (vent.io.iobase.IODeviceBase method)</a>, <a href="vent.io.html#vent.io.iobase.IODeviceBase.pigpiod_ok">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.QTextEditLogger">QTextEditLogger (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.QTextEditLogger">[1]</a>
+      <li><a href="io.html#vent.io.iobase.Pin">Pin (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.Pin">[1]</a>
+</li>
+      <li><a href="common.html#vent.common.message.ControlSettingName.PIP">PIP (vent.common.message.ControlSettingName attribute)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName.PIP">[1]</a>
+</li>
+      <li><a href="common.html#vent.common.message.ControlSettingName.PIP_TIME">PIP_TIME (vent.common.message.ControlSettingName attribute)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName.PIP_TIME">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.ADS1115.print_config">print_config() (vent.io.devices.ADS1115 method)</a>, <a href="vent.io.html#vent.io.devices.ADS1115.print_config">[1]</a>
+</li>
+      <li><a href="coordinator.html#vent.coordinator.process_manager.ProcessManager">ProcessManager (class in vent.coordinator.process_manager)</a>, <a href="vent.coordinator.html#vent.coordinator.process_manager.ProcessManager">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.PWMControlValve">PWMControlValve (class in vent.io.devices)</a>, <a href="vent.io.html#vent.io.devices.PWMControlValve">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.PWMOutput">PWMOutput (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -453,13 +739,31 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider">RangeSlider (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider">[1]</a>
+      <li><a href="io.html#vent.io.devices.ADS1115.read_conversion">read_conversion() (vent.io.devices.ADS1115 method)</a>, <a href="vent.io.html#vent.io.devices.ADS1115.read_conversion">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.read_device">read_device() (vent.io.iobase.I2CDevice method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.read_device">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.read_register">read_register() (vent.io.iobase.I2CDevice method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.read_register">[1]</a>
+</li>
+      <li><a href="coordinator.html#vent.coordinator.ipc.IPC.recvMsg">recvMsg() (vent.coordinator.ipc.IPC method)</a>, <a href="vent.coordinator.html#vent.coordinator.ipc.IPC.recvMsg">[1]</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.recvUIHeartbeat">recvUIHeartbeat() (vent.controller.control_module.ControlModuleSimulator method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.KeyPressHandler.returnPressed">returnPressed (vent.gui.widgets.KeyPressHandler attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.KeyPressHandler.returnPressed">[1]</a>
+      <li><a href="common.html#vent.common.message.AlarmSeverity.RED">RED (vent.common.message.AlarmSeverity attribute)</a>, <a href="vent.common.html#vent.common.message.AlarmSeverity.RED">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel.returnPressedAction">returnPressedAction() (vent.gui.widgets.EditableLabel method)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.returnPressedAction">[1]</a>
+      <li><a href="common.html#vent.common.message.IPCMessageCommand.RESET">RESET (vent.common.message.IPCMessageCommand attribute)</a>, <a href="vent.common.html#vent.common.message.IPCMessageCommand.RESET">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.SFM3200.reset">reset() (vent.io.devices.SFM3200 method)</a>, <a href="vent.io.html#vent.io.devices.SFM3200.reset">[1]</a>
+
+      <ul>
+        <li><a href="io.html#vent.io.iobase.Sensor.reset">(vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor.reset">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="coordinator.html#vent.coordinator.process_manager.ProcessManager.restartProcess">restartProcess() (vent.coordinator.process_manager.ProcessManager method)</a>, <a href="vent.coordinator.html#vent.coordinator.process_manager.ProcessManager.restartProcess">[1]</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.run">run() (vent.controller.control_module.ControlModuleSimulator method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -467,61 +771,67 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Plot.set_duration">set_duration() (vent.gui.widgets.Plot method)</a>, <a href="vent.gui.html#vent.gui.widgets.Plot.set_duration">[1]</a>
+      <li><a href="coordinator.html#vent.coordinator.ipc.IPC.sendMsg">sendMsg() (vent.coordinator.ipc.IPC method)</a>, <a href="vent.coordinator.html#vent.coordinator.ipc.IPC.sendMsg">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.HeartBeat.set_indicator">set_indicator() (vent.gui.widgets.HeartBeat method)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.set_indicator">[1]</a>
+      <li><a href="io.html#vent.io.iobase.Sensor">Sensor (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.Sensor">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.Vent_Gui.set_plot_duration">set_plot_duration() (vent.gui.Vent_Gui method)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.set_plot_duration">[1]</a>
+      <li><a href="common.html#vent.common.message.SensorValues">SensorValues (class in vent.common.message)</a>, <a href="vent.common.html#vent.common.message.SensorValues">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.Plot.set_safe_limits">set_safe_limits() (vent.gui.widgets.Plot method)</a>, <a href="vent.gui.html#vent.gui.widgets.Plot.set_safe_limits">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.QHLine.setColor">setColor() (vent.gui.widgets.QHLine method)</a>, <a href="vent.gui.html#vent.gui.widgets.QHLine.setColor">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.setHigh">setHigh() (vent.gui.widgets.RangeSlider method)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.setHigh">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel.setLabelEditableAction">setLabelEditableAction() (vent.gui.widgets.EditableLabel method)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.setLabelEditableAction">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.setLow">setLow() (vent.gui.widgets.RangeSlider method)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.setLow">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel.setText">setText() (vent.gui.widgets.EditableLabel method)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.setText">[1]</a>
-</li>
-      <li><a href="gui.html#id3">start_time (vent.gui.Vent_Gui attribute)</a>, <a href="gui.html#vent.gui.Vent_Gui.start_time">[1]</a>, <a href="vent.gui.html#id3">[2]</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.start_time">[3]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.HeartBeat.start_timer">start_timer() (vent.gui.widgets.HeartBeat method)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.start_timer">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.Vent_Gui.staticMetaObject">staticMetaObject (vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.staticMetaObject">[1]</a>
+      <li><a href="io.html#vent.io.iobase.InputPin.set">set() (vent.io.iobase.InputPin method)</a>, <a href="vent.io.html#vent.io.iobase.InputPin.set">[1]</a>
 
       <ul>
-        <li><a href="gui.html#vent.gui.widgets.Control.staticMetaObject">(vent.gui.widgets.Control attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Control.staticMetaObject">[1]</a>
+        <li><a href="io.html#vent.io.iobase.Pin.set">(vent.io.iobase.Pin method)</a>, <a href="vent.io.html#vent.io.iobase.Pin.set">[1]</a>
 </li>
-        <li><a href="gui.html#vent.gui.widgets.EditableLabel.staticMetaObject">(vent.gui.widgets.EditableLabel attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.staticMetaObject">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.HeartBeat.staticMetaObject">(vent.gui.widgets.HeartBeat attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.staticMetaObject">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.KeyPressHandler.staticMetaObject">(vent.gui.widgets.KeyPressHandler attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.KeyPressHandler.staticMetaObject">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.Log_Console.staticMetaObject">(vent.gui.widgets.Log_Console attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Log_Console.staticMetaObject">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.Message_Display.staticMetaObject">(vent.gui.widgets.Message_Display attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.staticMetaObject">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.Monitor_Value.staticMetaObject">(vent.gui.widgets.Monitor_Value attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value.staticMetaObject">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.Plot.staticMetaObject">(vent.gui.widgets.Plot attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Plot.staticMetaObject">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.QHLine.staticMetaObject">(vent.gui.widgets.QHLine attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.QHLine.staticMetaObject">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.RangeSlider.staticMetaObject">(vent.gui.widgets.RangeSlider attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.staticMetaObject">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.Status_Bar.staticMetaObject">(vent.gui.widgets.Status_Bar attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Status_Bar.staticMetaObject">[1]</a>
+        <li><a href="io.html#vent.io.iobase.PWMOutput.set">(vent.io.iobase.PWMOutput method)</a>, <a href="vent.io.html#vent.io.iobase.PWMOutput.set">[1]</a>
 </li>
       </ul></li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.set_control">set_control() (vent.controller.control_module.ControlModuleBase method)</a>
+
+      <ul>
+        <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.set_control">(vent.controller.control_module.ControlModuleSimulator method)</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.set_control">(vent.coordinator.coordinator.CoordinatorBase method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorBase.set_control">[1]</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.set_control">(vent.coordinator.coordinator.CoordinatorLocal method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.set_control">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="vent.controller.html#vent.controller.control_module.Balloon_Simulator.set_flow">set_flow() (vent.controller.control_module.Balloon_Simulator method)</a>
+</li>
+      <li><a href="common.html#vent.common.message.IPCMessageCommand.SETCONTROLS">SETCONTROLS (vent.common.message.IPCMessageCommand attribute)</a>, <a href="vent.common.html#vent.common.message.IPCMessageCommand.SETCONTROLS">[1]</a>
+</li>
+      <li><a href="io.html#vent.io.devices.SFM3200">SFM3200 (class in vent.io.devices)</a>, <a href="vent.io.html#vent.io.devices.SFM3200">[1]</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Status_Bar">Status_Bar (class in vent.gui.widgets)</a>, <a href="vent.gui.html#vent.gui.widgets.Status_Bar">[1]</a>
+      <li><a href="io.html#vent.io.devices.SolenoidValve">SolenoidValve (class in vent.io.devices)</a>, <a href="vent.io.html#vent.io.devices.SolenoidValve">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.Vent_Gui.status_height">status_height (vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.status_height">[1]</a>
+      <li><a href="io.html#vent.io.iobase.SPIDevice">SPIDevice (class in vent.io.iobase)</a>, <a href="vent.io.html#vent.io.iobase.SPIDevice">[1]</a>
 </li>
-      <li><a href="gui.html#vent.gui.widgets.HeartBeat.stop_timer">stop_timer() (vent.gui.widgets.HeartBeat method)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.stop_timer">[1]</a>
+      <li><a href="common.html#vent.common.message.IPCMessageCommand.START">START (vent.common.message.IPCMessageCommand attribute)</a>, <a href="vent.common.html#vent.common.message.IPCMessageCommand.START">[1]</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.start">start() (vent.controller.control_module.ControlModuleBase method)</a>
+
+      <ul>
+        <li><a href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.start">(vent.coordinator.coordinator.CoordinatorLocal method)</a>, <a href="vent.coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.start">[1]</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.ipc.IPC.start">(vent.coordinator.ipc.IPC method)</a>, <a href="vent.coordinator.html#vent.coordinator.ipc.IPC.start">[1]</a>
+</li>
+        <li><a href="coordinator.html#vent.coordinator.process_manager.ProcessManager.start">(vent.coordinator.process_manager.ProcessManager method)</a>, <a href="vent.coordinator.html#vent.coordinator.process_manager.ProcessManager.start">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="coordinator.html#vent.coordinator.process_manager.ProcessManager.startProcess">startProcess() (vent.coordinator.process_manager.ProcessManager method)</a>, <a href="vent.coordinator.html#vent.coordinator.process_manager.ProcessManager.startProcess">[1]</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.StateController">StateController (class in vent.controller.control_module)</a>
+</li>
+      <li><a href="common.html#vent.common.message.IPCMessageCommand.STOP">STOP (vent.common.message.IPCMessageCommand attribute)</a>, <a href="vent.common.html#vent.common.message.IPCMessageCommand.STOP">[1]</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.stop">stop() (vent.controller.control_module.ControlModuleBase method)</a>
+
+      <ul>
+        <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.stop">(vent.controller.control_module.ControlModuleSimulator method)</a>
+</li>
+      </ul></li>
+      <li><a href="coordinator.html#vent.coordinator.process_manager.ProcessManager.stopProcess">stopProcess() (vent.coordinator.process_manager.ProcessManager method)</a>, <a href="vent.coordinator.html#vent.coordinator.process_manager.ProcessManager.stopProcess">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -529,35 +839,17 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.Vent_Gui.test">test() (vent.gui.Vent_Gui method)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.test">[1]</a>
+      <li><a href="common.html#vent.common.message.ControlSettingName.TEMP">TEMP (vent.common.message.ControlSettingName attribute)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName.TEMP">[1]</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleBase.test_critical_levels">test_critical_levels() (vent.controller.control_module.ControlModuleBase method)</a>
 
       <ul>
-        <li><a href="gui.html#vent.gui.widgets.Log_Console.test">(vent.gui.widgets.Log_Console method)</a>, <a href="vent.gui.html#vent.gui.widgets.Log_Console.test">[1]</a>
+        <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.test_critical_levels">(vent.controller.control_module.ControlModuleSimulator method)</a>
 </li>
       </ul></li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.test_1">test_1() (vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.test_1">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.test_2">test_2() (vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.test_2">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.test_3">test_3() (vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.test_3">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.test_4">test_4() (vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.test_4">[1]</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.test_5">test_5() (vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.test_5">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel.text">text() (vent.gui.widgets.EditableLabel method)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.text">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.EditableLabel.textChanged">textChanged (vent.gui.widgets.EditableLabel attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.EditableLabel.textChanged">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Monitor_Value.timed_update">timed_update() (vent.gui.widgets.Monitor_Value method)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value.timed_update">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.HeartBeat.timeout">timeout (vent.gui.widgets.HeartBeat attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.HeartBeat.timeout">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.Vent_Gui.total_height">total_height (vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.total_height">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.Vent_Gui.total_width">total_width (vent.gui.Vent_Gui attribute)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.total_width">[1]</a>
+      <li><a href="io.html#vent.io.iobase.OutputPin.toggle">toggle() (vent.io.iobase.OutputPin method)</a>, <a href="vent.io.html#vent.io.iobase.OutputPin.toggle">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -565,36 +857,34 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Monitor_Value.update_boxes">update_boxes() (vent.gui.widgets.Monitor_Value method)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value.update_boxes">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.update_indicator">update_indicator() (vent.gui.widgets.RangeSlider method)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.update_indicator">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Monitor_Value.update_limits">update_limits() (vent.gui.widgets.Monitor_Value method)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value.update_limits">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.Message_Display.update_message">update_message() (vent.gui.widgets.Message_Display method)</a>, <a href="vent.gui.html#vent.gui.widgets.Message_Display.update_message">[1]</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.Vent_Gui.update_value">update_value() (vent.gui.Vent_Gui method)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui.update_value">[1]</a>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.Register.unpack">unpack() (vent.io.iobase.I2CDevice.Register method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.unpack">[1]</a>
 
       <ul>
-        <li><a href="gui.html#vent.gui.widgets.Control.update_value">(vent.gui.widgets.Control method)</a>, <a href="vent.gui.html#vent.gui.widgets.Control.update_value">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.Monitor_Value.update_value">(vent.gui.widgets.Monitor_Value method)</a>, <a href="vent.gui.html#vent.gui.widgets.Monitor_Value.update_value">[1]</a>
-</li>
-        <li><a href="gui.html#vent.gui.widgets.Plot.update_value">(vent.gui.widgets.Plot method)</a>, <a href="vent.gui.html#vent.gui.widgets.Plot.update_value">[1]</a>
+        <li><a href="io.html#vent.io.iobase.I2CDevice.Register.RegisterField.unpack">(vent.io.iobase.I2CDevice.Register.RegisterField method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.Register.RegisterField.unpack">[1]</a>
 </li>
       </ul></li>
+      <li><a href="vent.controller.html#vent.controller.control_module.Balloon_Simulator.update">update() (vent.controller.control_module.Balloon_Simulator method)</a>
+
+      <ul>
+        <li><a href="vent.controller.html#vent.controller.control_module.StateController.update">(vent.controller.control_module.StateController method)</a>
+</li>
+        <li><a href="io.html#vent.io.iobase.Sensor.update">(vent.io.iobase.Sensor method)</a>, <a href="vent.io.html#vent.io.iobase.Sensor.update">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="vent.controller.html#vent.controller.control_module.ControlModuleSimulator.update_alarms">update_alarms() (vent.controller.control_module.ControlModuleSimulator method)</a>
+</li>
+      <li><a href="vent.controller.html#vent.controller.control_module.StateController.update_internalVeriables">update_internalVeriables() (vent.controller.control_module.StateController method)</a>
+</li>
+      <li><a href="io.html#vent.io.devices.ADS1115.USER_CONFIGURABLE_FIELDS">USER_CONFIGURABLE_FIELDS (vent.io.devices.ADS1115 attribute)</a>, <a href="vent.io.html#vent.io.devices.ADS1115.USER_CONFIGURABLE_FIELDS">[1]</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gui.html#vent.gui.widgets.Control.value_changed">value_changed (vent.gui.widgets.Control attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.Control.value_changed">[1]</a>
-</li>
-      <li><a href="gui.html#vent.gui.widgets.RangeSlider.valueChanged">valueChanged (vent.gui.widgets.RangeSlider attribute)</a>, <a href="vent.gui.html#vent.gui.widgets.RangeSlider.valueChanged">[1]</a>
-</li>
       <li>
     vent
 
@@ -603,43 +893,112 @@
 </li>
       </ul></li>
       <li>
-    vent.gui
+    vent.common
 
       <ul>
-        <li><a href="gui.html#module-vent.gui">module</a>, <a href="vent.gui.html#module-vent.gui">[1]</a>
+        <li><a href="common.html#module-vent.common">module</a>, <a href="vent.common.html#module-vent.common">[1]</a>
 </li>
       </ul></li>
       <li>
-    vent.gui.defaults
+    vent.common.message
 
       <ul>
-        <li><a href="gui.html#module-vent.gui.defaults">module</a>, <a href="vent.gui.html#module-vent.gui.defaults">[1]</a>
+        <li><a href="common.html#module-vent.common.message">module</a>, <a href="vent.common.html#module-vent.common.message">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    vent.controller
+
+      <ul>
+        <li><a href="controller.html#module-vent.controller">module</a>, <a href="vent.controller.html#module-vent.controller">[1]</a>, <a href="vent.html#module-vent.controller">[2]</a>
+</li>
+      </ul></li>
+      <li>
+    vent.controller.control_module
+
+      <ul>
+        <li><a href="vent.controller.html#module-vent.controller.control_module">module</a>
+</li>
+      </ul></li>
+      <li>
+    vent.coordinator
+
+      <ul>
+        <li><a href="coordinator.html#module-vent.coordinator">module</a>, <a href="vent.coordinator.html#module-vent.coordinator">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    vent.coordinator.coordinator
+
+      <ul>
+        <li><a href="coordinator.html#module-vent.coordinator.coordinator">module</a>, <a href="vent.coordinator.html#module-vent.coordinator.coordinator">[1]</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    vent.gui.styles
+    vent.coordinator.ipc
 
       <ul>
-        <li><a href="gui.html#module-vent.gui.styles">module</a>, <a href="vent.gui.html#module-vent.gui.styles">[1]</a>
+        <li><a href="coordinator.html#module-vent.coordinator.ipc">module</a>, <a href="vent.coordinator.html#module-vent.coordinator.ipc">[1]</a>
 </li>
       </ul></li>
       <li>
-    vent.gui.widgets
+    vent.coordinator.process_manager
 
       <ul>
-        <li><a href="gui.html#module-vent.gui.widgets">module</a>, <a href="vent.gui.html#module-vent.gui.widgets">[1]</a>
+        <li><a href="coordinator.html#module-vent.coordinator.process_manager">module</a>, <a href="vent.coordinator.html#module-vent.coordinator.process_manager">[1]</a>
 </li>
       </ul></li>
       <li>
-    vent.helper
+    vent.io
 
       <ul>
-        <li><a href="helper.html#module-vent.helper">module</a>, <a href="vent.html#module-vent.helper">[1]</a>
+        <li><a href="io.html#module-vent.io">module</a>, <a href="vent.io.html#module-vent.io">[1]</a>
 </li>
       </ul></li>
-      <li><a href="gui.html#vent.gui.Vent_Gui">Vent_Gui (class in vent.gui)</a>, <a href="vent.gui.html#vent.gui.Vent_Gui">[1]</a>
+      <li>
+    vent.io.devices
+
+      <ul>
+        <li><a href="io.html#module-vent.io.devices">module</a>, <a href="vent.io.html#module-vent.io.devices">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    vent.io.iobase
+
+      <ul>
+        <li><a href="io.html#module-vent.io.iobase">module</a>, <a href="vent.io.html#module-vent.io.iobase">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    vent.main
+
+      <ul>
+        <li><a href="vent.html#module-vent.main">module</a>
+</li>
+      </ul></li>
+      <li><a href="common.html#vent.common.message.ControlSettingName.VTE">VTE (vent.common.message.ControlSettingName attribute)</a>, <a href="vent.common.html#vent.common.message.ControlSettingName.VTE">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.write_device">write_device() (vent.io.iobase.I2CDevice method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.write_device">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="io.html#vent.io.iobase.I2CDevice.write_register">write_register() (vent.io.iobase.I2CDevice method)</a>, <a href="vent.io.html#vent.io.iobase.I2CDevice.write_register">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Y">Y</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="common.html#vent.common.message.AlarmSeverity.YELLOW">YELLOW (vent.common.message.AlarmSeverity attribute)</a>, <a href="vent.common.html#vent.common.message.AlarmSeverity.YELLOW">[1]</a>
 </li>
   </ul></td>
 </tr></table>

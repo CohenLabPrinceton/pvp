@@ -157,6 +157,7 @@ class ADS1115(I2CDevice):
         '''
         return self.read_register(self.pointer.P.pack('CONFIG')) >> 15
 
+
 class P4vMini(AnalogSensor):
     ''' Analog gauge pressure sensor with range of 0 - 20" h20. The
     calibration outlined in the datasheet has low =  0.25V and
@@ -192,10 +193,10 @@ class P4vMini(AnalogSensor):
         return self._CONVERSION_FACTOR*super()._convert(raw)
 
 
-class OxygenSensor(AnalogSensor):
-    ''' Not yet implemented. Would need to define calibration and
-    overload _convert() to add unit conversion.
-    '''
+#class OxygenSensor(AnalogSensor):
+#    ''' Not yet implemented. Would need to define calibration and
+#    overload _convert() to add unit conversion.
+#    '''
 #    def __init__(self):
 #        raise NotImplementedError
 

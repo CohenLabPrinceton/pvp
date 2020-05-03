@@ -63,7 +63,7 @@ def be16_to_native(data, signed=False, count=2):
     ''' Unpacks a bytearray respecting big-endianness of outside world
     and returns an int according to signed.
     '''
-    return int.from_bytes(data[:count],'big',signed=signed)
+    return int.from_bytes(data[1][:count],'big',signed=signed)
 
 
 def native16_to_be(word, signed=False, count=2):
@@ -315,7 +315,7 @@ class Sensor(ABC):
         ''' Resets the sensors internal memory. May be overloaded by
         subclasses to extend functionality specific to a device.
         '''
-        self._data  = np.zeros(self.data_length)
+        self._data  = np.zeros(self.data_length,dtype=np.float16)
         self._i     = 0
 
     @property
@@ -517,11 +517,8 @@ class Pin(IODeviceBase):
     & vent.io.sensors (note: actuators and sensors do not need to be tied
     to a GPIO pin and may instead be interfaced through an ADC or I2C).
 
-    When this class is initialized without a subclass, it represents a
-    fully-functional binary digital GPIO pin. The subclasses InputPin and
-    OutputPin overload some functionaly of Pin in order to ensure the user
-    is warned when they call methods that are not consistent with the
-    declared use (i.e. calling .set() on an InputPin).
+    This is an abstract base class. The subclasses InputPin and 
+    OutputPin extend Pin into a usable form.
     '''
     _PIGPIO_MODES = {   'INPUT'     : 0,
                         'OUTPUT'    : 1,
@@ -558,20 +555,6 @@ class Pin(IODeviceBase):
         if result != 0:
             raise RuntimeError('Failed to set mode {} on pin {}'.format(mode, self.pin))
 
-    def get(self):
-        ''' Returns the value of the pin: usually 0 or 1 but can be
-        overridden e.g. by PWM which returns duty cycle.
-        '''
-        self.pig.read(self.pin)
-
-    def set(self, value):
-        ''' Sets the value of the Pin. Usually 0 or 1 but behavior
-        differs for some subclasses.
-        '''
-        if value not in (0, 1):
-            raise ValueError('Cannot set a value other than 0 or 1 to a Pin')
-        self.pig.write(self.pin, value)
-
 
 class InputPin(Pin):
     '''
@@ -584,12 +567,11 @@ class InputPin(Pin):
         super().__init__(pin, pig)
         self.mode = 'INPUT'
 
-    def set(self, value):
-        ''' Extends superclass method to raise a warning that pin is
-        being used in a manner contrary to its declared nature.
+    def get(self):
+        ''' Returns the value of the pin: usually 0 or 1 but can be
+        overridden e.g. by PWM which returns duty cycle.
         '''
-        super().set(value)
-        raise RuntimeWarning('set() was called on an InputPin')
+        self.pig.read(self.pin)
 
 
 class OutputPin(Pin):
@@ -619,12 +601,13 @@ class OutputPin(Pin):
         '''
         self.set(not super().get())
 
-    def get(self):
-        ''' Extends superclass method to raise a warning that pin is
-        being used in a manner contrary to its declared nature.
+    def set(self, value):
+        ''' Sets the value of the Pin. Usually 0 or 1 but behavior
+        differs for some subclasses.
         '''
-        super().get()
-        raise RuntimeWarning('get() was called on an OutputPin')
+        if value not in (0, 1):
+            raise ValueError('Cannot set a value other than 0 or 1 to a Pin')
+        self.pig.write(self.pin, value)
 
 
 class PWMOutput(OutputPin):

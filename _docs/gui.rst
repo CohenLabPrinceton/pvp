@@ -80,6 +80,7 @@ UI Notes & Todo
       of smaller displayed values that don't need controls
     * Save/load parameters. Autosave, and autorestore if saved <5m ago, otherwise init from defaults.
     * Implement timed updates to plots to limit resource usage
+    * Make class for setting values
     * Possible plots
 
         * Pressure vs. flow

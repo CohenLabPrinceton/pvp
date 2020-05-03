@@ -88,14 +88,11 @@
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="alarms.html">alarms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="controller.html">controller module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="controls.html">controls module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="helper.html">helper</a></li>
-<li class="toctree-l1"><a class="reference internal" href="main.html">main</a></li>
-<li class="toctree-l1"><a class="reference internal" href="main_control.html">main_control</a></li>
-<li class="toctree-l1"><a class="reference internal" href="sensors.html">sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -180,10 +177,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="vent.gui.html">vent.gui package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="vent.gui.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#module-vent.gui.defaults">vent.gui.defaults module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#module-vent.gui.styles">vent.gui.styles module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#module-vent.gui.widgets">vent.gui.widgets module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#module-vent.gui">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#vent-gui-defaults-module">vent.gui.defaults module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#vent-gui-styles-module">vent.gui.styles module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#vent-gui-widgets-module">vent.gui.widgets module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -195,8 +192,8 @@
 <div class="section" id="vent-alarms-module">
 <h2>vent.alarms module<a class="headerlink" href="#vent-alarms-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="vent-controller-module">
-<h2>vent.controller module<a class="headerlink" href="#vent-controller-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vent.controller">
+<span id="vent-controller-module"></span><h2>vent.controller module<a class="headerlink" href="#module-vent.controller" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="vent-controls-module">
 <h2>vent.controls module<a class="headerlink" href="#vent-controls-module" title="Permalink to this headline">¶</a></h2>
@@ -204,8 +201,11 @@
 <div class="section" id="vent-gui-styles-module">
 <h2>vent.gui_styles module<a class="headerlink" href="#vent-gui-styles-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-vent.helper">
-<span id="vent-helper-module"></span><h2>vent.helper module<a class="headerlink" href="#module-vent.helper" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="vent-helper-module">
+<h2>vent.helper module<a class="headerlink" href="#vent-helper-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-vent.main">
+<span id="vent-main-module"></span><h2>vent.main module<a class="headerlink" href="#module-vent.main" title="Permalink to this headline">¶</a></h2>
 <p><strong>Functions</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -213,19 +213,24 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#vent.helper.clamp" title="vent.helper.clamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clamp</span></code></a>(value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.main.main" title="vent.main.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.main.parse_cmd_args" title="vent.main.parse_cmd_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_cmd_args</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
-<dt id="vent.helper.clamp">
-<code class="sig-prename descclassname">vent.helper.</code><code class="sig-name descname">clamp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/helper.html#clamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.helper.clamp" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.main.parse_cmd_args">
+<code class="sig-prename descclassname">vent.main.</code><code class="sig-name descname">parse_cmd_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/main.html#parse_cmd_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.main.parse_cmd_args" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="vent-main-module">
-<h2>vent.main module<a class="headerlink" href="#vent-main-module" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="vent.main.main">
+<code class="sig-prename descclassname">vent.main.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/main.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.main.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="vent-main-control-module">
 <h2>vent.main_control module<a class="headerlink" href="#vent-main-control-module" title="Permalink to this headline">¶</a></h2>

@@ -3,10 +3,11 @@ from PySide2 import QtWidgets, QtCore
 
 from vent.gui import styles, mono_font
 from vent.gui.widgets.components import RangeSlider
+from vent.common import message
 
 
 class Monitor(QtWidgets.QWidget):
-    alarm = QtCore.Signal()
+    alarm = QtCore.Signal(message.Alarm)
     limits_changed = QtCore.Signal(tuple)
 
     def __init__(self, value, update_period=styles.MONITOR_UPDATE_INTERVAL):
@@ -26,6 +27,9 @@ class Monitor(QtWidgets.QWidget):
         self.update_period = update_period
 
         self.value = None
+
+        # whether we are currently styled as being in an alarm state
+        self._alarm = False
 
         self.init_ui()
 
@@ -186,15 +190,36 @@ class Monitor(QtWidgets.QWidget):
         self.check_alarm()
         self.limits_changed.emit((self.min_safe.value(), self.max_safe.value()))
 
-    def check_alarm(self, signal=None, value=None):
+    @property
+    def alarm(self):
+        return self._alarm
+
+    @alarm.setter
+    def alarm(self, alarm):
+        if alarm == True:
+            self.value_label.setStyleSheet(styles.DISPLAY_VALUE_ALARM)
+            self._alarm = True
+        elif alarm == False:
+            self.value_label.setStyleSheet(styles.DISPLAY_VALUE)
+            self._alarm = False
+
+    def toggle_alarm(self):
+
+        if self.alarm == False:
+            self.alarm = True
+        else:
+            self.alarm = False
+
+    def check_alarm(self, value=None):
         if value is None:
             value = self.value
 
         if value:
             if (value >= self.max_safe.value()) or (value <= self.min_safe.value()):
                 self.alarm.emit()
-                self.value_label.setStyleSheet(styles.DISPLAY_VALUE_ALARM)
-                self.range_slider.alarm = True
+
+                if self.alarm == False:
+                    self.toggle_alarm_state(True)
             else:
-                self.value_label.setStyleSheet(styles.DISPLAY_VALUE)
-                self.range_slider.alarm = False
+                if self.alarm == True:
+                    self.toggle_alarm_state(False)

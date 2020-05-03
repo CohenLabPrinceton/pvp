@@ -62,7 +62,7 @@ class AlarmSeverity(Enum):
 
 
 class Alarm:
-    def __init__(self, alarm_name, is_active, severity, alarm_start_time, alarm_end_time):
+    def __init__(self, alarm_name, is_active, severity, alarm_start_time, alarm_end_time, message=None):
         """
         :param alarm_name:
         :param is_active:
@@ -75,6 +75,7 @@ class Alarm:
         self.severity = severity
         self.alarm_start_time = alarm_start_time
         self.alarm_end_time = alarm_end_time
+        self.message = message
 
 
 class Error:

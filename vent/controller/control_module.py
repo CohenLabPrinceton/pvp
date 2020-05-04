@@ -4,6 +4,7 @@ import threading
 import numpy as np
 import copy
 from collections import deque
+import pdb
 
 from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
 from vent.common.values import CONTROL, ValueName
@@ -80,7 +81,7 @@ class ControlModuleBase:
 
         # Parameters to keep track of breath-cycle
         self.__cycle_start = time.time()
-        self.__cycle_waveform = None                             # To build up the current cycle's waveform
+        self.__cycle_waveform = np.array([[0, 0, 0]])                            # To build up the current cycle's waveform
         self.__cycle_waveform_archive = deque(maxlen = self._RINGBUFFER_SIZE)          # An archive of past waveforms.
 
         # These are measurements that change from timepoint to timepoint
@@ -237,8 +238,8 @@ class ControlModuleBase:
 
     def __analyze_last_waveform(self):
         ''' This goes through the last waveform, and updates VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
-        data = self.__cycle_waveform_archive[-1]
-        if data is not None:  # Only if there was a previous cycle
+        if len(self.__cycle_waveform_archive) > 1:  # Only if there was a previous cycle
+            data = self.__cycle_waveform_archive[-1]
             phase = data[:, 0]
             pressure = data[:, 1]
             volume = data[:, 2]
@@ -260,7 +261,7 @@ class ControlModuleBase:
 
     def __update_alarms(self):
         ''' This goes through the values obtained from the last waveform, and updates alarms.'''
-        if self.__cycle_waveform_archive[-1] is not None:
+        if len(self.__cycle_waveform_archive) > 1 : # Only if there was a previous cycle
             self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name="PIP")
             self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name="PIP_TIME")
             self.__test_critical_levels(min=self.__PEEP_min, max=self.__PEEP_max, value=self._DATA_PEEP, name="PEEP")
@@ -402,7 +403,7 @@ class ControlModuleBase:
         return self.__control_signal_out
 
     def __get_pressure_derivative(self, dt):
-        if self.__cycle_waveform is None:
+        if len(self.__cycle_waveform) < 1:
             sample_dPdt = 0
         else:
             latest_sample = self.__cycle_waveform[-1]  #Format of the last sample: [time|pressure|volume]
@@ -494,8 +495,9 @@ class ControlModuleBase:
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
         
-        if next_cycle or (self.__cycle_waveform is None):  # if a new breath cycle has started, or program just started
-            self.__cycle_waveform_archive.append( self.__cycle_waveform )
+        if next_cycle:                        # if a new breath cycle has started
+            if len(self.__cycle_waveform) > 1:
+                self.__cycle_waveform_archive.append( self.__cycle_waveform )
             self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])
             self.__analyze_last_waveform()    # Analyze last waveform
             self.__update_alarms()            # Run alarm detection over last cycle's waveform

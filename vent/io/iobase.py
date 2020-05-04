@@ -112,7 +112,7 @@ class I2CDevice(IODeviceBase):
         device without changing the register. Does NOT perform LE/BE
         conversion.
         '''
-        return self.pig.i2c_read_device(self.handle, num_bytes)[1]
+        return self.pig.i2c_read_device(self.handle, num_bytes)
 
     def write_device(self, word, signed=False, count=2):
         ''' Write bytes to the device without specifying register.
@@ -641,7 +641,7 @@ class PWMOutput(OutputPin):
         Note: pigpio.pi.hardware_PWM() returns 0 if OK and an error code otherwise.
         - Tries to set hardware PWM if hardware_enabled
         - If that fails, or if not hardware_enabled, tries to set software PWM instead.'''
-        self.__pwm(new_frequency, self.duty)
+        self.__pwm(new_frequency, self._duty())
 
     @property
     def duty(self):
@@ -649,12 +649,17 @@ class PWMOutput(OutputPin):
         Returns the PWM duty cycle (pulled straight from pigpiod) mapped to the range [0-1] '''
         return self.pig.get_PWM_dutycycle(self.pin)/self.pig.get_PWM_range(self.pin)
 
+    def _duty(self):
+        ''' Returns the pigpio int representation of the duty cycle
+        '''
+        return self.pig.get_PWM_dutycycle(self.pin)
+
     @duty.setter
     def duty(self, duty_cycle):
         ''' Description:
         Validation of requested duty cycle is performed here.
         Sets the PWM duty cycle to a value proportional to the input between (0, 1) '''
-        if not 0<duty_cycle<1:
+        if not 0 <= duty_cycle <= 1:
             raise ValueError('Duty cycle must be between 0 and 1')
         self.__pwm(self.frequency, int(duty_cycle*self.pig.get_PWM_range(self.pin)))
 
@@ -688,6 +693,7 @@ class PWMOutput(OutputPin):
         ''' Description:
         -Tries to set a hardware pwm. result == 0 if it suceeds.
         -Sets hardware_enabled flag to indicate success or failure'''
+        #print('pin: %3.0d freq: %5.0d duty: %4.2f'%(self.pin,frequency,duty))
         result = self.pig.hardware_PWM(self.pin, frequency, duty)
         if result != 0:
             self.hardware_enabled = False

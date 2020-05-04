@@ -257,7 +257,7 @@ class SFM3200(Sensor,I2CDevice):
         and returns a signed int converted from the big endian two
         complement that remains.
         '''
-        return be16_to_native(self.read_device(4)[:2])
+        return be16_to_native(self.read_device(4))
 
 
 #class HumiditySensor(Sensor):
@@ -282,7 +282,7 @@ class SolenoidValve(OutputPin):
     _FORMS = {  'Normally Closed'   : 0,
                 'Normally Open'     : 1 }
     def __init__( self, pin, form='Normally Closed', pig=None ):
-        self.form = self._FORMS[form]
+        self.form = form
         super().__init__(pin,pig)
 
     @property
@@ -295,7 +295,7 @@ class SolenoidValve(OutputPin):
     def form(self,f):
         ''' Performs validation on requested form and then sets it.
         '''
-        if f not in self._FORMS:
+        if f not in self._FORMS.keys():
             raise ValueError('form must be either NC for Normally Closed or NO for Normally Open')
         else:
             self._form = self._FORMS[f]
@@ -312,7 +312,7 @@ class SolenoidValve(OutputPin):
     def close(self):
         ''' De-energizes valve if Normally Closed. Energizes if
         Normally Open'''
-        if not self._form:
+        if self.form == 'Normally Closed':
             self.off()
         else:
             self.on()
@@ -322,9 +322,9 @@ class PWMControlValve(PWMOutput):
     ''' An extension of PWMOutput which incorporates linear
     compensation of the valve's response.
     '''
-    # or DAC out if it comes to that
+    # .close() is not working for this dude! 
     def __init__(self,pin,form='Normally Closed',initial_duty=0,frequency=None,pig=None):
-        super().__init__(pin,form,initial_duty,frequency,pig)
+        super().__init__(pin,initial_duty,frequency,pig)
 
         # TODO: sort out API commonality w solenoid valve.
 

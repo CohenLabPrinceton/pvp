@@ -91,8 +91,14 @@ UI Notes & Todo
 
     * Cache drawText() calls in range selector by drawing to pixmap
 
+Jonny Questions
+------------------
 
-* Spec a display for Julienne!!!!
+* Which alarm sounds to use?
+* Final final final breakdown on values and ranges plzzz
+
+
+
 
 GUI Object Documentation
 -------------------------

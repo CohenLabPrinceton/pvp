@@ -429,66 +429,30 @@ class Pin(IODeviceBase):
 
         # Pull error and print it
         if result != 0:
-            raise RuntimeError('Failed to set mode {} on pin {}'.format(mode, self.pin))
-
-
-class InputPin(Pin):
-    """
-    Subclass of Pin that should be used when calls to the pin should be
-    read-only during normal operation.
-    That is, if a call is made to set the value on an InputPin, it will
-    throw a runtime warning.
-    """
-
-    def __init__(self, pin, pig=None):
-        super().__init__(pin, pig)
-        self.mode = 'INPUT'
-
-    def get(self):
-        """ Returns the value of the pin: usually 0 or 1 but can be
-        overridden e.g. by PWM which returns duty cycle.
-        """
-        self.pig.read(self.pin)
-
-
-class OutputPin(Pin):
-    """
-    Subclass of Pin that should be used when calls to the pin should be
-    write-only during normal operation.
-    That is, if a call is made to get the value of an OutputPin, it will
-    throw a runtime warning.
-    """
-
-    def __init__(self, pin, pig=None):
-        super().__init__(pin, pig)
-        self.mode = 'OUTPUT'
-
-    def on(self):
-        """ Turn on a pin.
-        """
-        self.set(1)
-
-    def off(self):
-        """ Turn off a pin.
-        """
-        self.set(0)
+            raise RuntimeError('Failed to write mode {} on pin {}'.format(mode, self.pin))
 
     def toggle(self):
         """ If pin is on, turn it off. If it's off, turn it on. Do not
         raise a warning when pin is read in this way.
         """
-        self.set(not super().get())
+        self.write(not self.read())
 
-    def set(self, value):
+    def read(self):
+        """ Returns the value of the pin: usually 0 or 1 but can be
+        overridden e.g. by PWM which returns duty cycle.
+        """
+        self.pig.read(self.pin)
+
+    def write(self, value):
         """ Sets the value of the Pin. Usually 0 or 1 but behavior
         differs for some subclasses.
         """
         if value not in (0, 1):
-            raise ValueError('Cannot set a value other than 0 or 1 to a Pin')
+            raise ValueError('Cannot write a value other than 0 or 1 to a Pin')
         self.pig.write(self.pin, value)
 
 
-class PWMOutput(OutputPin):
+class PWMOutput(Pin):
     """
     I am a Special Pin!
     """
@@ -519,8 +483,8 @@ class PWMOutput(OutputPin):
     def frequency(self, new_frequency):
         """ Description:
         Note: pigpio.pi.hardware_PWM() returns 0 if OK and an error code otherwise.
-        - Tries to set hardware PWM if hardware_enabled
-        - If that fails, or if not hardware_enabled, tries to set software PWM instead."""
+        - Tries to write hardware PWM if hardware_enabled
+        - If that fails, or if not hardware_enabled, tries to write software PWM instead."""
         self.__pwm(new_frequency, self._duty())
 
     @property
@@ -543,12 +507,12 @@ class PWMOutput(OutputPin):
             raise ValueError('Duty cycle must be between 0 and 1')
         self.__pwm(self.frequency, int(duty_cycle * self.pig.get_PWM_range(self.pin)))
 
-    def get(self):
+    def read(self):
         """Overloaded to return duty cycle instead of reading the value on the pin """
         return self.duty
 
-    def set(self, value):
-        """Overloaded to set duty cycle"""
+    def write(self, value):
+        """Overloaded to write duty cycle"""
         self.duty = value
 
     def on(self):
@@ -562,8 +526,8 @@ class PWMOutput(OutputPin):
     def __pwm(self, frequency, duty):
         """ Description:
         -If hardware_enabled is True, start a hardware pwm with the requested duty.
-        -Otherwise (or if setting a hardware pwm fails and hardware_enabled is set to False),
-         set a software pwm in the same manner."""
+        -Otherwise (or if setting a hardware pwm fails and hardware_enabled is write to False),
+         write a software pwm in the same manner."""
         if self.hardware_enabled:
             self.__hardware_pwm(frequency, duty)
         if not self.hardware_enabled:
@@ -571,7 +535,7 @@ class PWMOutput(OutputPin):
 
     def __hardware_pwm(self, frequency, duty):
         """ Description:
-        -Tries to set a hardware pwm. result == 0 if it suceeds.
+        -Tries to write a hardware pwm. result == 0 if it suceeds.
         -Sets hardware_enabled flag to indicate success or failure"""
         # print('pin: %3.0d freq: %5.0d duty: %4.2f'%(self.pin,frequency,duty))
         result = self.pig.hardware_PWM(self.pin, frequency, duty)
@@ -593,3 +557,46 @@ class PWMOutput(OutputPin):
                 'A PWM frequency of {} was requested but the best that could be done was {}'.format(frequency,
                                                                                                     realized_frequency))
         self.hardware_enabled = False
+
+
+class SolenoidBase(ABC):
+    """ An abstract baseclass that defines methods using valve terminology.
+    Also allows configuring both normally open and normally closed valves (called the "form" of the valve).
+    """
+    _FORMS = {'Normally Closed': 0,
+              'Normally Open': 1}
+
+    def __init__(self, form='Normally Closed'):
+        self.form = form
+
+    @property
+    def form(self):
+        """ Returns the human-readable form of the valve
+        """
+        return dict(map(reversed, self._FORMS.items()))[self._form]
+
+    @form.setter
+    def form(self, f):
+        """ Performs validation on requested form and then sets it.
+        """
+        if f not in self._FORMS.keys():
+            raise ValueError('form must be either NC for Normally Closed or NO for Normally Open')
+        else:
+            self._form = self._FORMS[f]
+
+    def open(self):
+        """ Energizes valve if Normally Closed. De-energizes if
+        Normally Open
+         """
+        if self._form:
+            self.set(0)
+        else:
+            self.set(1)
+
+    def close(self):
+        """ De-energizes valve if Normally Closed. Energizes if
+        Normally Open"""
+        if self.form == 'Normally Closed':
+            self.set(0)
+        else:
+            self.set(1)

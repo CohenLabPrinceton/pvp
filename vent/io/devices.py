@@ -1,13 +1,13 @@
-'''
+"""
 Subclass implementations of specific sensor devices.
-'''
-from .iobase import Sensor, AnalogSensor, I2CDevice, SPIDevice, OutputPin, PWMOutput, be16_to_native
+"""
+import numpy as np
+from .iobase import Sensor, I2CDevice, OutputPin, PWMOutput, be16_to_native
 from time import sleep
-import struct
 
 
 class ADS1115(I2CDevice):
-    ''' Description:
+    """ Description:
     Class for the ADS1115 16 bit, 4 Channel ADC.
     Datasheet:
      http://www.ti.com/lit/ds/symlink/ads1114.pdf?ts=1587872241912
@@ -15,11 +15,11 @@ class ADS1115(I2CDevice):
     Default Values:
      Default configuration for vent:     0xC3E3
      Default configuration on power-up:  0x8583
-    '''
+    """
     _DEFAULT_ADDRESS = 0x48
     _DEFAULT_VALUES  = {'MUX':0, 'PGA':4.096, 'MODE':'SINGLE', 'DR':860}
 
-    ''' Address Pointer Register (write-only) '''
+    """ Address Pointer Register (write-only) """
     _POINTER_FIELDS = ('P')
     _POINTER_VALUES = (
             (
@@ -30,7 +30,7 @@ class ADS1115(I2CDevice):
             ),
     )
 
-    ''' Config Register (R/W) '''
+    """ Config Register (R/W) """
     _CONFIG_FIELDS = (
             'OS',
             'MUX',
@@ -54,7 +54,7 @@ class ADS1115(I2CDevice):
             (1, 2, 3, 'DISABLE')
     )
     USER_CONFIGURABLE_FIELDS   = ('MUX', 'PGA', 'MODE', 'DR')
-    ''' Note:
+    """ Note:
     The Conversion Register is read-only and contains a 16bit
     representation of the requested value (provided the conversion is
     ready).
@@ -62,15 +62,15 @@ class ADS1115(I2CDevice):
     The Lo-thresh & Hi-thresh Registers are not Utilized here. However,
     their function and usage are described in the datasheet. Should you
     want to extend the functionality implemented here.
-    '''
+    """
 
     def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None):
-        ''' Initializes registers: Pointer register is write only,
+        """ Initializes registers: Pointer register is write only,
         config is R/W. Sets initial value of _last_cfg to what is
         actually on the ADS.Packs default settings into _cfg, but does
         not actually write to ADC - that occurs when read_conversion()
         is called.
-        '''
+        """
         super().__init__(address,i2c_bus,pig)
         self.pointer    = self.Register(self._POINTER_FIELDS,self._POINTER_VALUES)
         self._config    = self.Register(self._CONFIG_FIELDS,self._CONFIG_VALUES)
@@ -78,39 +78,39 @@ class ADS1115(I2CDevice):
         self._cfg       = self._config.pack(cfg  = self._last_cfg, **self._DEFAULT_VALUES)
 
     def read_conversion(self,**kwargs):
-        ''' Returns a voltage (expressed as a float) corresponding to a
+        """ Returns a voltage (expressed as a float) corresponding to a
         channel on the ADC. The channel to read from, along with the
         gain, mode, and sample rate of the conversion may be may be
         specified as optional parameters. If read_conversion() is called
         with no parameters, the resulting voltage corresponds to the
         channel last read from and the same conversion settings.
-        '''
+        """
         return (
             self._read_conversion(**kwargs)
             * self._config.PGA.unpack(self.cfg) / 32767
         )
 
     def print_config(self):
-        ''' Returns the human-readable configuration for the next read.
-        '''
+        """ Returns the human-readable configuration for the next read.
+        """
         return self._config.unpack(self.cfg)
 
     @property
     def config(self):
-        ''' Returns the Register object of the config register.
-        '''
+        """ Returns the Register object of the config register.
+        """
         return self._config
 
     @property
     def cfg(self):
-        ''' Returns the contents (as a 16-bit unsigned integer) of the
+        """ Returns the contents (as a 16-bit unsigned integer) of the
         configuration that will be written to the config register when
         read_conversion() is next called.
-        '''
+        """
         return self._cfg
 
     def _read_conversion(self,**kwargs):
-        ''' Backend for read_conversion(). Returns the contents of the
+        """ Backend for read_conversion(). Returns the contents of the
         16-bit conversion register as an unsigned integer.
 
         If no parameters are passed, one of two things can happen:
@@ -130,7 +130,7 @@ class ADS1115(I2CDevice):
         Note: In continuous mode, data can be read from the conversion
         register of the ADS1115 at any time and always reflects the
         most recently completed conversion. So says the datasheet.
-        '''
+        """
         self._cfg = self._config.pack(cfg=self.cfg,**kwargs)
         mode = self.print_config()['MODE']
         if self._cfg != self._last_cfg or mode == 'SINGLE':
@@ -144,22 +144,148 @@ class ADS1115(I2CDevice):
         return self.read_register(self.pointer.P.pack('CONVERSION'),signed=True)
 
     def _read_last_cfg(self):
-        ''' Reads the config register and returns the contents as a
+        """ Reads the config register and returns the contents as a
         16-bit unsigned integer; updates internal record _last_cfg.
-        '''
+        """
         self._last_cfg = self.read_register(self.pointer.P.pack('CONFIG'))
         return self._last_cfg
 
     def _ready(self):
-        ''' Return status of ADC conversion.
+        """ Return status of ADC conversion.
         OS = 0: Device is currently performing a conversion
         OS = 1: Device is not currently performing a conversion
-        '''
+        """
         return self.read_register(self.pointer.P.pack('CONFIG')) >> 15
 
 
+class AnalogSensor(Sensor):
+    """ Generalized class describing an analog sensor attached to the
+    ADS1115 analog to digital converter. Inherits from the sensor base
+    class and extends with functionality specific to analog sensors
+    attached to the ads1115.
+
+    If instantiated without a subclass, conceptually represents a
+    voltmeter with a normalized output.
+    """
+    _DEFAULT_OFFSET_VOLTAGE = 0
+    _DEFAULT_OUTPUT_SPAN = 5
+    _CONVERSION_FACTOR = 1
+    _DEFAULT_CALIBRATION = {
+        'OFFSET_VOLTAGE': _DEFAULT_OFFSET_VOLTAGE,
+        'OUTPUT_SPAN': _DEFAULT_OUTPUT_SPAN
+    }
+
+    def __init__(self, adc, **kwargs):
+        """ Links analog sensor on the ADC with configuration options
+        specified. If no options are specified, it assumes the settings
+        currently on the ADC.
+        """
+        super().__init__()
+        self.adc = adc
+        if 'MUX' not in (kwargs.keys()):
+            raise TypeError(
+                'User must specify MUX for AnalogSensor creation'
+            )
+        self._check_and_set_attr(**kwargs)
+
+    def calibrate(self, **kwargs):
+        """ Sets the calibration of the sensor, either to the values
+        contained in the passed tuple or by some routine; the current
+        routine is pretty rudimentary and only calibrates offset voltage
+        """
+        if kwargs:
+            for fld, val in kwargs.items():
+                if fld in self._DEFAULT_CALIBRATION.keys():
+                    setattr(self, fld, val)
+        else:
+            for _ in range(50):
+                self.update()
+                # PRINT FOR DEBUG / HARDWARE TESTING
+                print(
+                    "Analog Sensor Calibration @ {:6.4f}".format(self.data[self.data.shape[0] - 1]),
+                    end='\r'
+                )
+                sleep(.1)
+            self.OFFSET_VOLTAGE = np.mean(self.data[-50:])
+            # PRINT FOR DEBUG / HARDWARE TESTING
+            print("Calibrated low-end of AnalogSensor @",
+                  ' %6.4f V' % self.OFFSET_VOLTAGE)
+
+    def _read(self):
+        """ Returns a value in the range of 0 - 1 corresponding to a
+        fraction of the full input range of the sensor
+        """
+        return self._convert(self._raw_read())
+
+    def _verify(self, value):
+        """ Checks to make sure sensor reading was indeed in [0, 1]
+        """
+        report = bool(0 <= value <= 1)
+        if not report:
+            print(value)
+        return report
+
+    def _convert(self, raw):
+        """ Scales raw voltage into the range 0 - 1
+        """
+        return (
+                (raw - getattr(self, 'OFFSET_VOLTAGE'))
+                / (getattr(self, 'OUTPUT_SPAN') + getattr(self, 'OFFSET_VOLTAGE'))
+        )
+
+    def _raw_read(self):
+        """ Builds kwargs from configured fields to pass along to adc,
+        then calls adc.read_conversion(), which returns a raw voltage.
+        """
+        fields = self.adc.USER_CONFIGURABLE_FIELDS
+        kwargs = dict(zip(
+            fields,
+            (getattr(self, field) for field in fields)
+        ))
+        return self.adc.read_conversion(**kwargs)
+
+    def _fill_attr(self):
+        """ Examines self to see if there are any fields identified as
+        user configurable or calibration that have not been set (i.e.
+        were not passed to __init__ as **kwargs). If a field is missing,
+        grabs the default value either from the ADC or from
+        _DEFAULT_CALIBRATION and sets it as an attribute.
+        """
+        for cfld in self.adc.USER_CONFIGURABLE_FIELDS:
+            if not hasattr(self, cfld):
+                setattr(
+                    self,
+                    cfld,
+                    getattr(self.adc.config, cfld).unpack(self.adc.cfg)
+                )
+        for dcal, value in self._DEFAULT_CALIBRATION.items():
+            if not hasattr(self, dcal):
+                setattr(self, dcal, value)
+
+    def _check_and_set_attr(self, **kwargs):
+        """ Checks to see if arguments passed to __init__ are recognized
+        as user configurable or calibration fields. If so, set the value
+        as an attribute like: self.KEY = VALUE. Keeps track of how many
+        attributes are set in this way; if at the end there unknown
+        arguments leftover, raises a TypeError; otherwise, calls
+        _fill_attr() to fill in fields that were not passed
+        """
+        allowed = (
+            *self.adc.USER_CONFIGURABLE_FIELDS,
+            *self._DEFAULT_CALIBRATION.keys(),
+        )
+        result = 0
+        for fld, val in kwargs.items():
+            if fld in allowed:
+                setattr(self, fld, val)
+                result += 1
+        if result != len(kwargs):
+            raise TypeError('AnalogSensor was passed unknown field(s)')
+        self._fill_attr()
+
+
 class P4vMini(AnalogSensor):
-    ''' Analog gauge pressure sensor with range of 0 - 20" h20. The
+    """ Analog gauge pressure sensor with range of 0 - 20" h20. The
     calibration outlined in the datasheet has low =  0.25V and
     high = 4.0V (give or take a bit). The conversion factor is derived
     from the sensor's maximum output of 20 in(h20), and we want sensor
@@ -167,7 +293,7 @@ class P4vMini(AnalogSensor):
 
     The only difference between this device and a generic AnalogSensor
     is its calibration, and the additional unit conversion in _convert()
-    '''
+    """
     _CALIBRATION = {
         'OFFSET_VOLTAGE' : 0.25,
         'OUTPUT_SPAN'    : 4.0
@@ -182,30 +308,30 @@ class P4vMini(AnalogSensor):
         #   would be prudent. A warning is probably sufficient.
 
     def _verify(self, value):
-        ''' Extends superclass value to function with a conversion
+        """ Extends superclass value to function with a conversion
         factor
-        '''
+        """
         return super()._verify(value/self._CONVERSION_FACTOR)
 
     def _convert(self, raw):
-        ''' Overloaded to map AnalogSensor's normalized output into the
-        desired units of cm(h20)'''
+        """ Overloaded to map AnalogSensor's normalized output into the
+        desired units of cm(h20)"""
         return self._CONVERSION_FACTOR*super()._convert(raw)
 
 
 #class OxygenSensor(AnalogSensor):
-#    ''' Not yet implemented. Would need to define calibration and
+#    """ Not yet implemented. Would need to define calibration and
 #    overload _convert() to add unit conversion.
-#    '''
+#    """
 #    def __init__(self):
 #        raise NotImplementedError
 
 
 class SFM3200(Sensor,I2CDevice):
-    ''' Datasheet:
+    """ Datasheet:
          https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/ ...
             ... 5_Mass_Flow_Meters/Datasheets/Sensirion_Mass_Flow_Meters_SFM3200_Datasheet.pdf
-    '''
+    """
     _DEFAULT_ADDRESS     = 0x40
     _FLOW_OFFSET         = 32768
     _FLOW_SCALE_FACTOR   = 120
@@ -217,30 +343,30 @@ class SFM3200(Sensor,I2CDevice):
         self._start()
 
     def reset(self):
-        ''' Extended to add device specific behavior: Asks the sensor
+        """ Extended to add device specific behavior: Asks the sensor
         to perform a soft reset. 80 ms soft reset time.
-        '''
+        """
         super().reset()
         self.write_device(0x2000)
         sleep(.08)
 
     def _start(self):
-        ''' Device specific:Sends the 'start measurement' command to the
+        """ Device specific:Sends the 'start measurement' command to the
         sensor. Start-up time once command has been recieved is
         'less than 100ms'
-        '''
+        """
         self.write_device(0x1000)
         sleep(.1)
 
     def _verify(self,value):
-        ''' No further verification needed for this sensor. Onboard
+        """ No further verification needed for this sensor. Onboard
         chip handles all that. Could throw in a CRC8 checker instead of
         discarding them in _convert().
-        '''
+        """
         return True
 
     def _convert(self,raw):
-        ''' Overloaded to replace with device-specific protocol.
+        """ Overloaded to replace with device-specific protocol.
         Convert raw int to a flow reading having type float with
         units slm. Implementation differs from parent for clarity and
         consistency with source material.
@@ -248,37 +374,37 @@ class SFM3200(Sensor,I2CDevice):
         Source:
           https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/ ...
             ... 5_Mass_Flow_Meters/Application_Notes/Sensirion_Mass_Flo_Meters_SFM3xxx_I2C_Functional_Description.pdf
-        '''
+        """
         return (raw - self._FLOW_OFFSET) / self._FLOW_SCALE_FACTOR
 
     def _raw_read(self):
-        ''' Performs an read on the sensor, converts recieved bytearray,
+        """ Performs an read on the sensor, converts recieved bytearray,
         discards the last two bytes (crc values - could implement in future),
         and returns a signed int converted from the big endian two
         complement that remains.
-        '''
+        """
         return be16_to_native(self.read_device(4))
 
 
 #class HumiditySensor(Sensor):
-#    ''' Not yet implemented.
-#    '''
+#    """ Not yet implemented.
+#    """
 #    def __init__(self):
 #        raise NotImplementedError
 
 
 #class TemperatureSensor(Sensor, SPIDevice):
-#    ''' Not yet implemented
-#    '''
+#    """ Not yet implemented
+#    """
 #    def __init__(self):
 #        raise NotImplementedError
 
 
 class SolenoidValve(OutputPin):
-    ''' An extension of OutputPin which uses valve terminology for its
+    """ An extension of OutputPin which uses valve terminology for its
     methods. Also allows configuring both normally open and normally
     closed valves (called the "form" of the valve).
-    '''
+    """
     _FORMS = {  'Normally Closed'   : 0,
                 'Normally Open'     : 1 }
     def __init__( self, pin, form='Normally Closed', pig=None ):
@@ -287,31 +413,31 @@ class SolenoidValve(OutputPin):
 
     @property
     def form(self):
-        ''' Returns the human-readable form of the valve
-        '''
+        """ Returns the human-readable form of the valve
+        """
         return dict(map(reversed,self._FORMS.items()))[self._form]
 
     @form.setter
     def form(self,f):
-        ''' Performs validation on requested form and then sets it.
-        '''
+        """ Performs validation on requested form and then sets it.
+        """
         if f not in self._FORMS.keys():
             raise ValueError('form must be either NC for Normally Closed or NO for Normally Open')
         else:
             self._form = self._FORMS[f]
 
     def open(self):
-        ''' Energizes valve if Normally Closed. De-energizes if
+        """ Energizes valve if Normally Closed. De-energizes if
         Normally Open
-         '''
+         """
         if self._form:
             self.off()
         else:
             self.on()
 
     def close(self):
-        ''' De-energizes valve if Normally Closed. Energizes if
-        Normally Open'''
+        """ De-energizes valve if Normally Closed. Energizes if
+        Normally Open"""
         if self.form == 'Normally Closed':
             self.off()
         else:
@@ -319,9 +445,9 @@ class SolenoidValve(OutputPin):
 
 
 class PWMControlValve(PWMOutput):
-    ''' An extension of PWMOutput which incorporates linear
+    """ An extension of PWMOutput which incorporates linear
     compensation of the valve's response.
-    '''
+    """
     # .close() is not working for this dude! 
     def __init__(self,pin,form='Normally Closed',initial_duty=0,frequency=None,pig=None):
         super().__init__(pin,initial_duty,frequency,pig)
@@ -329,26 +455,26 @@ class PWMControlValve(PWMOutput):
         # TODO: sort out API commonality w solenoid valve.
 
         def get(self):
-            '''Overridden to return the linearized setpoint corresponding
-            to the current duty cycle according to the valve's response curve'''
+            """Overridden to return the linearized setpoint corresponding
+            to the current duty cycle according to the valve's response curve"""
             return self.inverse_response(self.duty)
 
         def set(self,setpoint):
-            '''Overridden to determine & set the duty cycle corresponting
+            """Overridden to determine & set the duty cycle corresponting
             to the requested linearized setpoint according to the valve's
-            response curve'''
+            response curve"""
             self.duty = self.response(setpoint)
 
         def response(self,setpoint):
-            '''Setpoint takes a value in the range (0,100) so as not to
+            """Setpoint takes a value in the range (0,100) so as not to
             confuse with duty cycle, which takes a value in the range (0,1).
             Response curves are specific to individual valves and are to
             be implemented by subclasses. If not implemented in subclass,
-            defaults to a perfectly linear response'''
+            defaults to a perfectly linear response"""
             return setpoint/100
 
         def inverse_response(self,duty_cycle):
-            '''Inverse of response. Given a duty cycle in the range (0,1),
+            """Inverse of response. Given a duty cycle in the range (0,1),
             returns the corresponding linear setpoint in the range (0,100).
-            '''
+            """
             return duty_cycle*100

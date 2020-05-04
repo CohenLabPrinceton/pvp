@@ -1,0 +1,684 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>vent.controller.control_module &mdash; ventilator 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>vent.controller.control_module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for vent.controller.control_module</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">vent.common.message</span> <span class="k">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlSetting</span><span class="p">,</span> <span class="n">Alarm</span><span class="p">,</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">ControlSettingName</span>
+
+
+<div class="viewcode-block" id="ControlModuleBase"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase">[docs]</a><span class="k">class</span> <span class="nc">ControlModuleBase</span><span class="p">:</span>
+    <span class="c1"># Abstract class for controlling hardware based on settings received</span>
+    <span class="c1">#   Functions:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_values</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_settings</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_counter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dictionary of active alarms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logged_alarms</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of all resolved alarms</span>
+
+<div class="viewcode-block" id="ControlModuleBase.get_sensors"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.get_sensors">[docs]</a>    <span class="k">def</span> <span class="nf">get_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SensorValues</span><span class="p">:</span>
+        <span class="c1"># returns SensorValues</span>
+        <span class="c1"># include a timestamp and loop counter</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleBase.get_alarms"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.get_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">get_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Alarm</span><span class="p">]:</span>
+        <span class="c1"># Get a list of all alarms</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleBase.get_active_alarms"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.get_active_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">get_active_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Get a dictionary of all active alarms</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleBase.get_logged_alarms"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.get_logged_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">get_logged_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Alarm</span><span class="p">]:</span>
+        <span class="c1"># Get a list of inactive alarms</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleBase.clear_logged_alarms"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.clear_logged_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">clear_logged_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleBase.set_control"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.set_control">[docs]</a>    <span class="k">def</span> <span class="nf">set_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
+        <span class="c1"># takes ControlSetting struct</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleBase.get_control"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.get_control">[docs]</a>    <span class="k">def</span> <span class="nf">get_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting_name</span><span class="p">:</span> <span class="n">ControlSettingName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlSetting</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleBase.start"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controlSettings</span><span class="p">):</span>
+        <span class="c1"># start running</span>
+        <span class="c1"># controls actuators to achieve target state</span>
+        <span class="c1"># determined by settings and assessed by sensor values</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleBase.stop"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># stop running</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleBase.test_critical_levels"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleBase.test_critical_levels">[docs]</a>    <span class="k">def</span> <span class="nf">test_critical_levels</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">active_alarms</span><span class="p">,</span> <span class="n">logged_alarms</span><span class="p">):</span>
+        <span class="c1"># Tests whether a variable exceeds its bounds, and produces an alert.</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="ControlModuleDevice"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleDevice">[docs]</a><span class="k">class</span> <span class="nc">ControlModuleDevice</span><span class="p">(</span><span class="n">ControlModuleBase</span><span class="p">):</span>
+    <span class="c1"># Implement ControlModuleBase functions</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Balloon_Simulator"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.Balloon_Simulator">[docs]</a><span class="k">class</span> <span class="nc">Balloon_Simulator</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This is a simulator for inflating a balloon. </span>
+<span class="sd">    For math, see https://en.wikipedia.org/wiki/Two-balloon_experiment</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leak</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+        <span class="c1"># Hard parameters for the simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_volume</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># Liters  - 6?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_volume</span> <span class="o">=</span> <span class="mf">1.5</span>  <span class="c1"># Liters - baloon starts slightly inflated.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PC</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># Proportionality constant that relates pressure to cm-H2O</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P0</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Minimum pressure.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">leak</span> <span class="o">=</span> <span class="n">leak</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="mi">37</span>  <span class="c1"># keep track of this, as is important output variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">humidity</span> <span class="o">=</span> <span class="mi">90</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fio2</span> <span class="o">=</span> <span class="mi">60</span>
+
+        <span class="c1"># Dynamical parameters - these are the initial conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_flow</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># in unit  liters/sec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_pressure</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># in unit  cm-H2O</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_real</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_volume</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># size of the lung</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_volume</span>  <span class="c1"># in unit  liters</span>
+
+<div class="viewcode-block" id="Balloon_Simulator.get_pressure"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.Balloon_Simulator.get_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">get_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_pressure</span></div>
+
+<div class="viewcode-block" id="Balloon_Simulator.get_volume"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.Balloon_Simulator.get_volume">[docs]</a>    <span class="k">def</span> <span class="nf">get_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span></div>
+
+<div class="viewcode-block" id="Balloon_Simulator.set_flow"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.Balloon_Simulator.set_flow">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Qin</span><span class="p">,</span> <span class="n">Qout</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_flow</span> <span class="o">=</span> <span class="n">Qin</span> <span class="o">-</span> <span class="n">Qout</span></div>
+
+<div class="viewcode-block" id="Balloon_Simulator.update"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.Balloon_Simulator.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>  <span class="c1"># Performs an update of duration dt [seconds]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_flow</span> <span class="o">*</span> <span class="n">dt</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">leak</span><span class="p">:</span>
+            <span class="n">RC</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># pulled 5 sec out of my hat</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">/</span> <span class="p">(</span><span class="n">RC</span> <span class="o">+</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span> <span class="o">+</span> <span class="n">s</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_volume</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span><span class="p">)</span>
+
+        <span class="c1"># This is fromt the baloon equation, uses helper variable (the baloon radius)</span>
+        <span class="n">r_target</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">r0</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_volume</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Delay -&gt; Expansion takes time</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">:</span>
+            <span class="n">RC</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># pulled these 100ms out of my hat</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">/</span> <span class="p">(</span><span class="n">RC</span> <span class="o">+</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_real</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_real</span> <span class="o">+</span> <span class="n">s</span> <span class="o">*</span> <span class="p">(</span><span class="n">r_target</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_real</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_real</span> <span class="o">=</span> <span class="n">r_target</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_pressure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P0</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PC</span> <span class="o">/</span> <span class="p">(</span><span class="n">r0</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_real</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">r0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_real</span><span class="p">)</span> <span class="o">**</span> <span class="mi">6</span><span class="p">)</span>
+
+        <span class="c1"># Temperature, humidity and o2 fluctuations modelled as OUprocess</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">OUupdate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">37</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fio2</span> <span class="o">=</span> <span class="n">OUupdate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fio2</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">humidity</span> <span class="o">=</span> <span class="n">OUupdate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">humidity</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">humidity</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">humidity</span> <span class="o">=</span> <span class="mi">100</span></div></div>
+
+
+<div class="viewcode-block" id="OUupdate"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.OUupdate">[docs]</a><span class="k">def</span> <span class="nf">OUupdate</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This is a simple function to produce an OU process.</span>
+<span class="sd">    It is used as model for fluctuations in measurement variables.</span>
+<span class="sd">    inputs:</span>
+<span class="sd">       variable:   float     value at previous time step</span>
+<span class="sd">       dt      :   timestep</span>
+<span class="sd">       mu      :   mean</span>
+<span class="sd">       sigma   :   noise amplitude</span>
+<span class="sd">       tau     :   time scale</span>
+<span class="sd">    returns:</span>
+<span class="sd">       new_variable :  value of &quot;variable&quot; at next time step</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">sigma_bis</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span>
+    <span class="n">sqrtdt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">new_variable</span> <span class="o">=</span> <span class="n">variable</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">variable</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span> <span class="o">+</span> <span class="n">sigma_bis</span> <span class="o">*</span> <span class="n">sqrtdt</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">new_variable</span></div>
+
+
+<div class="viewcode-block" id="StateController"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.StateController">[docs]</a><span class="k">class</span> <span class="nc">StateController</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This is a class to control a respirator by iterating through set states with hard-coded valve settings</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PIP</span> <span class="o">=</span> <span class="mi">22</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PEEP</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_time</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># as fast as possible, try 500ms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpm</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="c1"># Derived variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_duration</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">E_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_duration</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_inspiration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time</span>  <span class="c1"># time [sec] for the four phases</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_plateau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_expiration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_PEEP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">E_phase</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_time</span>
+
+        <span class="c1"># Parameters to keep track of breath-cycle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_waveforms</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># saves the waveforms to meassure pip, peep etc.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="StateController.update_internalVeriables"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.StateController.update_internalVeriables">[docs]</a>    <span class="k">def</span> <span class="nf">update_internalVeriables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_duration</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">E_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_duration</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_inspiration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_plateau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_expiration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_PEEP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">E_phase</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_time</span></div>
+
+<div class="viewcode-block" id="StateController.get_Qin"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.StateController.get_Qin">[docs]</a>    <span class="k">def</span> <span class="nf">get_Qin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span></div>
+
+<div class="viewcode-block" id="StateController.get_Qout"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.StateController.get_Qout">[docs]</a>    <span class="k">def</span> <span class="nf">get_Qout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span></div>
+
+<div class="viewcode-block" id="StateController.update"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.StateController.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pressure</span><span class="p">):</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">cycle_phase</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_start</span>
+        <span class="n">time_since_last_update</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="n">now</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">+=</span> <span class="n">time_since_last_update</span> <span class="o">*</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span><span class="p">)</span>  <span class="c1"># Integrate what has happened within the last few seconds</span>
+        <span class="c1"># NOTE: As Qin and Qout are set, this is what the controllr believes has happened. NOT A MEASUREMENT, MIGHT NOT BE REALITY!</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span> <span class="o">=</span> <span class="n">pressure</span>
+
+        <span class="k">if</span> <span class="n">cycle_phase</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_inspiration</span><span class="p">:</span>  <span class="c1"># ADD CONTROL dP/dt</span>
+            <span class="c1"># to PIP, air in as fast as possible</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PIP</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">cycle_phase</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span><span class="p">:</span>  <span class="c1"># ADD CONTROL P</span>
+            <span class="c1"># keep PIP plateau, let air in if below</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PIP</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">cycle_phase</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_expiration</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span><span class="p">:</span>
+            <span class="c1"># to PEEP, open exit valve</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PEEP</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">cycle_phase</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_duration</span><span class="p">:</span>
+            <span class="c1"># keeping PEEP, let air in if below</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PEEP</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycle_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>  <span class="c1"># new cycle starts</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycle_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_counter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_waveforms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># if this cycle doesn&#39;t exist yet, start it</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycle_waveforms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle_counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="p">]])</span>  <span class="c1"># add volume</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_waveforms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle_counter</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">[[</span><span class="n">cycle_phase</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycle_waveforms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle_counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span></div></div>
+
+
+<div class="viewcode-block" id="ControlModuleSimulator"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator">[docs]</a><span class="k">class</span> <span class="nc">ControlModuleSimulator</span><span class="p">(</span><span class="n">ControlModuleBase</span><span class="p">):</span>
+    <span class="c1"># Implement ControlModuleBase functions</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>  <span class="c1"># get all from parent</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Balloon</span> <span class="o">=</span> <span class="n">Balloon_Simulator</span><span class="p">(</span><span class="n">leak</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span> <span class="o">=</span> <span class="n">StateController</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Variable limits to raise alarms, initialized as +- 10% of what the controller initializes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PIP_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PIP</span> <span class="o">*</span> <span class="mf">0.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PIP_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PIP</span> <span class="o">*</span> <span class="mf">1.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PIP_lastset</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PIP_time</span> <span class="o">*</span> <span class="mf">0.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PIP_time</span> <span class="o">*</span> <span class="mf">1.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_lastset</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PEEP</span> <span class="o">*</span> <span class="mf">0.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PEEP</span> <span class="o">*</span> <span class="mf">1.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_lastset</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpm_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">bpm</span> <span class="o">*</span> <span class="mf">0.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpm_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">bpm</span> <span class="o">*</span> <span class="mf">1.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpm_lastset</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I_phase_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">I_phase</span> <span class="o">*</span> <span class="mf">0.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I_phase_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">I_phase</span> <span class="o">*</span> <span class="mf">1.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I_phase_lastset</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># These are measurement values from the last breath cycle.</span>
+        <span class="c1"># NOTE: For the controller target value, see Controller.PEEP etc.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PEEP</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Measured valued of PEEP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PIP</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Measured value of PIP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_PIP</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Time of reaching PIP plateau</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Time when PIP plateau ends is end of inspiratory phase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_PEEP</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Time when PEEP is reached first</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_PEEP</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Last time of PEEP - by definition end of breath cycle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpm</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Measured breathing rate, by definition 60sec / length_of_breath_cycle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vte</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Maximum air displacement in last breath cycle</span>
+
+<div class="viewcode-block" id="ControlModuleSimulator.test_critical_levels"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.test_critical_levels">[docs]</a>    <span class="k">def</span> <span class="nf">test_critical_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This tests whether a variable is within bounds.</span>
+<span class="sd">        If it is, and an alarm existed, then the &quot;alarm_end_time&quot; is set.</span>
+<span class="sd">        If it is NOT, a new alarm is generated and appendede to the alarm-list.</span>
+<span class="sd">        Input:</span>
+<span class="sd">            min:           minimum value  (e.g. 2)</span>
+<span class="sd">            max:           maximum value  (e.g. 5)</span>
+<span class="sd">            value:         test value   (e.g. 3)</span>
+<span class="sd">            name:          parameter type (e.g. &quot;PIP&quot;, &quot;PEEP&quot; etc.)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">):</span>  <span class="c1"># If the variable is not within limits</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># And and alarm for that variable doesn&#39;t exist yet -&gt; RAISE ALARM.</span>
+                <span class="n">new_alarm</span> <span class="o">=</span> <span class="n">Alarm</span><span class="p">(</span><span class="n">alarm_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">is_active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">severity</span><span class="o">=</span><span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">RED</span><span class="p">,</span> \
+                                  <span class="n">alarm_start_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">alarm_end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_alarm</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Else: if the variable is within bounds,</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># And an alarm exists -&gt; inactivate it.</span>
+                <span class="n">old_alarm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">old_alarm</span><span class="o">.</span><span class="n">alarm_end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="n">old_alarm</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logged_alarms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">old_alarm</span><span class="p">)</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.update_alarms"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.update_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">update_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; This goes through the LAST waveform, and updates alarms.&#39;&#39;&#39;</span>
+        <span class="n">this_cycle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">cycle_counter</span>
+
+        <span class="k">if</span> <span class="n">this_cycle</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># The first cycle for which we can calculate this is cycle &quot;1&quot;.</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">cycle_waveforms</span><span class="p">[</span><span class="n">this_cycle</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">phase</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">pressure</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">vte</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+
+            <span class="c1"># get the pressure niveau heuristically (much faster than fitting)</span>
+            <span class="c1"># 20 and 80 percentiles pulled out of my hat.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PEEP</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">pressure</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PIP</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">pressure</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+
+            <span class="c1"># measure time of reaching PIP, and leaving PIP</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_PIP</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">pressure</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PIP</span><span class="p">))]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">pressure</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PIP</span><span class="p">))]</span>
+
+            <span class="c1"># and measure the same for PEEP</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_PEEP</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">pressure</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PEEP</span><span class="p">,</span> <span class="n">phase</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)))]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bpm</span> <span class="o">=</span> <span class="mf">60.</span> <span class="o">/</span> <span class="n">phase</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># 60 sec divided by the duration of last waveform</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_critical_levels</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PIP_min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PIP_max</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;PIP&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_critical_levels</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_max</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">first_PIP</span><span class="p">,</span>
+                                      <span class="n">name</span><span class="o">=</span><span class="s2">&quot;PIP_TIME&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_critical_levels</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PEEP_min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PEEP_max</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PEEP</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;PEEP&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_critical_levels</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bpm_min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bpm_max</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bpm</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;BREATHS_PER_MINUTE&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_critical_levels</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">I_phase_min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">I_phase_max</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;I_PHASE&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.get_sensors"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_sensors">[docs]</a>    <span class="k">def</span> <span class="nf">get_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># returns SensorValues and a time stamp</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_alarms</span><span class="p">()</span>  <span class="c1"># Make sure we are up to date</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_values</span> <span class="o">=</span> <span class="n">SensorValues</span><span class="p">(</span><span class="n">pip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span>
+                                          <span class="n">peep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PEEP</span><span class="p">,</span>
+                                          <span class="n">fio2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Balloon</span><span class="o">.</span><span class="n">fio2</span><span class="p">,</span>
+                                          <span class="n">temp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Balloon</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span>
+                                          <span class="n">humidity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Balloon</span><span class="o">.</span><span class="n">humidity</span><span class="p">,</span>
+                                          <span class="n">pressure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Balloon</span><span class="o">.</span><span class="n">current_pressure</span><span class="p">,</span>
+                                          <span class="n">vte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vte</span><span class="p">,</span>
+                                          <span class="n">breaths_per_minute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bpm</span><span class="p">,</span>
+                                          <span class="n">inspiration_time_sec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">I_phase</span><span class="p">,</span>
+                                          <span class="n">timestamp</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor_values</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.get_alarms"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">get_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Returns all alarms as a list</span>
+        <span class="n">ls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logged_alarms</span>
+        <span class="k">for</span> <span class="n">alarm_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="p">[</span><span class="n">alarm_key</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">ls</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.get_active_alarms"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_active_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">get_active_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Returns only the active alarms</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.get_logged_alarms"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_logged_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">get_logged_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Returns only the inactive alarms</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logged_alarms</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.set_control"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.set_control">[docs]</a>    <span class="k">def</span> <span class="nf">set_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Updates the control settings. &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">PIP</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PIP</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PIP_min</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">min_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PIP_max</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">max_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PIP_lastset</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">timestamp</span>
+
+        <span class="k">elif</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">PIP_TIME</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PIP_time</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_min</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">min_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_max</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">max_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_lastset</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">timestamp</span>
+
+        <span class="k">elif</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PEEP</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_min</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">min_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_max</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">max_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_lastset</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">timestamp</span>
+
+        <span class="k">elif</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">bpm</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bpm_min</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">min_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bpm_max</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">max_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bpm_lastset</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">timestamp</span>
+
+        <span class="k">elif</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">I_phase</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_phase_min</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">min_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_phase_max</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">max_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">I_phase_lastset</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">timestamp</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;You cannot set the variabe: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">control_setting</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">update_internalVeriables</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.get_control"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.get_control">[docs]</a>    <span class="k">def</span> <span class="nf">get_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting_name</span><span class="p">:</span> <span class="n">ControlSettingName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlSetting</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39; Updates the control settings. &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">control_setting_name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">PIP</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">PIP_min</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">PIP_max</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">PIP_lastset</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">control_setting_name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">PIP_TIME</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span>
+                                  <span class="n">PIP_time</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_min</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_max</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">PIP_time_lastset</span><span class="p">,</span> <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">control_setting_name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">PEEP</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_min</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_max</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">PEEP_lastset</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">control_setting_name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">bpm</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">bpm_min</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">bpm_max</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">bpm_lastset</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">control_setting_name</span> <span class="o">==</span> <span class="n">ControlSettingName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">I_phase</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">I_phase_min</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">I_phase_max</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">I_phase_lastset</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;You cannot set the variabe: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.run"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># start running</span>
+        <span class="c1"># controls actuators to achieve target state</span>
+        <span class="c1"># determined by settings and assessed by sensor values</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Balloon</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="n">now</span>
+
+        <span class="n">pressure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Balloon</span><span class="o">.</span><span class="n">get_pressure</span><span class="p">()</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Balloon</span><span class="o">.</span><span class="n">temperature</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pressure</span><span class="p">)</span>
+        <span class="n">Qout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">get_Qout</span><span class="p">()</span>
+        <span class="n">Qin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="n">get_Qin</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Balloon</span><span class="o">.</span><span class="n">set_flow</span><span class="p">(</span><span class="n">Qin</span><span class="p">,</span> <span class="n">Qout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.stop"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># stop running</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ControlModuleSimulator.recvUIHeartbeat"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.ControlModuleSimulator.recvUIHeartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">recvUIHeartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="get_control_module"><a class="viewcode-back" href="../../../vent.controller.html#vent.controller.control_module.get_control_module">[docs]</a><span class="k">def</span> <span class="nf">get_control_module</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">sim_mode</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ControlModuleSimulator</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ControlModuleDevice</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1823 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>io module &mdash; ventilator 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Requirements" href="requirements.html" />
+    <link rel="prev" title="gui" href="gui.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">io</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-vent.io.devices">vent.io.devices module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-vent.io.iobase">vent.io.iobase module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-vent.io">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>io module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/io.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="io-module">
+<h1>io module<a class="headerlink" href="#io-module" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-vent.io.devices">
+<span id="vent-io-devices-module"></span><h2>vent.io.devices module<a class="headerlink" href="#module-vent.io.devices" title="Permalink to this headline">¶</a></h2>
+<p>Subclass implementations of specific sensor devices.</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115" title="vent.io.devices.ADS1115"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ADS1115</span></code></a>([address, i2c_bus, pig])</p></td>
+<td><p>Description: Class for the ADS1115 16 bit, 4 Channel ADC.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.P4vMini" title="vent.io.devices.P4vMini"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P4vMini</span></code></a>(adc, MUX, **_CALIBRATION)</p></td>
+<td><p>Analog gauge pressure sensor with range of 0 - 20” h20.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.PWMControlValve" title="vent.io.devices.PWMControlValve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PWMControlValve</span></code></a>(pin[, form, initial_duty, …])</p></td>
+<td><p>An extension of PWMOutput which incorporates linear compensation of the valve’s response.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.SFM3200" title="vent.io.devices.SFM3200"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SFM3200</span></code></a>([address, i2c_bus, pig])</p></td>
+<td><p>Datasheet: <a class="reference external" href="https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/">https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/</a> …</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.SolenoidValve" title="vent.io.devices.SolenoidValve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolenoidValve</span></code></a>(pin[, form, pig])</p></td>
+<td><p>An extension of OutputPin which uses valve terminology for its methods.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="vent.io.devices.ADS1115">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.devices.</code><code class="sig-name descname">ADS1115</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">72</span></em>, <em class="sig-param"><span class="n">i2c_bus</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#ADS1115"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.ADS1115" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.I2CDevice" title="vent.io.iobase.I2CDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.I2CDevice</span></code></a></p>
+<p>Description:
+Class for the ADS1115 16 bit, 4 Channel ADC.
+Datasheet:</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115.USER_CONFIGURABLE_FIELDS" title="vent.io.devices.ADS1115.USER_CONFIGURABLE_FIELDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">USER_CONFIGURABLE_FIELDS</span></code></a></p></td>
+<td><p>Note: The Conversion Register is read-only and contains a 16bit representation of the requested value (provided the conversion is ready).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115._CONFIG_FIELDS" title="vent.io.devices.ADS1115._CONFIG_FIELDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_CONFIG_FIELDS</span></code></a></p></td>
+<td><p>Built-in immutable sequence.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115._CONFIG_VALUES" title="vent.io.devices.ADS1115._CONFIG_VALUES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_CONFIG_VALUES</span></code></a></p></td>
+<td><p>Built-in immutable sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115._DEFAULT_ADDRESS" title="vent.io.devices.ADS1115._DEFAULT_ADDRESS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULT_ADDRESS</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115._DEFAULT_VALUES" title="vent.io.devices.ADS1115._DEFAULT_VALUES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULT_VALUES</span></code></a></p></td>
+<td><p>Address Pointer Register (write-only)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115._POINTER_FIELDS" title="vent.io.devices.ADS1115._POINTER_FIELDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_POINTER_FIELDS</span></code></a></p></td>
+<td><p>str(object=’‘) -&gt; str</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115._POINTER_VALUES" title="vent.io.devices.ADS1115._POINTER_VALUES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_POINTER_VALUES</span></code></a></p></td>
+<td><p>Config Register (R/W)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115.cfg" title="vent.io.devices.ADS1115.cfg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cfg</span></code></a></p></td>
+<td><p>Returns the contents (as a 16-bit unsigned integer) of the configuration that will be written to the config register when read_conversion() is next called.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115.config" title="vent.io.devices.ADS1115.config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">config</span></code></a></p></td>
+<td><p>Returns the Register object of the config register.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115.__init__" title="vent.io.devices.ADS1115.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([address, i2c_bus, pig])</p></td>
+<td><p>Initializes registers: Pointer register is write only, config is R/W.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115._read_conversion" title="vent.io.devices.ADS1115._read_conversion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_conversion</span></code></a>(**kwargs)</p></td>
+<td><p>Backend for read_conversion().</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115._read_last_cfg" title="vent.io.devices.ADS1115._read_last_cfg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_last_cfg</span></code></a>()</p></td>
+<td><p>Reads the config register and returns the contents as a 16-bit unsigned integer; updates internal record _last_cfg.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115._ready" title="vent.io.devices.ADS1115._ready"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_ready</span></code></a>()</p></td>
+<td><p>Return status of ADC conversion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115.print_config" title="vent.io.devices.ADS1115.print_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_config</span></code></a>()</p></td>
+<td><p>Returns the human-readable configuration for the next read.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.ADS1115.read_conversion" title="vent.io.devices.ADS1115.read_conversion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_conversion</span></code></a>(**kwargs)</p></td>
+<td><p>Returns a voltage (expressed as a float) corresponding to a channel on the ADC.</p></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<div><p><a class="reference external" href="http://www.ti.com/lit/ds/symlink/ads1114.pdf?ts=1587872241912">http://www.ti.com/lit/ds/symlink/ads1114.pdf?ts=1587872241912</a></p>
+</div></blockquote>
+<dl class="simple">
+<dt>Default Values:</dt><dd><p>Default configuration for vent:     0xC3E3
+Default configuration on power-up:  0x8583</p>
+</dd>
+</dl>
+<p>Initializes registers: Pointer register is write only,
+config is R/W. Sets initial value of _last_cfg to what is
+actually on the ADS.Packs default settings into _cfg, but does
+not actually write to ADC - that occurs when read_conversion()
+is called.</p>
+<dl class="py attribute">
+<dt id="vent.io.devices.ADS1115._DEFAULT_ADDRESS">
+<code class="sig-name descname">_DEFAULT_ADDRESS</code><em class="property"> = 72</em><a class="headerlink" href="#vent.io.devices.ADS1115._DEFAULT_ADDRESS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.ADS1115._DEFAULT_VALUES">
+<code class="sig-name descname">_DEFAULT_VALUES</code><em class="property"> = {'DR': 860, 'MODE': 'SINGLE', 'MUX': 0, 'PGA': 4.096}</em><a class="headerlink" href="#vent.io.devices.ADS1115._DEFAULT_VALUES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Address Pointer Register (write-only)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.ADS1115._POINTER_FIELDS">
+<code class="sig-name descname">_POINTER_FIELDS</code><em class="property"> = 'P'</em><a class="headerlink" href="#vent.io.devices.ADS1115._POINTER_FIELDS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.ADS1115._POINTER_VALUES">
+<code class="sig-name descname">_POINTER_VALUES</code><em class="property"> = (('CONVERSION', 'CONFIG', 'LO_THRESH', 'HIGH_THRESH'),)</em><a class="headerlink" href="#vent.io.devices.ADS1115._POINTER_VALUES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Config Register (R/W)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.ADS1115._CONFIG_FIELDS">
+<code class="sig-name descname">_CONFIG_FIELDS</code><em class="property"> = ('OS', 'MUX', 'PGA', 'MODE', 'DR', 'COMP_MODE', 'COMP_POL', 'COMP_LAT', 'COMP_QUE')</em><a class="headerlink" href="#vent.io.devices.ADS1115._CONFIG_FIELDS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.ADS1115._CONFIG_VALUES">
+<code class="sig-name descname">_CONFIG_VALUES</code><em class="property"> = (('NO_EFFECT', 'START_CONVERSION'), ((0, 1), (0, 3), (1, 3), (2, 3), 0, 1, 2, 3), (6.144, 4.096, 2.048, 1.024, 0.512, 0.256, 0.256, 0.256), ('CONTINUOUS', 'SINGLE'), (8, 16, 32, 64, 128, 250, 475, 860), ('TRADIONAL', 'WINDOW'), ('ACTIVE_LOW', 'ACTIVE_HIGH'), ('NONLATCHING', 'LATCHING'), (1, 2, 3, 'DISABLE'))</em><a class="headerlink" href="#vent.io.devices.ADS1115._CONFIG_VALUES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.ADS1115.USER_CONFIGURABLE_FIELDS">
+<code class="sig-name descname">USER_CONFIGURABLE_FIELDS</code><em class="property"> = ('MUX', 'PGA', 'MODE', 'DR')</em><a class="headerlink" href="#vent.io.devices.ADS1115.USER_CONFIGURABLE_FIELDS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note:
+The Conversion Register is read-only and contains a 16bit
+representation of the requested value (provided the conversion is
+ready).</p>
+<p>The Lo-thresh &amp; Hi-thresh Registers are not Utilized here. However,
+their function and usage are described in the datasheet. Should you
+want to extend the functionality implemented here.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.ADS1115.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">72</span></em>, <em class="sig-param"><span class="n">i2c_bus</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#ADS1115.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.ADS1115.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes registers: Pointer register is write only,
+config is R/W. Sets initial value of _last_cfg to what is
+actually on the ADS.Packs default settings into _cfg, but does
+not actually write to ADC - that occurs when read_conversion()
+is called.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.ADS1115.read_conversion">
+<code class="sig-name descname">read_conversion</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#ADS1115.read_conversion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.ADS1115.read_conversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a voltage (expressed as a float) corresponding to a
+channel on the ADC. The channel to read from, along with the
+gain, mode, and sample rate of the conversion may be may be
+specified as optional parameters. If read_conversion() is called
+with no parameters, the resulting voltage corresponds to the
+channel last read from and the same conversion settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.ADS1115.print_config">
+<code class="sig-name descname">print_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#ADS1115.print_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.ADS1115.print_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the human-readable configuration for the next read.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.ADS1115.config">
+<em class="property">property </em><code class="sig-name descname">config</code><a class="headerlink" href="#vent.io.devices.ADS1115.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Register object of the config register.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.ADS1115.cfg">
+<em class="property">property </em><code class="sig-name descname">cfg</code><a class="headerlink" href="#vent.io.devices.ADS1115.cfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the contents (as a 16-bit unsigned integer) of the
+configuration that will be written to the config register when
+read_conversion() is next called.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.ADS1115._read_conversion">
+<code class="sig-name descname">_read_conversion</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#ADS1115._read_conversion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.ADS1115._read_conversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Backend for read_conversion(). Returns the contents of the
+16-bit conversion register as an unsigned integer.</p>
+<p>If no parameters are passed, one of two things can happen:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>If the ADC is in single-shot (mode=’SINGLE’) conversion
+mode, _last_cfg is written to the config register; once
+the ADC indicates it is ready, the contents of the
+conversion register are read and the result is returned.</p></li>
+<li><p>If the ADC is in CONTINUOUS mode, the contents of the
+conversion register are read immediately and returned.</p></li>
+</ol>
+</div></blockquote>
+<p>If any of channel, gain, mode, or data_rate are specified as
+parameters, a new _cfg is packed and written to the config
+register; once the ADC indicates it is ready, the contents of
+the conversion register are read and the result is returned.</p>
+<p>Note: In continuous mode, data can be read from the conversion
+register of the ADS1115 at any time and always reflects the
+most recently completed conversion. So says the datasheet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.ADS1115._read_last_cfg">
+<code class="sig-name descname">_read_last_cfg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#ADS1115._read_last_cfg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.ADS1115._read_last_cfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the config register and returns the contents as a
+16-bit unsigned integer; updates internal record _last_cfg.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.ADS1115._ready">
+<code class="sig-name descname">_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#ADS1115._ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.ADS1115._ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return status of ADC conversion.
+OS = 0: Device is currently performing a conversion
+OS = 1: Device is not currently performing a conversion</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.ADS1115._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.devices.ADS1115._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.devices.P4vMini">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.devices.</code><code class="sig-name descname">P4vMini</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">adc</span></em>, <em class="sig-param"><span class="n">MUX</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">_CALIBRATION</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#P4vMini"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.P4vMini" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.AnalogSensor" title="vent.io.iobase.AnalogSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.AnalogSensor</span></code></a></p>
+<p>Analog gauge pressure sensor with range of 0 - 20” h20. The
+calibration outlined in the datasheet has low =  0.25V and
+high = 4.0V (give or take a bit). The conversion factor is derived
+from the sensor’s maximum output of 20 in(h20), and we want sensor
+readings in cm h20: (2.54 cm/in * 20” h20) * read() = observed cmh20</p>
+<p>The only difference between this device and a generic AnalogSensor
+is its calibration, and the additional unit conversion in _convert()</p>
+<p>Links analog sensor on the ADC with configutation options
+specified. If no options are specified, it assumes the settings
+currently on the ADC.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.P4vMini._CALIBRATION" title="vent.io.devices.P4vMini._CALIBRATION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_CALIBRATION</span></code></a></p></td>
+<td><p>dict() -&gt; new empty dictionary</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.P4vMini._CONVERSION_FACTOR" title="vent.io.devices.P4vMini._CONVERSION_FACTOR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_CONVERSION_FACTOR</span></code></a></p></td>
+<td><p>Convert a string or number to a floating point number, if possible.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.P4vMini._convert" title="vent.io.devices.P4vMini._convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_convert</span></code></a>(raw)</p></td>
+<td><p>Overloaded to map AnalogSensor’s normalized output into the</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.P4vMini._verify" title="vent.io.devices.P4vMini._verify"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_verify</span></code></a>(value)</p></td>
+<td><p>Extends superclass value to function with a conversion</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.io.devices.P4vMini._CALIBRATION">
+<code class="sig-name descname">_CALIBRATION</code><em class="property"> = {'OFFSET_VOLTAGE': 0.25, 'OUTPUT_SPAN': 4.0}</em><a class="headerlink" href="#vent.io.devices.P4vMini._CALIBRATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.P4vMini._CONVERSION_FACTOR">
+<code class="sig-name descname">_CONVERSION_FACTOR</code><em class="property"> = 50.8</em><a class="headerlink" href="#vent.io.devices.P4vMini._CONVERSION_FACTOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.P4vMini._verify">
+<code class="sig-name descname">_verify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#P4vMini._verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.P4vMini._verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends superclass value to function with a conversion
+factor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.P4vMini._convert">
+<code class="sig-name descname">_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#P4vMini._convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.P4vMini._convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded to map AnalogSensor’s normalized output into the
+desired units of cm(h20)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.P4vMini._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.devices.P4vMini._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.devices.SFM3200">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.devices.</code><code class="sig-name descname">SFM3200</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">64</span></em>, <em class="sig-param"><span class="n">i2c_bus</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#SFM3200"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.SFM3200" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.Sensor" title="vent.io.iobase.Sensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.Sensor</span></code></a>, <a class="reference internal" href="#vent.io.iobase.I2CDevice" title="vent.io.iobase.I2CDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.I2CDevice</span></code></a></p>
+<p>Datasheet:
+<a class="reference external" href="https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/">https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/</a> …</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.SFM3200._DEFAULT_ADDRESS" title="vent.io.devices.SFM3200._DEFAULT_ADDRESS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULT_ADDRESS</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.SFM3200._FLOW_OFFSET" title="vent.io.devices.SFM3200._FLOW_OFFSET"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_FLOW_OFFSET</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.SFM3200._FLOW_SCALE_FACTOR" title="vent.io.devices.SFM3200._FLOW_SCALE_FACTOR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_FLOW_SCALE_FACTOR</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.SFM3200._convert" title="vent.io.devices.SFM3200._convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_convert</span></code></a>(raw)</p></td>
+<td><p>Overloaded to replace with device-specific protocol.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.SFM3200._raw_read" title="vent.io.devices.SFM3200._raw_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_raw_read</span></code></a>()</p></td>
+<td><p>Performs an read on the sensor, converts recieved bytearray, discards the last two bytes (crc values - could implement in future), and returns a signed int converted from the big endian two complement that remains.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.SFM3200._start" title="vent.io.devices.SFM3200._start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_start</span></code></a>()</p></td>
+<td><p>Device specific:Sends the ‘start measurement’ command to the sensor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.SFM3200._verify" title="vent.io.devices.SFM3200._verify"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_verify</span></code></a>(value)</p></td>
+<td><p>No further verification needed for this sensor.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.SFM3200.reset" title="vent.io.devices.SFM3200.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>Extended to add device specific behavior: Asks the sensor to perform a soft reset.</p></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<div><p>… 5_Mass_Flow_Meters/Datasheets/Sensirion_Mass_Flow_Meters_SFM3200_Datasheet.pdf</p>
+</div></blockquote>
+<p>Upon creation, calls update() to ensure that if get is
+called there will be something to return</p>
+<dl class="py attribute">
+<dt id="vent.io.devices.SFM3200._DEFAULT_ADDRESS">
+<code class="sig-name descname">_DEFAULT_ADDRESS</code><em class="property"> = 64</em><a class="headerlink" href="#vent.io.devices.SFM3200._DEFAULT_ADDRESS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.SFM3200._FLOW_OFFSET">
+<code class="sig-name descname">_FLOW_OFFSET</code><em class="property"> = 32768</em><a class="headerlink" href="#vent.io.devices.SFM3200._FLOW_OFFSET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.SFM3200._FLOW_SCALE_FACTOR">
+<code class="sig-name descname">_FLOW_SCALE_FACTOR</code><em class="property"> = 120</em><a class="headerlink" href="#vent.io.devices.SFM3200._FLOW_SCALE_FACTOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.SFM3200.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#SFM3200.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.SFM3200.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extended to add device specific behavior: Asks the sensor
+to perform a soft reset. 80 ms soft reset time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.SFM3200._start">
+<code class="sig-name descname">_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#SFM3200._start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.SFM3200._start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Device specific:Sends the ‘start measurement’ command to the
+sensor. Start-up time once command has been recieved is
+‘less than 100ms’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.SFM3200._verify">
+<code class="sig-name descname">_verify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#SFM3200._verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.SFM3200._verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>No further verification needed for this sensor. Onboard
+chip handles all that. Could throw in a CRC8 checker instead of
+discarding them in _convert().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.SFM3200._convert">
+<code class="sig-name descname">_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#SFM3200._convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.SFM3200._convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded to replace with device-specific protocol.
+Convert raw int to a flow reading having type float with
+units slm. Implementation differs from parent for clarity and
+consistency with source material.</p>
+<dl class="simple">
+<dt>Source:</dt><dd><dl class="simple">
+<dt><a class="reference external" href="https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/">https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/</a> …</dt><dd><p>… 5_Mass_Flow_Meters/Application_Notes/Sensirion_Mass_Flo_Meters_SFM3xxx_I2C_Functional_Description.pdf</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.SFM3200._raw_read">
+<code class="sig-name descname">_raw_read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#SFM3200._raw_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.SFM3200._raw_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs an read on the sensor, converts recieved bytearray,
+discards the last two bytes (crc values - could implement in future),
+and returns a signed int converted from the big endian two
+complement that remains.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.SFM3200._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.devices.SFM3200._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.devices.SolenoidValve">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.devices.</code><code class="sig-name descname">SolenoidValve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pin</span></em>, <em class="sig-param"><span class="n">form</span><span class="o">=</span><span class="default_value">'Normally Closed'</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#SolenoidValve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.SolenoidValve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.OutputPin" title="vent.io.iobase.OutputPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.OutputPin</span></code></a></p>
+<p>An extension of OutputPin which uses valve terminology for its
+methods. Also allows configuring both normally open and normally
+closed valves (called the “form” of the valve).</p>
+<p>Inherits attributes and methods from IODeviceBase.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.SolenoidValve._FORMS" title="vent.io.devices.SolenoidValve._FORMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_FORMS</span></code></a></p></td>
+<td><p>dict() -&gt; new empty dictionary</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.SolenoidValve.form" title="vent.io.devices.SolenoidValve.form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">form</span></code></a></p></td>
+<td><p>Returns the human-readable form of the valve</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.devices.SolenoidValve.close" title="vent.io.devices.SolenoidValve.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<td><p>De-energizes valve if Normally Closed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.devices.SolenoidValve.open" title="vent.io.devices.SolenoidValve.open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open</span></code></a>()</p></td>
+<td><p>Energizes valve if Normally Closed.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.io.devices.SolenoidValve._FORMS">
+<code class="sig-name descname">_FORMS</code><em class="property"> = {'Normally Closed': 0, 'Normally Open': 1}</em><a class="headerlink" href="#vent.io.devices.SolenoidValve._FORMS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.devices.SolenoidValve._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.devices.SolenoidValve._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.SolenoidValve.form">
+<em class="property">property </em><code class="sig-name descname">form</code><a class="headerlink" href="#vent.io.devices.SolenoidValve.form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the human-readable form of the valve</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.SolenoidValve.open">
+<code class="sig-name descname">open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#SolenoidValve.open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.SolenoidValve.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Energizes valve if Normally Closed. De-energizes if
+Normally Open</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.devices.SolenoidValve.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#SolenoidValve.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.SolenoidValve.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-energizes valve if Normally Closed. Energizes if
+Normally Open</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.devices.PWMControlValve">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.devices.</code><code class="sig-name descname">PWMControlValve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pin</span></em>, <em class="sig-param"><span class="n">form</span><span class="o">=</span><span class="default_value">'Normally Closed'</span></em>, <em class="sig-param"><span class="n">initial_duty</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">frequency</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/devices.html#PWMControlValve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.devices.PWMControlValve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.PWMOutput" title="vent.io.iobase.PWMOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.PWMOutput</span></code></a></p>
+<p>An extension of PWMOutput which incorporates linear
+compensation of the valve’s response.</p>
+<p>Inherits attributes and methods from IODeviceBase.</p>
+<dl class="py attribute">
+<dt id="vent.io.devices.PWMControlValve._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.devices.PWMControlValve._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vent.io.iobase">
+<span id="vent-io-iobase-module"></span><h2>vent.io.iobase module<a class="headerlink" href="#module-vent.io.iobase" title="Permalink to this headline">¶</a></h2>
+<p>Provides the abstract classes and classes for basic objects like
+pins, to be used for higher-level operations by the “device” objects.</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor" title="vent.io.iobase.AnalogSensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnalogSensor</span></code></a>(adc, **kwargs)</p></td>
+<td><p>Generalized class describing an analog sensor attached to the ADS1115 analog to digital converter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.I2CDevice" title="vent.io.iobase.I2CDevice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">I2CDevice</span></code></a>(i2c_address, i2c_bus[, pig])</p></td>
+<td><p>A class wrapper for pigpio I2C handles.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.IODeviceBase" title="vent.io.iobase.IODeviceBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IODeviceBase</span></code></a>(pig)</p></td>
+<td><p>Abstract base Class for pigpio handles (or whatever other GPIO library</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.InputPin" title="vent.io.iobase.InputPin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InputPin</span></code></a>(pin[, pig])</p></td>
+<td><p>Subclass of Pin that should be used when calls to the pin should be read-only during normal operation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.OutputPin" title="vent.io.iobase.OutputPin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OutputPin</span></code></a>(pin[, pig])</p></td>
+<td><p>Subclass of Pin that should be used when calls to the pin should be write-only during normal operation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput" title="vent.io.iobase.PWMOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PWMOutput</span></code></a>(pin[, initial_duty, frequency, pig])</p></td>
+<td><p>I am a Special Pin!</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Pin" title="vent.io.iobase.Pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pin</span></code></a>(pin[, pig])</p></td>
+<td><p>Base Class wrapping pigpio methods for interacting with GPIO pins on the raspberry pi.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.SPIDevice" title="vent.io.iobase.SPIDevice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SPIDevice</span></code></a>(pig)</p></td>
+<td><p>A class wrapper for pigpio SPI handles.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor" title="vent.io.iobase.Sensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sensor</span></code></a>()</p></td>
+<td><p>Abstract base Class describing generalized sensors.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.be16_to_native" title="vent.io.iobase.be16_to_native"><code class="xref py py-obj docutils literal notranslate"><span class="pre">be16_to_native</span></code></a>(data[, signed, count])</p></td>
+<td><p>Unpacks a bytearray respecting big-endianness of outside world and returns an int according to signed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.native16_to_be" title="vent.io.iobase.native16_to_be"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native16_to_be</span></code></a>(word[, signed, count])</p></td>
+<td><p>Packs an int into a bytearray while swapping big-endianness</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="vent.io.iobase.IODeviceBase">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">IODeviceBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pig</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#IODeviceBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.IODeviceBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+<p>Abstract base Class for pigpio handles (or whatever other GPIO library
+we end up using)</p>
+<p>Note: pigpio commands return -144 if an error is encountered while
+attempting to communicate with the demon. TODO would be to recognize
+when that occurs and handle it gracefully, i.e. kill the daemon,
+restart it, and reopen the python interface(s)</p>
+<p>Initializes the pigpio python bindings oject if necessary,
+and checks that it is actually running.</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.IODeviceBase.__init__" title="vent.io.iobase.IODeviceBase.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(pig)</p></td>
+<td><p>Initializes the pigpio python bindings oject if necessary, and checks that it is actually running.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.IODeviceBase.close" title="vent.io.iobase.IODeviceBase.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<td><p>Closes an I2C/SPI (or potentially Serial) connection</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.IODeviceBase.pigpiod_ok" title="vent.io.iobase.IODeviceBase.pigpiod_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pigpiod_ok</span></code></a>()</p></td>
+<td><p>Returns True if pigpiod is running and False if not</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.IODeviceBase.handle" title="vent.io.iobase.IODeviceBase.handle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle</span></code></a></p></td>
+<td><p>Pigpiod handle associated with device (only for i2c/spi)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.IODeviceBase.pig" title="vent.io.iobase.IODeviceBase.pig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pig</span></code></a></p></td>
+<td><p>The pigpio python bindings object</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.io.iobase.IODeviceBase.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pig</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#IODeviceBase.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.IODeviceBase.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the pigpio python bindings oject if necessary,
+and checks that it is actually running.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.IODeviceBase.pig">
+<em class="property">property </em><code class="sig-name descname">pig</code><a class="headerlink" href="#vent.io.iobase.IODeviceBase.pig" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pigpio python bindings object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.IODeviceBase.handle">
+<em class="property">property </em><code class="sig-name descname">handle</code><a class="headerlink" href="#vent.io.iobase.IODeviceBase.handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pigpiod handle associated with device (only for i2c/spi)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.IODeviceBase.pigpiod_ok">
+<code class="sig-name descname">pigpiod_ok</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#IODeviceBase.pigpiod_ok"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.IODeviceBase.pigpiod_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if pigpiod is running and False if not</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.IODeviceBase.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#IODeviceBase.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.IODeviceBase.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes an I2C/SPI (or potentially Serial) connection</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.IODeviceBase._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.iobase.IODeviceBase._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.io.iobase.be16_to_native">
+<code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">be16_to_native</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">signed</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">count</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#be16_to_native"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.be16_to_native" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpacks a bytearray respecting big-endianness of outside world
+and returns an int according to signed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.io.iobase.native16_to_be">
+<code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">native16_to_be</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">word</span></em>, <em class="sig-param"><span class="n">signed</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">count</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#native16_to_be"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.native16_to_be" title="Permalink to this definition">¶</a></dt>
+<dd><p>Packs an int into a bytearray while swapping big-endianness
+of the pi and returns bytearray</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.I2CDevice">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">I2CDevice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i2c_address</span></em>, <em class="sig-param"><span class="n">i2c_bus</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.IODeviceBase" title="vent.io.iobase.IODeviceBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.IODeviceBase</span></code></a></p>
+<p>A class wrapper for pigpio I2C handles. Defines several methods
+used for reading from and writing to device registers. Defines
+helper classes Register and RegisterField for handling the
+manipulation of arbitrary registers.</p>
+<p>Note: The Raspberry Pi uses LE byte-ordering, while the outside
+world tends to use BE (at least, the sensors in use so far all do).
+Thus, bytes need to be swapped from native (LE) ordering to BE
+prior to being written to an i2c device, and bytes recieved need to
+be swapped from BE into native (LE). All methods except read_device
+and write_device perform this automatically. The methods read_device
+and write_device do NOT byteswap and return bytearrays rather than
+the unsigned 16-bit int used by the other read/write methods.</p>
+<p>Initializes pigpio bindings and opens i2c connection.</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.I2CDevice.Register" title="vent.io.iobase.I2CDevice.Register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Register</span></code></a>(fields, values)</p></td>
+<td><p>Describes a writable configuration register.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.I2CDevice.__init__" title="vent.io.iobase.I2CDevice.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(i2c_address, i2c_bus[, pig])</p></td>
+<td><p>Initializes pigpio bindings and opens i2c connection.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.I2CDevice.close" title="vent.io.iobase.I2CDevice.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<td><p>Extends superclass method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.I2CDevice.open" title="vent.io.iobase.I2CDevice.open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open</span></code></a>(i2c_bus, i2c_address)</p></td>
+<td><p>Opens i2c connection given i2c bus and address.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.I2CDevice.read_device" title="vent.io.iobase.I2CDevice.read_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_device</span></code></a>(num_bytes)</p></td>
+<td><p>Read a specified number of bytes directly from the the device without changing the register.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.I2CDevice.read_register" title="vent.io.iobase.I2CDevice.read_register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_register</span></code></a>(register[, signed, count])</p></td>
+<td><p>Read count# bytes from the specified register</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.I2CDevice.write_device" title="vent.io.iobase.I2CDevice.write_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_device</span></code></a>(word[, signed, count])</p></td>
+<td><p>Write bytes to the device without specifying register.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.I2CDevice.write_register" title="vent.io.iobase.I2CDevice.write_register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_register</span></code></a>(register, word[, signed, count])</p></td>
+<td><p>Write bytes to the specified register.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i2c_address</span></em>, <em class="sig-param"><span class="n">i2c_bus</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes pigpio bindings and opens i2c connection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.open">
+<code class="sig-name descname">open</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i2c_bus</span></em>, <em class="sig-param"><span class="n">i2c_address</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens i2c connection given i2c bus and address.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends superclass method. Checks that pigpiod is connected
+and if a handle has been set - if so, closes an i2c connection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.read_device">
+<code class="sig-name descname">read_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_bytes</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.read_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.read_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a specified number of bytes directly from the the
+device without changing the register. Does NOT perform LE/BE
+conversion.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.write_device">
+<code class="sig-name descname">write_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">word</span></em>, <em class="sig-param"><span class="n">signed</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">count</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.write_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.write_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write bytes to the device without specifying register.
+DOES perform LE/BE conversion. Count should be
+specified for when passing something other than a word.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.read_register">
+<code class="sig-name descname">read_register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">register</span></em>, <em class="sig-param"><span class="n">signed</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">count</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.read_register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.read_register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read count# bytes from the specified register
+(denoted by a single byte)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.write_register">
+<code class="sig-name descname">write_register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">register</span></em>, <em class="sig-param"><span class="n">word</span></em>, <em class="sig-param"><span class="n">signed</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">count</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.write_register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.write_register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write bytes to the specified register. Count should be
+specified for when passing something other than a word.
+(register denoted by a single byte)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.I2CDevice.Register">
+<em class="property">class </em><code class="sig-name descname">Register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fields</span></em>, <em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Describes a writable configuration register. Has dynamically
+defined attributes corresponding to the fields described by the
+passed arguments. Takes as arguments two tuples of equal length,
+the first of which names each field and the second being a tuple
+of tuples containing the (human readable) possible settings &amp;
+values for each field.</p>
+<p>Note: The intializer reverses the fields &amp; their values because
+a human reads the register, as drawn in the datasheet, from left
+to right - however, the fields furthest to the left are the most
+significant bits of the register.</p>
+<p>Initializer which loads in (dynamically defined)
+attributes.</p>
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.Register.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fields</span></em>, <em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializer which loads in (dynamically defined)
+attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.Register.unpack">
+<code class="sig-name descname">unpack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.unpack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.unpack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the contents of a register in integer form,
+returns a dict of fields and their current settings</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.Register.pack">
+<code class="sig-name descname">pack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.pack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.pack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an initial integer representation of a register and an
+arbitrary number of field=value settings, returns an integer
+representation of the register incorporating the new settings.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.I2CDevice.Register.RegisterField">
+<em class="property">class </em><code class="sig-name descname">RegisterField</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">offset</span></em>, <em class="sig-param"><span class="n">mask</span></em>, <em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.RegisterField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.RegisterField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Describes a configurable field in a writable register.</p>
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.Register.RegisterField.offset">
+<code class="sig-name descname">offset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.RegisterField.offset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.RegisterField.offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the position of the field’s LSB in the
+register. Example: mask = self._mask &lt;&lt; self._offset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.Register.RegisterField.info">
+<code class="sig-name descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.RegisterField.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.RegisterField.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list containing stuff</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.Register.RegisterField.unpack">
+<code class="sig-name descname">unpack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.RegisterField.unpack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.RegisterField.unpack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts setting from passed 16-bit config &amp; returns
+human readable result.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.Register.RegisterField.pack">
+<code class="sig-name descname">pack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.RegisterField.pack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.RegisterField.pack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a human-readable setting and returns a
+bit-shifted integer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.Register.RegisterField.insert">
+<code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.RegisterField.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.RegisterField.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs validation and then does a bitwise
+replacement on passed config with the passed value.
+Returns integer representation of the new config.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.I2CDevice.Register.RegisterField.extract">
+<code class="sig-name descname">extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#I2CDevice.Register.RegisterField.extract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.I2CDevice.Register.RegisterField.extract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts setting from passed 16-bit config &amp; returns
+integer representation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.I2CDevice._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.iobase.I2CDevice._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.SPIDevice">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">SPIDevice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pig</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#SPIDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.SPIDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.IODeviceBase" title="vent.io.iobase.IODeviceBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.IODeviceBase</span></code></a></p>
+<p>A class wrapper for pigpio SPI handles. Not really implemented.</p>
+<p>Initializes the pigpio python bindings oject if necessary,
+and checks that it is actually running.</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.SPIDevice._SPIDevice__init" title="vent.io.iobase.SPIDevice._SPIDevice__init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SPIDevice__init</span></code></a>(channel, baudrate[, pig])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.SPIDevice.close" title="vent.io.iobase.SPIDevice.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<td><p>Extends superclass method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.SPIDevice.open" title="vent.io.iobase.SPIDevice.open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open</span></code></a>(channel, baudrate)</p></td>
+<td><p>Opens an SPI connection and returns the pigpiod handle.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.io.iobase.SPIDevice.open">
+<code class="sig-name descname">open</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">baudrate</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#SPIDevice.open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.SPIDevice.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens an SPI connection and returns the pigpiod handle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.SPIDevice.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#SPIDevice.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.SPIDevice.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends superclass method. Checks that pigpiod is connected
+and if a handle has been set - if so, closes an SPI connection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.SPIDevice._SPIDevice__init">
+<code class="sig-name descname">_SPIDevice__init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">baudrate</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vent.io.iobase.SPIDevice._SPIDevice__init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.SPIDevice._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.iobase.SPIDevice._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.Sensor">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">Sensor</code><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+<p>Abstract base Class describing generalized sensors. Defines a
+mechanism for limited internal storage of recent observations and
+methods to pull that data out for external use.</p>
+<p>Upon creation, calls update() to ensure that if get is
+called there will be something to return</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor._DEFAULT_STORED_OBSERVATIONS" title="vent.io.iobase.Sensor._DEFAULT_STORED_OBSERVATIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULT_STORED_OBSERVATIONS</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor.data" title="vent.io.iobase.Sensor.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
+<td><p>Generalized, not necessarily performant.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor.data_length" title="vent.io.iobase.Sensor.data_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_length</span></code></a></p></td>
+<td><p>Returns the number of observations kept in the Sensor’s internal ndarray.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor._Sensor__store_last" title="vent.io.iobase.Sensor._Sensor__store_last"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Sensor__store_last</span></code></a>(value)</p></td>
+<td><p>Takes a value and stores it in self.data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor.__init__" title="vent.io.iobase.Sensor.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p>Upon creation, calls update() to ensure that if get is</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor._convert" title="vent.io.iobase.Sensor._convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_convert</span></code></a>(raw)</p></td>
+<td><p>Converts a raw reading from a sensor in whatever forma the device communicates with into a meaningful result.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor._raw_read" title="vent.io.iobase.Sensor._raw_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_raw_read</span></code></a>()</p></td>
+<td><p>Requests a new observation from the device and returns the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor._read" title="vent.io.iobase.Sensor._read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read</span></code></a>()</p></td>
+<td><p>Calls _raw_read and scales the result before returning it</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor._verify" title="vent.io.iobase.Sensor._verify"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_verify</span></code></a>(value)</p></td>
+<td><p>Validate reading and throw exception/alarm if sensor does not</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor.age" title="vent.io.iobase.Sensor.age"><code class="xref py py-obj docutils literal notranslate"><span class="pre">age</span></code></a>()</p></td>
+<td><p>Returns the time since the last sensor update, in seconds.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor.get" title="vent.io.iobase.Sensor.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>()</p></td>
+<td><p>Return the most recent sensor reading.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor.reset" title="vent.io.iobase.Sensor.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>Resets the sensors internal memory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.Sensor.update" title="vent.io.iobase.Sensor.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
+<td><p>Make a sensor reading, verify that it makes sense and store the result internally.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.io.iobase.Sensor._DEFAULT_STORED_OBSERVATIONS">
+<code class="sig-name descname">_DEFAULT_STORED_OBSERVATIONS</code><em class="property"> = 128</em><a class="headerlink" href="#vent.io.iobase.Sensor._DEFAULT_STORED_OBSERVATIONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upon creation, calls update() to ensure that if get is
+called there will be something to return</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a sensor reading, verify that it makes sense and store
+the result internally. Returns True if reading was verified and
+False if something went wrong.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the most recent sensor reading.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor.age">
+<code class="sig-name descname">age</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor.age"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor.age" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the time since the last sensor update, in seconds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the sensors internal memory. May be overloaded by
+subclasses to extend functionality specific to a device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor.data">
+<em class="property">property </em><code class="sig-name descname">data</code><a class="headerlink" href="#vent.io.iobase.Sensor.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generalized, not necessarily performant. Returns an ndarray
+of observations arranged oldest to newest. Result has length
+equal to the lessor of self.n and the number of observations
+made.</p>
+<p>Note: ndarray.astype(bool) returns an equivalent sized array
+with True for each nonzero element and False everywhere else.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor.data_length">
+<em class="property">property </em><code class="sig-name descname">data_length</code><a class="headerlink" href="#vent.io.iobase.Sensor.data_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of observations kept in the Sensor’s
+internal ndarray. Once the ndarray has been filled, the sensor
+begins overwriting the oldest elements of the ndarray with new
+observations such that the size of the internal storage stays
+constant.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor._read">
+<code class="sig-name descname">_read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor._read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor._read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls _raw_read and scales the result before returning it</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor._verify">
+<em class="property">abstract </em><code class="sig-name descname">_verify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor._verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor._verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate reading and throw exception/alarm if sensor does not
+appear to be working correctly</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor._convert">
+<em class="property">abstract </em><code class="sig-name descname">_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor._convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor._convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a raw reading from a sensor in whatever forma
+the device communicates with into a meaningful result.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor._raw_read">
+<em class="property">abstract </em><code class="sig-name descname">_raw_read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Sensor._raw_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Sensor._raw_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests a new observation from the device and returns the
+raw result in whatever format/units the device communicates with</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Sensor._Sensor__store_last">
+<code class="sig-name descname">_Sensor__store_last</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vent.io.iobase.Sensor._Sensor__store_last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a value and stores it in self.data. Increments counter</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.Sensor._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.iobase.Sensor._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.AnalogSensor">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">AnalogSensor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">adc</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#AnalogSensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.AnalogSensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.Sensor" title="vent.io.iobase.Sensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.Sensor</span></code></a></p>
+<p>Generalized class describing an analog sensor attached to the
+ADS1115 analog to digital converter. Inherits from the sensor base
+class and extends with functionality specific to analog sensors
+attached to the ads1115.</p>
+<p>If instantiated without a subclass, conceptually represents a
+voltmeter with a normalized output.</p>
+<p>Links analog sensor on the ADC with configutation options
+specified. If no options are specified, it assumes the settings
+currently on the ADC.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._CONVERSION_FACTOR" title="vent.io.iobase.AnalogSensor._CONVERSION_FACTOR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_CONVERSION_FACTOR</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._DEFAULT_CALIBRATION" title="vent.io.iobase.AnalogSensor._DEFAULT_CALIBRATION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULT_CALIBRATION</span></code></a></p></td>
+<td><p>dict() -&gt; new empty dictionary</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._DEFAULT_OFFSET_VOLTAGE" title="vent.io.iobase.AnalogSensor._DEFAULT_OFFSET_VOLTAGE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULT_OFFSET_VOLTAGE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._DEFAULT_OUTPUT_SPAN" title="vent.io.iobase.AnalogSensor._DEFAULT_OUTPUT_SPAN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULT_OUTPUT_SPAN</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor.__init__" title="vent.io.iobase.AnalogSensor.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(adc, **kwargs)</p></td>
+<td><p>Links analog sensor on the ADC with configutation options specified.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._check_and_set_attr" title="vent.io.iobase.AnalogSensor._check_and_set_attr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_and_set_attr</span></code></a>(**kwargs)</p></td>
+<td><p>Checks to see if arguments passed to __init__ are recognized as user configurable or calibration fields.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._convert" title="vent.io.iobase.AnalogSensor._convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_convert</span></code></a>(raw)</p></td>
+<td><p>Scales raw voltage into the range 0 - 1</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._fill_attr" title="vent.io.iobase.AnalogSensor._fill_attr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_fill_attr</span></code></a>()</p></td>
+<td><p>Examines self to see if there are any fields identified as user configurable or calibration that have not been set (i.e.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._raw_read" title="vent.io.iobase.AnalogSensor._raw_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_raw_read</span></code></a>()</p></td>
+<td><p>Builds kwargs from configured fields to pass along to adc, then calls adc.read_conversion(), which returns a raw voltage.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._read" title="vent.io.iobase.AnalogSensor._read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read</span></code></a>()</p></td>
+<td><p>Returns a value in the range of 0 - 1 corresponding to a</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor._verify" title="vent.io.iobase.AnalogSensor._verify"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_verify</span></code></a>(value)</p></td>
+<td><p>Checks to make sure sensor reading was indeed in [0, 1]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.AnalogSensor.calibrate" title="vent.io.iobase.AnalogSensor.calibrate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calibrate</span></code></a>(**kwargs)</p></td>
+<td><p>Sets the calibration of the sensor, either to the values</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.io.iobase.AnalogSensor._DEFAULT_OFFSET_VOLTAGE">
+<code class="sig-name descname">_DEFAULT_OFFSET_VOLTAGE</code><em class="property"> = 0</em><a class="headerlink" href="#vent.io.iobase.AnalogSensor._DEFAULT_OFFSET_VOLTAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.AnalogSensor._DEFAULT_OUTPUT_SPAN">
+<code class="sig-name descname">_DEFAULT_OUTPUT_SPAN</code><em class="property"> = 5</em><a class="headerlink" href="#vent.io.iobase.AnalogSensor._DEFAULT_OUTPUT_SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.AnalogSensor._CONVERSION_FACTOR">
+<code class="sig-name descname">_CONVERSION_FACTOR</code><em class="property"> = 1</em><a class="headerlink" href="#vent.io.iobase.AnalogSensor._CONVERSION_FACTOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.AnalogSensor._DEFAULT_CALIBRATION">
+<code class="sig-name descname">_DEFAULT_CALIBRATION</code><em class="property"> = {'OFFSET_VOLTAGE': 0, 'OUTPUT_SPAN': 5}</em><a class="headerlink" href="#vent.io.iobase.AnalogSensor._DEFAULT_CALIBRATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.AnalogSensor.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">adc</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#AnalogSensor.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.AnalogSensor.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Links analog sensor on the ADC with configutation options
+specified. If no options are specified, it assumes the settings
+currently on the ADC.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.AnalogSensor.calibrate">
+<code class="sig-name descname">calibrate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#AnalogSensor.calibrate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.AnalogSensor.calibrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the calibration of the sensor, either to the values
+contained in the passed tuple or by some routine; the current
+routine is pretty rudimentary and only calibrates offset voltage</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.AnalogSensor._read">
+<code class="sig-name descname">_read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#AnalogSensor._read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.AnalogSensor._read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a value in the range of 0 - 1 corresponding to a
+fraction of the full input range of the sensor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.AnalogSensor._verify">
+<code class="sig-name descname">_verify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#AnalogSensor._verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.AnalogSensor._verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks to make sure sensor reading was indeed in [0, 1]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.AnalogSensor._convert">
+<code class="sig-name descname">_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#AnalogSensor._convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.AnalogSensor._convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scales raw voltage into the range 0 - 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.AnalogSensor._raw_read">
+<code class="sig-name descname">_raw_read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#AnalogSensor._raw_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.AnalogSensor._raw_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds kwargs from configured fields to pass along to adc,
+then calls adc.read_conversion(), which returns a raw voltage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.AnalogSensor._fill_attr">
+<code class="sig-name descname">_fill_attr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#AnalogSensor._fill_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.AnalogSensor._fill_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Examines self to see if there are any fields identified as
+user configurable or calibration that have not been set (i.e.
+were not passed to __init__ as <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs). If a field is missing,
+grabs the default value either from the ADC or from
+_DEFAULT_CALIBRATION and sets it as an attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.AnalogSensor._check_and_set_attr">
+<code class="sig-name descname">_check_and_set_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#AnalogSensor._check_and_set_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.AnalogSensor._check_and_set_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks to see if arguments passed to __init__ are recognized
+as user configurable or calibration fields. If so, set the value
+as an attribute like: self.KEY = VALUE. Keeps track of how many
+attributes are set in this way; if at the end there unknown
+arguments leftover, raises a TypeError; otherwise, calls
+_fill_attr() to fill in fields that were not passed</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.AnalogSensor._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.iobase.AnalogSensor._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.Pin">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">Pin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pin</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Pin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Pin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.IODeviceBase" title="vent.io.iobase.IODeviceBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.IODeviceBase</span></code></a></p>
+<p>Base Class wrapping pigpio methods for interacting with GPIO pins on
+the raspberry pi. Subclasses include InputPin, OutputPin; along with
+any specialized pins or specific devices defined in vent.io.actuators
+&amp; vent.io.sensors (note: actuators and sensors do not need to be tied
+to a GPIO pin and may instead be interfaced through an ADC or I2C).</p>
+<p>When this class is initialized without a subclass, it represents a
+fully-functional binary digital GPIO pin. The subclasses InputPin and
+OutputPin overload some functionaly of Pin in order to ensure the user
+is warned when they call methods that are not consistent with the
+declared use (i.e. calling .set() on an InputPin).</p>
+<p>Inherits attributes and methods from IODeviceBase.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Pin._PIGPIO_MODES" title="vent.io.iobase.Pin._PIGPIO_MODES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PIGPIO_MODES</span></code></a></p></td>
+<td><p>dict() -&gt; new empty dictionary</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.Pin.mode" title="vent.io.iobase.Pin.mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mode</span></code></a></p></td>
+<td><p>The currently active pigpio mode of the pin.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Pin.__init__" title="vent.io.iobase.Pin.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(pin[, pig])</p></td>
+<td><p>Inherits attributes and methods from IODeviceBase.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.Pin.get" title="vent.io.iobase.Pin.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>()</p></td>
+<td><p>Returns the value of the pin: usually 0 or 1 but can be overridden e.g.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.Pin.set" title="vent.io.iobase.Pin.set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></a>(value)</p></td>
+<td><p>Sets the value of the Pin.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.io.iobase.Pin._PIGPIO_MODES">
+<code class="sig-name descname">_PIGPIO_MODES</code><em class="property"> = {'ALT0': 4, 'ALT1': 5, 'ALT2': 6, 'ALT3': 7, 'ALT4': 3, 'ALT5': 2, 'INPUT': 0, 'OUTPUT': 1}</em><a class="headerlink" href="#vent.io.iobase.Pin._PIGPIO_MODES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Pin.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pin</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Pin.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Pin.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inherits attributes and methods from IODeviceBase.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Pin.mode">
+<em class="property">property </em><code class="sig-name descname">mode</code><a class="headerlink" href="#vent.io.iobase.Pin.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>The currently active pigpio mode of the pin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Pin.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Pin.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Pin.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the pin: usually 0 or 1 but can be
+overridden e.g. by PWM which returns duty cycle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.Pin.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#Pin.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.Pin.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the value of the Pin. Usually 0 or 1 but behavior
+differs for some subclasses.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.Pin._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.iobase.Pin._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.InputPin">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">InputPin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pin</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#InputPin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.InputPin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.Pin" title="vent.io.iobase.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.Pin</span></code></a></p>
+<p>Subclass of Pin that should be used when calls to the pin should be
+read-only during normal operation.
+That is, if a call is made to set the value on an InputPin, it will
+throw a runtime warning.</p>
+<p>Inherits attributes and methods from IODeviceBase.</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.InputPin.set" title="vent.io.iobase.InputPin.set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></a>(value)</p></td>
+<td><p>Extends superclass method to raise a warning that pin is being used in a manner contrary to its declared nature.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.io.iobase.InputPin.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#InputPin.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.InputPin.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends superclass method to raise a warning that pin is
+being used in a manner contrary to its declared nature.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.InputPin._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.iobase.InputPin._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.OutputPin">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">OutputPin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pin</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#OutputPin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.OutputPin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.Pin" title="vent.io.iobase.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.Pin</span></code></a></p>
+<p>Subclass of Pin that should be used when calls to the pin should be
+write-only during normal operation.
+That is, if a call is made to get the value of an OutputPin, it will
+throw a runtime warning.</p>
+<p>Inherits attributes and methods from IODeviceBase.</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.OutputPin.get" title="vent.io.iobase.OutputPin.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>()</p></td>
+<td><p>Extends superclass method to raise a warning that pin is being used in a manner contrary to its declared nature.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.OutputPin.off" title="vent.io.iobase.OutputPin.off"><code class="xref py py-obj docutils literal notranslate"><span class="pre">off</span></code></a>()</p></td>
+<td><p>Turn off a pin.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.OutputPin.on" title="vent.io.iobase.OutputPin.on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on</span></code></a>()</p></td>
+<td><p>Turn on a pin.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.OutputPin.toggle" title="vent.io.iobase.OutputPin.toggle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toggle</span></code></a>()</p></td>
+<td><p>If pin is on, turn it off.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.io.iobase.OutputPin.on">
+<code class="sig-name descname">on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#OutputPin.on"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.OutputPin.on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn on a pin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.OutputPin.off">
+<code class="sig-name descname">off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#OutputPin.off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.OutputPin.off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off a pin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.OutputPin.toggle">
+<code class="sig-name descname">toggle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#OutputPin.toggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.OutputPin.toggle" title="Permalink to this definition">¶</a></dt>
+<dd><p>If pin is on, turn it off. If it’s off, turn it on. Do not
+raise a warning when pin is read in this way.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.OutputPin.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#OutputPin.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.OutputPin.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends superclass method to raise a warning that pin is
+being used in a manner contrary to its declared nature.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.OutputPin._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.iobase.OutputPin._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.io.iobase.PWMOutput">
+<em class="property">class </em><code class="sig-prename descclassname">vent.io.iobase.</code><code class="sig-name descname">PWMOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pin</span></em>, <em class="sig-param"><span class="n">initial_duty</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">frequency</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#PWMOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.PWMOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.io.iobase.OutputPin" title="vent.io.iobase.OutputPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.io.iobase.OutputPin</span></code></a></p>
+<p>I am a Special Pin!</p>
+<p>Inherits attributes and methods from IODeviceBase.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput._DEFAULT_FREQUENCY" title="vent.io.iobase.PWMOutput._DEFAULT_FREQUENCY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULT_FREQUENCY</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput._DEFAULT_SOFT_FREQ" title="vent.io.iobase.PWMOutput._DEFAULT_SOFT_FREQ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULT_SOFT_FREQ</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput._HARDWARE_PWM_PINS" title="vent.io.iobase.PWMOutput._HARDWARE_PWM_PINS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_HARDWARE_PWM_PINS</span></code></a></p></td>
+<td><p>Built-in immutable sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput.duty" title="vent.io.iobase.PWMOutput.duty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">duty</span></code></a></p></td>
+<td><p>Description:</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput.frequency" title="vent.io.iobase.PWMOutput.frequency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frequency</span></code></a></p></td>
+<td><p>Return the current PWM frequency active on the pin.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput._PWMOutput__hardware_pwm" title="vent.io.iobase.PWMOutput._PWMOutput__hardware_pwm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PWMOutput__hardware_pwm</span></code></a>(frequency, duty)</p></td>
+<td><p>Description: -Tries to set a hardware pwm.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput._PWMOutput__pwm" title="vent.io.iobase.PWMOutput._PWMOutput__pwm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PWMOutput__pwm</span></code></a>(frequency, duty)</p></td>
+<td><p>Description: -If hardware_enabled is True, start a hardware pwm with the requested duty.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput._PWMOutput__software_pwm" title="vent.io.iobase.PWMOutput._PWMOutput__software_pwm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PWMOutput__software_pwm</span></code></a>(frequency, duty)</p></td>
+<td><p>Used for pins where hardware PWM is not available.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput.get" title="vent.io.iobase.PWMOutput.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>()</p></td>
+<td><p>Overloaded to return duty cycle instead of reading the value on the pin</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput.off" title="vent.io.iobase.PWMOutput.off"><code class="xref py py-obj docutils literal notranslate"><span class="pre">off</span></code></a>()</p></td>
+<td><p>Same functionality as parent, but done with PWM intact</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput.on" title="vent.io.iobase.PWMOutput.on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on</span></code></a>()</p></td>
+<td><p>Same functionality as parent, but done with PWM intact</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.io.iobase.PWMOutput.set" title="vent.io.iobase.PWMOutput.set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></a>(value)</p></td>
+<td><p>Overloaded to set duty cycle</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.io.iobase.PWMOutput._DEFAULT_FREQUENCY">
+<code class="sig-name descname">_DEFAULT_FREQUENCY</code><em class="property"> = 20000</em><a class="headerlink" href="#vent.io.iobase.PWMOutput._DEFAULT_FREQUENCY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.PWMOutput._DEFAULT_SOFT_FREQ">
+<code class="sig-name descname">_DEFAULT_SOFT_FREQ</code><em class="property"> = 2000</em><a class="headerlink" href="#vent.io.iobase.PWMOutput._DEFAULT_SOFT_FREQ" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.PWMOutput._HARDWARE_PWM_PINS">
+<code class="sig-name descname">_HARDWARE_PWM_PINS</code><em class="property"> = (12, 13, 18, 19)</em><a class="headerlink" href="#vent.io.iobase.PWMOutput._HARDWARE_PWM_PINS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.PWMOutput.frequency">
+<em class="property">property </em><code class="sig-name descname">frequency</code><a class="headerlink" href="#vent.io.iobase.PWMOutput.frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current PWM frequency active on the pin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.PWMOutput.duty">
+<em class="property">property </em><code class="sig-name descname">duty</code><a class="headerlink" href="#vent.io.iobase.PWMOutput.duty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description:
+Returns the PWM duty cycle (pulled straight from pigpiod) mapped to the range [0-1]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.PWMOutput.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#PWMOutput.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.PWMOutput.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded to return duty cycle instead of reading the value on the pin</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.PWMOutput.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#PWMOutput.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.PWMOutput.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded to set duty cycle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.PWMOutput._PWMOutput__hardware_pwm">
+<code class="sig-name descname">_PWMOutput__hardware_pwm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frequency</span></em>, <em class="sig-param"><span class="n">duty</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vent.io.iobase.PWMOutput._PWMOutput__hardware_pwm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description:
+-Tries to set a hardware pwm. result == 0 if it suceeds.
+-Sets hardware_enabled flag to indicate success or failure</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.PWMOutput._PWMOutput__pwm">
+<code class="sig-name descname">_PWMOutput__pwm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frequency</span></em>, <em class="sig-param"><span class="n">duty</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vent.io.iobase.PWMOutput._PWMOutput__pwm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description:
+-If hardware_enabled is True, start a hardware pwm with the requested duty.
+-Otherwise (or if setting a hardware pwm fails and hardware_enabled is set to False),</p>
+<blockquote>
+<div><p>set a software pwm in the same manner.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.PWMOutput._PWMOutput__software_pwm">
+<code class="sig-name descname">_PWMOutput__software_pwm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frequency</span></em>, <em class="sig-param"><span class="n">duty</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vent.io.iobase.PWMOutput._PWMOutput__software_pwm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for pins where hardware PWM is not available.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.io.iobase.PWMOutput._abc_impl">
+<code class="sig-name descname">_abc_impl</code><em class="property"> = &lt;_abc_data object&gt;</em><a class="headerlink" href="#vent.io.iobase.PWMOutput._abc_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.PWMOutput.on">
+<code class="sig-name descname">on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#PWMOutput.on"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.PWMOutput.on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same functionality as parent, but done with PWM intact</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.io.iobase.PWMOutput.off">
+<code class="sig-name descname">off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/io/iobase.html#PWMOutput.off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.io.iobase.PWMOutput.off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same functionality as parent, but done with PWM intact</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vent.io">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-vent.io" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="requirements.html" class="btn btn-neutral float-right" title="Requirements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gui.html" class="btn btn-neutral float-left" title="gui" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

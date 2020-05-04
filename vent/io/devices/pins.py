@@ -1,4 +1,4 @@
-from vent.io import IODeviceBase
+from vent.io.devices import IODeviceBase
 
 
 class Pin(IODeviceBase):

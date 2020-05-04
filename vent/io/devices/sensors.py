@@ -4,8 +4,7 @@ from time import sleep
 
 import numpy as np
 
-from vent.io import be16_to_native
-from vent.io.devices import I2CDevice
+from vent.io.devices import I2CDevice, be16_to_native
 
 
 class Sensor(ABC):
@@ -133,10 +132,10 @@ class AnalogSensor(Sensor):
     """
     _DEFAULT_offset_voltage = 0
     _DEFAULT_output_span = 5
-    _CONVERSION_FACTOR = 1
     _DEFAULT_CALIBRATION = {
         'offset_voltage': _DEFAULT_offset_voltage,
-        'output_span': _DEFAULT_output_span
+        'output_span': _DEFAULT_output_span,
+        'conversion_factor': 1
     }
 
     def __init__(self, adc, **kwargs):
@@ -184,7 +183,7 @@ class AnalogSensor(Sensor):
     def _verify(self, value):
         """ Checks to make sure sensor reading was indeed in [0, 1]
         """
-        report = bool(0 <= value <= 1)
+        report = bool(0 <= value/self.conversion_factor <= 1)
         if not report:
             print(value)
         return report
@@ -193,7 +192,7 @@ class AnalogSensor(Sensor):
         """ Scales raw voltage into the range 0 - 1
         """
         return (
-                (raw - getattr(self, 'offset_voltage'))
+                self.conversion_factor * (raw - getattr(self, 'offset_voltage'))
                 / (getattr(self, 'output_span') + getattr(self, 'offset_voltage'))
         )
 
@@ -246,41 +245,6 @@ class AnalogSensor(Sensor):
         if result != len(kwargs):
             raise TypeError('AnalogSensor was passed unknown field(s)')
         self._fill_attr()
-
-
-class P4vMini(AnalogSensor):
-    """ Analog gauge pressure sensor with range of 0 - 20" h20. The
-    calibration outlined in the datasheet has low =  0.25V and
-    high = 4.0V (give or take a bit). The conversion factor is derived
-    from the sensor's maximum output of 20 in(h20), and we want sensor
-    readings in cm h20: (2.54 cm/in * 20" h20) * read() = observed cmh20
-
-    The only difference between this device and a generic AnalogSensor
-    is its calibration, and the additional unit conversion in _convert()
-    """
-    _CALIBRATION = {
-        'offset_voltage': 0.25,
-        'output_span': 4.0
-    }
-    _CONVERSION_FACTOR = 2.54 * 20
-
-    def __init__(self, adc, mux, **calibration_kwargs):
-        super().__init__(adc, MUX=mux, **calibration_kwargs)
-
-        # A check here to make sure calibrated offset voltage is
-        #  reasonably close to what is currently coming from the sensor
-        #   would be prudent. A warning is probably sufficient.
-
-    def _verify(self, value):
-        """ Extends superclass value to function with a conversion
-        factor
-        """
-        return super()._verify(value / self._CONVERSION_FACTOR)
-
-    def _convert(self, raw):
-        """ Overloaded to map AnalogSensor's normalized output into the
-        desired units of cm(h20)"""
-        return self._CONVERSION_FACTOR * super()._convert(raw)
 
 
 class SFM3200(Sensor, I2CDevice):

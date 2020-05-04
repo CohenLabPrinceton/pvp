@@ -100,7 +100,7 @@ GUI Object Documentation
 Main GUI Module
 ~~~~~~~~~~~~~~~~~
 
-.. automodule:: vent.gui
+.. automodule:: vent.gui.main
     :members:
     :undoc-members:
     :autosummary:
@@ -108,7 +108,27 @@ Main GUI Module
 GUI Widgets
 ~~~~~~~~~~~~~
 
-.. automodule:: vent.gui.widgets
+.. automodule:: vent.gui.widgets.control
+    :members:
+    :undoc-members:
+    :autosummary:
+
+.. automodule:: vent.gui.widgets.monitor
+    :members:
+    :undoc-members:
+    :autosummary:
+
+.. automodule:: vent.gui.widgets.plot
+    :members:
+    :undoc-members:
+    :autosummary:
+
+.. automodule:: vent.gui.widgets.status_bar
+    :members:
+    :undoc-members:
+    :autosummary:
+
+.. automodule:: vent.gui.widgets.components
     :members:
     :undoc-members:
     :autosummary:
@@ -125,6 +145,14 @@ GUI Stylesheets
 ~~~~~~~~~~~~~~~~~~
 
 .. automodule:: vent.gui.styles
+    :members:
+    :undoc-members:
+    :autosummary:
+
+GUI Alarm Manager
+~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: vent.gui.alarm_manager
     :members:
     :undoc-members:
     :autosummary:

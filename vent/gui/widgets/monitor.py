@@ -191,11 +191,11 @@ class Monitor(QtWidgets.QWidget):
         self.limits_changed.emit((self.min_safe.value(), self.max_safe.value()))
 
     @property
-    def alarm(self):
+    def alarm_state(self):
         return self._alarm
 
-    @alarm.setter
-    def alarm(self, alarm):
+    @alarm_state.setter
+    def alarm_state(self, alarm):
         if alarm == True:
             self.value_label.setStyleSheet(styles.DISPLAY_VALUE_ALARM)
             self._alarm = True
@@ -203,12 +203,22 @@ class Monitor(QtWidgets.QWidget):
             self.value_label.setStyleSheet(styles.DISPLAY_VALUE)
             self._alarm = False
 
+    @QtCore.Slot(bool)
+    def set_alarm(self, alarm):
+        """
+        Simple wrapper to set alarm state from a qt signal
+
+        Args:
+            alarm (bool): Whether to set as alarm state or not
+        """
+        self.alarm_state = alarm
+
     def toggle_alarm(self):
 
-        if self.alarm == False:
-            self.alarm = True
+        if self.alarm_state == False:
+            self.alarm_state = True
         else:
-            self.alarm = False
+            self.alarm_state = False
 
     def check_alarm(self, value=None):
         if value is None:

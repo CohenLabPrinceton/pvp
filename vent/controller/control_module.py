@@ -535,6 +535,10 @@ class ControlModuleBase:
         else:
             print("Main Loop is not running.")
 
+    def is_running(self):
+        # TODO: this should be better thread-safe variable
+        return self._running
+
     def do_pid_control(self):
         if self._pid_control_flag:
             print("Already running PID control.")

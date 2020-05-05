@@ -1,0 +1,593 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>vent.common package &mdash; ventilator 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>vent.common package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/vent.common.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="vent-common-package">
+<h1>vent.common package<a class="headerlink" href="#vent-common-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-vent.common.message">
+<span id="vent-common-message-module"></span><h2>vent.common.message module<a class="headerlink" href="#module-vent.common.message" title="Permalink to this headline">¶</a></h2>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.Alarm" title="vent.common.message.Alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Alarm</span></code></a>(alarm_name, is_active, severity, …)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param alarm_name</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.AlarmSeverity" title="vent.common.message.AlarmSeverity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AlarmSeverity</span></code></a></p></td>
+<td><p>An enumeration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ControlSetting</span></code></a>(name, value, min_value, …)</p></td>
+<td><p>TODO: if enum is hard to use, we may just use a predefined set, e.g.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName" title="vent.common.message.ControlSettingName"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ControlSettingName</span></code></a></p></td>
+<td><p>An enumeration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.Error" title="vent.common.message.Error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Error</span></code></a>(errnum, err_str, timestamp)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.IPCMessage" title="vent.common.message.IPCMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPCMessage</span></code></a>(command)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param command</dt>
+<dd class="field-odd"><p>ENUM in IPCMessageCommand</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.IPCMessageCommand" title="vent.common.message.IPCMessageCommand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPCMessageCommand</span></code></a></p></td>
+<td><p>An enumeration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.SensorValues" title="vent.common.message.SensorValues"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SensorValues</span></code></a>([pip, peep, fio2, temp, …])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="vent.common.message.SensorValues">
+<em class="property">class </em><code class="sig-prename descclassname">vent.common.message.</code><code class="sig-name descname">SensorValues</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pip</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">peep</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fio2</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">temp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">humidity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pressure</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vte</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">breaths_per_minute</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inspiration_time_sec</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">timestamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loop_counter</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/common/message.html#SensorValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.SensorValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.common.message.ControlSettingName">
+<em class="property">class </em><code class="sig-prename descclassname">vent.common.message.</code><code class="sig-name descname">ControlSettingName</code><a class="reference internal" href="_modules/vent/common/message.html#ControlSettingName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.ControlSettingName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>An enumeration.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName.BREATHS_PER_MINUTE" title="vent.common.message.ControlSettingName.BREATHS_PER_MINUTE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BREATHS_PER_MINUTE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName.FIO2" title="vent.common.message.ControlSettingName.FIO2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FIO2</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName.HUMIDITY" title="vent.common.message.ControlSettingName.HUMIDITY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HUMIDITY</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName.INSPIRATION_TIME_SEC" title="vent.common.message.ControlSettingName.INSPIRATION_TIME_SEC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INSPIRATION_TIME_SEC</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName.PEEP" title="vent.common.message.ControlSettingName.PEEP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PEEP</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName.PIP" title="vent.common.message.ControlSettingName.PIP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PIP</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName.PIP_TIME" title="vent.common.message.ControlSettingName.PIP_TIME"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PIP_TIME</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName.TEMP" title="vent.common.message.ControlSettingName.TEMP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TEMP</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSettingName.VTE" title="vent.common.message.ControlSettingName.VTE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VTE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.common.message.ControlSettingName.PIP">
+<code class="sig-name descname">PIP</code><em class="property"> = 1</em><a class="headerlink" href="#vent.common.message.ControlSettingName.PIP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.ControlSettingName.PIP_TIME">
+<code class="sig-name descname">PIP_TIME</code><em class="property"> = 2</em><a class="headerlink" href="#vent.common.message.ControlSettingName.PIP_TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.ControlSettingName.PEEP">
+<code class="sig-name descname">PEEP</code><em class="property"> = 3</em><a class="headerlink" href="#vent.common.message.ControlSettingName.PEEP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.ControlSettingName.BREATHS_PER_MINUTE">
+<code class="sig-name descname">BREATHS_PER_MINUTE</code><em class="property"> = 4</em><a class="headerlink" href="#vent.common.message.ControlSettingName.BREATHS_PER_MINUTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.ControlSettingName.INSPIRATION_TIME_SEC">
+<code class="sig-name descname">INSPIRATION_TIME_SEC</code><em class="property"> = 5</em><a class="headerlink" href="#vent.common.message.ControlSettingName.INSPIRATION_TIME_SEC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.ControlSettingName.FIO2">
+<code class="sig-name descname">FIO2</code><em class="property"> = 6</em><a class="headerlink" href="#vent.common.message.ControlSettingName.FIO2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.ControlSettingName.TEMP">
+<code class="sig-name descname">TEMP</code><em class="property"> = 7</em><a class="headerlink" href="#vent.common.message.ControlSettingName.TEMP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.ControlSettingName.HUMIDITY">
+<code class="sig-name descname">HUMIDITY</code><em class="property"> = 8</em><a class="headerlink" href="#vent.common.message.ControlSettingName.HUMIDITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.ControlSettingName.VTE">
+<code class="sig-name descname">VTE</code><em class="property"> = 9</em><a class="headerlink" href="#vent.common.message.ControlSettingName.VTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.common.message.ControlSetting">
+<em class="property">class </em><code class="sig-prename descclassname">vent.common.message.</code><code class="sig-name descname">ControlSetting</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">min_value</span></em>, <em class="sig-param"><span class="n">max_value</span></em>, <em class="sig-param"><span class="n">timestamp</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/common/message.html#ControlSetting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.ControlSetting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>TODO: if enum is hard to use, we may just use a predefined set, e.g. {‘PIP’, ‘PEEP’, …}
+:param name: enum belong to ControlSettingName
+:param value:
+:param min_value:
+:param max_value:
+:param timestamp:</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.ControlSetting.__init__" title="vent.common.message.ControlSetting.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(name, value, min_value, max_value, …)</p></td>
+<td><p>TODO: if enum is hard to use, we may just use a predefined set, e.g.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.common.message.ControlSetting.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">min_value</span></em>, <em class="sig-param"><span class="n">max_value</span></em>, <em class="sig-param"><span class="n">timestamp</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/common/message.html#ControlSetting.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.ControlSetting.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: if enum is hard to use, we may just use a predefined set, e.g. {‘PIP’, ‘PEEP’, …}
+:param name: enum belong to ControlSettingName
+:param value:
+:param min_value:
+:param max_value:
+:param timestamp:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.common.message.AlarmSeverity">
+<em class="property">class </em><code class="sig-prename descclassname">vent.common.message.</code><code class="sig-name descname">AlarmSeverity</code><a class="reference internal" href="_modules/vent/common/message.html#AlarmSeverity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.AlarmSeverity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>An enumeration.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.AlarmSeverity.ORANGE" title="vent.common.message.AlarmSeverity.ORANGE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ORANGE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.AlarmSeverity.RED" title="vent.common.message.AlarmSeverity.RED"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RED</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.AlarmSeverity.YELLOW" title="vent.common.message.AlarmSeverity.YELLOW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YELLOW</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.common.message.AlarmSeverity.RED">
+<code class="sig-name descname">RED</code><em class="property"> = 1</em><a class="headerlink" href="#vent.common.message.AlarmSeverity.RED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.AlarmSeverity.ORANGE">
+<code class="sig-name descname">ORANGE</code><em class="property"> = 2</em><a class="headerlink" href="#vent.common.message.AlarmSeverity.ORANGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.AlarmSeverity.YELLOW">
+<code class="sig-name descname">YELLOW</code><em class="property"> = 3</em><a class="headerlink" href="#vent.common.message.AlarmSeverity.YELLOW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.common.message.Alarm">
+<em class="property">class </em><code class="sig-prename descclassname">vent.common.message.</code><code class="sig-name descname">Alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_name</span></em>, <em class="sig-param"><span class="n">is_active</span></em>, <em class="sig-param"><span class="n">severity</span></em>, <em class="sig-param"><span class="n">alarm_start_time</span></em>, <em class="sig-param"><span class="n">alarm_end_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/common/message.html#Alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.Alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alarm_name</strong> – </p></li>
+<li><p><strong>is_active</strong> – </p></li>
+<li><p><strong>severity</strong> – ENUM in AlarmSeverity</p></li>
+<li><p><strong>alarm_start_time</strong> – </p></li>
+<li><p><strong>alarm_end_time</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.Alarm.__init__" title="vent.common.message.Alarm.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(alarm_name, is_active, severity, …)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param alarm_name</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.common.message.Alarm.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_name</span></em>, <em class="sig-param"><span class="n">is_active</span></em>, <em class="sig-param"><span class="n">severity</span></em>, <em class="sig-param"><span class="n">alarm_start_time</span></em>, <em class="sig-param"><span class="n">alarm_end_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/common/message.html#Alarm.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.Alarm.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alarm_name</strong> – </p></li>
+<li><p><strong>is_active</strong> – </p></li>
+<li><p><strong>severity</strong> – ENUM in AlarmSeverity</p></li>
+<li><p><strong>alarm_start_time</strong> – </p></li>
+<li><p><strong>alarm_end_time</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.common.message.Error">
+<em class="property">class </em><code class="sig-prename descclassname">vent.common.message.</code><code class="sig-name descname">Error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">errnum</span></em>, <em class="sig-param"><span class="n">err_str</span></em>, <em class="sig-param"><span class="n">timestamp</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/common/message.html#Error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.Error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.common.message.IPCMessageCommand">
+<em class="property">class </em><code class="sig-prename descclassname">vent.common.message.</code><code class="sig-name descname">IPCMessageCommand</code><a class="reference internal" href="_modules/vent/common/message.html#IPCMessageCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.IPCMessageCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>An enumeration.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.IPCMessageCommand.GETALARMS" title="vent.common.message.IPCMessageCommand.GETALARMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GETALARMS</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.IPCMessageCommand.GETSENSORS" title="vent.common.message.IPCMessageCommand.GETSENSORS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GETSENSORS</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.IPCMessageCommand.RESET" title="vent.common.message.IPCMessageCommand.RESET"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RESET</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.IPCMessageCommand.SETCONTROLS" title="vent.common.message.IPCMessageCommand.SETCONTROLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SETCONTROLS</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.IPCMessageCommand.START" title="vent.common.message.IPCMessageCommand.START"><code class="xref py py-obj docutils literal notranslate"><span class="pre">START</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="common.html#vent.common.message.IPCMessageCommand.STOP" title="vent.common.message.IPCMessageCommand.STOP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STOP</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.common.message.IPCMessageCommand.START">
+<code class="sig-name descname">START</code><em class="property"> = 1</em><a class="headerlink" href="#vent.common.message.IPCMessageCommand.START" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.IPCMessageCommand.STOP">
+<code class="sig-name descname">STOP</code><em class="property"> = 2</em><a class="headerlink" href="#vent.common.message.IPCMessageCommand.STOP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.IPCMessageCommand.RESET">
+<code class="sig-name descname">RESET</code><em class="property"> = 3</em><a class="headerlink" href="#vent.common.message.IPCMessageCommand.RESET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.IPCMessageCommand.GETSENSORS">
+<code class="sig-name descname">GETSENSORS</code><em class="property"> = 4</em><a class="headerlink" href="#vent.common.message.IPCMessageCommand.GETSENSORS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.IPCMessageCommand.GETALARMS">
+<code class="sig-name descname">GETALARMS</code><em class="property"> = 5</em><a class="headerlink" href="#vent.common.message.IPCMessageCommand.GETALARMS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.common.message.IPCMessageCommand.SETCONTROLS">
+<code class="sig-name descname">SETCONTROLS</code><em class="property"> = 6</em><a class="headerlink" href="#vent.common.message.IPCMessageCommand.SETCONTROLS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.common.message.IPCMessage">
+<em class="property">class </em><code class="sig-prename descclassname">vent.common.message.</code><code class="sig-name descname">IPCMessage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/common/message.html#IPCMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.IPCMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>command</strong> – ENUM in IPCMessageCommand</p>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="common.html#vent.common.message.IPCMessage.__init__" title="vent.common.message.IPCMessage.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(command)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param command</dt>
+<dd class="field-odd"><p>ENUM in IPCMessageCommand</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.common.message.IPCMessage.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/common/message.html#IPCMessage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.common.message.IPCMessage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>command</strong> – ENUM in IPCMessageCommand</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vent.common">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-vent.common" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

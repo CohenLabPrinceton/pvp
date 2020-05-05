@@ -18,14 +18,12 @@ Welcome to ventilator's documentation!
    :caption: Software:
 
 
-   alarms
-   controller
-   controls
+   common <common>
+   controller <controller>
+   coordinator <coordinator>
    GUI <gui>
-   helper
-   main
-   main_control
-   sensors
+   io <io>
+
 
 .. toctree::
    :maxdepth: 2

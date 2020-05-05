@@ -1,15 +1,16 @@
-import time
 import threading
 from typing import List, Dict
-import vent
-from vent.common.message import SensorValues, ControlSetting, Alarm
-from vent.common.values import ValueName
-from vent.common import values
-from vent.common.message import SensorValueNew
-import vent.controller.control_module
-from vent.coordinator.rpc import get_rpc_client
-from vent.coordinator.process_manager import ProcessManager
 import pickle
+import threading
+from typing import List, Dict
+
+import vent
+import vent.controller.control_module
+from vent.common.message import ControlSetting, Alarm
+from vent.common.message import SensorValueNew
+from vent.common.values import ValueName
+from vent.coordinator.process_manager import ProcessManager
+from vent.coordinator.rpc import get_rpc_client
 
 
 class CoordinatorBase:
@@ -35,7 +36,7 @@ class CoordinatorBase:
     def get_logged_alarms(self) -> List[Alarm]:
         pass
 
-    def clear_logged_alarms(pself):
+    def clear_logged_alarms(self):
         pass
 
     def set_control(self, control_setting: ControlSetting):
@@ -98,7 +99,7 @@ class CoordinatorLocal(CoordinatorBase):
     def get_logged_alarms(self) -> List[Alarm]:
         return self.control_module.get_logged_alarms()
 
-    def clear_logged_alarms(pself):
+    def clear_logged_alarms(self):
         # TODO: implement this
         raise NotImplementedError
 

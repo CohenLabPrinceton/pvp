@@ -598,16 +598,19 @@ class Balloon_Simulator:
 
     def set_flow_in(self, Qin, dt):
         self.set_Qin = Qin
-        self.Qin     = Qin         # Assume the set-value is also the true value for prop
+
+        Qin_clip = np.min([Qin, 2])                # Flows have to be positive, and reasonable. Nothing here is faster that 2 l/s
+        Qin_clip = np.max([Qin_clip, 0])
+        self.Qin     = Qin_clip                    # Assume the set-value is also the true value for prop
 
     def set_flow_out(self, Qout, dt):
         self.set_Qout = Qout
-        difference_pressure = self.current_pressure - 0
-        resistance = 0.05*Qout      # This should be in the range of ~1 liter/s for dp=~30 cmH2O
-        gQout = difference_pressure * resistance  #Target for flow out
-        RC = 0.1
-        s = dt / (RC + dt)
-        self.Qout = self.Qout + s * (gQout - self.Qout)
+
+        Qout_clip = np.min([Qout, 2])                    # Flows have to be positive, and reasonable. Nothing here is faster that 2 l/s
+        Qout_clip = np.max([Qout_clip, 0])
+        difference_pressure = self.current_pressure - 0  # Convention: outside is "0"
+        resistance = 0.05*Qout_clip                      # This should be in the range of ~1 liter/s for dp=~30 cmH2O
+        self.Qout = difference_pressure * resistance         # Target for flow out
 
     def update(self, dt):  # Performs an update of duration dt [seconds]
         self.current_flow = self.Qin - self.Qout
@@ -727,8 +730,8 @@ class ControlModuleSimulator(ControlModuleBase):
             self.Balloon.set_flow_in(Qin, dt = dt)                  # Set the flow rates for the Balloon simulator
             self.Balloon.set_flow_out(Qout, dt = dt)
 
-            self._DATA_Qout = self.Balloon.Qout                      # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
-            self._DATA_Qin  = self.Balloon.Qin                       # Tell controller the expiratory flow rate, _DATA_Qin                     --- SENSOR 3
+            self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
+            self._DATA_Qin  = self.Balloon.Qin                      # Tell controller the expiratory flow rate, _DATA_Qin                     --- SENSOR 3
             self._last_update = now
 
             if update_copies == 0:

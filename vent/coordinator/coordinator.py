@@ -15,102 +15,15 @@ from vent.coordinator.process_manager import ProcessManager
 class CoordinatorBase:
     def __init__(self, sim_mode=False):
         # get_ui_control_module handles single_process flag
-        # TODO: SHARED_ is a better prefix than COPY_, as not all fields are copy
-        self.COPY_sensor_values = None
-        self.COPY_alarms = None
-        self.COPY_active_alarms = {}
-        self.COPY_logged_alarms = []
-        self.COPY_control_settings = {}
-        self.COPY_tentative_control_settings = {}
-        self.COPY_last_message_timestamp = None
-        self.lock = threading.Lock()
-        self._is_running = threading.Event()
-
-    def get_sensors(self) -> Dict[ValueName, SensorValueNew]:
-        with self.lock:
-            sensor_values = self.COPY_sensor_values
-        if sensor_values is None:
-            return None
-        # TODO: merge the API such that controller and coordinator use the same SensorValue class
-        else:
-            res = {
-                ValueName.PIP: SensorValueNew(ValueName.PIP, sensor_values.pip, sensor_values.timestamp,
-                                              sensor_values.loop_counter),
-                ValueName.PEEP: SensorValueNew(ValueName.PEEP, sensor_values.peep, sensor_values.timestamp,
-                                               sensor_values.loop_counter),
-                ValueName.FIO2: SensorValueNew(ValueName.FIO2, sensor_values.fio2, sensor_values.timestamp,
-                                               sensor_values.loop_counter),
-                ValueName.TEMP: SensorValueNew(ValueName.TEMP, sensor_values.temp, sensor_values.timestamp,
-                                               sensor_values.loop_counter),
-                ValueName.HUMIDITY: SensorValueNew(ValueName.HUMIDITY, sensor_values.humidity, sensor_values.timestamp,
-                                                   sensor_values.loop_counter),
-                ValueName.PRESSURE: SensorValueNew(ValueName.PRESSURE, sensor_values.pressure, sensor_values.timestamp,
-                                                   sensor_values.loop_counter),
-                ValueName.VTE: SensorValueNew(ValueName.VTE, sensor_values.vte, sensor_values.timestamp,
-                                              sensor_values.loop_counter),
-                ValueName.BREATHS_PER_MINUTE: SensorValueNew(ValueName.BREATHS_PER_MINUTE, sensor_values.breaths_per_minute,
-                                                             sensor_values.timestamp, sensor_values.loop_counter),
-                ValueName.INSPIRATION_TIME_SEC: SensorValueNew(ValueName.INSPIRATION_TIME_SEC,
-                                                               sensor_values.inspiration_time_sec, sensor_values.timestamp,
-                                                               sensor_values.loop_counter),
-            }
-            return res
-
-    def get_active_alarms(self) -> Dict[str, Alarm]:
-        # TODO: the dict key should be better as class instead of str
-        with self.lock:
-            active_alarms = self.COPY_active_alarms.copy()  # Make sure to return a copy
-        return active_alarms
-
-    def get_logged_alarms(self) -> List[Alarm]:
-        with self.lock:
-            logged_alarms = self.COPY_logged_alarms.copy()  # Make sure to return a copy
-        return logged_alarms
-
-    def clear_logged_alarms(pself):
+        # self.lock = threading.Lock()
         pass
 
-    def set_control(self, control_setting: ControlSetting):
-        """
-        takes ControlSetting struct
-        """
-        with self.lock:
-            self.COPY_tentative_control_settings[control_setting.name] = control_setting
-
-    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
-        with self.lock:
-            control_setting = self.COPY_control_settings.get(control_setting_name)
-        return control_setting
-
-    def get_msg_timestamp(self):
-        # return timestamp of last message
-        with self.lock:
-            last_message_timestamp = self.last_message_timestamp
-        return last_message_timestamp
-
-    def start(self):
-        """
-        Start the coordinator.
-        This does a soft start (not allocating a process).
-        This function will return immediately
-        """
-        self._is_running.set()
-
-    def is_running(self) -> bool:
-        """
-        Test whether the whole system is running
-        TODO: current implementation is not good. As we need also make sure the controller is running.
-        """
-        return self._is_running.is_set()
-
-    def stop(self):
-        """
-        Stop the coordinator.
-        This does a soft stop (not kill a process)
-        This function will return immediately
-        :return:
-        """
-        self._is_running.clear()
+    # TODO: do we still need this
+    # def get_msg_timestamp(self):
+    #     # return timestamp of last message
+    #     with self.lock:
+    #         last_message_timestamp = self.last_message_timestamp
+    #     return last_message_timestamp
 
 
 class CoordinatorLocal(CoordinatorBase):
@@ -126,36 +39,67 @@ class CoordinatorLocal(CoordinatorBase):
         """
         super().__init__(sim_mode=sim_mode)
         self.control_module = vent.controller.control_module.get_control_module(sim_mode)
-        self.thread = threading.Thread(target=self.__main_loop, daemon=True)
-        self.thread.start()
-        self.thread_id = self.thread.ident
-        self.start()
 
-    def __main_loop(self):
-        while self._is_running.wait():
-            sensor_values = self.control_module.get_sensors()
-            with self.lock:
-                self.COPY_sensor_values = sensor_values
-                self.last_message_timestamp = sensor_values.timestamp
-            for name in values.controllable_values:
-                with self.lock:
-                    not_in_control_settings = name not in self.COPY_control_settings
-                if not_in_control_settings:
-                    control_setting = self.control_module.get_control(name)
-                    with self.lock:
-                        self.COPY_control_settings[name] = control_setting
-                with self.lock:
-                    disagreed_tentative = name in self.COPY_tentative_control_settings and \
-                                      self.COPY_tentative_control_settings[name] != self.COPY_control_settings[
-                                          name]
-                if disagreed_tentative:
-                    with self.lock:
-                        tentative_control_setting = self.COPY_tentative_control_settings[name]
-                    self.control_module.set_control(tentative_control_setting)
-                    with self.lock:
-                        self.COPY_control_settings[name] = self.control_module.get_control(name)
-            # sleep 10 ms
-            time.sleep(0.01)
+    def get_sensors(self) -> Dict[ValueName, SensorValueNew]:
+        sensor_values = self.control_module.get_sensors()
+        res = {
+            ValueName.PIP: SensorValueNew(ValueName.PIP, sensor_values.pip, sensor_values.timestamp,
+                                          sensor_values.loop_counter),
+            ValueName.PEEP: SensorValueNew(ValueName.PEEP, sensor_values.peep, sensor_values.timestamp,
+                                           sensor_values.loop_counter),
+            ValueName.FIO2: SensorValueNew(ValueName.FIO2, sensor_values.fio2, sensor_values.timestamp,
+                                           sensor_values.loop_counter),
+            ValueName.TEMP: SensorValueNew(ValueName.TEMP, sensor_values.temp, sensor_values.timestamp,
+                                           sensor_values.loop_counter),
+            ValueName.HUMIDITY: SensorValueNew(ValueName.HUMIDITY, sensor_values.humidity, sensor_values.timestamp,
+                                               sensor_values.loop_counter),
+            ValueName.PRESSURE: SensorValueNew(ValueName.PRESSURE, sensor_values.pressure, sensor_values.timestamp,
+                                               sensor_values.loop_counter),
+            ValueName.VTE: SensorValueNew(ValueName.VTE, sensor_values.vte, sensor_values.timestamp,
+                                          sensor_values.loop_counter),
+            ValueName.BREATHS_PER_MINUTE: SensorValueNew(ValueName.BREATHS_PER_MINUTE, sensor_values.breaths_per_minute,
+                                                         sensor_values.timestamp, sensor_values.loop_counter),
+            ValueName.INSPIRATION_TIME_SEC: SensorValueNew(ValueName.INSPIRATION_TIME_SEC,
+                                                           sensor_values.inspiration_time_sec, sensor_values.timestamp,
+                                                           sensor_values.loop_counter),
+        }
+        return res
+
+    def get_active_alarms(self) -> Dict[str, Alarm]:
+        return self.control_module.get_active_alarms()
+
+    def get_logged_alarms(self) -> List[Alarm]:
+        return self.control_module.get_logged_alarms()
+
+    def clear_logged_alarms(pself):
+        # TODO: implement this
+        raise NotImplementedError
+
+    def set_control(self, control_setting: ControlSetting):
+        self.control_module.set_control(control_setting)
+
+    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
+        return self.control_module.get_control(control_setting_name)
+
+    def start(self):
+        """
+        Start the coordinator.
+        This does a soft start (not allocating a process).
+        """
+        self.control_module.start()
+
+    def is_running(self) -> bool:
+        """
+        Test whether the whole system is running
+        """
+        return self.control_module._running
+
+    def stop(self):
+        """
+        Stop the coordinator.
+        This does a soft stop (not kill a process)
+        """
+        self.control_module.stop()
 
 
 class CoordinatorRemote(CoordinatorBase):

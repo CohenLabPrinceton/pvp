@@ -1,16 +1,18 @@
 # TODO: this is a unit test, need to add integration test
 import random
+import socket
 import threading
 import time
 from unittest.mock import patch, Mock
+
 import pytest
+
 from vent.common import values
 from vent.common.message import ControlSetting, SensorValues
 from vent.common.values import ValueName
 from vent.controller.control_module import ControlModuleBase
-from vent.coordinator.coordinator import get_coordinator
-import socket
 from vent.coordinator import rpc
+from vent.coordinator.coordinator import get_coordinator
 
 
 def is_port_in_use(port):
@@ -106,3 +108,5 @@ def test_remote_coordinator(control_setting_name):
     assert c_read.min_value == c.min_value
     assert c_read.max_value == c.max_value
     assert c_read.timestamp == c.timestamp
+
+    coordinator.process_manager.stop_process()

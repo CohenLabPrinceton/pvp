@@ -10,13 +10,11 @@ class ProcessManager:
         self.command_line = None  # TODO: what is this?
         self.max_heartbeat_interval = None
         self.previous_timestamp = None
+        # TODO: if child process exists, need to reconnect it
         self.child_process = multiprocessing.Process(target=rpc.rpc_server_main, args=(self.sim_mode,))
-        self.child_process.daemon = True
+        # TODO: when master process die, child process should survive
         self.child_process.start()
         self.child_pid = self.child_process.pid
-
-    def __del__(self):
-        self.stop_process()
 
     def start_process(self):
         if self.child_process is not None:

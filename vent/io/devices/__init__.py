@@ -30,7 +30,7 @@ class IODeviceBase(ABC):
         """ Closes the i2c/spi connection, and stops the python bindings
         for the pigpio daemon.
         """
-        self.close()
+        self._close()
         if self.pigpiod_ok:
             self.pig.stop()
 
@@ -51,7 +51,7 @@ class IODeviceBase(ABC):
         """
         return self.pig.connected
 
-    def close(self):
+    def _close(self):
         """ Closes an I2C/SPI (or potentially Serial) connection
         """
         if not self.pigpiod_ok() or self.handle <= 0:
@@ -79,18 +79,18 @@ class I2CDevice(IODeviceBase):
         """
         super().__init__(pig)
         self._i2c_bus = i2c_bus
-        self.open(i2c_bus, i2c_address)
+        self._open(i2c_bus, i2c_address)
 
-    def open(self, i2c_bus, i2c_address):
+    def _open(self, i2c_bus, i2c_address):
         """ Opens i2c connection given i2c bus and address.
         """
         self._handle = self.pig.i2c_open(i2c_bus, i2c_address)
 
-    def close(self):
+    def _close(self):
         """ Extends superclass method. Checks that pigpiod is connected
         and if a handle has been set - if so, closes an i2c connection.
         """
-        super().close()
+        super()._close()
         self.pig.i2c_close(self.handle)
 
     def read_device(self, num_bytes):
@@ -241,18 +241,18 @@ class SPIDevice(IODeviceBase):
 
     def __init(self, channel, baudrate, pig=None):
         super().__init__(pig)
-        self.open(channel, baudrate)
+        self._open(channel, baudrate)
 
-    def open(self, channel, baudrate):
+    def _open(self, channel, baudrate):
         """ Opens an SPI connection and returns the pigpiod handle.
         """
         self._handle = self.pig.spi_open(channel, baudrate)
 
-    def close(self):
+    def _close(self):
         """ Extends superclass method. Checks that pigpiod is connected
         and if a handle has been set - if so, closes an SPI connection.
         """
-        super().close()
+        super()._close()
         self.pig.spi_close(self.handle)
 
 

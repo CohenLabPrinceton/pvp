@@ -132,7 +132,7 @@ class Message_Display(QtWidgets.QFrame):
 
         self.clear_button = QtWidgets.QPushButton('Clear Message')
         self.clear_button.clicked.connect(self.clear_message)
-        #clear_icon = QtGui.QIcon.fromTheme('window-close')
+        #clear_icon = QtGui.QIcon.fromTheme('window-_close')
         #self.clear_button.setIcon(clear_icon)
 
         self.layout.addWidget(self.message, 5)

@@ -1,8 +1,10 @@
 import time
 from abc import ABC, abstractmethod
 from time import sleep
+from random import random
 
 import numpy as np
+
 
 from vent.io.devices import I2CDevice, be16_to_native
 
@@ -48,8 +50,9 @@ class Sensor(ABC):
         """ Returns the time since the last sensor update, in seconds.
         """
         if self._last_timestamp == -1:
-            raise RuntimeError('age() called before update()')
-        return time.time() - self._last_timestamp
+            return -1
+        else:
+            return time.time() - self._last_timestamp
 
     def reset(self):
         """ Resets the sensors internal memory. May be overloaded by
@@ -304,3 +307,44 @@ class SFM3200(Sensor, I2CDevice):
         complement that remains.
         """
         return be16_to_native(self.read_device(4))
+
+class SimSensor(Sensor):
+    def __init__(self, min=0, max=100, pig=None):
+        super().__init__()
+        self.min = min
+        self.max = max
+
+    def _verify(self,value):
+        """
+
+        Args:
+            value: The sensor reading to verify
+
+        Returns: Usually true. Sometimes false.
+        """
+        if random() > .999:
+            return False
+        else:
+            return True
+
+    def _convert(self, raw):
+        """
+
+        Args:
+            raw: The raw value to convert
+
+        Returns: Just the same raw value.
+
+        """
+        return raw
+
+    def _raw_read(self):
+        """ Initializes randomly, otherwise does a random walk-ish thing
+
+        Returns: The "sensor reading"
+
+        """
+        if self._i == 0:
+            return self.min + random() * self.max
+        else:
+            return self.get() + random() * (self.max/100)

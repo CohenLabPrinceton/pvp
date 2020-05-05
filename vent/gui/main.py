@@ -339,7 +339,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         """
-        Emit :attr:`.gui_closing` and close!
+        Emit :attr:`.gui_closing` and _close!
         """
         globals()['_GUI_INSTANCE'] = None
         self.gui_closing.emit()

@@ -25,7 +25,7 @@ class Pin(IODeviceBase):
         """ Inherits attributes and methods from IODeviceBase.
         """
         super().__init__(pig)
-        self.pin = pin
+        self.pin = int(pin)
 
     @property
     def mode(self):
@@ -78,7 +78,7 @@ class PWMOutput(Pin):
 
     def __init__(self, pin, initial_duty=0, frequency=None, pig=None):
         super().__init__(pin, pig)
-        if pin not in self._HARDWARE_PWM_PINS:
+        if self.pin not in self._HARDWARE_PWM_PINS:
             self.hardware_enabled = False
             frequency = self._DEFAULT_SOFT_FREQ if frequency is None else frequency
             raise RuntimeWarning(

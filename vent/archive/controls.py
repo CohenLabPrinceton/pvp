@@ -31,9 +31,9 @@ class Controller:
         self.logger = logger
         self.settings = ControlSettings()
         # Sets up the GPIO interface for valve control.
-        self.inlet = gpiozero.DigitalOutputDevice(17, active_high=True, initial_value=True) #starts open
+        self.inlet = gpiozero.DigitalOutputDevice(17, active_high=True, initial_value=True) #starts _open
         self.inspir = gpiozero.PWMOutputDevice(22, active_high=True, initial_value=0, frequency = 20) #starts closed
-        self.expir = gpiozero.DigitalOutputDevice(27, active_high=False, initial_value=True) #Starts open
+        self.expir = gpiozero.DigitalOutputDevice(27, active_high=False, initial_value=True) #Starts _open
         # Initialize control state (assume I.C. is inhale) 
         self._state = 0
         self.__inhale()
@@ -59,13 +59,13 @@ class Controller:
         # Updates valve controller using sensor readings and control settings. 
         # Should also log prior controller commands (not implemented).
     # Control scheme assumes the use of a PEEP valve
-        assert(self.inlet.value == True),"Inlet valve should be open!"
+        assert(self.inlet.value == True),"Inlet valve should be _open!"
         self.logger.update()
         self.__print_status()
         # change the following to grabbing last observations from logger
         if(self._state==0):
             # INHALING
-            # Inlet flow is open, expiratory dump valve closed
+            # Inlet flow is _open, expiratory dump valve closed
             if(self.jp.get_pressure(1) > self.settings.pip):
                 self.__hold_pip()
         elif(self._state==1):

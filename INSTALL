@@ -1,0 +1,5 @@
+#!/bin/sh
+sudo pip3 install pigpio
+sudo pip3 install external/PySide2*
+sudo systemctl enable pigpiod
+sudo systemctl start pigpiod

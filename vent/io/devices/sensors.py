@@ -301,7 +301,7 @@ class SFM3200(Sensor, I2CDevice):
         return (raw - self._FLOW_OFFSET) / self._FLOW_SCALE_FACTOR
 
     def _raw_read(self):
-        """ Performs an read on the sensor, converts recieved bytearray,
+        """ Performs an read on the sensor, converts received bytearray,
         discards the last two bytes (crc values - could implement in future),
         and returns a signed int converted from the big endian two
         complement that remains.

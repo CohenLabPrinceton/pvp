@@ -115,6 +115,7 @@ class SimOnOffValve(SolenoidBase):
     """ stub: a simulated on/off valve"""
 
     def __init__(self, pig=None):
+        super().__init__()
         self.state = 0
 
     def open(self):
@@ -132,6 +133,7 @@ class SimControlValve(SolenoidBase):
     """stub: a simulated linear control valve"""
 
     def __init__(self, pig=None):
+        super().__init__()
         self._setpoint = 0
 
     @property

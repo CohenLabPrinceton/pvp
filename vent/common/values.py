@@ -1,9 +1,6 @@
 from collections import OrderedDict as odict
 from enum import Enum, auto
 
-from vent.gui import styles
-
-
 # TODO: Zhenyu's job is to make sure the print value is an intepretable string
 class ValueName(Enum):
     #Setting that are likely important for future adjustements

@@ -22,6 +22,9 @@ class DoubleSlider(QtWidgets.QSlider):
 
         self.valueChanged.connect(self.emitDoubleValueChanged)
 
+    def setDecimals(self, decimals):
+        self._multi = 10 ** decimals
+
     def emitDoubleValueChanged(self):
         self.doubleValueChanged.emit(self.value())
 
@@ -29,19 +32,25 @@ class DoubleSlider(QtWidgets.QSlider):
         return float(super(DoubleSlider, self).value()) / self._multi
 
     def setMinimum(self, value):
-        return super(DoubleSlider, self).setMinimum(value * self._multi)
+        return super(DoubleSlider, self).setMinimum(round(value * self._multi))
 
     def setMaximum(self, value):
-        return super(DoubleSlider, self).setMaximum(value * self._multi)
+        return super(DoubleSlider, self).setMaximum(round(value * self._multi))
+
+    def minimum(self):
+        return super(DoubleSlider, self).minimum() / self._multi
+
+    def maximum(self):
+        return super(DoubleSlider, self).maximum() / self._multi
 
     def setSingleStep(self, value):
-        return super(DoubleSlider, self).setSingleStep(value * self._multi)
+        return super(DoubleSlider, self).setSingleStep(round(value * self._multi))
 
     def singleStep(self):
         return float(super(DoubleSlider, self).singleStep()) / self._multi
 
     def setValue(self, value):
-        super(DoubleSlider, self).setValue(int(value * self._multi))
+        super(DoubleSlider, self).setValue(int(round(value * self._multi)))
 
 
 class RangeSlider(QtWidgets.QSlider):

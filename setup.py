@@ -33,7 +33,7 @@ setup(
         'numpy',
         'PySide2',
         'pyqtgraph>=0.11.0rc0',
-        'pytest-qt'
+        'pytest-qt',
         'pigpio'
     ],
     dependency_links=depend_links

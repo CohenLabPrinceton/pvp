@@ -297,24 +297,24 @@ def test_erratic_dt():
         This is a function to test whether the controller works with random update times
     '''
     Controller = get_control_module(sim_mode=True)
-    Controller.start()
 
+    Controller.start()
     ls = []
-    tt = []
-    t0 = time.time()
     for t in np.arange(0, 30,0.05):
         Controller._LOOP_UPDATE_TIME = np.random.randint(100)/1000  # updates anywhere between 0ms and 100ms
         time.sleep(0.05)
-
-    val = Controller.get_sensors()
-
+        vals = Controller.get_sensors()
+        ls.append(vals)
     Controller.stop()
 
     cc = Controller.get_control(control_setting_name = ValueName.PEEP)
     target_peep = cc.value
-
     cc = Controller.get_control(control_setting_name = ValueName.PIP)
     target_pip = cc.value
 
-    assert np.abs(val.peep - target_peep) < 5
-    assert np.abs(val.pip - target_pip) < 5
+    peeps = np.unique([np.abs(s.peep - target_peep)  for s in ls if s.peep is not None])
+    pips = np.unique([np.abs(s.pip - target_pip)  for s in ls if s.peep is not None])
+
+    assert np.mean(peeps) < 5
+    assert np.mean(pips) < 5
+

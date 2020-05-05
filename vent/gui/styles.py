@@ -24,6 +24,9 @@ SLIDER_COLOR = TEXT_COLOR
 INDICATOR_COLOR = SUBWAY_COLORS['blue']
 ALARM_COLOR = "#FF0000"
 
+DIVIDER_COLOR = "#FFFFFF"
+DIVIDER_COLOR_DARK = BOX_BACKGROUND
+
 VALUE_SIZE = 72
 NAME_SIZE = 36
 UNIT_SIZE = 18
@@ -111,12 +114,24 @@ QLabel {{
 }}""".format(textcolor=TEXT_COLOR,
              name_size=NAME_SIZE)
 
+DISPLAY_NAME_ALARM = """
+QLabel {{ 
+    color: #ff0000; 
+    font-size: {name_size}pt;
+}}""".format(name_size=NAME_SIZE)
+
 DISPLAY_UNITS = """
 QLabel {{ 
     color: {textcolor}; 
     font-size: {unit_size}pt;
 }}""".format(textcolor=TEXT_COLOR,
              unit_size=UNIT_SIZE)
+
+DISPLAY_UNITS_ALARM = f"""
+QLabel {{ 
+    color: #ff0000; 
+    font-size: {UNIT_SIZE}pt;
+}}"""
 
 DISPLAY_WIDGET = """
 border-bottom: 2px solid white;
@@ -175,7 +190,7 @@ color: {text_color};
 text-align: left;
 """.format(text_color=TEXT_COLOR)
 
-DIVIDER_COLOR = "#FFFFFF"
+
 
 STATUS_NORMAL = f"""
 QFrame {{

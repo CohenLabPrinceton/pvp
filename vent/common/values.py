@@ -13,6 +13,7 @@ class ValueName(Enum):
     PEEP_TIME = auto() # time to reach PEEP
     BREATHS_PER_MINUTE = auto()
     INSPIRATION_TIME_SEC = auto()
+    IE_RATIO = auto()
     #Settings that are read out, but can not be controlled by software
     FIO2 = auto()
     TEMP = auto()
@@ -167,7 +168,7 @@ SENSOR = odict({
         'name': 'Humidity',
         'units': '%',
         'abs_range': (0, 100),
-        'safe_range': (80, 100),
+        'safe_range': (70, 100),
         'decimals': 1
     }),
     ValueName.VTE: Value(**{
@@ -181,8 +182,15 @@ SENSOR = odict({
         'name': 'Pressure',
         'units': 'mmH2O',
         'abs_range': (0,70),
-        'safe_range': (10,80),
+        'safe_range': (0,60),
         'decimals': 1
+    }),
+    ValueName.IE_RATIO: Value(**{
+        'name': 'I:E Ratio',
+        'units': '',
+        'abs_range': (0, 2),
+        'safe_range': (0.33, 1),
+        'decimals': 2
     })
 })
 """
@@ -203,10 +211,10 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 CONTROL = odict({
     ValueName.PIP: Value(**{
         'name': 'PIP', # (Peak Inspiratory Pressure)
-        'units': 'cmH2O',
+        'units': 'cm H2O',
         'abs_range': (0, 70), # FIXME
         'safe_range': (0, 50), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
-        'default': 40,           # FIXME
+        'default': 22,           # FIXME
         'decimals': 1          # FIXME
     }),
     ValueName.PIP_TIME: Value(**{
@@ -214,7 +222,7 @@ CONTROL = odict({
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME
         'safe_range': (0.2, 0.5),  # FIXME
-        'default': 1,  # FIXME
+        'default': 0.3,  # FIXME
         'decimals': 1  # FIXME
     }),
     ValueName.INSPIRATION_TIME_SEC: Value(**{
@@ -227,10 +235,10 @@ CONTROL = odict({
     }),
     ValueName.PEEP: Value(**{
         'name': 'PEEP', #  (Positive End Expiratory Pressure)
-        'units': 'cmH2O',
+        'units': 'cm H2O',
         'abs_range': (0, 20),  # FIXME
         'safe_range': (0, 16), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
-        'default': 10,            # FIXME
+        'default': 5,            # FIXME
         'decimals': 1           # FIXME
     }),
     ValueName.PEEP_TIME: Value(**{
@@ -242,13 +250,14 @@ CONTROL = odict({
         'decimals': 1  # FIXME
     }),
     ValueName.BREATHS_PER_MINUTE: Value(**{
-        'name': 'BPM',
-        'units': 'breaths/min',
+        'name': 'RR', # Daniel re: FDA labels
+        'units': 'BPM', # Daniel re: FDA labels
         'abs_range': (0, 50), # FIXME
         'safe_range': (10, 30), # Stanford's socshttps://www.vent4us.org/technical
         'default': 17,            # FIXME
         'decimals': 1           # FIXME
     }),
+
 
 
     # 'ie': Value(**{

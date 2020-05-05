@@ -6,7 +6,7 @@ import copy
 from collections import deque
 import pdb
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
+from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmLevel
 from vent.common.values import CONTROL, ValueName
 
 
@@ -225,7 +225,7 @@ class ControlModuleBase:
         '''
         if (value < min) or (value > max):  # If the variable is not within limits
             if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
-                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmSeverity.RED, \
+                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmLevel.RED, value=value,
                                   alarm_start_time=time.time(), alarm_end_time=None)
                 self.__active_alarms[name] = new_alarm
         else:  # Else: if the variable is within bounds,
@@ -262,9 +262,9 @@ class ControlModuleBase:
     def __update_alarms(self):
         ''' This goes through the values obtained from the last waveform, and updates alarms.'''
         if len(self.__cycle_waveform_archive) > 1 : # Only if there was a previous cycle
-            self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name="PIP")
-            self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name="PIP_TIME")
-            self.__test_critical_levels(min=self.__PEEP_min, max=self.__PEEP_max, value=self._DATA_PEEP, name="PEEP")
+            self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name=ValueName.PIP)
+            self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name=ValueName.PIP_TIME)
+            self.__test_critical_levels(min=self.__PEEP_min, max=self.__PEEP_max, value=self._DATA_PEEP, name=ValueName.PEEP)
             self.__test_critical_levels(min=self.__bpm_min, max=self.__bpm_max, value=self._DATA_BPM, name="BREATHS_PER_MINUTE")
             self.__test_critical_levels(min=self.__I_phase_min, max=self.__I_phase_max, value=self._DATA_I_PHASE, name="I_PHASE")
 
@@ -297,6 +297,8 @@ class ControlModuleBase:
         logged_alarms = self.COPY_logged_alarms.copy()
         self._lock.release()
         return logged_alarms
+
+
 
     def set_control(self, control_setting: ControlSetting):
         ''' Updates the entry of COPY contained in the control settings'''

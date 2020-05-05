@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import random
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
+from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmLevel
 from vent.common.values import ValueName
 from vent.coordinator.coordinator import get_coordinator
 from vent.controller.control_module import get_control_module

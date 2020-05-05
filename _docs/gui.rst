@@ -114,25 +114,40 @@ Main GUI Module
 GUI Widgets
 ~~~~~~~~~~~~~
 
+Control
+_________
+
 .. automodule:: vent.gui.widgets.control
     :members:
     :undoc-members:
     :autosummary:
+
+Monitor
+_________
 
 .. automodule:: vent.gui.widgets.monitor
     :members:
     :undoc-members:
     :autosummary:
 
+Plot
+_______
+
 .. automodule:: vent.gui.widgets.plot
     :members:
     :undoc-members:
     :autosummary:
 
+Status Bar
+____________
+
 .. automodule:: vent.gui.widgets.status_bar
     :members:
     :undoc-members:
     :autosummary:
+
+Components
+____________
 
 .. automodule:: vent.gui.widgets.components
     :members:

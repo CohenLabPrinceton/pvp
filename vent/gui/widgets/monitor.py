@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from PySide2 import QtWidgets, QtCore
 
 from vent.gui import styles, mono_font
@@ -7,10 +8,10 @@ from vent.common import message
 
 
 class Monitor(QtWidgets.QWidget):
-    alarm = QtCore.Signal(message.Alarm)
+    alarm = QtCore.Signal(tuple)
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, value, update_period=styles.MONITOR_UPDATE_INTERVAL):
+    def __init__(self, value, update_period=styles.MONITOR_UPDATE_INTERVAL, enum_name = None):
         """
 
         Args:
@@ -25,6 +26,7 @@ class Monitor(QtWidgets.QWidget):
         self.safe_range = value.safe_range
         self.decimals = value.decimals
         self.update_period = update_period
+        self.enum_name = enum_name
 
         self.value = None
 
@@ -90,7 +92,7 @@ class Monitor(QtWidgets.QWidget):
         )
         self.toggle_button.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                          QtWidgets.QSizePolicy.Expanding)
-        self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
+        self.toggle_button.setArrowType(QtCore.Qt.RightArrow)
 
         #########
         # connect widgets
@@ -167,7 +169,13 @@ class Monitor(QtWidgets.QWidget):
     def update_value(self, new_value):
 
         # stash numerical value
-        new_value = np.clip(new_value, self.abs_range[0], self.abs_range[1])
+        try:
+            new_value = np.clip(new_value, self.abs_range[0], self.abs_range[1])
+        except TypeError:
+            # if given None, can't clip it.
+            # just return
+            # TODO: Should this raise an alarm?
+            return
         self.value = new_value
         self.check_alarm()
 
@@ -198,9 +206,13 @@ class Monitor(QtWidgets.QWidget):
     def alarm_state(self, alarm):
         if alarm == True:
             self.value_label.setStyleSheet(styles.DISPLAY_VALUE_ALARM)
+            self.name_label.setStyleSheet(styles.DISPLAY_NAME_ALARM)
+            self.units_label.setStyleSheet(styles.DISPLAY_UNITS_ALARM)
             self._alarm = True
         elif alarm == False:
             self.value_label.setStyleSheet(styles.DISPLAY_VALUE)
+            self.name_label.setStyleSheet(styles.DISPLAY_NAME)
+            self.units_label.setStyleSheet(styles.DISPLAY_UNITS)
             self._alarm = False
 
     @QtCore.Slot(bool)
@@ -225,8 +237,8 @@ class Monitor(QtWidgets.QWidget):
             value = self.value
 
         if value:
-            if (value >= self.max_safe.value()) or (value <= self.min_safe.value()):
-                self.alarm.emit()
+            if (value > self.max_safe.value()) or (value < self.min_safe.value()):
+                self.alarm.emit((self.enum_name, value, time.time()))
 
                 if self.alarm == False:
                     self.toggle_alarm_state(True)

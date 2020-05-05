@@ -1,11 +1,13 @@
 import logging
 import time
+import datetime
 
 import numpy as np
 from PySide2 import QtWidgets, QtCore
 
 from vent.gui import styles, mono_font
 from vent.gui import get_gui_instance
+from vent.common.message import Alarm, AlarmLevel
 
 
 class Status_Bar(QtWidgets.QWidget):
@@ -28,8 +30,8 @@ class Status_Bar(QtWidgets.QWidget):
         self.layout = QtWidgets.QHBoxLayout()
 
 
-        self.log_console = Message_Display()
-        self.layout.addWidget(self.log_console)
+        self.status_message = Message_Display()
+        self.layout.addWidget(self.status_message)
         self.layout.setContentsMargins(5,5,5,5)
 
         self.heartbeat = HeartBeat()
@@ -51,20 +53,16 @@ class Status_Bar(QtWidgets.QWidget):
 
 class Message_Display(QtWidgets.QFrame):
 
-    message_cleared = QtCore.Signal(str)
-
-    MESSAGE_PRIORITY = {
-        'info': 0,
-        'warning': 1,
-        'alarm': 2
-    }
+    message_cleared = QtCore.Signal(Alarm)
+    level_changed = QtCore.Signal(AlarmLevel)
 
     def __init__(self):
         super(Message_Display, self).__init__()
 
         self.icons = {}
-        self.messages = {}
-        self.current_msg = None
+        self.alarms = {}
+        self.current_alarm = None
+        self._alarm_level = AlarmLevel.OFF
         self.setContentsMargins(0,0,0,0)
 
         self.make_icons()
@@ -84,9 +82,9 @@ class Message_Display(QtWidgets.QFrame):
         normal_icon = style.standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation, None, self)
         normal_icon = normal_icon.pixmap(size,size)
 
-        self.icons['info'] = normal_icon
-        self.icons['warning'] = warning_icon
-        self.icons['alarm'] = alarm_icon
+        self.icons[AlarmLevel.YELLOW] = normal_icon
+        self.icons[AlarmLevel.ORANGE] = warning_icon
+        self.icons[AlarmLevel.RED] = alarm_icon
 
 
 
@@ -111,6 +109,7 @@ class Message_Display(QtWidgets.QFrame):
 
 
         self.clear_button = QtWidgets.QPushButton('Clear Message')
+        self.clear_button.setVisible(False)
         self.clear_button.clicked.connect(self.clear_message)
         #clear_icon = QtGui.QIcon.fromTheme('window-close')
         #self.clear_button.setIcon(clear_icon)
@@ -123,70 +122,94 @@ class Message_Display(QtWidgets.QFrame):
 
     def draw_state(self, state=None):
 
-        if state == "info":
+        if state == AlarmLevel.YELLOW:
             self.setStyleSheet(styles.STATUS_NORMAL)
-            self.icon.setPixmap(self.icons['info'])
-        elif state == "warning":
+            self.icon.setPixmap(self.icons[AlarmLevel.YELLOW])
+            self.clear_button.setVisible(True)
+        elif state == AlarmLevel.ORANGE:
             self.setStyleSheet(styles.STATUS_WARN)
-            self.icon.setPixmap(self.icons['warning'])
-        elif state == "alarm":
+            self.icon.setPixmap(self.icons[AlarmLevel.ORANGE])
+            self.clear_button.setVisible(True)
+        elif state == AlarmLevel.RED:
             self.setStyleSheet(styles.STATUS_ALARM)
-            self.icon.setPixmap(self.icons['alarm'])
+            self.icon.setPixmap(self.icons[AlarmLevel.RED])
+            self.clear_button.setVisible(True)
         else:
             self.setStyleSheet(styles.STATUS_NORMAL)
+            self.clear_button.setVisible(False)
             self.icon.clear()
 
 
-    @QtCore.Slot(tuple)
-    def update_message(self, msg):
+    @QtCore.Slot(Alarm)
+    def update_message(self, alarm):
         """
         Arguments:
-            msg (tuple): (msg_id, msg_type, msg)
+            alarm (:class:`~.message.Alarm`)
 
         """
 
-        if msg is None:
+        if alarm is None:
             # clear
-            self.current_msg = None
+            self.current_alarm = None
             self.draw_state()
             self.message.setText("")
             return
 
-        self.messages[msg[0]] = msg
+        self.alarms[alarm.id] = alarm
 
-        if self.current_msg:
+        if self.current_alarm:
             # see if we are outranked by current message
-
-            msg_priority = self.MESSAGE_PRIORITY[msg[1]]
-            current_priority = self.MESSAGE_PRIORITY[self.current_msg[1]]
-            if msg_priority >= current_priority:
-                self.draw_state(msg[1])
-                self.message.setText(msg[2])
-                self.current_msg = msg
+            if alarm.severity.value >= self.current_alarm.severity.value:
+                self.draw_state(alarm.severity)
+                self.message.setText(alarm.message)
+                self.current_alarm = alarm
+                self.alarm_level = alarm.severity
+            else:
+                return
 
         else:
-            self.draw_state(msg[1])
-            self.message.setText(msg[2])
-            self.current_msg = msg
+            self.draw_state(alarm.severity)
+            self.message.setText(alarm.message)
+            self.current_alarm = alarm
+            self.alarm_level = alarm.severity
+
+        # delete old messages from same value
+        self.alarms = {a_key: a_val for a_key, a_val in self.alarms.items() if
+                       (a_val.alarm_name != alarm.alarm_name) or
+                       (a_val.id == alarm.id)}
 
     def clear_message(self):
-        if not self.current_msg:
+        if not self.current_alarm:
             return
 
-        self.message_cleared.emit(self.current_msg[0])
-        del self.messages[self.current_msg[0]]
+        self.message_cleared.emit(self.current_alarm)
+        del self.alarms[self.current_alarm.id]
 
 
         # check if we have another message to display
-        if len(self.messages)>0:
+        if len(self.alarms)>0:
             # get message priorities
-            paired_priorities = [(msg[0], self.MESSAGE_PRIORITY[msg[1]]) for msg in self.messages.values()]
+            paired_priorities = [(alarm.id, alarm.severity.value) for alarm in self.alarms.values()]
             priorities = np.array([msg[1] for msg in paired_priorities])
+            # find the max priority
             max_ind = np.argmax(priorities)
-            self.current_msg = None
-            self.update_message(self.messages[paired_priorities[max_ind][0]])
+            self.current_alarm = None
+            new_alarm = self.alarms[paired_priorities[max_ind][0]]
+            self.update_message(new_alarm)
+            self.alarm_level = new_alarm.severity
         else:
             self.update_message(None)
+            self.alarm_level = AlarmLevel.OFF
+
+    @property
+    def alarm_level(self):
+        return self._alarm_level
+
+    @alarm_level.setter
+    def alarm_level(self, alarm_level):
+        if alarm_level != self._alarm_level:
+            self.level_changed.emit(alarm_level)
+            self._alarm_level = alarm_level
 
 
 class HeartBeat(QtWidgets.QFrame):

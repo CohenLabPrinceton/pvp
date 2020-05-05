@@ -448,13 +448,16 @@ class QHLine(QtWidgets.QFrame):
     """
     with respct to https://stackoverflow.com/a/51057516
     """
-    def __init__(self, parent=None, color=QtGui.QColor(styles.DIVIDER_COLOR)):
+    def __init__(self, parent=None, color=styles.DIVIDER_COLOR):
         super(QHLine, self).__init__(parent)
         self.setFrameShape(QtWidgets.QFrame.HLine)
         self.setFrameShadow(QtWidgets.QFrame.Plain)
         self.setLineWidth(0)
         self.setMidLineWidth(3)
         self.setContentsMargins(0, 0, 0, 0)
+
+        color = QtGui.QColor(color)
+
         self.setColor(color)
 
     def setColor(self, color):

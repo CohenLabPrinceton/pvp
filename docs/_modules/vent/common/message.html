@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>vent.common.message &mdash; ventilator 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>vent.common.message</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for vent.common.message</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+
+
+<div class="viewcode-block" id="SensorValues"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.SensorValues">[docs]</a><span class="k">class</span> <span class="nc">SensorValues</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">peep</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fio2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">humidity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vte</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">breaths_per_minute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">inspiration_time_sec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loop_counter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pip</span> <span class="o">=</span> <span class="n">pip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peep</span> <span class="o">=</span> <span class="n">peep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fio2</span> <span class="o">=</span> <span class="n">fio2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">humidity</span> <span class="o">=</span> <span class="n">humidity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span> <span class="o">=</span> <span class="n">pressure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vte</span> <span class="o">=</span> <span class="n">vte</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaths_per_minute</span> <span class="o">=</span> <span class="n">breaths_per_minute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inspiration_time_sec</span> <span class="o">=</span> <span class="n">inspiration_time_sec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">timestamp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_counter</span> <span class="o">=</span> <span class="n">loop_counter</span></div>
+
+
+<div class="viewcode-block" id="ControlSettingName"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.ControlSettingName">[docs]</a><span class="k">class</span> <span class="nc">ControlSettingName</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="c1">#Setting that are likely important for future adjustements</span>
+    <span class="n">PIP</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>       <span class="c1"># PIP pressure</span>
+    <span class="n">PIP_TIME</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># time to reach PIP</span>
+    <span class="n">PEEP</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>      <span class="c1"># PEEP pressure</span>
+    <span class="n">BREATHS_PER_MINUTE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">INSPIRATION_TIME_SEC</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="c1">#Settings that are read out, but can not be controlled by software</span>
+    <span class="n">FIO2</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">TEMP</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">HUMIDITY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">VTE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ControlSetting"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.ControlSetting">[docs]</a><span class="k">class</span> <span class="nc">ControlSetting</span><span class="p">:</span>
+<div class="viewcode-block" id="ControlSetting.__init__"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.ControlSetting.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO: if enum is hard to use, we may just use a predefined set, e.g. {&#39;PIP&#39;, &#39;PEEP&#39;, ...}</span>
+<span class="sd">        :param name: enum belong to ControlSettingName</span>
+<span class="sd">        :param value:</span>
+<span class="sd">        :param min_value:</span>
+<span class="sd">        :param max_value:</span>
+<span class="sd">        :param timestamp:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_value</span> <span class="o">=</span> <span class="n">min_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_value</span> <span class="o">=</span> <span class="n">max_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">timestamp</span></div></div>
+
+
+<div class="viewcode-block" id="AlarmSeverity"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.AlarmSeverity">[docs]</a><span class="k">class</span> <span class="nc">AlarmSeverity</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">ORANGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">YELLOW</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Alarm"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.Alarm">[docs]</a><span class="k">class</span> <span class="nc">Alarm</span><span class="p">:</span>
+<div class="viewcode-block" id="Alarm.__init__"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.Alarm.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_name</span><span class="p">,</span> <span class="n">is_active</span><span class="p">,</span> <span class="n">severity</span><span class="p">,</span> <span class="n">alarm_start_time</span><span class="p">,</span> <span class="n">alarm_end_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param alarm_name:</span>
+<span class="sd">        :param is_active:</span>
+<span class="sd">        :param severity: ENUM in AlarmSeverity</span>
+<span class="sd">        :param alarm_start_time:</span>
+<span class="sd">        :param alarm_end_time:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_name</span> <span class="o">=</span> <span class="n">alarm_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="n">is_active</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">severity</span> <span class="o">=</span> <span class="n">severity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_start_time</span> <span class="o">=</span> <span class="n">alarm_start_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_end_time</span> <span class="o">=</span> <span class="n">alarm_end_time</span></div></div>
+
+
+<div class="viewcode-block" id="Error"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.Error">[docs]</a><span class="k">class</span> <span class="nc">Error</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errnum</span><span class="p">,</span> <span class="n">err_str</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errnum</span> <span class="o">=</span> <span class="n">errnum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">err_str</span> <span class="o">=</span> <span class="n">err_str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">timestamp</span></div>
+
+
+<div class="viewcode-block" id="IPCMessageCommand"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.IPCMessageCommand">[docs]</a><span class="k">class</span> <span class="nc">IPCMessageCommand</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">START</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">STOP</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">RESET</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">GETSENSORS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">GETALARMS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">SETCONTROLS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="IPCMessage"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.IPCMessage">[docs]</a><span class="k">class</span> <span class="nc">IPCMessage</span><span class="p">:</span>
+<div class="viewcode-block" id="IPCMessage.__init__"><a class="viewcode-back" href="../../../vent.common.html#vent.common.message.IPCMessage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param command: ENUM in IPCMessageCommand</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="n">command</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

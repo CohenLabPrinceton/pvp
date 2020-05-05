@@ -4,11 +4,9 @@ Ventilator-Dev
 .. toctree::
    :maxdepth: 4
 
-   alarms
+   common
    controller
+   coordinator
    gui
    gui_styles
-   helper
-   main
-   main_control
-   sensors
+   io

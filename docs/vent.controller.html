@@ -1,0 +1,606 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>vent.controller package &mdash; ventilator 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>vent.controller package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/vent.controller.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="vent-controller-package">
+<h1>vent.controller package<a class="headerlink" href="#vent-controller-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-vent.controller.control_module">
+<span id="vent-controller-control-module-module"></span><h2>vent.controller.control_module module<a class="headerlink" href="#module-vent.controller.control_module" title="Permalink to this headline">¶</a></h2>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.Balloon_Simulator" title="vent.controller.control_module.Balloon_Simulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Balloon_Simulator</span></code></a>(leak, delay)</p></td>
+<td><p>This is a simulator for inflating a balloon.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase" title="vent.controller.control_module.ControlModuleBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ControlModuleBase</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleDevice" title="vent.controller.control_module.ControlModuleDevice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ControlModuleDevice</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator" title="vent.controller.control_module.ControlModuleSimulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ControlModuleSimulator</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.StateController" title="vent.controller.control_module.StateController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StateController</span></code></a>()</p></td>
+<td><p>This is a class to control a respirator by iterating through set states with hard-coded valve settings</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.OUupdate" title="vent.controller.control_module.OUupdate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OUupdate</span></code></a>(variable, dt, mu, sigma, tau)</p></td>
+<td><p>This is a simple function to produce an OU process.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.get_control_module" title="vent.controller.control_module.get_control_module"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_control_module</span></code></a>([sim_mode])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="vent.controller.control_module.ControlModuleBase">
+<em class="property">class </em><code class="sig-prename descclassname">vent.controller.control_module.</code><code class="sig-name descname">ControlModuleBase</code><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.clear_logged_alarms" title="vent.controller.control_module.ControlModuleBase.clear_logged_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_logged_alarms</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.get_active_alarms" title="vent.controller.control_module.ControlModuleBase.get_active_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_active_alarms</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.get_alarms" title="vent.controller.control_module.ControlModuleBase.get_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_alarms</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.get_control" title="vent.controller.control_module.ControlModuleBase.get_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_control</span></code></a>(control_setting_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.get_logged_alarms" title="vent.controller.control_module.ControlModuleBase.get_logged_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logged_alarms</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.get_sensors" title="vent.controller.control_module.ControlModuleBase.get_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sensors</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.set_control" title="vent.controller.control_module.ControlModuleBase.set_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control</span></code></a>(control_setting)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.start" title="vent.controller.control_module.ControlModuleBase.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>(controlSettings)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.stop" title="vent.controller.control_module.ControlModuleBase.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleBase.test_critical_levels" title="vent.controller.control_module.ControlModuleBase.test_critical_levels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_critical_levels</span></code></a>(max, value, name, …)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.get_sensors">
+<code class="sig-name descname">get_sensors</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="common.html#vent.common.message.SensorValues" title="vent.common.message.SensorValues">vent.common.message.SensorValues</a><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.get_sensors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.get_sensors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.get_alarms">
+<code class="sig-name descname">get_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="common.html#vent.common.message.Alarm" title="vent.common.message.Alarm">vent.common.message.Alarm</a><span class="p">]</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.get_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.get_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.get_active_alarms">
+<code class="sig-name descname">get_active_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.get_active_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.get_active_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.get_logged_alarms">
+<code class="sig-name descname">get_logged_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="common.html#vent.common.message.Alarm" title="vent.common.message.Alarm">vent.common.message.Alarm</a><span class="p">]</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.get_logged_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.get_logged_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.clear_logged_alarms">
+<code class="sig-name descname">clear_logged_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.clear_logged_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.clear_logged_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.set_control">
+<code class="sig-name descname">set_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.set_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.set_control" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.get_control">
+<code class="sig-name descname">get_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting_name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.message.ControlSettingName" title="vent.common.message.ControlSettingName">vent.common.message.ControlSettingName</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.get_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.get_control" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">controlSettings</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleBase.test_critical_levels">
+<code class="sig-name descname">test_critical_levels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">active_alarms</span></em>, <em class="sig-param"><span class="n">logged_alarms</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleBase.test_critical_levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleBase.test_critical_levels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.controller.control_module.ControlModuleDevice">
+<em class="property">class </em><code class="sig-prename descclassname">vent.controller.control_module.</code><code class="sig-name descname">ControlModuleDevice</code><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.controller.control_module.ControlModuleBase" title="vent.controller.control_module.ControlModuleBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.controller.control_module.ControlModuleBase</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.controller.control_module.Balloon_Simulator">
+<em class="property">class </em><code class="sig-prename descclassname">vent.controller.control_module.</code><code class="sig-name descname">Balloon_Simulator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">leak</span></em>, <em class="sig-param"><span class="n">delay</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#Balloon_Simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.Balloon_Simulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This is a simulator for inflating a balloon.
+For math, see <a class="reference external" href="https://en.wikipedia.org/wiki/Two-balloon_experiment">https://en.wikipedia.org/wiki/Two-balloon_experiment</a></p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.Balloon_Simulator.get_pressure" title="vent.controller.control_module.Balloon_Simulator.get_pressure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pressure</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.Balloon_Simulator.get_volume" title="vent.controller.control_module.Balloon_Simulator.get_volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_volume</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.Balloon_Simulator.set_flow" title="vent.controller.control_module.Balloon_Simulator.set_flow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_flow</span></code></a>(Qin, Qout)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.Balloon_Simulator.update" title="vent.controller.control_module.Balloon_Simulator.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.controller.control_module.Balloon_Simulator.get_pressure">
+<code class="sig-name descname">get_pressure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#Balloon_Simulator.get_pressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.Balloon_Simulator.get_pressure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.Balloon_Simulator.get_volume">
+<code class="sig-name descname">get_volume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#Balloon_Simulator.get_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.Balloon_Simulator.get_volume" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.Balloon_Simulator.set_flow">
+<code class="sig-name descname">set_flow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Qin</span></em>, <em class="sig-param"><span class="n">Qout</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#Balloon_Simulator.set_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.Balloon_Simulator.set_flow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.Balloon_Simulator.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dt</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#Balloon_Simulator.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.Balloon_Simulator.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.controller.control_module.OUupdate">
+<code class="sig-prename descclassname">vent.controller.control_module.</code><code class="sig-name descname">OUupdate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">variable</span></em>, <em class="sig-param"><span class="n">dt</span></em>, <em class="sig-param"><span class="n">mu</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="n">tau</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#OUupdate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.OUupdate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a simple function to produce an OU process.
+It is used as model for fluctuations in measurement variables.
+inputs:</p>
+<blockquote>
+<div><p>variable:   float     value at previous time step
+dt      :   timestep
+mu      :   mean
+sigma   :   noise amplitude
+tau     :   time scale</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>value of “variable” at next time step</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>new_variable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.controller.control_module.StateController">
+<em class="property">class </em><code class="sig-prename descclassname">vent.controller.control_module.</code><code class="sig-name descname">StateController</code><a class="reference internal" href="_modules/vent/controller/control_module.html#StateController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.StateController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This is a class to control a respirator by iterating through set states with hard-coded valve settings</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.StateController.get_Qin" title="vent.controller.control_module.StateController.get_Qin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Qin</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.StateController.get_Qout" title="vent.controller.control_module.StateController.get_Qout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Qout</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.StateController.update" title="vent.controller.control_module.StateController.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(pressure)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.StateController.update_internalVeriables" title="vent.controller.control_module.StateController.update_internalVeriables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_internalVeriables</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.controller.control_module.StateController.update_internalVeriables">
+<code class="sig-name descname">update_internalVeriables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#StateController.update_internalVeriables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.StateController.update_internalVeriables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.StateController.get_Qin">
+<code class="sig-name descname">get_Qin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#StateController.get_Qin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.StateController.get_Qin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.StateController.get_Qout">
+<code class="sig-name descname">get_Qout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#StateController.get_Qout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.StateController.get_Qout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.StateController.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pressure</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#StateController.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.StateController.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.controller.control_module.ControlModuleSimulator">
+<em class="property">class </em><code class="sig-prename descclassname">vent.controller.control_module.</code><code class="sig-name descname">ControlModuleSimulator</code><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.controller.control_module.ControlModuleBase" title="vent.controller.control_module.ControlModuleBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.controller.control_module.ControlModuleBase</span></code></a></p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.get_active_alarms" title="vent.controller.control_module.ControlModuleSimulator.get_active_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_active_alarms</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.get_alarms" title="vent.controller.control_module.ControlModuleSimulator.get_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_alarms</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.get_control" title="vent.controller.control_module.ControlModuleSimulator.get_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_control</span></code></a>(control_setting_name)</p></td>
+<td><p>Updates the control settings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.get_logged_alarms" title="vent.controller.control_module.ControlModuleSimulator.get_logged_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logged_alarms</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.get_sensors" title="vent.controller.control_module.ControlModuleSimulator.get_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sensors</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.recvUIHeartbeat" title="vent.controller.control_module.ControlModuleSimulator.recvUIHeartbeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recvUIHeartbeat</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.run" title="vent.controller.control_module.ControlModuleSimulator.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.set_control" title="vent.controller.control_module.ControlModuleSimulator.set_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control</span></code></a>(control_setting)</p></td>
+<td><p>Updates the control settings.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.stop" title="vent.controller.control_module.ControlModuleSimulator.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.test_critical_levels" title="vent.controller.control_module.ControlModuleSimulator.test_critical_levels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_critical_levels</span></code></a>(min, max, value, name)</p></td>
+<td><p>This tests whether a variable is within bounds.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.controller.control_module.ControlModuleSimulator.update_alarms" title="vent.controller.control_module.ControlModuleSimulator.update_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_alarms</span></code></a>()</p></td>
+<td><p>This goes through the LAST waveform, and updates alarms.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.test_critical_levels">
+<code class="sig-name descname">test_critical_levels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">min</span></em>, <em class="sig-param"><span class="n">max</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.test_critical_levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.test_critical_levels" title="Permalink to this definition">¶</a></dt>
+<dd><p>This tests whether a variable is within bounds.
+If it is, and an alarm existed, then the “alarm_end_time” is set.
+If it is NOT, a new alarm is generated and appendede to the alarm-list.
+Input:</p>
+<blockquote>
+<div><p>min:           minimum value  (e.g. 2)
+max:           maximum value  (e.g. 5)
+value:         test value   (e.g. 3)
+name:          parameter type (e.g. “PIP”, “PEEP” etc.)</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.update_alarms">
+<code class="sig-name descname">update_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.update_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.update_alarms" title="Permalink to this definition">¶</a></dt>
+<dd><p>This goes through the LAST waveform, and updates alarms.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.get_sensors">
+<code class="sig-name descname">get_sensors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.get_sensors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.get_sensors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.get_alarms">
+<code class="sig-name descname">get_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.get_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.get_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.get_active_alarms">
+<code class="sig-name descname">get_active_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.get_active_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.get_active_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.get_logged_alarms">
+<code class="sig-name descname">get_logged_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.get_logged_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.get_logged_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.set_control">
+<code class="sig-name descname">set_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.set_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.set_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the control settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.get_control">
+<code class="sig-name descname">get_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting_name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.message.ControlSettingName" title="vent.common.message.ControlSettingName">vent.common.message.ControlSettingName</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.get_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.get_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the control settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.controller.control_module.ControlModuleSimulator.recvUIHeartbeat">
+<code class="sig-name descname">recvUIHeartbeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#ControlModuleSimulator.recvUIHeartbeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.ControlModuleSimulator.recvUIHeartbeat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.controller.control_module.get_control_module">
+<code class="sig-prename descclassname">vent.controller.control_module.</code><code class="sig-name descname">get_control_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/controller/control_module.html#get_control_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.controller.control_module.get_control_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vent.controller">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-vent.controller" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

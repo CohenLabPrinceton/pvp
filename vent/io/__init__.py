@@ -42,15 +42,15 @@ class Ventilator:
     def pressure(self) -> float:
         """ Returns the pressure from the primary pressure sensor
         """
-        self.pressure_sensor.update()
-        return self.pressure_sensor.get()
+        self._pressure_sensor.update()
+        return self._pressure_sensor.get()
 
     @property
     def flow(self) -> float:
         """ The measured flow rate.
         """
-        self.flow_sensor.update()
-        return self.flow_sensor.get()
+        self._flow_sensor.update()
+        return self._flow_sensor.get()
 
     @property
     def setpoint(self) -> float:

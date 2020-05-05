@@ -74,7 +74,7 @@ def test_restart_controller():
 ######################################################################
 #
 #   Make sure the controller controlls, and the controll values look 
-#   good. (i.e. _close to target within narrow margins).
+#   good. (i.e. close to target within narrow margins).
 #
 
 @pytest.mark.parametrize("control_type", ["PID", "STATE"])
@@ -159,7 +159,7 @@ def test_control_dynamical(control_type):
 
     hb1 = Controller.heartbeat()
     assert hb1 > 0                                 # Test the heartbeat
-    assert np.abs(hb1 - COPY_lc) <= Controller._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE  # true heart-beat should be _close to the sensor loop counter
+    assert np.abs(hb1 - COPY_lc) <= Controller._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE  # true heart-beat should be close to the sensor loop counter
 
 
 

@@ -48,7 +48,7 @@ class ControlModuleBase:
 
         # This is what the machine has controll over:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
-        self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is _open/_close
+        self.__control_signal_out = 0              # State of a valve on the expiratory side - this is open/close
         self._pid_control_flag    = True           # Default is: use PID control
 
         # Internal Control variables. "SET" indicates that this is set.
@@ -399,7 +399,7 @@ class ControlModuleBase:
         return self.__control_signal_in
 
     def _get_control_signal_out(self):
-        ''' This is the control signal (_open/_close) on the expiratory side '''
+        ''' This is the control signal (open/close) on the expiratory side '''
         return self.__control_signal_out
 
     def __get_pressure_derivative(self, dt):
@@ -440,7 +440,7 @@ class ControlModuleBase:
                 target_slope = (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PIP_TIME
                 self.__get_PID_error(yis = self._DATA_dpdt, ytarget = target_slope, dt = dt)   # here, we control dP/dt   
                 self.__calculate_control_signal_in()
-                self.__control_signal_out = 0   # _close out valve
+                self.__control_signal_out = 0   # close out valve
                 if self._DATA_PRESSURE > self.__SET_PIP:
                     self.__control_signal_in = 0
             else:
@@ -453,7 +453,7 @@ class ControlModuleBase:
             if self._pid_control_flag:
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt)
                 self.__calculate_control_signal_in()
-                self.__control_signal_out = 0   # _close out valve
+                self.__control_signal_out = 0   # close out valve
             else:
                 self.__control_signal_in = 0                             # STATE CONTROL: keep PIP plateau, let air in if below
                 self.__control_signal_out = 0
@@ -465,7 +465,7 @@ class ControlModuleBase:
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:  # then, we drop pressure as fast as possible
             if self._pid_control_flag:
                 self.control_signal_in = 0
-                self.__control_signal_out = np.inf   # _open out valve to max, once the pressure is down, let the PID controller take over
+                self.__control_signal_out = np.inf   # open out valve to max, once the pressure is down, let the PID controller take over
                 if self._DATA_PRESSURE < 1.1*self.__SET_PEEP:
                     self.__control_signal_out = 0
             else:

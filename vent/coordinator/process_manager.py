@@ -37,6 +37,6 @@ class ProcessManager:
         self.start_process()
 
     def heartbeat(self, timestamp):
-        # if no heartbeat in maxInterval restart
+        # TODO: if no heartbeat in maxInterval restart
         pass
 

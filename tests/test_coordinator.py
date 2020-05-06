@@ -8,7 +8,7 @@ from unittest.mock import patch, Mock
 import pytest
 
 from vent.common import values
-from vent.common.message import ControlSetting, SensorValues, SensorValue
+from vent.common.message import ControlSetting, SensorValues, SensorValueNew, Alarm, AlarmSeverity
 from vent.common.values import ValueName
 from vent.controller.control_module import ControlModuleBase
 from vent.coordinator import rpc
@@ -47,6 +47,12 @@ class ControlModuleMock(ControlModuleBase):
         self._running.wait()
         self.control_setting[control_setting.name] = control_setting
 
+    def get_active_alarms(self):
+        return {"PIP": Alarm("PIP", True, AlarmSeverity.RED, time.time(), None)}
+
+    def get_logged_alarms(self):
+        return [Alarm("PIP", False, AlarmSeverity.RED, time.time(), None)]
+
 
 def mock_get_control_module(sim_mode):
     return ControlModuleMock()
@@ -64,7 +70,6 @@ def test_local_coordinator(control_setting_name):
     v_min = v - 5
     v_max = v + 5
 
-    # TODO: add test for stop
     # TODO: add test for test reference
 
     c = ControlSetting(name=control_setting_name, value=v, min_value=v_min, max_value=v_max, timestamp=t)
@@ -95,7 +100,6 @@ def test_remote_coordinator(control_setting_name):
     v_min = v - 5
     v_max = v + 5
 
-    # TODO: add test for stop
     # TODO: add test for test reference
     # TODO: test racing condition
 
@@ -123,29 +127,102 @@ def test_process_manager():
     while not coordinator.is_running():
         pass
 
-    sensor_values = coordinator.get_sensors()
-    assert isinstance(sensor_values, dict)
-    for k, v in sensor_values.items():
-        assert isinstance(k, ValueName)
-        assert isinstance(v, SensorValue)
-
+    assert coordinator.is_running() == True
     coordinator.process_manager.stop_process()
     assert coordinator.process_manager.child_pid is None
 
-    coordinator.process_manager.start_process()
-    assert coordinator.process_manager.child_pid is not None
+    try:
+        coordinator.is_running()
+        assert False
+    except ConnectionRefusedError:
+        pass
+    except Exception:
+        assert False
 
-    sensor_values = coordinator.get_sensors()
-    assert isinstance(sensor_values, dict)
-    for k, v in sensor_values.items():
-        assert isinstance(k, ValueName)
-        assert isinstance(v, SensorValue)
+    coordinator.process_manager.start_process()
+
+    time.sleep(1)
+    assert coordinator.process_manager.child_pid is not None
+    assert coordinator.is_running() == False
 
     coordinator.process_manager.restart_process()
+
+    time.sleep(1)
     assert coordinator.process_manager.child_pid is not None
+    assert coordinator.is_running() == False
+
+    coordinator.process_manager.stop_process()
+
+
+def test_local_sensors():
+    coordinator = get_coordinator(single_process=True, sim_mode=True)
+    coordinator.start()
+    while not coordinator.is_running():
+        pass
 
     sensor_values = coordinator.get_sensors()
     assert isinstance(sensor_values, dict)
     for k, v in sensor_values.items():
         assert isinstance(k, ValueName)
-        assert isinstance(v, SensorValue)
+        assert isinstance(v, SensorValueNew)
+
+
+def test_remote_sensors():
+    # wait before
+    while not is_port_in_use(rpc.default_port):
+        time.sleep(1)
+    coordinator = get_coordinator(single_process=False, sim_mode=True)
+    # TODO need to wait for rpc client start?
+    time.sleep(1)
+    coordinator.start()
+    while not coordinator.is_running():
+        pass
+
+    sensor_values = coordinator.get_sensors()
+    assert isinstance(sensor_values, dict)
+    for k, v in sensor_values.items():
+        assert isinstance(k, ValueName)
+        assert isinstance(v, SensorValueNew)
+
+    coordinator.process_manager.stop_process()
+
+
+def test_local_alarms():
+    coordinator = get_coordinator(single_process=True, sim_mode=True)
+    coordinator.start()
+    while not coordinator.is_running():
+        pass
+
+    alarms = coordinator.get_active_alarms()
+    assert isinstance(alarms, dict)
+    for k, v in alarms.items():
+        assert isinstance(v, Alarm)
+
+    alarms = coordinator.get_logged_alarms()
+    assert isinstance(alarms, list)
+    for a in alarms:
+        assert isinstance(a, Alarm)
+
+
+def test_remote_alarms():
+    # wait before
+    while not is_port_in_use(rpc.default_port):
+        time.sleep(1)
+    coordinator = get_coordinator(single_process=False, sim_mode=True)
+    # TODO need to wait for rpc client start?
+    time.sleep(1)
+    coordinator.start()
+    while not coordinator.is_running():
+        pass
+
+    alarms = coordinator.get_active_alarms()
+    assert isinstance(alarms, dict)
+    for k, v in alarms.items():
+        assert isinstance(v, Alarm)
+
+    alarms = coordinator.get_logged_alarms()
+    assert isinstance(alarms, list)
+    for a in alarms:
+        assert isinstance(a, Alarm)
+
+    coordinator.process_manager.stop_process()

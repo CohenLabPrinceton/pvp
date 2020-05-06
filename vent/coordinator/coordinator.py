@@ -162,10 +162,12 @@ class CoordinatorRemote(CoordinatorBase):
         return res
 
     def get_active_alarms(self) -> Dict[str, Alarm]:
-        return pickle.loads(self.rpc_client.get_active_alarms())
+        pickled_res = self.rpc_client.get_active_alarms().data
+        return pickle.loads(pickled_res)
 
     def get_logged_alarms(self) -> List[Alarm]:
-        return pickle.loads(self.rpc_client.get_logged_alarms())
+        pickled_res = self.rpc_client.get_logged_alarms().data
+        return pickle.loads(pickled_res)
 
     def clear_logged_alarms(self):
         # TODO: implement this

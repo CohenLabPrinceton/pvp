@@ -1,4 +1,5 @@
 import multiprocessing
+import time
 
 from vent.coordinator import rpc
 
@@ -22,7 +23,6 @@ class ProcessManager:
             return
         self.child_process = multiprocessing.Process(target=rpc.rpc_server_main, args=(self.sim_mode,))
         self.child_process.daemon = True
-
         self.child_process.start()
         self.child_pid = self.child_process.pid
 
@@ -30,6 +30,10 @@ class ProcessManager:
         if self.child_process is not None:
             # print(f'kill process {self.child_pid}')
             self.child_process.kill()
+            while self.child_process.is_alive():
+                time.sleep(0.01)
+            self.child_process = None
+            self.child_pid = None
 
     def restart_process(self):
         if self.child_process is not None:

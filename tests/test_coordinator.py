@@ -8,7 +8,7 @@ from unittest.mock import patch, Mock
 import pytest
 
 from vent.common import values
-from vent.common.message import ControlSetting, SensorValues
+from vent.common.message import ControlSetting, SensorValues, SensorValue
 from vent.common.values import ValueName
 from vent.controller.control_module import ControlModuleBase
 from vent.coordinator import rpc
@@ -110,3 +110,42 @@ def test_remote_coordinator(control_setting_name):
     assert c_read.timestamp == c.timestamp
 
     coordinator.process_manager.stop_process()
+
+
+def test_process_manager():
+    # wait before
+    while not is_port_in_use(rpc.default_port):
+        time.sleep(1)
+    coordinator = get_coordinator(single_process=False, sim_mode=True)
+    # TODO need to wait for rpc client start?
+    time.sleep(1)
+    coordinator.start()
+    while not coordinator.is_running():
+        pass
+
+    sensor_values = coordinator.get_sensors()
+    assert isinstance(sensor_values, dict)
+    for k, v in sensor_values.items():
+        assert isinstance(k, ValueName)
+        assert isinstance(v, SensorValue)
+
+    coordinator.process_manager.stop_process()
+    assert coordinator.process_manager.child_pid is None
+
+    coordinator.process_manager.start_process()
+    assert coordinator.process_manager.child_pid is not None
+
+    sensor_values = coordinator.get_sensors()
+    assert isinstance(sensor_values, dict)
+    for k, v in sensor_values.items():
+        assert isinstance(k, ValueName)
+        assert isinstance(v, SensorValue)
+
+    coordinator.process_manager.restart_process()
+    assert coordinator.process_manager.child_pid is not None
+
+    sensor_values = coordinator.get_sensors()
+    assert isinstance(sensor_values, dict)
+    for k, v in sensor_values.items():
+        assert isinstance(k, ValueName)
+        assert isinstance(v, SensorValue)

@@ -133,11 +133,11 @@ class CoordinatorRemote(CoordinatorBase):
         super().__init__(sim_mode=sim_mode)
         # TODO: according to documentation, pass max_heartbeat_interval?
         self.process_manager = ProcessManager(sim_mode)
-        self.proxy = get_rpc_client()
+        self.rpc_client = get_rpc_client()
         # TODO: make sure the ipc connection is setup. There should be a clever method
 
     def get_sensors(self) -> Dict[ValueName, SensorValueNew]:
-        sensor_values = pickle.loads(self.proxy.get_sensors().data)
+        sensor_values = pickle.loads(self.rpc_client.get_sensors().data)
         res = {
             ValueName.PIP: SensorValueNew(ValueName.PIP, sensor_values.pip, sensor_values.timestamp,
                                           sensor_values.loop_counter),
@@ -162,10 +162,10 @@ class CoordinatorRemote(CoordinatorBase):
         return res
 
     def get_active_alarms(self) -> Dict[str, Alarm]:
-        return pickle.loads(self.proxy.get_active_alarms())
+        return pickle.loads(self.rpc_client.get_active_alarms())
 
     def get_logged_alarms(self) -> List[Alarm]:
-        return pickle.loads(self.proxy.get_logged_alarms())
+        return pickle.loads(self.rpc_client.get_logged_alarms())
 
     def clear_logged_alarms(self):
         # TODO: implement this
@@ -173,11 +173,11 @@ class CoordinatorRemote(CoordinatorBase):
 
     def set_control(self, control_setting: ControlSetting):
         pickled_args = pickle.dumps(control_setting)
-        self.proxy.set_control(pickled_args)
+        self.rpc_client.set_control(pickled_args)
 
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         pickled_args = pickle.dumps(control_setting_name)
-        pickled_res = self.proxy.get_control(pickled_args).data
+        pickled_res = self.rpc_client.get_control(pickled_args).data
         return pickle.loads(pickled_res)
 
     def start(self):
@@ -185,20 +185,20 @@ class CoordinatorRemote(CoordinatorBase):
         Start the coordinator.
         This does a soft start (not allocating a process).
         """
-        self.proxy.start()
+        self.rpc_client.start()
 
     def is_running(self) -> bool:
         """
         Test whether the whole system is running
         """
-        return self.proxy.is_running()
+        return self.rpc_client.is_running()
 
     def stop(self):
         """
         Stop the coordinator.
         This does a soft stop (not kill a process)
         """
-        self.proxy.stop()
+        self.rpc_client.stop()
 
 
 def get_coordinator(single_process=False, sim_mode=False) -> CoordinatorBase:

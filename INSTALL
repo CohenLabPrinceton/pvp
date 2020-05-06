@@ -3,3 +3,6 @@ sudo pip3 install pigpio
 sudo pip3 install external/PySide2*
 sudo systemctl enable pigpiod
 sudo systemctl start pigpiod
+# The following is necessary to avoid an issue with Numpy 1.18.4 on Raspian.
+# See: https://github.com/numpy/numpy/issues/14772
+sudo apt-get install libatlas-base-dev

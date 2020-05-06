@@ -1,7 +1,8 @@
-import xmlrpc.client
-import vent.controller.control_module
-from xmlrpc.server import SimpleXMLRPCServer
 import pickle
+import xmlrpc.client
+from xmlrpc.server import SimpleXMLRPCServer
+
+import vent.controller.control_module
 
 default_addr = 'localhost'
 default_port = 9533
@@ -10,23 +11,29 @@ remote_controller = None
 
 
 def get_sensors():
-    return pickle.dumps(remote_controller.get_sensors())
+    res = remote_controller.get_sensors()
+    return pickle.dumps(res)
 
 
 def get_active_alarms():
-    return pickle.dumps(remote_controller.get_active_alarms())
+    res = remote_controller.get_active_alarms()
+    return pickle.dumps(res)
 
 
 def get_logged_alarms():
-    return pickle.dumps(remote_controller.get_logged_alarms())
+    res = remote_controller.get_logged_alarms()
+    return pickle.dumps(res)
 
 
 def set_control(control_setting):
-    remote_controller.set_control(pickle.loads(control_setting.data))
+    args = pickle.loads(control_setting.data)
+    remote_controller.set_control(args)
 
 
 def get_control(control_setting_name):
-    return pickle.dumps(remote_controller.get_control(pickle.loads(control_setting_name.data)))
+    args = pickle.loads(control_setting_name.data)
+    res = remote_controller.get_control(args)
+    return pickle.dumps(res)
 
 
 def rpc_server_main(sim_mode, addr=default_addr, port=default_port):

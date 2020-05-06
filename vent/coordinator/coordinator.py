@@ -1,5 +1,3 @@
-import threading
-from typing import List, Dict
 import pickle
 import threading
 from typing import List, Dict
@@ -174,10 +172,13 @@ class CoordinatorRemote(CoordinatorBase):
         raise NotImplementedError
 
     def set_control(self, control_setting: ControlSetting):
-        self.proxy.set_control(pickle.dumps(control_setting))
+        pickled_args = pickle.dumps(control_setting)
+        self.proxy.set_control(pickled_args)
 
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
-        return pickle.loads(self.proxy.get_control(pickle.dumps(control_setting_name)).data)
+        pickled_args = pickle.dumps(control_setting_name)
+        pickled_res = self.proxy.get_control(pickled_args).data
+        return pickle.loads(pickled_res)
 
     def start(self):
         """

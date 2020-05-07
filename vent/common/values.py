@@ -25,6 +25,7 @@ controllable_values = {
     ValueName.PEEP_TIME,
     ValueName.BREATHS_PER_MINUTE,
     ValueName.INSPIRATION_TIME_SEC,
+    ValueName.IE_RATIO
 }
 
 non_controllable_values = {

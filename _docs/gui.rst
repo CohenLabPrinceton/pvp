@@ -154,14 +154,6 @@ ____________
     :undoc-members:
     :autosummary:
 
-GUI Defaults
-~~~~~~~~~~~~~~~
-
-.. automodule:: vent.gui.defaults
-    :members:
-    :undoc-members:
-    :autosummary:
-
 GUI Stylesheets
 ~~~~~~~~~~~~~~~~~~
 

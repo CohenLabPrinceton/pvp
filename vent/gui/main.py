@@ -14,49 +14,6 @@ from vent.common import values
 
 
 class Vent_Gui(QtWidgets.QMainWindow):
-    """
-
-    Controls:
-        - PIP: peak inhalation pressure (~20 cm H2O)
-        - T_insp: inspiratory time to PEEP (~0.5 sec)
-        - I/E: inspiratory to expiratory time ratio
-        - bpm: breaths per minute (15 bpm -> 1/15 sec cycle time)
-        - PIP_time: Target time for PIP. While lungs expand, dP/dt should be PIP/PIP_time
-        - flow_insp: nominal flow rate during inspiration
-
-    **Set by hardware**
-        - FiO2: fraction of inspired oxygen, set by blender
-        - max_flow: manual valve at output of blender
-        - PEEP: positive end-expiratory pressure, set by manual valve
-
-    **Derived parameters**
-        - cycle_time: 1/bpm
-        - t_insp: inspiratory time, controlled by cycle_time and I/E
-        - t_exp: expiratory time, controlled by cycle_time and I/E
-
-    **Monitored variables**
-        - O2
-        - Temperature
-        - Humidity
-        - (VTE) End-Tidal volume: the volume of air entering the lung, derived from flow through t_exp
-        - PIP: peak inspiratory pressure, set by user in software
-        - Mean plateau pressure: derived from pressure sensor during inspiration cycle hold (no flow)
-        - PEEP: positive end-expiratory pressure, set by manual valve
-        - fTotal (total respiratory frequency) - breaths delivered by vent & patients natural breaths
-
-    **Alarms**
-        - Oxygen out of range
-        - High pressure (tube/airway occlusion)
-        - Low-pressure (disconnect)
-        - Temperature out of range
-        - Low voltage alarm (if using battery power)
-        - Tidal volume (expiratory) out of range
-
-    Graphs:
-        - Flow
-        - Pressure
-
-    """
 
     gui_closing = QtCore.Signal()
     """
@@ -86,12 +43,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
     see :data:`.gui.defaults.PLOTS`
     """
 
-    display_width = 2
+    monitor_width = 2
     plot_width = 4
     control_width = 2
-    total_width = display_width+plot_width+control_width
+    total_width = monitor_width + plot_width + control_width
     """
-    computed from ``display_width+plot_width+control_width``
+    computed from ``monitor_width+plot_width+control_width``
     """
 
     status_height = 1
@@ -101,13 +58,25 @@ class Vent_Gui(QtWidgets.QMainWindow):
     computed from ``status_height+main_height``
     """
 
-    def __init__(self, coordinator, update_period = 0.1, test=False):
+    def __init__(self, coordinator, update_period = 0.1):
         """
+        The Main GUI window.
+
+        Only one instance can be created at a time. Uses :func:`set_gui_instance` to
+        store a reference to itself. after initialization, use `get_gui_instance` to
+        retrieve a reference.
+
+        .. todo:
+
+            Jonny add a screenshot here when final version.
+
 
         Attributes:
-            monitor (dict): Dictionary mapping :data:`.default.SENSOR` keys to :class:`.widgets.Monitor_Value` objects
-            plots (dict): Dictionary mapping :data:`.default.PLOT` keys to :class:`.widgets.Plot` objects
-            controls (dict): Dictionary mapping :data:`.default.CONTROL` keys to :class:`.widgets.Control` objects
+            monitor (dict): Dictionary mapping :data:`.values.SENSOR` keys to :class:`.widgets.Monitor_Value` objects
+            plots (dict): Dictionary mapping :data:`.gui.PLOT` keys to :class:`.widgets.Plot` objects
+            controls (dict): Dictionary mapping :data:`.values.CONTROL` keys to :class:`.widgets.Control` objects
+            coordinator (:class:`vent.coordinator.coordinator.CoordinatorBase`): Some coordinator object that we use to communicate with the controller
+            control_module (:class:`vent.controller.control_module.ControlModuleBase`): Reference to the control module, retrieved from coordinator
             start_time (float): Start time as returned by :func:`time.time`
             update_period (float): The global delay between redraws of the GUI (seconds)
             alarm_manager (:class:`~.AlarmManager`)
@@ -132,10 +101,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.monitor = {}
         self.plots = {}
         self.controls = {}
-
-        self.control_settings = {}
-
-        self.draw_lock = threading.Lock()
 
         self.coordinator = coordinator
         self.control_module = self.coordinator.control_module
@@ -328,9 +293,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.display_layout.addStretch(10)
 
-        self.monitor_layout.addLayout(self.display_layout, self.display_width)
+        self.monitor_layout.addLayout(self.display_layout, self.monitor_width)
 
-        self.main_layout.addWidget(self.monitor_box, self.plot_width + self.display_width)
+        self.main_layout.addWidget(self.monitor_box, self.plot_width + self.monitor_width)
 
 
     def init_ui_plots(self):

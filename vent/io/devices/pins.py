@@ -1,4 +1,5 @@
 from vent.io.devices import IODeviceBase
+from vent.common.fashion import pigpio_command
 
 
 class Pin(IODeviceBase):
@@ -25,15 +26,17 @@ class Pin(IODeviceBase):
         """ Inherits attributes and methods from IODeviceBase.
         """
         super().__init__(pig)
-        self.pin = int(pin)
+        self.pin = pin
 
     @property
+    @pigpio_command
     def mode(self):
         """ The currently active pigpio mode of the pin.
         """
         return dict(map(reversed, self._PIGPIO_MODES.items()))[self.pig.get_mode(self.pin)]
 
     @mode.setter
+    @pigpio_command
     def mode(self, mode):
         """
         Performs validation on requested mode, then sets the mode.
@@ -53,12 +56,14 @@ class Pin(IODeviceBase):
         """
         self.write(not self.read())
 
+    @pigpio_command
     def read(self):
         """ Returns the value of the pin: usually 0 or 1 but can be
         overridden e.g. by PWM which returns duty cycle.
         """
         self.pig.read(self.pin)
 
+    @pigpio_command
     def write(self, value):
         """ Sets the value of the Pin. Usually 0 or 1 but behavior
         differs for some subclasses.
@@ -90,6 +95,7 @@ class PWMOutput(Pin):
         self.__pwm(frequency, initial_duty)
 
     @property
+    @pigpio_command
     def frequency(self):
         """ Return the current PWM frequency active on the pin.
         """
@@ -104,17 +110,20 @@ class PWMOutput(Pin):
         self.__pwm(new_frequency, self._duty())
 
     @property
+    @pigpio_command
     def duty(self):
         """ Description:
         Returns the PWM duty cycle (pulled straight from pigpiod) mapped to the range [0-1] """
         return self.pig.get_PWM_dutycycle(self.pin) / self.pig.get_PWM_range(self.pin)
 
+    @pigpio_command
     def _duty(self):
         """ Returns the pigpio int representation of the duty cycle
         """
         return self.pig.get_PWM_dutycycle(self.pin)
 
     @duty.setter
+    @pigpio_command
     def duty(self, duty_cycle):
         """ Description:
         Validation of requested duty cycle is performed here.
@@ -149,6 +158,7 @@ class PWMOutput(Pin):
         if not self.hardware_enabled:
             self.__software_pwm(frequency, duty)
 
+    @pigpio_command
     def __hardware_pwm(self, frequency, duty):
         """ Description:
         -Tries to write a hardware pwm. result == 0 if it suceeds.
@@ -164,6 +174,7 @@ class PWMOutput(Pin):
         else:
             self.hardware_enabled = True
 
+    @pigpio_command
     def __software_pwm(self, frequency, duty):
         """ Used for pins where hardware PWM is not available. """
         self.pig.set_PWM_dutycycle(self.pin, duty)

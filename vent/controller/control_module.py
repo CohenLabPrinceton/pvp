@@ -569,24 +569,30 @@ class Balloon_Simulator:
     For math, see https://en.wikipedia.org/wiki/Two-balloon_experiment
     '''
 
-    def __init__(self, leak, delay):
+    def __init__(self, leak):
         # Hard parameters for the simulation
-        self.max_volume = 6  # Liters  - 6?
+        self.max_volume = 6    # Liters  - 6?
         self.min_volume = 1.5  # Liters - baloon starts slightly inflated.
-        self.PC = 20  # Proportionality constant that relates pressure to cm-H2O
-        self.P0 = 0  # Minimum pressure.
+        self.PC = 20           # Proportionality constant that relates pressure to cm-H2O
+        self.P0 = 0            # Baseline/Minimum pressure.
         self.leak = leak
-        self.delay = delay
 
-        self.temperature = 37  # keep track of this, as is important output variable
+        self.temperature = 37  # keep track of these, as they are important output variable
         self.humidity = 90
         self.fio2 = 60
 
         # Dynamical parameters - these are the initial conditions
-        self.current_flow = 0  # in unit  liters/sec
+        self.current_flow     = 0  # in unit  liters/sec
+
+        self.set_Qin          = 0  # set flow of a prop valve on inspiratory side      -- liters/second
+        self.Qin              = 0  # exact flow of a prop valve on inspiratory side    -- liters/second
+
+        self.set_Qout         = 0  # 0|max - setting of an solenoid on expiratory side -- liters/second
+        self.Qout             = 0  # exact flow through the solenoid
+
         self.current_pressure = 0  # in unit  cm-H2O
         self.r_real = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)  # size of the lung
-        self.current_volume = self.min_volume  # in unit  liters
+        self.current_volume = self.min_volume                         # in unit  liters
 
     def get_pressure(self):
         return self.current_pressure
@@ -594,10 +600,24 @@ class Balloon_Simulator:
     def get_volume(self):
         return self.current_volume
 
-    def set_flow(self, Qin, Qout):
-        self.current_flow = Qin - Qout
+    def set_flow_in(self, Qin, dt):
+        self.set_Qin = Qin
+
+        Qin_clip = np.min([Qin, 2])                # Flows have to be positive, and reasonable. Nothing here is faster that 2 l/s
+        Qin_clip = np.max([Qin_clip, 0])
+        self.Qin     = Qin_clip                    # Assume the set-value is also the true value for prop
+
+    def set_flow_out(self, Qout, dt):
+        self.set_Qout = Qout
+
+        Qout_clip = np.min([Qout, 2])                    # Flows have to be positive, and reasonable. Nothing here is faster that 2 l/s
+        Qout_clip = np.max([Qout_clip, 0])
+        difference_pressure = self.current_pressure - 0  # Convention: outside is "0"
+        resistance = 0.05*Qout_clip                      # This should be in the range of ~1 liter/s for dp=~30 cmH2O
+        self.Qout = difference_pressure * resistance         # Target for flow out
 
     def update(self, dt):  # Performs an update of duration dt [seconds]
+        self.current_flow = self.Qin - self.Qout
         self.current_volume += self.current_flow * dt
 
         if self.leak:
@@ -606,16 +626,8 @@ class Balloon_Simulator:
             self.current_volume = self.current_volume + s * (self.min_volume - self.current_volume)
 
         # This is fromt the baloon equation, uses helper variable (the baloon radius)
-        r_target = (3 * self.current_volume / (4 * np.pi)) ** (1 / 3)
+        self.r_real = (3 * self.current_volume / (4 * np.pi)) ** (1 / 3)
         r0 = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)
-
-        # Delay -> Expansion takes time
-        if self.delay:
-            RC = 0.1  # pulled these 100ms out of my hat
-            s = dt / (RC + dt)
-            self.r_real = self.r_real + s * (r_target - self.r_real)
-        else:
-            self.r_real = r_target
 
         self.current_pressure = self.P0 + (self.PC / (r0 ** 2 * self.r_real)) * (1 - (r0 / self.r_real) ** 6)
 
@@ -648,7 +660,7 @@ class ControlModuleSimulator(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self):
         ControlModuleBase.__init__(self)
-        self.Balloon = Balloon_Simulator(leak=True, delay=False)          # This is the simulation
+        self.Balloon = Balloon_Simulator(leak=True)          # This is the simulation
         self._sensor_to_COPY()
 
     def __SimulatedPropValve(self, x, dt):
@@ -719,10 +731,11 @@ class ControlModuleSimulator(ControlModuleBase):
             y = self._get_control_signal_out()                      # Expiratory side: get control signal for Solenoid
             Qout = self.__SimulatedSolenoid(y)                      # Set expiratory flow rate, Qout
 
-            self.Balloon.set_flow(Qin, Qout)                        # Set the flow rates for the Balloon simulator
+            self.Balloon.set_flow_in(Qin, dt = dt)                  # Set the flow rates for the Balloon simulator
+            self.Balloon.set_flow_out(Qout, dt = dt)
 
-            self._DATA_Qout = Qout                                  # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
-            self._DATA_Qin = Qin                                    # Tell controller the expiratory flow rate, _DATA_Qin                     --- SENSOR 3
+            self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
+            self._DATA_Qin  = self.Balloon.Qin                      # Tell controller the expiratory flow rate, _DATA_Qin                     --- SENSOR 3
             self._last_update = now
 
             if update_copies == 0:

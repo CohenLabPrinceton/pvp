@@ -72,8 +72,8 @@ class PWMOutput(Pin):
     """
     I am a Special Pin!
     """
-    _DEFAULT_FREQUENCY = 20000
-    _DEFAULT_SOFT_FREQ = 2000
+    _DEFAULT_FREQUENCY = 1500
+    _DEFAULT_SOFT_FREQ = 1000
     _HARDWARE_PWM_PINS = (12, 13, 18, 19)
 
     def __init__(self, pin, initial_duty=0, frequency=None, pig=None):
@@ -82,8 +82,8 @@ class PWMOutput(Pin):
             self.hardware_enabled = False
             frequency = self._DEFAULT_SOFT_FREQ if frequency is None else frequency
             raise RuntimeWarning(
-                'PWMOutput called on pin {} but that is not a PWM channel. Available frequencies will be limited.'.format(
-                    self.pin))
+                'PWMOutput called on pin {} but that is not a PWM channel.',
+                'Available frequencies will be limited.'.format(self.pin))
         else:
             self.hardware_enabled = True
             frequency = self._DEFAULT_FREQUENCY if frequency is None else frequency

@@ -5,7 +5,6 @@ from random import random
 
 import numpy as np
 
-
 from vent.io.devices import I2CDevice, be16_to_native
 
 
@@ -152,13 +151,14 @@ class AnalogSensor(Sensor):
             raise TypeError(
                 'User must specify MUX for AnalogSensor creation'
             )
+        kwargs = {key: kwargs[key] for key in kwargs.keys() - ('pig',)}
         self._check_and_set_attr(**kwargs)
 
     def calibrate(self, **kwargs):
         """ Sets the calibration of the sensor, either to the values
         contained in the passed tuple or by some routine; the current
         routine is pretty rudimentary and only calibrates offset voltage
-        """
+        """  # FIXME
         if kwargs:
             for fld, val in kwargs.items():
                 if fld in self._DEFAULT_CALIBRATION.keys():
@@ -172,7 +172,7 @@ class AnalogSensor(Sensor):
                     end='\r'
                 )
                 sleep(.1)
-            self.offset_voltage = np.mean(self.data[-50:])
+            self.offset_voltage = np.min(self.data[-50:])
             # PRINT FOR DEBUG / HARDWARE TESTING
             print("Calibrated low-end of AnalogSensor @",
                   ' %6.4f V' % self.offset_voltage)
@@ -186,9 +186,18 @@ class AnalogSensor(Sensor):
     def _verify(self, value):
         """ Checks to make sure sensor reading was indeed in [0, 1]
         """
-        report = bool(0 <= value/self.conversion_factor <= 1)
+        report = bool(0 <= value / self.conversion_factor <= 1)
         if not report:
-            print(value)
+            # FIXME: Right now this just expands the calibration range whenever bounds are exceeded, because we're not
+            #  familiar enough with our sensors to know when we should really be rejecting values. This approach should
+            #  work for debugging/R&D purposes but really ought to be thought through and/or replaced for production.
+            #  For example, negative voltages are probably bad. voltages about VDD (~5V) are also probably bad. There is
+            #  some expected drift around offset voltage and output span, however, and that drift is going to change
+            #  depending on the sensor in question; i.e., voltages between offset_voltage and zero may or may not be ok,
+            #  and voltages above the offset+span that do not exceed VDD may or may not be ok as well.
+            self.offset_voltage = min(self.offset_voltage, value)
+            self.output_span = max(self.output_span, value - self.offset_voltage)
+            print('Warning: AnalogSensor calibration adjusted')
         return report
 
     def _convert(self, raw):
@@ -246,7 +255,7 @@ class AnalogSensor(Sensor):
                 setattr(self, fld, val)
                 result += 1
         if result != len(kwargs):
-            raise TypeError('AnalogSensor was passed unknown field(s)')
+            raise TypeError('AnalogSensor was passed unknown field(s)', kwargs.items(), allowed)
         self._fill_attr()
 
 
@@ -308,13 +317,14 @@ class SFM3200(Sensor, I2CDevice):
         """
         return be16_to_native(self.read_device(4))
 
-class SimSensor(Sensor):
-    def __init__(self, min=0, max=100, pig=None):
-        super().__init__()
-        self.min = min
-        self.max = max
 
-    def _verify(self,value):
+class SimSensor(Sensor):
+    def __init__(self, low=0, high=100, pig=None):
+        super().__init__()
+        self.min = low
+        self.max = high
+
+    def _verify(self, value):
         """
 
         Args:
@@ -347,4 +357,4 @@ class SimSensor(Sensor):
         if self._i == 0:
             return self.min + random() * self.max
         else:
-            return self.get() + random() * (self.max/100)
+            return self.get() + random() * (self.max / 100)

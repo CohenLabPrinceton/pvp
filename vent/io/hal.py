@@ -1,12 +1,13 @@
 """ Module for interacting with physical and/or simulated devices installed on the ventilator.
 
 """
-import configparser
+
 from importlib import import_module
+from ast import literal_eval
+from .devices.sensors import Sensor
 
 import pigpio
-
-from .devices.sensors import Sensor
+import configparser
 
 
 class Hal:
@@ -18,8 +19,8 @@ class Hal:
     def __init__(self, config_file=None):
         """ Initializes HAL from config_file.
             For each section in config_file, imports the class <type> from module <module>, and sets attribute
-            self.<section> = <type>(**opts), where opts is a dict containing all of the options in <section> that are not
-            <type> or <section>. For example, upon encountering the following entry in config_file.ini:
+            self.<section> = <type>(**opts), where opts is a dict containing all of the options in <section> that are
+            not <type> or <section>. For example, upon encountering the following entry in config_file.ini:
 
                 [adc]
                 type   = ADS1115
@@ -32,7 +33,7 @@ class Hal:
                         class_ = getattr(import_module('.devices', 'vent.io'), 'ADS1115')
 
                 2) Instantiate an ADS1115 object with the arguments defined in config_file and set it as an attribute:
-                        self._adc = class_(pig=self.-pig,i2c_address=0x48,i2c_bus=1)
+                        self._adc = class_(pig=self.-pig,address=0x48,i2c_bus=1)
 
             Note: RawConfigParser.optionxform() is overloaded here s.t. options are case sensitive (they are by default
             case insensitive). This is necessary due to the kwarg MUX which is so named for consistency with the config
@@ -48,6 +49,8 @@ class Hal:
                 conversion_factor=2.54*20
             )
 
+            Note: ast.literal_eval(opt) interprets integers, 0xFF, (a, b) etc. correctly. It does not interpret strings
+            correctly, nor does it know 'adc' -> self._adc; therefore, these special cases are explicitly handled.
         Args:
             config_file (str): Path to the configuration file containing the definitions of specific components on the
                 ventilator machine. (e.g., config_file = "vent/io/config/devices.ini")
@@ -66,9 +69,22 @@ class Hal:
         self.config.read(config_file)
         for section in self.config.sections():
             sdict = dict(self.config[section])
-            class_ = getattr(import_module('.'+sdict['module'], 'vent.io'), sdict['type'])
-            opts = {key: sdict[key] for key in sdict.keys() - ('module', 'type')}
-            setattr(self, '_'+section, class_(pig=self._pig, **opts))
+            class_ = getattr(import_module('.' + sdict['module'], 'vent.io'), sdict['type'])
+            opts = {key: sdict[key] for key in sdict.keys() - ('module', 'type',)}
+            for key in opts.keys():
+                if key == 'adc':
+                    opts[key] = self._adc
+                elif key in ('form', 'response'):
+                    pass
+                else:
+                    opts[key] = literal_eval(opts[key])
+            print('section: ', section, 'opts: ', opts.items())  # debug
+            setattr(self, '_' + section, class_(pig=self._pig, **opts))
+        self._pressure_sensor.update()
+        self._flow_sensor.update()
+        if isinstance(self._secondary_pressure_sensor, Sensor):
+            self._secondary_pressure_sensor.update()
+        self._flow_sensor.update()
 
     # TODO: Need exception handling whenever inlet valve is opened
 
@@ -113,10 +129,10 @@ class Hal:
         Args:
             value: Requested flow, as a proportion of maximum. Must be in [0, 1].
         """
-        if 0 <= value <= 1:
-            raise ValueError('setpoint must be a number between 0 and 1')
-        if value > 0 and not self._inlet_valve.isopen():
+        if not 0 <= value <= 100:
+            raise ValueError('setpoint must be a number between 0 and 100')
+        if value > 0 and not self._inlet_valve.isopen:
             self._inlet_valve.open()
-        elif value == 0 and self._inlet_valve.isopen():
+        elif value == 0 and self._inlet_valve.isopen:
             self._inlet_valve.close()
         self._control_valve.setpoint = value

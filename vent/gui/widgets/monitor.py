@@ -45,15 +45,18 @@ class Monitor(QtWidgets.QWidget):
         # create widgets
         # make range slider
         self.range_slider = RangeSlider(self.abs_range, self.safe_range,
+                                        decimals=self.decimals,
                                         orientation=QtCore.Qt.Orientation.Horizontal)
 
         # make comboboxes to display numerical value
-        self.max_safe = QtWidgets.QSpinBox()
+        self.max_safe = QtWidgets.QDoubleSpinBox()
+        self.max_safe.setDecimals(self.decimals)
         self.max_safe.setRange(self.abs_range[0], self.abs_range[1])
         self.max_safe.setSingleStep(10 ** (self.decimals * -1))
         self.max_safe.setValue(self.safe_range[1])
 
-        self.min_safe = QtWidgets.QSpinBox()
+        self.min_safe = QtWidgets.QDoubleSpinBox()
+        self.min_safe.setDecimals(self.decimals)
         self.min_safe.setRange(self.abs_range[0], self.abs_range[1])
         self.min_safe.setSingleStep(10 ** (self.decimals * -1))
         self.min_safe.setValue(self.safe_range[0])

@@ -92,18 +92,18 @@ def test_gui_launch(qtbot):
 
     assert vent_gui.isVisible()
 
-def test_gui_launch_mp(qtbot):
-    assert qt_api.QApplication.instance() is not None
-
-    coordinator = get_coordinator(sim_mode=True, single_process=False)
-    vent_gui = gui.Vent_Gui(coordinator)
-    qtbot.addWidget(vent_gui)
-    vent_gui.status_bar.start_button.click()
-
-    # wait for a second to let the simulation spin up and start spitting values
-    qtbot.wait(5000)
-
-    assert vent_gui.isVisible()
+# def test_gui_launch_mp(qtbot):
+#     assert qt_api.QApplication.instance() is not None
+#
+#     coordinator = get_coordinator(sim_mode=True, single_process=False)
+#     vent_gui = gui.Vent_Gui(coordinator)
+#     qtbot.addWidget(vent_gui)
+#     vent_gui.status_bar.start_button.click()
+#
+#     # wait for a second to let the simulation spin up and start spitting values
+#     qtbot.wait(5000)
+#
+#     assert vent_gui.isVisible()
 
 
 

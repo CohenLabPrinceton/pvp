@@ -126,7 +126,8 @@ class ControlModuleBase:
         ###########################  Threading init  #########################
         # Run the start() method as a thread
         self._loop_counter = 0
-        self._running = False
+        self._running = threading.Event()
+        self._running.clear()
         self._lock = threading.Lock()
         self._alarm_to_COPY()  #These require the lock
         self._initialize_set_to_COPY()
@@ -543,21 +544,21 @@ class ControlModuleBase:
 
     def start(self):
         if self.__thread is None or not self.__thread.is_alive():  # If the previous thread has been stopped, make a new one.
-            self._running = True
+            self._running.set()
             self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
             self.__thread.start()
         else:
             print("Main Loop already running.")
 
     def stop(self):
-        if self.__thread.is_alive():
-            self._running = False
+        if self.__thread is not None and self.__thread.is_alive():
+            self._running.clear()
         else:
             print("Main Loop is not running.")
 
     def is_running(self):
         # TODO: this should be better thread-safe variable
-        return self._running
+        return self._running.is_set()
 
     def do_pid_control(self):
         if self._pid_control_flag:
@@ -575,7 +576,7 @@ class ControlModuleBase:
 
     @property
     def running(self):
-        return self._running
+        return self._running.is_set()
 
 
 class ControlModuleDevice(ControlModuleBase):
@@ -738,7 +739,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
-        while self._running:
+        while self._running.is_set():
             time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()

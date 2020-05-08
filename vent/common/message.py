@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from vent.common import values
 from itertools import count
-
+from copy import copy
 
 
 class SensorValueNew:
@@ -33,7 +33,7 @@ class SensorValues:
         # check that all the kwargs are in values.SENSOR
         for key, value in kwargs.items():
             if (key in values.ValueName.__members__.keys()):
-                setattr(self, key, value)
+                setattr(self, key, copy(value))
             else:
                 raise KeyError(f'value {key} not declared in vent.values!!!')
 

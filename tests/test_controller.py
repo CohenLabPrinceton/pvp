@@ -125,12 +125,17 @@ def test_control_dynamical(control_type):
     Controller.stop()
 
     vals_stop = Controller.get_sensors()
-    
+    print(v_peep)
+    print(v_pip)
+    print(v_bpm)
+    print(v_iphase)
+    print(Inspiration_CI)
+
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
-    assert np.abs(vals_stop.peep - v_peep)                     < 3    # PIP error correct within 3 cmH2O
-    assert np.abs(vals_stop.pip - v_pip)                       < 3    # PIP error correct within 3 cmH2O
+    assert np.abs(vals_stop.peep - v_peep)                     < 5    # PIP error correct within 5 cmH2O
+    assert np.abs(vals_stop.pip - v_pip)                       < 5    # PIP error correct within 5 cmH2O
     assert np.abs(vals_stop.breaths_per_minute - v_bpm)        < 3    # Breaths per minute correct within 3 bpm
-    assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < Inspiration_CI # Inspiration time   correct within 0.3 sec
+    assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < Inspiration_CI # Inspiration time
 
     # Test whether get_sensors() return the right values
     COPY_peep     = Controller.COPY_sensor_values.peep
@@ -275,4 +280,41 @@ def test_alarm():
     waveformlist_2 = Controller.get_past_waveforms()
 
     assert len([s for s in waveformlist_1 if s is not None]) > len([s for s in waveformlist_2 if s is not None])   #Test: calling the past_waveforms clears ring buffer.
+
+
+
+
+
+######################################################################
+#########################   TEST 4  ##################################
+######################################################################
+#
+#   More involved test, triggers a series of alarms and makes sure they
+#   are raised correctly.
+#
+def test_erratic_dt():
+    '''
+        This is a function to test whether the controller works with random update times
+    '''
+    Controller = get_control_module(sim_mode=True)
+
+    Controller.start()
+    ls = []
+    for t in np.arange(0, 30,0.05):
+        Controller._LOOP_UPDATE_TIME = np.random.randint(100)/1000  # updates anywhere between 0ms and 100ms
+        time.sleep(0.05)
+        vals = Controller.get_sensors()
+        ls.append(vals)
+    Controller.stop()
+
+    cc = Controller.get_control(control_setting_name = ValueName.PEEP)
+    target_peep = cc.value
+    cc = Controller.get_control(control_setting_name = ValueName.PIP)
+    target_pip = cc.value
+
+    peeps = np.unique([np.abs(s.peep - target_peep)  for s in ls if s.peep is not None])
+    pips = np.unique([np.abs(s.pip - target_pip)  for s in ls if s.peep is not None])
+
+    assert np.mean(peeps) < 5
+    assert np.mean(pips) < 5
 

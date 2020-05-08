@@ -14,7 +14,7 @@ def parse_cmd_args():
                         help='run as simulation using virtual sensors and actuators (default: False)',
                         action='store_true')
     parser.add_argument('--single_process',
-                        help='running UI and coordinator within one process (default: True)',
+                        help='running UI and coordinator within one process (default: False)',
                         action='store_true')
     return parser.parse_args()
 

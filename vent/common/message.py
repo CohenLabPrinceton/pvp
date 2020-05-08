@@ -99,18 +99,3 @@ class Error:
         self.timestamp = timestamp
 
 
-class IPCMessageCommand(Enum):
-    START = auto()
-    STOP = auto()
-    RESET = auto()
-    GETSENSORS = auto()
-    GETALARMS = auto()
-    SETCONTROLS = auto()
-
-
-class IPCMessage:
-    def __init__(self, command):
-        """
-        :param command: ENUM in IPCMessageCommand
-        """
-        self.command = command

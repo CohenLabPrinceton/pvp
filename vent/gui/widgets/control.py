@@ -24,8 +24,8 @@ class Control(QtWidgets.QWidget):
 
     def init_ui(self):
         self.layout = QtWidgets.QGridLayout()
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                  QtWidgets.QSizePolicy.Expanding)
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                           QtWidgets.QSizePolicy.Expanding)
 
         # Value, Controller
         #        min,   max
@@ -63,19 +63,20 @@ class Control(QtWidgets.QWidget):
 
 
         self.name_label = QtWidgets.QLabel()
-        self.name_label.setStyleSheet(styles.DISPLAY_NAME)
+        self.name_label.setStyleSheet(styles.CONTROL_NAME)
         self.name_label.setText(self.name)
-        self.name_label.setAlignment(QtCore.Qt.AlignRight)
-        self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                    QtWidgets.QSizePolicy.Maximum)
         self.name_label.setWordWrap(True)
+        self.name_label.setAlignment(QtCore.Qt.AlignRight)
+        # self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                             QtWidgets.QSizePolicy.Expanding)
+
 
         self.units_label = QtWidgets.QLabel()
-        self.units_label.setStyleSheet(styles.DISPLAY_UNITS)
+        self.units_label.setStyleSheet(styles.CONTROL_UNITS)
         self.units_label.setText(self.units)
         self.units_label.setAlignment(QtCore.Qt.AlignRight)
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                    QtWidgets.QSizePolicy.Maximum)
+                                    QtWidgets.QSizePolicy.Expanding)
 
         # Expand drawer button
         self.toggle_button = QtWidgets.QToolButton(checkable=True,
@@ -92,13 +93,13 @@ class Control(QtWidgets.QWidget):
 
         ###
         # layout
-        self.layout.addWidget(self.value_label, 0, 0, 3, 1, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.value_label, 0, 0, 2, 1, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         #self.layout.addWidget(self.dial, 0, 1, 2, 2, alignment=QtCore.Qt.AlignVCenter)
         #self.layout.addWidget(self.slider_min, 2, 1, 1, 1)
         #self.layout.addWidget(self.slider_max, 2, 2, 1, 1)
-        self.layout.addWidget(self.name_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight)
-        self.layout.addWidget(self.units_label, 2, 1, 1, 1, alignment=QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
-        self.layout.addWidget(self.toggle_button, 0, 2, 3, 1, alignment=QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.name_label, 0, 1, 1, 1)
+        self.layout.addWidget(self.units_label, 1, 1, 1, 1)
+        self.layout.addWidget(self.toggle_button, 0, 2, 2, 1, alignment=QtCore.Qt.AlignRight)
 
         self.setLayout(self.layout)
 
@@ -139,18 +140,10 @@ class Control(QtWidgets.QWidget):
         self.slider_layout.addWidget(self.slider_min)
         self.slider_layout.addWidget(self.slider)
         self.slider_layout.addWidget(self.slider_max)
-        
-        #
-        # self.dial = QtWidgets.QDial()
-        # self.dial.setFocusPolicy(QtCore.Qt.StrongFocus)
-        # self.dial.setMinimum(self.abs_range[0])
-        # self.dial.setMaximum(self.abs_range[1])
-        # self.dial.setNotchesVisible(True)
-        # self.dial.setContentsMargins(0,0,0,0)
-        # self.dial.setFixedHeight(styles.VALUE_SIZE)
-        # self.dial.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
-        #                         QtWidgets.QSizePolicy.Fixed)
-        #
+
+        self.slider_frame = QtWidgets.QFrame()
+        self.slider_frame.setLayout(self.slider_layout)
+        self.slider_frame.setVisible(False)
 
         ###
         # set signals
@@ -164,13 +157,14 @@ class Control(QtWidgets.QWidget):
     def toggle_control(self, state):
         if state == True:
             self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
-            self.layout.addLayout(self.slider_layout, 3, 0, 1, 3)
-            self.adjustSize()
+            self.layout.addWidget(self.slider_frame, 3, 0, 1, 3)
+            self.slider_frame.setVisible(True)
+            #self.adjustSize()
         else:
             self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
-            self.layout.removeItem(self.slider_layout)
-            self.adjustSize()
-        pass
+            self.layout.removeWidget(self.slider_frame)
+            self.slider_frame.setVisible(False)
+            #self.adjustSize()
 
 
     def update_value(self, new_value):

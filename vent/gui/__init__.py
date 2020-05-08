@@ -4,7 +4,48 @@
 
 # python standard libraries
 import os
+from collections import OrderedDict as odict
 from PySide2 import QtGui
+from vent.common.values import ValueName, SENSOR
+from vent.gui import styles
+
+LIMIT_GUI_INSTANCE = True
+"""
+(bool): whether there hsould only be one GUI instance at a time. disabled during testing.
+"""
+
+def limit_gui(limit=None):
+    if limit is None:
+        return globals()['LIMIT_GUI_INSTANCE']
+    else:
+        globals()['LIMIT_GUI_INSTANCE'] = limit
+
+
+
+
+PLOTS = odict({
+    ValueName.PRESSURE: SENSOR[ValueName.PRESSURE].to_dict(),
+    ValueName.TEMP: SENSOR[ValueName.TEMP].to_dict(),
+    ValueName.HUMIDITY: SENSOR[ValueName.HUMIDITY].to_dict()
+})
+"""
+Values to plot.
+
+Should have the same key as some key in :data:`~.defaults.SENSOR`. If it does,
+it will be mutually connected to the resulting :class:`.gui.widgets.Monitor_Value`
+such that the set limit range is updated when the horizontal bars on the plot are updated.::
+
+    {
+        'name' (str): title of plot,
+        'abs_range' (tuple): absolute limit of plot range,
+        'safe_range' (tuple): safe range, will be discolored outside of this range,
+        'color' (str): hex color of line (like "#FF0000")
+    }
+"""
+
+PLOTS[ValueName.PRESSURE]['color'] = styles.SUBWAY_COLORS['orange']
+PLOTS[ValueName.TEMP]['color'] = styles.SUBWAY_COLORS['red']
+PLOTS[ValueName.HUMIDITY]['color'] = styles.SUBWAY_COLORS['blue']
 
 
 ########################
@@ -76,33 +117,5 @@ def load_mono_font():
 
     globals()['_MONO_FONT'] = mono_font
 
-#from vent.gui.main import Vent_Gui
 
-# modules for interacting with rest of ventilator
-
-
-##########################
-# GUI Class
-
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description="Launch the Ventilator GUI")
-#     parser.add_argument('--test',
-#                         dest='test',
-#                         help="Run in test mode? (y=1/n=0, default=0)",
-#                         choices=('y','n'),
-#                         default=0)
-
-
-    #
-    # args = parser.parse_args()
-    #
-    # gui_test = False
-    # if args.test in (1, True, 'y'):
-    #     gui_test = True
-    #
-    # # just for testing, should be run from main
-    # app = QtWidgets.QApplication(sys.argv)
-    # app.setStyleSheet(styles.GLOBAL)
-    # gui = Vent_Gui(test=gui_test)
-    # sys.exit(app.exec_())
+from vent.gui.main import Vent_Gui, launch_gui, get_gui_instance

@@ -132,33 +132,33 @@ def test_control_dynamical(control_type):
     print(Inspiration_CI)
 
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
-    assert np.abs(vals_stop.peep - v_peep)                     < 5    # PIP error correct within 5 cmH2O
-    assert np.abs(vals_stop.pip - v_pip)                       < 5    # PIP error correct within 5 cmH2O
-    assert np.abs(vals_stop.breaths_per_minute - v_bpm)        < 3    # Breaths per minute correct within 3 bpm
-    assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < Inspiration_CI # Inspiration time
+    assert np.abs(vals_stop.PEEP - v_peep)                     < 5    # PIP error correct within 5 cmH2O
+    assert np.abs(vals_stop.PIP - v_pip)                       < 5    # PIP error correct within 5 cmH2O
+    assert np.abs(vals_stop.BREATHS_PER_MINUTE - v_bpm)        < 3    # Breaths per minute correct within 3 bpm
+    assert np.abs(vals_stop.INSPIRATION_TIME_SEC - v_iphase)   < Inspiration_CI # Inspiration time
 
     # Test whether get_sensors() return the right values
-    COPY_peep     = Controller.COPY_sensor_values.peep
-    COPY_pip      = Controller.COPY_sensor_values.pip
-    COPY_fio2     = Controller.COPY_sensor_values.fio2
-    COPY_temp     = Controller.COPY_sensor_values.temp
-    COPY_humidity = Controller.COPY_sensor_values.humidity
-    COPY_pressure = Controller.COPY_sensor_values.pressure
-    COPY_vte      = Controller.COPY_sensor_values.vte
-    COPY_bpm      = Controller.COPY_sensor_values.breaths_per_minute
-    COPY_Iinsp    = Controller.COPY_sensor_values.inspiration_time_sec
+    COPY_peep     = Controller.COPY_sensor_values.PEEP
+    COPY_pip      = Controller.COPY_sensor_values.PIP
+    COPY_fio2     = Controller.COPY_sensor_values.FIO2
+    COPY_temp     = Controller.COPY_sensor_values.TEMP
+    COPY_humidity = Controller.COPY_sensor_values.HUMIDITY
+    COPY_pressure = Controller.COPY_sensor_values.PRESSURE
+    COPY_vte      = Controller.COPY_sensor_values.VTE
+    COPY_bpm      = Controller.COPY_sensor_values.BREATHS_PER_MINUTE
+    COPY_Iinsp    = Controller.COPY_sensor_values.INSPIRATION_TIME_SEC
     COPY_tt       = Controller.COPY_sensor_values.timestamp
     COPY_lc       = Controller.COPY_sensor_values.loop_counter
 
-    assert COPY_peep     == vals_stop.peep
-    assert COPY_pip      == vals_stop.pip
-    assert COPY_fio2     == vals_stop.fio2
-    assert COPY_temp     == vals_stop.temp
-    assert COPY_humidity == vals_stop.humidity
-    assert COPY_pressure == vals_stop.pressure
-    assert COPY_vte      == vals_stop.vte
-    assert COPY_bpm      == vals_stop.breaths_per_minute
-    assert COPY_Iinsp    == vals_stop.inspiration_time_sec
+    assert COPY_peep     == vals_stop.PEEP
+    assert COPY_pip      == vals_stop.PIP
+    assert COPY_fio2     == vals_stop.FIO2
+    assert COPY_temp     == vals_stop.TEMP
+    assert COPY_humidity == vals_stop.HUMIDITY
+    assert COPY_pressure == vals_stop.PRESSURE
+    assert COPY_vte      == vals_stop.VTE
+    assert COPY_bpm      == vals_stop.BREATHS_PER_MINUTE
+    assert COPY_Iinsp    == vals_stop.INSPIRATION_TIME_SEC
     assert COPY_tt       == vals_stop.timestamp
     assert COPY_lc       == vals_stop.loop_counter
 
@@ -212,7 +212,7 @@ def test_alarm():
         if (t > 8+(60/17)) and (t<23):  #Test whether it is active
             activealarms = Controller.get_active_alarms()
             assert len(activealarms.keys()) >= 1
-            assert 'PIP' in activealarms.keys()
+            assert ValueName.PIP in activealarms.keys()
 
         if t == 12:    # trigger a PEEP alarm
             command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=5, timestamp=time.time())
@@ -223,7 +223,7 @@ def test_alarm():
         if (t > 12+(60/17)) and (t<23):
             activealarms = Controller.get_active_alarms()
             assert len(activealarms.keys()) >= 1
-            assert 'PEEP' in activealarms.keys()
+            assert ValueName.PEEP in activealarms.keys()
 
         if t == 15:    # trigger a BPM alarm
             command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=5, timestamp=time.time())
@@ -234,7 +234,7 @@ def test_alarm():
         if (t > 15+(60/17)) and (t<20):
             activealarms = Controller.get_active_alarms()
             assert len(activealarms.keys()) >= 1
-            assert 'BREATHS_PER_MINUTE' in activealarms.keys()
+            assert ValueName.BREATHS_PER_MINUTE in activealarms.keys()
 
         if t == 17:    # Trigger a INSPIRATION_TIME_SEC alarm
             command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=1, timestamp=time.time())
@@ -245,7 +245,7 @@ def test_alarm():
         if (t > 17+(60/17)) and (t<22):
             activealarms = Controller.get_active_alarms()
             assert len(activealarms.keys()) >= 1
-            assert 'I_PHASE' in activealarms.keys()
+            assert ValueName.INSPIRATION_TIME_SEC in activealarms.keys()
 
 
         time.sleep(0.05)
@@ -312,8 +312,8 @@ def test_erratic_dt():
     cc = Controller.get_control(control_setting_name = ValueName.PIP)
     target_pip = cc.value
 
-    peeps = np.unique([np.abs(s.peep - target_peep)  for s in ls if s.peep is not None])
-    pips = np.unique([np.abs(s.pip - target_pip)  for s in ls if s.peep is not None])
+    peeps = np.unique([np.abs(s.PEEP - target_peep)  for s in ls if s.PEEP is not None])
+    pips = np.unique([np.abs(s.PIP - target_pip)  for s in ls if s.PIP is not None])
 
     assert np.mean(peeps) < 5
     assert np.mean(pips) < 5

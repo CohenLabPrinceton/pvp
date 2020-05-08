@@ -91,8 +91,20 @@ UI Notes & Todo
 
     * Cache drawText() calls in range selector by drawing to pixmap
 
+Jonny Questions
+------------------
 
-* Spec a display for Julienne!!!!
+* Which alarm sounds to use?
+* Final final final breakdown on values and ranges plzzz
+
+
+jonny todo
+______________
+
+* use loop_counter to check on controller advancement
+* implement single values list with properties 'controllable' vs not.
+
+
 
 GUI Object Documentation
 -------------------------
@@ -100,7 +112,7 @@ GUI Object Documentation
 Main GUI Module
 ~~~~~~~~~~~~~~~~~
 
-.. automodule:: vent.gui
+.. automodule:: vent.gui.main
     :members:
     :undoc-members:
     :autosummary:
@@ -108,15 +120,42 @@ Main GUI Module
 GUI Widgets
 ~~~~~~~~~~~~~
 
-.. automodule:: vent.gui.widgets
+Control
+_________
+
+.. automodule:: vent.gui.widgets.control
     :members:
     :undoc-members:
     :autosummary:
 
-GUI Defaults
-~~~~~~~~~~~~~~~
+Monitor
+_________
 
-.. automodule:: vent.gui.defaults
+.. automodule:: vent.gui.widgets.monitor
+    :members:
+    :undoc-members:
+    :autosummary:
+
+Plot
+_______
+
+.. automodule:: vent.gui.widgets.plot
+    :members:
+    :undoc-members:
+    :autosummary:
+
+Status Bar
+____________
+
+.. automodule:: vent.gui.widgets.status_bar
+    :members:
+    :undoc-members:
+    :autosummary:
+
+Components
+____________
+
+.. automodule:: vent.gui.widgets.components
     :members:
     :undoc-members:
     :autosummary:
@@ -125,6 +164,14 @@ GUI Stylesheets
 ~~~~~~~~~~~~~~~~~~
 
 .. automodule:: vent.gui.styles
+    :members:
+    :undoc-members:
+    :autosummary:
+
+GUI Alarm Manager
+~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: vent.gui.alarm_manager
     :members:
     :undoc-members:
     :autosummary:

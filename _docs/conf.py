@@ -87,7 +87,7 @@ autodoc_default_options = {
 autoclass_content = "both"
 autosummary_generate = True
 
-# autodoc_mock_imports = ['automationhat']
+autodoc_mock_imports = ['pigpio']
 
 
 ######

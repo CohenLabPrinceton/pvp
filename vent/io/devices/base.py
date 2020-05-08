@@ -1,6 +1,5 @@
 """ Base classes & functions used throughout vent.io.devices
 """
-from abc import ABC
 from collections import OrderedDict
 from vent.common.fashion import pigpio_command
 
@@ -18,7 +17,7 @@ class PigpioConnection(pigpio.pi):
             raise RuntimeError('Could not establish connection with pigpio daemon')
 
 
-class IODeviceBase(ABC):
+class IODeviceBase:
     """ Abstract base Class for pigpio handles (or whatever other GPIO library
     we end up using)
 
@@ -28,22 +27,14 @@ class IODeviceBase(ABC):
     restart it, and reopen the python interface(s)
     """
 
-    def __init__(self, pig):
+    def __init__(self, pig=None):
         """ Initializes the pigpio python bindings object if necessary,
         and checks that it is actually running.
         """
         self._pig = pig if pig is not None else PigpioConnection(show_errors=False)
         self._handle = -1
-        if not self.pigpiod_ok():
+        if not self.pigpiod_ok:
             raise RuntimeError
-
-    def __del__(self):
-        """ Closes the i2c/spi connection, and stops the python bindings
-        for the pigpio daemon.
-        """  # FIXME
-        self._close()
-        if self.pigpiod_ok:
-            self.pig.stop()
 
     @property
     def pig(self):
@@ -57,7 +48,8 @@ class IODeviceBase(ABC):
         """
         return self._handle
 
-    def pigpiod_ok(self):
+    @property
+    def pigpiod_ok(self) -> bool:
         """ Returns True if pigpiod is running and False if not
         """  # TODO: Could throw an Exception here if not connected
         return self.pig.connected
@@ -65,7 +57,7 @@ class IODeviceBase(ABC):
     def _close(self):
         """ Closes an I2C/SPI (or potentially Serial) connection
         """
-        if not self.pigpiod_ok() or self.handle <= 0:
+        if not self.pigpiod_ok or self.handle <= 0:
             return
 
 
@@ -108,9 +100,15 @@ class I2CDevice(IODeviceBase):
 
     @pigpio_command
     def read_device(self, num_bytes):
-        """ Read a specified number of bytes directly from the the
-        device without changing the register. Does NOT perform LE/BE
-        conversion.
+        """ Read a specified number of bytes directly from the the device without changing the register.
+        Does NOT perform LE/BE conversion.
+
+        Args:
+            num_bytes (int): The number of bytes to read from the device
+
+        Returns:
+            tuple: a tuple of the number of bytes read and a bytearray containing the bytes. If there was an error the
+            number of bytes read will be less than zero (and will contain the error code).
         """
         return self.pig.i2c_read_device(self.handle, num_bytes)
 
@@ -129,6 +127,12 @@ class I2CDevice(IODeviceBase):
     def read_register(self, register, signed=False, count=2):
         """ Read count# bytes from the specified register
         (denoted by a single byte)
+
+        Args:
+            register (int): The index of the register to read
+
+        Returns:
+            int: integer representation of 16 bit register contents
         """
         return be16_to_native(
             self.pig.i2c_read_i2c_block_data(
@@ -144,6 +148,15 @@ class I2CDevice(IODeviceBase):
         """ Write bytes to the specified register. Count should be
         specified for when passing something other than a word.
         (register denoted by a single byte)
+
+        Args:
+            count: The number of bytes to write to the register
+            signed: Whether or not arg 'word' is signed
+            word: The unsigned 16 bit integer to write to the register (must be consistent with 'signed')
+            register (int): The index of the register to write to
+
+        Returns:
+            int: integer representation of 16 bit register contents
         """
         self.pig.i2c_write_i2c_block_data(
             self.handle,

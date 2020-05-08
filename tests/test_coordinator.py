@@ -113,8 +113,6 @@ def test_remote_coordinator(control_setting_name):
     assert c_read.max_value == c.max_value
     assert c_read.timestamp == c.timestamp
 
-    coordinator.process_manager.stop_process()
-
 
 def test_process_manager():
     # wait before
@@ -128,7 +126,7 @@ def test_process_manager():
         pass
 
     assert coordinator.is_running() == True
-    coordinator.process_manager.stop_process()
+    coordinator.process_manager.try_stop_process()
     assert coordinator.process_manager.child_pid is None
 
     try:
@@ -150,8 +148,6 @@ def test_process_manager():
     time.sleep(1)
     assert coordinator.process_manager.child_pid is not None
     assert coordinator.is_running() == False
-
-    coordinator.process_manager.stop_process()
 
 
 def test_local_sensors():
@@ -183,8 +179,6 @@ def test_remote_sensors():
     for k, v in sensor_values.items():
         assert isinstance(k, ValueName)
         assert isinstance(v, SensorValueNew)
-
-    coordinator.process_manager.stop_process()
 
 
 def test_local_alarms():
@@ -224,5 +218,3 @@ def test_remote_alarms():
     assert isinstance(alarms, list)
     for a in alarms:
         assert isinstance(a, Alarm)
-
-    coordinator.process_manager.stop_process()

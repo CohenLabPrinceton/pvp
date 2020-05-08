@@ -113,7 +113,6 @@ def test_remote_coordinator(control_setting_name):
     assert c_read.max_value == c.max_value
     assert c_read.timestamp == c.timestamp
 
-    coordinator.process_manager.stop_process()
 
 @pytest.mark.timeout(10)
 def test_process_manager():
@@ -128,7 +127,7 @@ def test_process_manager():
         pass
 
     assert coordinator.is_running() == True
-    coordinator.process_manager.stop_process()
+    coordinator.process_manager.try_stop_process()
     assert coordinator.process_manager.child_pid is None
 
     try:
@@ -151,8 +150,6 @@ def test_process_manager():
     assert coordinator.process_manager.child_pid is not None
     assert coordinator.is_running() == False
 
-    coordinator.process_manager.stop_process()
-
 
 def test_local_sensors():
     coordinator = get_coordinator(single_process=True, sim_mode=True)
@@ -173,10 +170,8 @@ def test_local_sensors():
 @pytest.mark.timeout(10)
 def test_remote_sensors():
     # wait before
-    # this fails every time and i'm not sure how it wouldnt? - jls
-    #if not is_port_in_use(rpc.default_port):
-    #    time.sleep(1)
-
+    while not is_port_in_use(rpc.default_port):
+        time.sleep(1)
     coordinator = get_coordinator(single_process=False, sim_mode=True)
     # TODO need to wait for rpc client start?
     time.sleep(1)
@@ -193,8 +188,6 @@ def test_remote_sensors():
     for k, v in sensor_values.to_dict().items():
         assert isinstance(k, ValueName)
         assert isinstance(v, int) or isinstance(v, float) or v is None
-
-    coordinator.process_manager.stop_process()
 
 
 def test_local_alarms():
@@ -216,8 +209,8 @@ def test_local_alarms():
 @pytest.mark.timeout(10)
 def test_remote_alarms():
     # wait before
-    # while not is_port_in_use(rpc.default_port):
-    #     time.sleep(1)
+    while not is_port_in_use(rpc.default_port):
+        time.sleep(1)
     coordinator = get_coordinator(single_process=False, sim_mode=True)
     # TODO need to wait for rpc client start?
     time.sleep(1)
@@ -234,5 +227,3 @@ def test_remote_alarms():
     assert isinstance(alarms, list)
     for a in alarms:
         assert isinstance(a, Alarm)
-
-    coordinator.process_manager.stop_process()

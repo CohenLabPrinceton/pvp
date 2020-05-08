@@ -15,6 +15,9 @@ class ProcessManager:
         # TODO: if child process exists, need to reconnect it
         self.start_process()
 
+    def __del__(self):
+        self.try_stop_process()
+
     def start_process(self):
         if self.child_process is not None:
             # Child process already started
@@ -24,7 +27,7 @@ class ProcessManager:
         self.child_process.start()
         self.child_pid = self.child_process.pid
 
-    def stop_process(self):
+    def try_stop_process(self):
         if self.child_process is not None:
             # print(f'kill process {self.child_pid}')
             self.child_process.kill()
@@ -34,8 +37,7 @@ class ProcessManager:
             self.child_pid = None
 
     def restart_process(self):
-        if self.child_process is not None:
-            self.stop_process()
+        self.try_stop_process()
         self.start_process()
 
     def heartbeat(self, timestamp):

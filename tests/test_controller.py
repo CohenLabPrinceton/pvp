@@ -132,8 +132,8 @@ def test_control_dynamical(control_type):
     print(Inspiration_CI)
 
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
-    assert np.abs(vals_stop.peep - v_peep)                     < 5    # PIP error correct within 5 cmH2O
-    assert np.abs(vals_stop.pip - v_pip)                       < 5    # PIP error correct within 5 cmH2O
+    assert np.abs(vals_stop.peep - v_peep)                     < 7.5  # PIP error correct within 5 cmH2O
+    assert np.abs(vals_stop.pip - v_pip)                       < 7.5  # PIP error correct within 5 cmH2O
     assert np.abs(vals_stop.breaths_per_minute - v_bpm)        < 3    # Breaths per minute correct within 3 bpm
     assert np.abs(vals_stop.inspiration_time_sec - v_iphase)   < Inspiration_CI # Inspiration time
 

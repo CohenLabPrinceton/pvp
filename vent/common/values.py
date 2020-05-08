@@ -301,3 +301,4 @@ given as argument to the ``callable_returning_boolean`` which will return
 whether (``True``) or not (``False``) a value is allowed.
 """
 
+MAX_STACK_DEPTH = 20

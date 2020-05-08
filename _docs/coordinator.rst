@@ -4,7 +4,7 @@ coordinator module
 Submodules
 ----------
 
-vent.coordinator.coordinator module
+coordinator
 -----------------------------------
 
 .. automodule:: vent.coordinator.coordinator
@@ -12,7 +12,7 @@ vent.coordinator.coordinator module
    :undoc-members:
    :show-inheritance:
 
-vent.coordinator.ipc module
+ipc
 ---------------------------
 
 .. automodule:: vent.coordinator.ipc
@@ -20,7 +20,7 @@ vent.coordinator.ipc module
    :undoc-members:
    :show-inheritance:
 
-vent.coordinator.process\_manager module
+process\_manager
 ----------------------------------------
 
 .. automodule:: vent.coordinator.process_manager
@@ -28,11 +28,3 @@ vent.coordinator.process\_manager module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: vent.coordinator
-   :members:
-   :undoc-members:
-   :show-inheritance:

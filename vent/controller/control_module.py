@@ -108,6 +108,9 @@ class ControlModuleBase:
         self.__PEEP_min         = CONTROL[ValueName.PEEP].safe_range[0]
         self.__PEEP_max         = CONTROL[ValueName.PEEP].safe_range[1]
         self.__PEEP_lastset     = time.time()
+        self.__PEEP_time_min    = CONTROL[ValueName.PEEP_TIME].safe_range[0]
+        self.__PEEP_time_max    = CONTROL[ValueName.PEEP_TIME].safe_range[1]
+        self.__PEEP_time_lastset = time.time()
         self.__bpm_min          = CONTROL[ValueName.BREATHS_PER_MINUTE].safe_range[0]
         self.__bpm_max          = CONTROL[ValueName.BREATHS_PER_MINUTE].safe_range[1]
         self.__bpm_lastset      = time.time()
@@ -124,13 +127,15 @@ class ControlModuleBase:
         ###########################  Threading init  #########################
         # Run the start() method as a thread
         self._loop_counter = 0
-        self._running = False
+        self._running = threading.Event()
+        self._running.clear()
         self._lock = threading.Lock()
         self._alarm_to_COPY()  #These require the lock
         self._initialize_set_to_COPY()
 
-        self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
-        self.__thread.start()
+        # self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
+        # self.__thread.start()
+        self.__thread = None
 
 
     def _initialize_set_to_COPY(self):
@@ -160,6 +165,9 @@ class ControlModuleBase:
         self.COPY_PEEP_min = self.__PEEP_min
         self.COPY_PEEP_max = self.__PEEP_max
         self.COPY_PEEP_lastset = self.__PEEP_lastset
+        self.COPY_PEEP_time_min = self.__PEEP_time_min
+        self.COPY_PEEP_time_max = self.__PEEP_time_max
+        self.COPY_PEEP_time_lastset = self.__PEEP_time_lastset
         self.COPY_bpm_min = self.__bpm_min 
         self.COPY_bpm_max = self.__bpm_max
         self.COPY_bpm_lastset = self.__bpm_lastset
@@ -203,7 +211,10 @@ class ControlModuleBase:
         self.__PIP_time_lastset = self.COPY_PIP_time_lastset  
         self.__PEEP_min         = self.COPY_PEEP_min 
         self.__PEEP_max         = self.COPY_PEEP_max  
-        self.__PEEP_lastset     = self.COPY_PEEP_lastset  
+        self.__PEEP_lastset     = self.COPY_PEEP_lastset
+        self.__PEEP_time_min    = self.COPY_PEEP_time_min
+        self.__PEEP_time_max    = self.COPY_PEEP_time_max
+        self.__PEEP_time_lastset = self.COPY_PEEP_time_lastset
         self.__bpm_min          = self.COPY_bpm_min 
         self.__bpm_max          = self.COPY_bpm_max  
         self.__bpm_lastset      = self.COPY_bpm_lastset  
@@ -226,7 +237,7 @@ class ControlModuleBase:
         '''
         if (value < min) or (value > max):  # If the variable is not within limits
             if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
-                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmSeverity.RED, \
+                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmSeverity.RED, value=value,
                                   alarm_start_time=time.time(), alarm_end_time=None)
                 self.__active_alarms[name] = new_alarm
         else:  # Else: if the variable is within bounds,
@@ -263,11 +274,11 @@ class ControlModuleBase:
     def __update_alarms(self):
         ''' This goes through the values obtained from the last waveform, and updates alarms.'''
         if len(self.__cycle_waveform_archive) > 1 : # Only if there was a previous cycle
-            self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name="PIP")
-            self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name="PIP_TIME")
-            self.__test_critical_levels(min=self.__PEEP_min, max=self.__PEEP_max, value=self._DATA_PEEP, name="PEEP")
-            self.__test_critical_levels(min=self.__bpm_min, max=self.__bpm_max, value=self._DATA_BPM, name="BREATHS_PER_MINUTE")
-            self.__test_critical_levels(min=self.__I_phase_min, max=self.__I_phase_max, value=self._DATA_I_PHASE, name="I_PHASE")
+            self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name=ValueName.PIP)
+            self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name=ValueName.PIP_TIME)
+            self.__test_critical_levels(min=self.__PEEP_min, max=self.__PEEP_max, value=self._DATA_PEEP, name=ValueName.PEEP)
+            self.__test_critical_levels(min=self.__bpm_min, max=self.__bpm_max, value=self._DATA_BPM, name=ValueName.BREATHS_PER_MINUTE)
+            self.__test_critical_levels(min=self.__I_phase_min, max=self.__I_phase_max, value=self._DATA_I_PHASE, name=ValueName.INSPIRATION_TIME_SEC)
 
     def get_sensors(self) -> SensorValues:
         # Make sure to return a copy of the instance
@@ -298,6 +309,8 @@ class ControlModuleBase:
         logged_alarms = self.COPY_logged_alarms.copy()
         self._lock.release()
         return logged_alarms
+
+
 
     def set_control(self, control_setting: ControlSetting):
         ''' Updates the entry of COPY contained in the control settings'''
@@ -332,6 +345,12 @@ class ControlModuleBase:
             self.COPY_I_phase_min = control_setting.min_value
             self.COPY_I_phase_max = control_setting.max_value
             self.COPY_I_phase_lastset = control_setting.timestamp
+
+        elif control_setting.name == ValueName.PEEP_TIME:
+            self.COPY_SET_PEEP_TIME = control_setting.value
+            self.COPY_PEEP_min = control_setting.min_value
+            self.COPY_PEEP_max = control_setting.max_value
+            self.COPY_PEEP_lastset = control_setting.timestamp
 
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting.name))
@@ -525,22 +544,22 @@ class ControlModuleBase:
         pass   
 
     def start(self):
-        if not self.__thread.is_alive():  # If the previous thread has been stopped, make a new one.
-            self._running = True
+        if self.__thread is None or not self.__thread.is_alive():  # If the previous thread has been stopped, make a new one.
+            self._running.set()
             self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
             self.__thread.start()
         else:
             print("Main Loop already running.")
 
     def stop(self):
-        if self.__thread.is_alive():
-            self._running = False
+        if self.__thread is not None and self.__thread.is_alive():
+            self._running.clear()
         else:
             print("Main Loop is not running.")
 
     def is_running(self):
         # TODO: this should be better thread-safe variable
-        return self._running
+        return self._running.is_set()
 
     def do_pid_control(self):
         if self._pid_control_flag:
@@ -555,6 +574,10 @@ class ControlModuleBase:
     def heartbeat(self):
         '''only used for fiddling'''
         return self._loop_counter
+
+    @property
+    def running(self):
+        return self._running.is_set()
 
 
 class ControlModuleDevice(ControlModuleBase):
@@ -749,17 +772,19 @@ class ControlModuleSimulator(ControlModuleBase):
     def _sensor_to_COPY(self):
         # And the sensor measurements
         self._lock.acquire()
-        self.COPY_sensor_values = SensorValues(pip=self._DATA_PIP,
-                                          peep=self._DATA_PEEP,
-                                          fio2=self.Balloon.fio2,
-                                          temp=self.Balloon.temperature,
-                                          humidity= self.Balloon.humidity,
-                                          pressure=self.Balloon.current_pressure,
-                                          vte=self._DATA_VTE,
-                                          breaths_per_minute=self._DATA_BPM,
-                                          inspiration_time_sec=self._DATA_I_PHASE,
-                                          timestamp=time.time(),
-                                          loop_counter = self._loop_counter)
+        self.COPY_sensor_values = SensorValues(**{
+            ValueName.PIP.name                  : self._DATA_PIP,
+            ValueName.PEEP.name                 : self._DATA_PEEP,
+            ValueName.FIO2.name                 : self.Balloon.fio2,
+            ValueName.TEMP.name                 : self.Balloon.temperature,
+            ValueName.HUMIDITY.name             : self.Balloon.humidity,
+            ValueName.PRESSURE.name             : self.Balloon.current_pressure,
+            ValueName.VTE.name                  : self._DATA_VTE, # FIXME: VTE should be a percentage not a proportion, no
+            ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+            ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+            'timestamp'                  : time.time(),
+            'loop_counter'             : self._loop_counter
+        })
         self._lock.release()
 
     def _start_mainloop(self):
@@ -768,7 +793,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
-        while self._running:
+        while self._running.is_set():
             time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
@@ -799,6 +824,11 @@ class ControlModuleSimulator(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
+
+        # # get final values on stop
+        self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
+        self._alarm_to_COPY()  # Copy current alarms and settings to COPY
+        self._sensor_to_COPY()  # Copy sensor values to COPY
 
 
 

@@ -6,18 +6,20 @@
 Welcome to ventilator's documentation!
 ======================================
 
+
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Hardware:
 
    Hardware Placeholder <hardware>
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Software:
 
-
+   main <main>
    common <common>
    controller <controller>
    coordinator <coordinator>
@@ -26,7 +28,7 @@ Welcome to ventilator's documentation!
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Resources:
 
    Ventilator Requirements <requirements>
@@ -35,7 +37,7 @@ Welcome to ventilator's documentation!
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 4
    :caption: Meta:
 
    Changelog <changelog/index>

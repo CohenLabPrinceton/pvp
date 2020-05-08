@@ -13,6 +13,13 @@ if ret == 0:
     os.system("sudo +x INSTALL")
     os.system("sudo ./INSTALL")
 
+    # keeping this around for proper packaging later
+    # get wheel name
+    #external_files = os.listdir(os.path.join(os.getcwd(), 'external'))
+    #pyside_wheel = [whl for whl in external_files if whl.endswith('.whl') and whl.startswith("PySide2")][0]
+    #depend_links.append(os.path.join(os.getcwd(), 'external', pyside_wheel))
+
+
 setup(
     name="ventilator",
     author="vent team",
@@ -26,6 +33,8 @@ setup(
         'numpy',
         'PySide2',
         'pyqtgraph>=0.11.0rc0',
+        'pytest-qt',
+        'pytest-timeout',
         'pigpio'
     ],
     dependency_links=depend_links

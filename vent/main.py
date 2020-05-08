@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import argparse
 import sys
-from vent.coordinator.coordinator import get_coordinator
 from vent.gui.main import launch_gui
+from vent.coordinator.coordinator import get_coordinator
+
+from pudb.remote import set_trace
 
 
 def parse_cmd_args():
@@ -22,6 +24,8 @@ def main():
     coordinator = get_coordinator(single_process=args.single_process, sim_mode=args.simulation)
     app, gui = launch_gui(coordinator)
     sys.exit(app.exec_())
+
+
     # TODO: gui.main(ui_control_module)
 
 

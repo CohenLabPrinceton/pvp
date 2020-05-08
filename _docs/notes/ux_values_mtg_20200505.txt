@@ -1,0 +1,37 @@
+<--- todo --->
+* go through parameters and wat they mean
+	* defaults?
+	* display actual values or just measured values?
+	* ie ratio is what now? what is reverse option?
+		* how set IE? t-insp, t-exp?
+	* which have alarms?
+* when to trigger alarms
+
+<--- questions --->
+* should have prototype waveform display?
+	- yes. display piecewise linear function and underlay recent history of traces
+* can autostart when all necessary params set?
+	- no, should have 'on' button
+* how turn off?
+	- u dont
+
+<--- decisions --->
+* don't set default values for controls,
+	* prompt user with wizard
+* stick with integers when possible
+	* mind precision in fda docs
+* toggle autoset limits as proportion of related control value
+* display measured values next to control value
+* dropdown box selecting which two t_insp settings you want (t_insp, rr, i:e)
+* i:e needs to always be displayed
+	* display all three, toggle which is fixed with radio box. 
+* prompt to set FiO2 on start (manually)
+* mode field: pressure control
+
+<--- plots --->
+checkbox to enable
+
+* ideal vs measured waveform
+	with longform pressure timeseries underlaid?
+* volume vs time
+* flow vs time

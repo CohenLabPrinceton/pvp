@@ -1,9 +1,6 @@
 from collections import OrderedDict as odict
 from enum import Enum, auto
 
-from vent.gui import styles
-
-
 # TODO: Zhenyu's job is to make sure the print value is an intepretable string
 class ValueName(Enum):
     #Setting that are likely important for future adjustements
@@ -13,6 +10,7 @@ class ValueName(Enum):
     PEEP_TIME = auto() # time to reach PEEP
     BREATHS_PER_MINUTE = auto()
     INSPIRATION_TIME_SEC = auto()
+    IE_RATIO = auto()
     #Settings that are read out, but can not be controlled by software
     FIO2 = auto()
     TEMP = auto()
@@ -26,6 +24,7 @@ controllable_values = {
     ValueName.PEEP,
     ValueName.BREATHS_PER_MINUTE,
     ValueName.INSPIRATION_TIME_SEC,
+    ValueName.IE_RATIO
 }
 
 non_controllable_values = {
@@ -137,36 +136,60 @@ class Value(object):
     def __getitem__(self, key):
         return self.__getattribute__(key)
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'units': self.units,
+            'abs_range': self.abs_range,
+            'safe_range': self.safe_range,
+            'decimals': self.decimals,
+            'default': self.default
+                }
 
 
 
-MONITOR = odict({
+
+SENSOR = odict({
     ValueName.FIO2: Value(**{ 'name': 'FiO2',
         'units': '%',
         'abs_range': (0, 100),
-        'safe_range': (60, 100),
+        'safe_range': (20, 100),
         'decimals' : 1
     }),
     ValueName.TEMP: Value(**{
         'name': 'Temp',
         'units': '\N{DEGREE SIGN}C',
-        'abs_range': (0, 50),
-        'safe_range': (20, 30),
+        'abs_range': (35, 40),
+        'safe_range': (36, 39),
         'decimals': 1
     }),
     ValueName.HUMIDITY: Value(**{
         'name': 'Humidity',
         'units': '%',
         'abs_range': (0, 100),
-        'safe_range': (20, 75),
+        'safe_range': (70, 100),
         'decimals': 1
     }),
     ValueName.VTE: Value(**{
         'name': 'VTE',
         'units': '%',
         'abs_range': (0, 100),
-        'safe_range': (20, 80),
+        'safe_range': (0, 100),
         'decimals': 1
+    }),
+    ValueName.PRESSURE: Value(**{
+        'name': 'Pressure',
+        'units': 'mmH2O',
+        'abs_range': (0,70),
+        'safe_range': (0,60),
+        'decimals': 1
+    }),
+    ValueName.IE_RATIO: Value(**{
+        'name': 'I:E Ratio',
+        'units': '',
+        'abs_range': (0, 2),
+        'safe_range': (0.33, 1),
+        'decimals': 2
     })
 })
 """
@@ -187,52 +210,55 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 CONTROL = odict({
     ValueName.PIP: Value(**{
         'name': 'PIP', # (Peak Inspiratory Pressure)
-        'units': 'cmH2O',
-        'abs_range': (10, 30), # FIXME
-        'safe_range': (20,24), # FIXME
+        'units': 'cm H2O',
+        'abs_range': (0, 70), # FIXME
+        'safe_range': (0, 50), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
         'default': 22,           # FIXME
         'decimals': 1          # FIXME
     }),
     ValueName.PIP_TIME: Value(**{
-        'name': 'PIPt', #  (Peak Inspiratory Pressure)
+        'name': 'PIPt',
         'units': 'seconds',
-        'abs_range': (0, 1),  # FIXME
+        'abs_range': (0, 5),  # FIXME
         'safe_range': (0.2, 0.5),  # FIXME
         'default': 0.3,  # FIXME
         'decimals': 1  # FIXME
     }),
-    ValueName.PEEP: Value(**{
-        'name': 'PEEP', #  (Positive End Expiratory Pressure)
-        'units': 'cmH2O',
-        'abs_range': (0, 10),  # FIXME
-        'safe_range': (4,6), # FIXME
-        'default': 5,            # FIXME
-        'decimals': 1           # FIXME
-    }),
-    ValueName.BREATHS_PER_MINUTE: Value(**{
-        'name': 'Breath Rate',
-        'units': 'breaths/min',
-        'abs_range': (0, 50), # FIXME
-        'safe_range': (16, 19), # FIXME
-        'default': 17,            # FIXME
-        'decimals': 1           # FIXME
-    }),
     ValueName.INSPIRATION_TIME_SEC: Value(**{
-        'name': 'Inspiration Time',
+        'name': 'INSPt',
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME
         'safe_range': (1, 3.0),  # FIXME
         'default': 2.0,  # FIXME
         'decimals': 1  # FIXME
     }),
+    ValueName.PEEP: Value(**{
+        'name': 'PEEP', #  (Positive End Expiratory Pressure)
+        'units': 'cm H2O',
+        'abs_range': (0, 20),  # FIXME
+        'safe_range': (0, 16), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
+        'default': 5,            # FIXME
+        'decimals': 1           # FIXME
+    }),
     ValueName.PEEP_TIME: Value(**{
-        'name': 'Time to reach PEEP',
+        'name': 'PEEPt',
         'units': 'seconds',
         'abs_range': (0, 2),  # FIXME
         'safe_range': (0, 1.0),  # FIXME
         'default': 0.5,  # FIXME
         'decimals': 1  # FIXME
-    })
+    }),
+    ValueName.BREATHS_PER_MINUTE: Value(**{
+        'name': 'RR', # Daniel re: FDA labels
+        'units': 'BPM', # Daniel re: FDA labels
+        'abs_range': (0, 50), # FIXME
+        'safe_range': (10, 30), # Stanford's socshttps://www.vent4us.org/technical
+        'default': 17,            # FIXME
+        'decimals': 1           # FIXME
+    }),
+
+
+
     # 'ie': Value(**{
     #     'name': 'I:E',
     #     'units': '',
@@ -254,49 +280,6 @@ Sent to control module to control operation of ventilator.::
         'safe_range' (tuple): range outside of which a warning will be raised,
         'default' (int, float): the default value of the parameter,
         'decimals' (int): The number of decimals of precision this number should be displayed with
-    }
-"""
-
-
-PLOTS = odict({
-        # 'flow': {
-        #     'name': 'Flow (L/s)',
-        #     'abs_range': (0, 100),
-        #     'safe_range': (20, 80),
-        #     'color': styles.SUBWAY_COLORS['yellow'],
-        # },
-
-        'pressure': {
-            'name': 'Pressure (mmHg)',
-            'abs_range': (0, 30),
-            'safe_range': (5, 20),
-            'color': styles.SUBWAY_COLORS['orange'],
-        },
-        'temp': {
-            'name': 'Temperature (C)',
-            'abs_range': (20,50),
-            'safe_range' :(35,40),
-            'color': styles.SUBWAY_COLORS['red']
-        },
-        'humidity': {
-            'name': 'Humidity (% H2O)',
-            'abs_range': (70, 100),
-            'safe_range': (90, 100),
-            'color': styles.SUBWAY_COLORS['blue']
-        }
-    })
-"""
-Values to plot.
-
-Should have the same key as some key in :data:`~.defaults.MONITOR`. If it does,
-it will be mutually connected to the resulting :class:`.gui.widgets.Monitor_Value`
-such that the set limit range is updated when the horizontal bars on the plot are updated.::
-
-    {
-        'name' (str): title of plot,
-        'abs_range' (tuple): absolute limit of plot range,
-        'safe_range' (tuple): safe range, will be discolored outside of this range,
-        'color' (str): hex color of line (like "#FF0000")
     }
 """
 

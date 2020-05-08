@@ -32,6 +32,9 @@ import numpy as np
 # Test user interaction
 # Simulate user actions with the whole intact gui
 
+# turn off gui limiting
+gui.limit_gui(False)
+
 n_samples = 100
 decimals = 5
 global_minmax_range = (0, 100)
@@ -81,9 +84,24 @@ def test_gui_launch(qtbot):
 
     coordinator = get_coordinator(sim_mode=True, single_process=True)
     vent_gui = gui.Vent_Gui(coordinator)
+    qtbot.addWidget(vent_gui)
+    vent_gui.status_bar.start_button.click()
 
     # wait for a second to let the simulation spin up and start spitting values
-    qtbot.wait(1000)
+    qtbot.wait(5000)
+
+    assert vent_gui.isVisible()
+
+def test_gui_launch_mp(qtbot):
+    assert qt_api.QApplication.instance() is not None
+
+    coordinator = get_coordinator(sim_mode=True, single_process=False)
+    vent_gui = gui.Vent_Gui(coordinator)
+    qtbot.addWidget(vent_gui)
+    vent_gui.status_bar.start_button.click()
+
+    # wait for a second to let the simulation spin up and start spitting values
+    qtbot.wait(5000)
 
     assert vent_gui.isVisible()
 

@@ -56,5 +56,9 @@ def rpc_server_main(sim_mode, addr=default_addr, port=default_port):
 
 
 def get_rpc_client():
-    proxy = xmlrpc.client.ServerProxy(f"http://{default_addr}:{default_port}/")
+    # https://mail.python.org/pipermail/python-bugs-list/2015-January/260126.html
+    transport = xmlrpc.client.Transport()
+    con = transport.make_connection('localhost')
+    con.timeout = 5
+    proxy = xmlrpc.client.ServerProxy(f"http://{default_addr}:{default_port}/", transport=transport)
     return proxy

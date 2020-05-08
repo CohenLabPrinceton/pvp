@@ -7,7 +7,7 @@ from PySide2 import QtWidgets, QtCore
 
 from vent.gui import styles, mono_font
 from vent.gui import get_gui_instance
-from vent.common.message import Alarm, AlarmLevel
+from vent.common.message import Alarm, AlarmSeverity
 
 
 class Status_Bar(QtWidgets.QWidget):
@@ -38,6 +38,9 @@ class Status_Bar(QtWidgets.QWidget):
         self.heartbeat.start_timer()
         self.layout.addWidget(self.heartbeat)
 
+        self.start_button = QtWidgets.QPushButton('start!!!')
+        self.layout.addWidget(self.start_button)
+
 
         self.setLayout(self.layout)
 
@@ -54,7 +57,7 @@ class Status_Bar(QtWidgets.QWidget):
 class Message_Display(QtWidgets.QFrame):
 
     message_cleared = QtCore.Signal(Alarm)
-    level_changed = QtCore.Signal(AlarmLevel)
+    level_changed = QtCore.Signal(AlarmSeverity)
 
     def __init__(self):
         super(Message_Display, self).__init__()
@@ -62,7 +65,7 @@ class Message_Display(QtWidgets.QFrame):
         self.icons = {}
         self.alarms = {}
         self.current_alarm = None
-        self._alarm_level = AlarmLevel.OFF
+        self._alarm_level = AlarmSeverity.OFF
         self.setContentsMargins(0,0,0,0)
 
         self.make_icons()
@@ -82,9 +85,9 @@ class Message_Display(QtWidgets.QFrame):
         normal_icon = style.standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation, None, self)
         normal_icon = normal_icon.pixmap(size,size)
 
-        self.icons[AlarmLevel.YELLOW] = normal_icon
-        self.icons[AlarmLevel.ORANGE] = warning_icon
-        self.icons[AlarmLevel.RED] = alarm_icon
+        self.icons[AlarmSeverity.YELLOW] = normal_icon
+        self.icons[AlarmSeverity.ORANGE] = warning_icon
+        self.icons[AlarmSeverity.RED] = alarm_icon
 
 
 
@@ -122,17 +125,17 @@ class Message_Display(QtWidgets.QFrame):
 
     def draw_state(self, state=None):
 
-        if state == AlarmLevel.YELLOW:
+        if state == AlarmSeverity.YELLOW:
             self.setStyleSheet(styles.STATUS_NORMAL)
-            self.icon.setPixmap(self.icons[AlarmLevel.YELLOW])
+            self.icon.setPixmap(self.icons[AlarmSeverity.YELLOW])
             self.clear_button.setVisible(True)
-        elif state == AlarmLevel.ORANGE:
+        elif state == AlarmSeverity.ORANGE:
             self.setStyleSheet(styles.STATUS_WARN)
-            self.icon.setPixmap(self.icons[AlarmLevel.ORANGE])
+            self.icon.setPixmap(self.icons[AlarmSeverity.ORANGE])
             self.clear_button.setVisible(True)
-        elif state == AlarmLevel.RED:
+        elif state == AlarmSeverity.RED:
             self.setStyleSheet(styles.STATUS_ALARM)
-            self.icon.setPixmap(self.icons[AlarmLevel.RED])
+            self.icon.setPixmap(self.icons[AlarmSeverity.RED])
             self.clear_button.setVisible(True)
         else:
             self.setStyleSheet(styles.STATUS_NORMAL)
@@ -199,7 +202,7 @@ class Message_Display(QtWidgets.QFrame):
             self.alarm_level = new_alarm.severity
         else:
             self.update_message(None)
-            self.alarm_level = AlarmLevel.OFF
+            self.alarm_level = AlarmSeverity.OFF
 
     @property
     def alarm_level(self):

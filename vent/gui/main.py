@@ -6,8 +6,9 @@ import os
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
-from vent.common.message import ControlSetting, Alarm, AlarmLevel
+from vent.common.message import ControlSetting, Alarm, AlarmSeverity
 from vent.common.values import ValueName
+from vent import gui
 from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS
 from vent.gui.alarm_manager import AlarmManager
 from vent.common import values
@@ -88,22 +89,26 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         """
-        if get_gui_instance() is not None:
-            raise Exception('Instance of gui already running!')
-        else:
-            set_gui_instance(self)
+        if gui.limit_gui():
+            if get_gui_instance() is not None:
+                raise Exception('Instance of gui already running!')
+            else:
+                set_gui_instance(self)
 
         super(Vent_Gui, self).__init__()
 
         self.alarm_manager = AlarmManager()
-        self._alarm_state = AlarmLevel.OFF
+        self._alarm_state = AlarmSeverity.OFF
 
         self.monitor = {}
         self.plots = {}
         self.controls = {}
 
         self.coordinator = coordinator
-        self.control_module = self.coordinator.control_module
+        try:
+            self.control_module = self.coordinator.control_module
+        except AttributeError:
+            self.control_module = None
 
         # start QTimer to update values
         self.timer = QtCore.QTimer()
@@ -177,8 +182,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         try:
             # get alarms
             active_alarms = self.coordinator.get_active_alarms()
-            if len(active_alarms)>0:
-                pdb.set_trace()
             self.alarms_updated.emit(active_alarms)
 
 
@@ -386,10 +389,17 @@ class Vent_Gui(QtWidgets.QMainWindow):
         #self.status_bar.status_message.level_changed.connect(self.alarm_state_changed)
         self.status_bar.status_message.message_cleared.connect(self.handle_cleared_alarm)
 
+        # connect start button to coordinator start
+        self.status_bar.start_button.clicked.connect(self.coordinator.start)
+
     @QtCore.Slot(Alarm)
     def handle_alarm(self, alarm):
         self.status_bar.status_message.update_message(alarm)
-        self.monitor[alarm.alarm_name.name].alarm_state = True
+        try:
+            self.monitor[alarm.alarm_name.name].alarm_state = True
+        except:
+            # FIXME: will be fixed when values are displayed next to controls
+            pass
         if alarm.severity.value > self.alarm_state.value:
             self.alarm_state = alarm.severity
 
@@ -404,10 +414,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     @alarm_state.setter
     def alarm_state(self, state):
-        if state == AlarmLevel.RED:
+        if state == AlarmSeverity.RED:
             pass
 
-    @QtCore.Slot(AlarmLevel)
+    @QtCore.Slot(AlarmSeverity)
     def alarm_state_changed(self, state):
         self.alarm_state = state
 
@@ -421,7 +431,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
         Emit :attr:`.gui_closing` and close!
         """
-        globals()['_GUI_INSTANCE'] = None
+        #globals()['_GUI_INSTANCE'] = None
+        set_gui_instance(None)
         self.gui_closing.emit()
 
         if self.coordinator:

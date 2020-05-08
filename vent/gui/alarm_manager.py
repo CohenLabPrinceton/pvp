@@ -1,5 +1,5 @@
 from PySide2 import QtCore
-from vent.common.message import Alarm, AlarmLevel
+from vent.common.message import Alarm, AlarmSeverity
 import datetime
 import time
 from vent.common import values
@@ -53,7 +53,7 @@ class AlarmManager(QtCore.QObject):
             new_alarm = Alarm(
                 alarm_name=alarm[0],
                 is_active = True,
-                severity = AlarmLevel.RED,
+                severity = AlarmSeverity.RED,
                 alarm_start_time= alarm[2],
                 alarm_end_time = None,
                 value = alarm[1],

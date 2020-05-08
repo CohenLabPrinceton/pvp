@@ -82,7 +82,7 @@ def test_local_coordinator(control_setting_name):
     assert c_read.max_value == c.max_value
     assert c_read.timestamp == c.timestamp
 
-
+@pytest.mark.timeout(10)
 @pytest.mark.parametrize("control_setting_name", values.controllable_values)
 @patch('vent.controller.control_module.get_control_module', mock_get_control_module, Mock())
 def test_remote_coordinator(control_setting_name):
@@ -115,7 +115,7 @@ def test_remote_coordinator(control_setting_name):
 
     coordinator.process_manager.stop_process()
 
-
+@pytest.mark.timeout(10)
 def test_process_manager():
     # wait before
     while not is_port_in_use(rpc.default_port):
@@ -161,16 +161,22 @@ def test_local_sensors():
         pass
 
     sensor_values = coordinator.get_sensors()
-    assert isinstance(sensor_values, dict)
-    for k, v in sensor_values.items():
+    assert isinstance(sensor_values, SensorValues)
+
+    values_dict = sensor_values.to_dict()
+    # if all of the values are none, then this is just a blank object
+    assert(not all([v is None for v in values_dict.values()]))
+    for k, v in values_dict.items():
         assert isinstance(k, ValueName)
-        assert isinstance(v, SensorValueNew)
+        assert isinstance(v, int) or isinstance(v, float) or v is None
 
-
+@pytest.mark.timeout(10)
 def test_remote_sensors():
     # wait before
-    while not is_port_in_use(rpc.default_port):
-        time.sleep(1)
+    # this fails every time and i'm not sure how it wouldnt? - jls
+    #if not is_port_in_use(rpc.default_port):
+    #    time.sleep(1)
+
     coordinator = get_coordinator(single_process=False, sim_mode=True)
     # TODO need to wait for rpc client start?
     time.sleep(1)
@@ -179,10 +185,14 @@ def test_remote_sensors():
         pass
 
     sensor_values = coordinator.get_sensors()
-    assert isinstance(sensor_values, dict)
-    for k, v in sensor_values.items():
+    assert isinstance(sensor_values, SensorValues)
+    values_dict = sensor_values.to_dict()
+    # if all of the values are none, then this is just a blank object
+    assert(not all([v is None for v in values_dict.values()]))
+
+    for k, v in sensor_values.to_dict().items():
         assert isinstance(k, ValueName)
-        assert isinstance(v, SensorValueNew)
+        assert isinstance(v, int) or isinstance(v, float) or v is None
 
     coordinator.process_manager.stop_process()
 
@@ -203,11 +213,11 @@ def test_local_alarms():
     for a in alarms:
         assert isinstance(a, Alarm)
 
-
+@pytest.mark.timeout(10)
 def test_remote_alarms():
     # wait before
-    while not is_port_in_use(rpc.default_port):
-        time.sleep(1)
+    # while not is_port_in_use(rpc.default_port):
+    #     time.sleep(1)
     coordinator = get_coordinator(single_process=False, sim_mode=True)
     # TODO need to wait for rpc client start?
     time.sleep(1)

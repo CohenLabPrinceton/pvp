@@ -37,6 +37,11 @@ class SensorValues:
             else:
                 raise KeyError(f'value {key} not declared in vent.values!!!')
 
+    def to_dict(self):
+        return {
+            valname: getattr(self,valname.name) for valname in values.ValueName
+        }
+
 
 
 class ControlSetting:
@@ -56,7 +61,7 @@ class ControlSetting:
         self.timestamp = timestamp
 
 
-class AlarmLevel(Enum):
+class AlarmSeverity(Enum):
     RED = 3
     ORANGE = 2
     YELLOW = 1

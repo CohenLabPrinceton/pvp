@@ -6,7 +6,7 @@ import copy
 from collections import deque
 import pdb
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmLevel
+from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
 from vent.common.values import CONTROL, ValueName
 
 
@@ -107,6 +107,9 @@ class ControlModuleBase:
         self.__PEEP_min         = CONTROL[ValueName.PEEP].safe_range[0]
         self.__PEEP_max         = CONTROL[ValueName.PEEP].safe_range[1]
         self.__PEEP_lastset     = time.time()
+        self.__PEEP_time_min    = CONTROL[ValueName.PEEP_TIME].safe_range[0]
+        self.__PEEP_time_max    = CONTROL[ValueName.PEEP_TIME].safe_range[1]
+        self.__PEEP_time_lastset = time.time()
         self.__bpm_min          = CONTROL[ValueName.BREATHS_PER_MINUTE].safe_range[0]
         self.__bpm_max          = CONTROL[ValueName.BREATHS_PER_MINUTE].safe_range[1]
         self.__bpm_lastset      = time.time()
@@ -159,6 +162,9 @@ class ControlModuleBase:
         self.COPY_PEEP_min = self.__PEEP_min
         self.COPY_PEEP_max = self.__PEEP_max
         self.COPY_PEEP_lastset = self.__PEEP_lastset
+        self.COPY_PEEP_time_min = self.__PEEP_time_min
+        self.COPY_PEEP_time_max = self.__PEEP_time_max
+        self.COPY_PEEP_time_lastset = self.__PEEP_time_lastset
         self.COPY_bpm_min = self.__bpm_min 
         self.COPY_bpm_max = self.__bpm_max
         self.COPY_bpm_lastset = self.__bpm_lastset
@@ -202,7 +208,10 @@ class ControlModuleBase:
         self.__PIP_time_lastset = self.COPY_PIP_time_lastset  
         self.__PEEP_min         = self.COPY_PEEP_min 
         self.__PEEP_max         = self.COPY_PEEP_max  
-        self.__PEEP_lastset     = self.COPY_PEEP_lastset  
+        self.__PEEP_lastset     = self.COPY_PEEP_lastset
+        self.__PEEP_time_min    = self.COPY_PEEP_time_min
+        self.__PEEP_time_max    = self.COPY_PEEP_time_max
+        self.__PEEP_time_lastset = self.COPY_PEEP_time_lastset
         self.__bpm_min          = self.COPY_bpm_min 
         self.__bpm_max          = self.COPY_bpm_max  
         self.__bpm_lastset      = self.COPY_bpm_lastset  
@@ -225,7 +234,7 @@ class ControlModuleBase:
         '''
         if (value < min) or (value > max):  # If the variable is not within limits
             if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
-                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmLevel.RED, value=value,
+                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmSeverity.RED, value=value,
                                   alarm_start_time=time.time(), alarm_end_time=None)
                 self.__active_alarms[name] = new_alarm
         else:  # Else: if the variable is within bounds,
@@ -265,8 +274,8 @@ class ControlModuleBase:
             self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name=ValueName.PIP)
             self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name=ValueName.PIP_TIME)
             self.__test_critical_levels(min=self.__PEEP_min, max=self.__PEEP_max, value=self._DATA_PEEP, name=ValueName.PEEP)
-            self.__test_critical_levels(min=self.__bpm_min, max=self.__bpm_max, value=self._DATA_BPM, name="BREATHS_PER_MINUTE")
-            self.__test_critical_levels(min=self.__I_phase_min, max=self.__I_phase_max, value=self._DATA_I_PHASE, name="I_PHASE")
+            self.__test_critical_levels(min=self.__bpm_min, max=self.__bpm_max, value=self._DATA_BPM, name=ValueName.BREATHS_PER_MINUTE)
+            self.__test_critical_levels(min=self.__I_phase_min, max=self.__I_phase_max, value=self._DATA_I_PHASE, name=ValueName.INSPIRATION_TIME_SEC)
 
     def get_sensors(self) -> SensorValues:
         # Make sure to return a copy of the instance
@@ -333,6 +342,12 @@ class ControlModuleBase:
             self.COPY_I_phase_min = control_setting.min_value
             self.COPY_I_phase_max = control_setting.max_value
             self.COPY_I_phase_lastset = control_setting.timestamp
+
+        elif control_setting.name == ValueName.PEEP_TIME:
+            self.COPY_SET_PEEP_TIME = control_setting.value
+            self.COPY_PEEP_min = control_setting.min_value
+            self.COPY_PEEP_max = control_setting.max_value
+            self.COPY_PEEP_lastset = control_setting.timestamp
 
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting.name))

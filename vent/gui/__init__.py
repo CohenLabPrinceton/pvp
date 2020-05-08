@@ -9,6 +9,20 @@ from PySide2 import QtGui
 from vent.common.values import ValueName, SENSOR
 from vent.gui import styles
 
+LIMIT_GUI_INSTANCE = True
+"""
+(bool): whether there hsould only be one GUI instance at a time. disabled during testing.
+"""
+
+def limit_gui(limit=None):
+    if limit is None:
+        return globals()['LIMIT_GUI_INSTANCE']
+    else:
+        globals()['LIMIT_GUI_INSTANCE'] = limit
+
+
+
+
 PLOTS = odict({
     ValueName.PRESSURE: SENSOR[ValueName.PRESSURE].to_dict(),
     ValueName.TEMP: SENSOR[ValueName.TEMP].to_dict(),

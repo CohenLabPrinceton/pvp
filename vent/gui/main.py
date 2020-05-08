@@ -89,11 +89,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         """
-        if gui.limit_gui():
-            if get_gui_instance() is not None:
-                raise Exception('Instance of gui already running!')
-            else:
-                set_gui_instance(self)
+
+        if get_gui_instance() is not None and gui.limit_gui():
+            raise Exception('Instance of gui already running!')
+        else:
+            set_gui_instance(self)
 
         super(Vent_Gui, self).__init__()
 

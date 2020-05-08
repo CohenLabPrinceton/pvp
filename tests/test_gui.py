@@ -15,7 +15,7 @@ test types
 """
 
 import pytest
-import pdb
+
 
 from pytestqt import qt_compat
 from pytestqt.qt_compat import qt_api
@@ -25,13 +25,15 @@ from vent.gui import styles
 from vent.gui import widgets
 from vent.coordinator.coordinator import get_coordinator
 
+
 from PySide2 import QtCore, QtGui, QtWidgets
 
 import numpy as np
 
 ##################################
-# Test user interaction
-# Simulate user actions with the whole intact gui
+
+
+
 
 # turn off gui limiting
 gui.limit_gui(False)
@@ -99,11 +101,13 @@ def test_gui_launch(qtbot):
 
     assert vent_gui.isVisible()
 
+@pytest.mark.timeout(15)
 def test_gui_launch_mp(qtbot):
     assert qt_api.QApplication.instance() is not None
 
     coordinator = get_coordinator(sim_mode=True, single_process=False)
     coordinator.start()
+
     vent_gui = gui.Vent_Gui(coordinator)
     qtbot.addWidget(vent_gui)
     vent_gui.status_bar.start_button.click()

@@ -39,7 +39,7 @@ def get_control(control_setting_name):
     return pickle.dumps(res)
 
 
-def rpc_server_main(sim_mode, addr=default_addr, port=default_port):
+def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port):
     global remote_controller
     if addr != default_addr:
         raise NotImplementedError
@@ -55,7 +55,9 @@ def rpc_server_main(sim_mode, addr=default_addr, port=default_port):
     server.register_function(remote_controller.start, "start")
     server.register_function(remote_controller.is_running, "is_running")
     server.register_function(remote_controller.stop, "stop")
+    serve_event.set()
     server.serve_forever()
+
 
 
 def get_rpc_client():

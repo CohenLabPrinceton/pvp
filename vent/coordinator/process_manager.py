@@ -12,8 +12,12 @@ class ProcessManager:
         self.max_heartbeat_interval = None
         self.previous_timestamp = None
         self.child_process = None
+        self.serve_event = multiprocessing.Event()
+        self.serve_event.clear()
+        self.timeout = 5
         # TODO: if child process exists, need to reconnect it
         self.start_process()
+        #time.sleep(1)
 
     def __del__(self):
         self.try_stop_process()
@@ -22,10 +26,17 @@ class ProcessManager:
         if self.child_process is not None:
             # Child process already started
             return
-        self.child_process = multiprocessing.Process(target=rpc.rpc_server_main, args=(self.sim_mode,))
+        self.serve_event.clear()
+        self.child_process = multiprocessing.Process(target=rpc.rpc_server_main,
+                                                     kwargs=
+                                                     {
+                                                         'sim_mode':self.sim_mode,
+                                                         'serve_event':self.serve_event
+                                                     })
         # self.child_process.daemon = True
         self.child_process.start()
         self.child_pid = self.child_process.pid
+        self.serve_event.wait(self.timeout)
 
     def try_stop_process(self):
         if self.child_process is not None:

@@ -103,6 +103,7 @@ def test_gui_launch_mp(qtbot):
     assert qt_api.QApplication.instance() is not None
 
     coordinator = get_coordinator(sim_mode=True, single_process=False)
+    coordinator.start()
     vent_gui = gui.Vent_Gui(coordinator)
     qtbot.addWidget(vent_gui)
     vent_gui.status_bar.start_button.click()

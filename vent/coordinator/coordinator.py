@@ -160,7 +160,10 @@ class CoordinatorRemote(CoordinatorBase):
         Stop the coordinator.
         This does a soft stop (not kill a process)
         """
-        self.rpc_client.stop()
+        try:
+            self.rpc_client.stop()
+        except ConnectionRefusedError:
+            pass
         self.process_manager.stop_process()
 
     def __del__(self):

@@ -405,7 +405,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     @QtCore.Slot(Alarm)
     def handle_cleared_alarm(self, alarm):
-        self.monitor[alarm.alarm_name.name].alarm_state = False
+        try:
+            self.monitor[alarm.alarm_name.name].alarm_state = False
+        except:
+            # FIXME: will be fixed when values are displayed next to controls
+            pass
 
 
     @property

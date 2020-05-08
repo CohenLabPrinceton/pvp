@@ -2,7 +2,7 @@ from PySide2 import QtCore
 from vent.common.message import Alarm, AlarmSeverity
 import datetime
 import time
-from vent.common import values
+from vent.common import values, message
 import numpy as np
 
 _ALARM_MANAGER_INSTANCE = None
@@ -75,6 +75,11 @@ class AlarmManager(QtCore.QObject):
                 time.localtime(alarm.alarm_start_time)
             )
 
+            if isinstance(alarm.alarm_name, values.ValueName):
+                alarm_str = alarm.alarm_name.name
+            else:
+                alarm_str = str(alarm.alarm_name)
+
 
             if alarm.value is not None:
                 # round to `digits` specified in value def
@@ -86,9 +91,11 @@ class AlarmManager(QtCore.QObject):
 
                 value = np.round(alarm.value, decimals=round_digits)
 
-                alarm.message = f"{alarm.alarm_name.name} went out of range at {start_time}, value was {value}"
+
+
+                alarm.message = f"{alarm_str} went out of range at {start_time}, value was {value}"
             else:
-                alarm.message = f"{alarm.alarm_name.name} went out of range at {start_time}"
+                alarm.message = f"{alarm_str} went out of range at {start_time}"
         return alarm
 
 

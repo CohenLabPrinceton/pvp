@@ -102,6 +102,7 @@ jonny todo
 ______________
 
 * use loop_counter to check on controller advancement
+* implement single values list with properties 'controllable' vs not.
 
 
 

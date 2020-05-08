@@ -164,7 +164,7 @@ class CoordinatorRemote(CoordinatorBase):
             self.rpc_client.stop()
         except ConnectionRefusedError:
             pass
-        self.process_manager.stop_process()
+        self.process_manager.try_stop_process()
 
     def __del__(self):
         self.stop()

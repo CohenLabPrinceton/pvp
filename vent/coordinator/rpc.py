@@ -1,4 +1,5 @@
 import pickle
+import socket
 import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
 
@@ -6,6 +7,8 @@ import vent.controller.control_module
 
 default_addr = 'localhost'
 default_port = 9533
+default_timeout = 10
+socket.setdefaulttimeout(default_timeout)
 
 remote_controller = None
 
@@ -57,8 +60,10 @@ def rpc_server_main(sim_mode, addr=default_addr, port=default_port):
 
 def get_rpc_client():
     # https://mail.python.org/pipermail/python-bugs-list/2015-January/260126.html
-    transport = xmlrpc.client.Transport()
-    con = transport.make_connection('localhost')
-    con.timeout = 5
-    proxy = xmlrpc.client.ServerProxy(f"http://{default_addr}:{default_port}/", transport=transport)
+    #transport = xmlrpc.client.Transport()
+    #con = transport.make_connection(f"http://{default_addr}:{default_port}/")
+    #con.timeout = 5
+    #
+    proxy = xmlrpc.client.ServerProxy(f"http://{default_addr}:{default_port}/")
+
     return proxy

@@ -131,8 +131,9 @@ class ControlModuleBase:
         self._alarm_to_COPY()  #These require the lock
         self._initialize_set_to_COPY()
 
-        self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
-        self.__thread.start()
+        # self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
+        # self.__thread.start()
+        self.__thread = None
 
 
     def _initialize_set_to_COPY(self):
@@ -541,7 +542,7 @@ class ControlModuleBase:
         pass   
 
     def start(self):
-        if not self.__thread.is_alive():  # If the previous thread has been stopped, make a new one.
+        if self.__thread is None or not self.__thread.is_alive():  # If the previous thread has been stopped, make a new one.
             self._running = True
             self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
             self.__thread.start()
@@ -769,7 +770,7 @@ class ControlModuleSimulator(ControlModuleBase):
             else:
                 update_copies -= 1
 
-        # get final values on stop
+        # # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
         self._alarm_to_COPY()  # Copy current alarms and settings to COPY
         self._sensor_to_COPY()  # Copy sensor values to COPY

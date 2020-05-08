@@ -4,9 +4,9 @@
 
 from importlib import import_module
 from ast import literal_eval
+from .devices import PigpioConnection
 from .devices.sensors import Sensor
 
-import pigpio
 import configparser
 
 
@@ -65,7 +65,7 @@ class Hal:
         self._secondary_pressure_sensor = object
         self._flow_sensor_in = object
         self._flow_sensor_ex = object
-        self._pig = pigpio.pi()
+        self._pig = PigpioConnection(show_errors=False)
         self.config = configparser.RawConfigParser()
         self.config.optionxform = lambda option: option
         self.config.read(config_file)

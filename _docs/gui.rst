@@ -98,6 +98,11 @@ Jonny Questions
 * Final final final breakdown on values and ranges plzzz
 
 
+jonny todo
+______________
+
+* use loop_counter to check on controller advancement
+
 
 
 GUI Object Documentation

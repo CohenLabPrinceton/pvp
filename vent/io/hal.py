@@ -55,14 +55,16 @@ class Hal:
             config_file (str): Path to the configuration file containing the definitions of specific components on the
                 ventilator machine. (e.g., config_file = "vent/io/config/devices.ini")
         """
-        self._setpoint = 0.0
+        self._setpoint_in = 0.0   # setpoint for inspiratory side
+        self._setpoint_ex = 0.0   # setpoint for expiratory side
         self._adc = object
         self._inlet_valve = object
         self._control_valve = object
         self._expiratory_valve = object
         self._pressure_sensor = object
         self._secondary_pressure_sensor = object
-        self._flow_sensor = object
+        self._flow_sensor_in = object
+        self._flow_sensor_ex = object
         self._pig = PigpioConnection(show_errors=False)
         self.config = configparser.RawConfigParser()
         self.config.optionxform = lambda option: option
@@ -81,10 +83,11 @@ class Hal:
             print('section: ', section, 'opts: ', opts.items())  # debug
             setattr(self, '_' + section, class_(pig=self._pig, **opts))
         self._pressure_sensor.update()
-        self._flow_sensor.update()
         if isinstance(self._secondary_pressure_sensor, Sensor):
             self._secondary_pressure_sensor.update()
-        self._flow_sensor.update()
+        self._flow_sensor_in.update()
+        self._flow_sensor_ex.update()
+
 
     # TODO: Need exception handling whenever inlet valve is opened
 
@@ -107,23 +110,48 @@ class Hal:
             raise RuntimeWarning('Secondary pressure sensor not instantiated. Check your "devices.ini" file.')
 
     @property
-    def flow(self) -> float:
-        """ The measured flow rate.
+    def flow_in(self) -> float:
+        """ The measured flow rate inspiratory side.
         """
-        self._flow_sensor.update()
-        return self._flow_sensor.get()
+        self._flow_sensor_in.update()
+        return self._flow_sensor_in.get()
 
     @property
-    def setpoint(self) -> float:
-        """ The currently requested flow
+    def flow_ex(self) -> float:
+        """ The measured flow rate expiratory side.
+        """
+        self._flow_sensor_en.update()
+        return self._flow_sensor_en.get()
+
+    @property
+    def setpoint_ex(self) -> float:
+        """ The currently requested flow on the expiratory side. This is solenoid open/close.
 
         Returns:
             float: 0<=setpoint<=1; The current set-point for flow control as a proportion of the maximum.
         """
-        return self._setpoint
+        pass
 
-    @setpoint.setter
-    def setpoint(self, value: float):
+    @setpoint_ex.setter
+    def setpoint_ex(self, value: float):
+        """
+
+        Args:
+            value: Requested flow, as a proportion of maximum. Must be in [0, 1].
+        """
+        pass
+
+    @property
+    def setpoint_in(self) -> float:
+        """ The currently requested flow for the prop valve on the inspiratory side
+
+        Returns:
+            float: 0<=setpoint<=1; The current set-point for flow control as a proportion of the maximum.
+        """
+        return self._setpoint_in
+
+    @setpoint_in.setter
+    def setpoint_in(self, value: float):
         """
 
         Args:

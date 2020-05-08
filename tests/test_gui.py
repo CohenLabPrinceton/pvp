@@ -21,6 +21,7 @@ from pytestqt import qt_compat
 from pytestqt.qt_compat import qt_api
 
 from vent import gui
+from vent.gui import styles
 from vent.gui import widgets
 from vent.coordinator.coordinator import get_coordinator
 
@@ -82,8 +83,14 @@ def generic_saferange():
 def test_gui_launch(qtbot):
     assert qt_api.QApplication.instance() is not None
 
+    app = qt_api.QApplication.instance()
+    app.setStyle('Fusion')
+    app.setStyleSheet(styles.DARK_THEME)
+    app = styles.set_dark_palette(app)
+
     coordinator = get_coordinator(sim_mode=True, single_process=True)
     vent_gui = gui.Vent_Gui(coordinator)
+    #app, vent_gui = launch_gui(coordinator)
     qtbot.addWidget(vent_gui)
     vent_gui.status_bar.start_button.click()
 

@@ -103,35 +103,5 @@ def load_mono_font():
 
     globals()['_MONO_FONT'] = mono_font
 
-#from vent.gui.main import Vent_Gui
-
-# modules for interacting with rest of ventilator
-
-
-##########################
-# GUI Class
-
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description="Launch the Ventilator GUI")
-#     parser.add_argument('--test',
-#                         dest='test',
-#                         help="Run in test mode? (y=1/n=0, default=0)",
-#                         choices=('y','n'),
-#                         default=0)
-
-
-    #
-    # args = parser.parse_args()
-    #
-    # gui_test = False
-    # if args.test in (1, True, 'y'):
-    #     gui_test = True
-    #
-    # # just for testing, should be run from main
-    # app = QtWidgets.QApplication(sys.argv)
-    # app.setStyleSheet(styles.GLOBAL)
-    # gui = Vent_Gui(test=gui_test)
-    # sys.exit(app.exec_())
 
 from vent.gui.main import Vent_Gui, launch_gui, get_gui_instance

@@ -144,18 +144,6 @@ class Control(QtWidgets.QWidget):
         self.slider_frame = QtWidgets.QFrame()
         self.slider_frame.setLayout(self.slider_layout)
         self.slider_frame.setVisible(False)
-        
-        #
-        # self.dial = QtWidgets.QDial()
-        # self.dial.setFocusPolicy(QtCore.Qt.StrongFocus)
-        # self.dial.setMinimum(self.abs_range[0])
-        # self.dial.setMaximum(self.abs_range[1])
-        # self.dial.setNotchesVisible(True)
-        # self.dial.setContentsMargins(0,0,0,0)
-        # self.dial.setFixedHeight(styles.VALUE_SIZE)
-        # self.dial.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
-        #                         QtWidgets.QSizePolicy.Fixed)
-        #
 
         ###
         # set signals

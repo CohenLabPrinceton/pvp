@@ -107,10 +107,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         # start QTimer to update values
         self.timer = QtCore.QTimer()
-        #self.timer.timeout.connect(self.update_gui)
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.update_gui)
         # stop QTimer when program closing
         self.gui_closing.connect(self.timer.stop)
-        # start the timer
 
         # set update period (after timer is created!!)
         self._update_period = None
@@ -119,13 +119,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # initialize controls to starting values
         self.init_controls()
 
-
         self.init_ui()
         self.start_time = time.time()
 
         self.update_gui()
-
-        #self.timer.start(self.update_period*1000)
 
     @property
     def update_period(self):
@@ -137,13 +134,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         if update_period != self._update_period:
             # if the timer is active, stop it and restart with new period
-            if self.timer.isActive():
-                self.timer.setInterval(update_period*1000)
+            # if self.timer.isActive():
+            self.timer.setInterval(update_period*1000)
 
             # store new value
             self._update_period = update_period
-
-
 
     def init_controls(self):
         """
@@ -156,7 +151,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     def set_value(self, new_value, value_name=None):
         """
-        set value in the test thread
+        Set a control value with the ``coordinator``
+
+        Args:
+            new_value (float): Som
         """
         # get sender ID
         if value_name is None:
@@ -196,7 +194,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         #
         finally:
-            QtCore.QTimer.singleShot(self.update_period*1000, self.update_gui)
+            self.timer.start()
 
 
 
@@ -256,8 +254,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # connect signals and slots
         self.init_ui_signals()
 
-
-
         self.show()
 
     def init_ui_status_bar(self):
@@ -277,12 +273,13 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         #########
         # display values
+        # box that contains both the monitors and the plots
         self.monitor_box = QtWidgets.QGroupBox("Sensor Monitor")
         self.monitor_layout = QtWidgets.QHBoxLayout()
         self.monitor_layout.setContentsMargins(0, 0, 0, 0)
         self.monitor_box.setLayout(self.monitor_layout)
 
-
+        # box that just displays the monitor widgets
         self.display_layout = QtWidgets.QVBoxLayout()
         self.display_layout.setContentsMargins(0,0,0,0)
 
@@ -322,16 +319,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         for a_time in times:
             self.time_buttons[a_time[0]] = QtWidgets.QRadioButton(a_time[0])
-            # self.time_buttons[a_time[0]].setCheckable(True)
             self.time_buttons[a_time[0]].setObjectName(str(a_time[1]))
             self.time_buttons[a_time[0]].clicked.connect(self.set_plot_duration)
             button_layout.addWidget(self.time_buttons[a_time[0]])
-            # button_group.addButton(self.time_buttons[a_time[0]])
 
         button_box.setLayout(button_layout)
         self.plot_layout.addWidget(button_box)
-        # pdb.set_trace()
 
+        # the plot widgets themselves
         for plot_key, plot_params in self.PLOTS.items():
             self.plots[plot_key.name] = widgets.Plot(**plot_params)
             self.plot_layout.addWidget(self.plots[plot_key.name])
@@ -365,14 +360,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_layout.addStretch(10)
         self.controls_box.setLayout(self.controls_layout)
 
-
-        control_pal = self.controls_box.palette()
-        control_pal.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(styles.CONTROL_BACKGROUND))
-        # control_pal.setColor(QtGui.QPalette.Text, QtGui.QColor(styles.CONTROL_TEXT))
-        self.controls_box.setAutoFillBackground(True)
-        self.controls_box.setPalette(control_pal)
-
-        # pdb.set_trace()
         self.main_layout.addWidget(self.controls_box, self.control_width)
 
     def init_ui_signals(self):
@@ -423,10 +410,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
     @QtCore.Slot(AlarmLevel)
     def alarm_state_changed(self, state):
         self.alarm_state = state
-
-
-
-
 
     def set_plot_duration(self, dur):
         dur = int(self.sender().objectName())

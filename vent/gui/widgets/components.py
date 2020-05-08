@@ -7,8 +7,10 @@ from vent.gui import styles, mono_font
 
 class DoubleSlider(QtWidgets.QSlider):
     """
+    Slider capable of representing floats
+
     Ripped off from
-    and https://stackoverflow.com/a/50300848 for double support!
+    and https://stackoverflow.com/a/50300848 ,
 
     Thank you!!!
     """
@@ -67,27 +69,39 @@ class DoubleSlider(QtWidgets.QSlider):
 class RangeSlider(DoubleSlider):
 
     valueChanged = QtCore.Signal(tuple)
+    """
+    (tuple): (low, high) set range of floats
+    """
 
     def __init__(self, abs_range, safe_range, decimals=1, *args, **kwargs):
+        """
+        Slider with two handles that sets a range
+
+        Args:
+            abs_range (tuple): absolute range of slider
+            safe_range (tuple): default set values for handles of slider
+            decimals (int): number of decimals of precision
+            *args:
+            **kwargs:
+        """
         super(RangeSlider, self).__init__(decimals=decimals, *args, **kwargs)
         self.setStyleSheet(styles.RANGE_SLIDER)
 
         self.decimals = decimals
         self.setSingleStep(10 ** -self.decimals)
+
         # abs range is the min/max theoretically allowable values
         self.abs_range = abs_range
         self.setMinimum(abs_range[0])
         self.setMaximum(abs_range[1])
-        # initialize high and low to full range
-        self._low = int(round(abs_range[0] * self._multi))
-        self._high = int(round(abs_range[1] * self._multi))
 
         # safe range are the levels outside of which we trigger an alarm
+        # initialize high and low to full range first so they have acceptable values
+        self._low = int(round(abs_range[0] * self._multi))
+        self._high = int(round(abs_range[1] * self._multi))
+        # then set the initial value
         self.safe_range = safe_range
-        self.low = safe_range[0]
-        self.high = safe_range[1]
-
-        self._alarm = False
+        self.setValue(self.safe_range)
 
         self.pressed_control = QtWidgets.QStyle.SC_None
         self.hover_control = QtWidgets.QStyle.SC_None
@@ -96,11 +110,10 @@ class RangeSlider(DoubleSlider):
         # 0 for the low, 1 for the high, -1 for both
         self.active_slider = 0
 
+        # cache tick levels and labels so they're not redrawn constantly
         self.levels = None
         self.level_labels = None
-        #self.generate_labels()
 
-        # self.setContentsMargins(0,0,0,0)
         if self.orientation() == QtCore.Qt.Orientation.Horizontal:
             self.setMinimumHeight(styles.SLIDER_HEIGHT)
         else:
@@ -196,6 +209,11 @@ class RangeSlider(DoubleSlider):
         return (self.low, self.high)
 
     def generate_labels(self):
+        """
+        Generate the text labels for the slider.
+
+        Called on init and on resizeEvent
+        """
 
 
         self.levels = np.linspace(self.minimum(), self.maximum(), 5)
@@ -209,10 +227,6 @@ class RangeSlider(DoubleSlider):
         self.initStyleOption(opt)
         length = style.pixelMetric(QtWidgets.QStyle.PM_SliderLength, opt, self)
         available = style.pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, opt, self)
-        # border_offset = 5
-        # available -= border_offset
-
-
 
         for v in self.levels:
             label_str = str(int(round(v)))

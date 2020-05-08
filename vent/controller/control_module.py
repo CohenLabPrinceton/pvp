@@ -769,6 +769,11 @@ class ControlModuleSimulator(ControlModuleBase):
             else:
                 update_copies -= 1
 
+        # get final values on stop
+        self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
+        self._alarm_to_COPY()  # Copy current alarms and settings to COPY
+        self._sensor_to_COPY()  # Copy sensor values to COPY
+
 
 
 

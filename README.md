@@ -7,3 +7,10 @@ Raspberry pi code for controlling the rapid-deploy critical care ventilator
 # Describe About more
 
 hello all
+
+# we wrote some of it down a
+t
+
+https://ventilator.readthedocs.io/en/latest/
+
+

@@ -2,8 +2,20 @@
 """
 from abc import ABC
 from collections import OrderedDict
+from vent.common.fashion import pigpio_command
 
+import time
 import pigpio
+
+
+class PigpioConnection(pigpio.pi):
+    """ Subclass that extends pigpio.pi to throw an exception if there are issues connecting to the pigpio daemon.
+
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.connected:
+            raise RuntimeError('Could not establish connection with pigpio daemon')
 
 
 class IODeviceBase(ABC):
@@ -17,10 +29,10 @@ class IODeviceBase(ABC):
     """
 
     def __init__(self, pig):
-        """ Initializes the pigpio python bindings oject if necessary,
+        """ Initializes the pigpio python bindings object if necessary,
         and checks that it is actually running.
         """
-        self._pig = pig if pig is not None else pigpio.pi()
+        self._pig = pig if pig is not None else PigpioConnection(show_errors=False)
         self._handle = -1
         if not self.pigpiod_ok():
             raise RuntimeError
@@ -28,7 +40,7 @@ class IODeviceBase(ABC):
     def __del__(self):
         """ Closes the i2c/spi connection, and stops the python bindings
         for the pigpio daemon.
-        """
+        """  # FIXME
         self._close()
         if self.pigpiod_ok:
             self.pig.stop()
@@ -47,7 +59,7 @@ class IODeviceBase(ABC):
 
     def pigpiod_ok(self):
         """ Returns True if pigpiod is running and False if not
-        """
+        """  # TODO: Could throw an Exception here if not connected
         return self.pig.connected
 
     def _close(self):
@@ -80,11 +92,13 @@ class I2CDevice(IODeviceBase):
         self._i2c_bus = i2c_bus
         self._open(i2c_bus, i2c_address)
 
+    @pigpio_command
     def _open(self, i2c_bus, i2c_address):
         """ Opens i2c connection given i2c bus and address.
         """
         self._handle = self.pig.i2c_open(i2c_bus, i2c_address)
 
+    @pigpio_command
     def _close(self):
         """ Extends superclass method. Checks that pigpiod is connected
         and if a handle has been set - if so, closes an i2c connection.
@@ -92,6 +106,7 @@ class I2CDevice(IODeviceBase):
         super()._close()
         self.pig.i2c_close(self.handle)
 
+    @pigpio_command
     def read_device(self, num_bytes):
         """ Read a specified number of bytes directly from the the
         device without changing the register. Does NOT perform LE/BE
@@ -99,6 +114,7 @@ class I2CDevice(IODeviceBase):
         """
         return self.pig.i2c_read_device(self.handle, num_bytes)
 
+    @pigpio_command
     def write_device(self, word, signed=False, count=2):
         """ Write bytes to the device without specifying register.
         DOES perform LE/BE conversion. Count should be
@@ -109,6 +125,7 @@ class I2CDevice(IODeviceBase):
             native16_to_be(word, signed=signed, count=count)
         )
 
+    @pigpio_command
     def read_register(self, register, signed=False, count=2):
         """ Read count# bytes from the specified register
         (denoted by a single byte)
@@ -122,6 +139,7 @@ class I2CDevice(IODeviceBase):
             signed=signed
         )
 
+    @pigpio_command
     def write_register(self, register, word, signed=False, count=2):
         """ Write bytes to the specified register. Count should be
         specified for when passing something other than a word.
@@ -243,11 +261,13 @@ class SPIDevice(IODeviceBase):
         super().__init__(pig)
         self._open(channel, baudrate)
 
+    @pigpio_command
     def _open(self, channel, baudrate):
         """ Opens an SPI connection and returns the pigpiod handle.
         """
         self._handle = self.pig.spi_open(channel, baudrate)
 
+    @pigpio_command
     def _close(self):
         """ Extends superclass method. Checks that pigpiod is connected
         and if a handle has been set - if so, closes an SPI connection.
@@ -388,9 +408,9 @@ class ADS1115(I2CDevice):
             self._last_cfg = self.cfg
             data_rate = self._config.DR.unpack(self.cfg)
             while not (self._ready() or mode == 'CONTINUOUS'):
-                tick = self.pig.get_current_tick()
-                while (self.pig.get_current_tick() - tick) < 1000000 / data_rate:
-                    pass
+                tick = time.time()
+                while (time.time() - tick) < 1000000 / data_rate:
+                    pass  # TODO: implement asyncio.sleep()
         return self.read_register(self.pointer.P.pack('CONVERSION'), signed=True)
 
     def _read_last_cfg(self):

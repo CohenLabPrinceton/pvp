@@ -5,6 +5,7 @@ import numpy as np
 import copy
 from collections import deque
 import pdb
+import vent.io as io
 
 from vent.common.message import SensorValues, ControlSetting
 from vent.alarms import AlarmSeverity, Alarm
@@ -588,7 +589,60 @@ class ControlModuleBase:
 
 class ControlModuleDevice(ControlModuleBase):
     # Implement ControlModuleBase functions
-    pass
+    def __init__(self):
+        ControlModuleBase.__init__(self)
+        self.HAL = io.Hal(config_file='vent/io/config/devices.ini')
+        self._sensor_to_COPY()
+
+
+    def _sensor_to_COPY(self):
+        # And the sensor measurements
+        self._lock.acquire()
+        self.COPY_sensor_values = SensorValues(pip = self._DATA_PIP,
+                                          peep     = self._DATA_PEEP,
+                                          fio2     = NONE,
+                                          pressure = self.HAL.pressure,
+                                          vte      = self._DATA_VTE,
+                                          breaths_per_minute   = self._DATA_BPM,
+                                          inspiration_time_sec = self._DATA_I_PHASE,
+                                          timestamp            = time.time(),
+                                          loop_counter         = self._loop_counter)
+        self._lock.release()
+
+    def _start_mainloop(self):
+        # start running, this should be run as a thread! 
+        # Compare to initialization in Base Class!
+
+        update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
+
+        while self._running:
+            time.sleep(self._LOOP_UPDATE_TIME)
+            self._loop_counter += 1
+            now = time.time()
+            dt = now - self._last_update                            # Time sincle last cycle of main-loop
+
+            self._DATA_PRESSURE = self.HAL.pressure                 # Get a pressure measurement from HAL
+
+            self._PID_update(dt = dt)                               # Update the PID Controller
+
+            valve_open_in = self._get_control_signal_in()           # Inspiratory side: get control signal for PropValve
+            hal.setpoint_in = max(min(100, valve_open_in), 0)
+
+            valve_open_ex = self._get_control_signal_out()          # Expiratory side: get control signal for Solenoid
+            hal.setpoint_out = max(min(100, valve_open_ex), 0)
+
+            self._DATA_Qout = self.HAL.flow_out                     # Flow sensor on Expiratory side
+            self._DATA_Qin  = self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
+            self._last_update = now
+
+            if update_copies == 0:
+                self._controls_from_COPY()     # Update controls from possibly updated values as a chunk
+                self._alarm_to_COPY()          # Copy current alarms and settings to COPY
+                self._sensor_to_COPY()         # Copy sensor values to COPY
+                update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
+            else:
+                update_copies -= 1
+
 
 
 

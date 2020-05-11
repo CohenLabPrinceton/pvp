@@ -1,5 +1,4 @@
 from abc import ABC
-
 from vent.io.devices.pins import Pin, PWMOutput
 
 
@@ -73,9 +72,22 @@ class PWMControlValve(SolenoidBase, PWMOutput):
     compensation of the valve's response.
     """
 
-    def __init__(self, pin, form='Normally Closed', initial_duty=0, frequency=None, pig=None):
+    def __init__(self, pin, form='Normally Closed', initial_duty=0, frequency=None, response=None, pig=None):
         PWMOutput.__init__(self, pin=pin, initial_duty=initial_duty, frequency=frequency, pig=pig)
         SolenoidBase.__init__(self, form=form)
+        if response is None:
+            raise NotImplementedError('You need to implement a default response behavior')
+        self._response_array = self.load_valve_response(response)
+
+
+    def load_valve_response(self,response_path):
+        # open the file in read binary mode
+        response_file = open(response_path, "rb")
+        #read the file to numpy array
+        response_array = np.load(response_file)
+        #close the file
+        response_file.close
+        return response_array
 
     @property
     def setpoint(self):
@@ -96,19 +108,35 @@ class PWMControlValve(SolenoidBase, PWMOutput):
         response curve"""
         self.duty = self.response(setpoint)
 
-    def response(self, setpoint):
+    def response(self, setpoint, rising=True):
         """Setpoint takes a value in the range (0,100) so as not to
         confuse with duty cycle, which takes a value in the range (0,1).
         Response curves are specific to individual valves and are to
-        be implemented by subclasses. If not implemented in subclass,
-        defaults to a perfectly linear response"""
-        return setpoint / 100
+        be implemented by subclasses. 
+        Different curves are calibrated to 'rising = True' 
+        (valves opening) or'rising = False' (valves closing), 
+        as different characteristic flow behavior can be observed."""
+        
+        idx = (np.abs(self._response_array[:,0] - (setpoint))).argmin()
+        if(rising==True):
+            duty = self._response_array[idx,1]
+        else:
+            duty = self._response_array[idx,2]
+        
+        return duty
 
-    def inverse_response(self, duty_cycle):
+    def inverse_response(self, duty_cycle, rising=True):
         """Inverse of response. Given a duty cycle in the range (0,1),
         returns the corresponding linear setpoint in the range (0,100).
         """
-        return duty_cycle * 100
+        
+        if(rising==True):
+            idx = (np.abs(self._response_array[:,1] - duty_cycle)).argmin()
+        else:
+            idx = (np.abs(self._response_array[:,2] - duty_cycle)).argmin()
+        setpt = self._response_array[idx,0]
+        
+        return setpt
 
 
 class SimOnOffValve(SolenoidBase):

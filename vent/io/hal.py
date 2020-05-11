@@ -4,7 +4,6 @@
 
 from importlib import import_module
 from ast import literal_eval
-from .devices import PigpioConnection
 from .devices.sensors import Sensor
 
 import vent.io.devices.valves as valves

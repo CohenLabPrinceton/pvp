@@ -7,6 +7,7 @@ from ast import literal_eval
 from .devices import PigpioConnection
 from .devices.sensors import Sensor
 
+import vent.io.devices.valves as valves
 import configparser
 
 
@@ -16,7 +17,7 @@ class Hal:
     on the ventilator (real or simulated) are specified in a configuration file.
     """
 
-    def __init__(self, config_file=None):
+    def __init__(self, config_file='vent/io/config/chasemeister_V1000.ini'):
         """ Initializes HAL from config_file.
             For each section in config_file, imports the class <type> from module <module>, and sets attribute
             self.<section> = <type>(**opts), where opts is a dict containing all of the options in <section> that are
@@ -85,8 +86,10 @@ class Hal:
         self._pressure_sensor.update()
         if isinstance(self._secondary_pressure_sensor, Sensor):
             self._secondary_pressure_sensor.update()
-        self._flow_sensor_in.update()
-        self._flow_sensor_ex.update()
+        if isinstance(self._flow_sensor_in, Sensor):
+            self._flow_sensor_in.update()
+        if isinstance(self._flow_sensor_ex, Sensor):
+            self._flow_sensor_ex.update()
 
 
     # TODO: Need exception handling whenever inlet valve is opened
@@ -120,8 +123,8 @@ class Hal:
     def flow_ex(self) -> float:
         """ The measured flow rate expiratory side.
         """
-        self._flow_sensor_en.update()
-        return self._flow_sensor_en.get()
+        self._flow_sensor_ex.update()
+        return self._flow_sensor_ex.get()
 
     @property
     def setpoint_ex(self) -> float:
@@ -130,7 +133,8 @@ class Hal:
         Returns:
             float: 0<=setpoint<=1; The current set-point for flow control as a proportion of the maximum.
         """
-        pass
+        return self._setpoint_ex
+
 
     @setpoint_ex.setter
     def setpoint_ex(self, value: float):
@@ -139,7 +143,10 @@ class Hal:
         Args:
             value: Requested flow, as a proportion of maximum. Must be in [0, 1].
         """
-        pass
+        if (isinstance(self._expiratory_valve, valves.OnOffValve) or
+                isinstance(self._expiratory_valve, valves.SimOnOffValve)):
+            assert value in (0, 1)  # TODO catch & log error (ought to rename @pigpio_command and use that)
+        self._expiratory_valve.setpoint = value
 
     @property
     def setpoint_in(self) -> float:

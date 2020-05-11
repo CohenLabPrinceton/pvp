@@ -290,8 +290,7 @@ class SPIDevice(IODeviceBase):
 
 
 class ADS1115(I2CDevice):
-    """ Description:
-    Class for the ADS1115 16 bit, 4 Channel ADC.
+    """ ADS1115 16 bit, 4 Channel Analog to Digital Converter.
     Datasheet:
      http://www.ti.com/lit/ds/symlink/ads1114.pdf?ts=1587872241912
 
@@ -440,6 +439,31 @@ class ADS1115(I2CDevice):
         """
         return self.read_register(self.pointer.P.pack('CONFIG')) >> 15
 
+
+class ADS1015(ADS1115):
+    """ ADS1015 16 bit, 4 Channel Analog to Digital Converter.
+    Datasheet:
+      http://www.ti.com/lit/ds/symlink/ads1015.pdf?&ts=1589228228921
+
+    Basically the same device as the ADS1115, except has 12 bit resolution instead of 16, and has different (faster)
+    data rates. The difference in data rates is handled by overloading _CONFIG_VALUES. The difference in resolution is
+    irrelevant for implementation.  #TODO Check: or by overloading _read_conversion() to bitshift  by 4?
+    """
+    _CONFIG_VALUES = (
+        ('NO_EFFECT', 'START_CONVERSION'),
+        ((0, 1), (0, 3), (1, 3), (2, 3), 0, 1, 2, 3),
+        (6.144, 4.096, 2.048, 1.024, 0.512, 0.256, 0.256, 0.256),
+        ('CONTINUOUS', 'SINGLE'),
+        (128, 250, 490, 920, 1600, 2400, 3300, 3300),  # This one is different
+        ('TRADIONAL', 'WINDOW'),
+        ('ACTIVE_LOW', 'ACTIVE_HIGH'),
+        ('NONLATCHING', 'LATCHING'),
+        (1, 2, 3, 'DISABLE')
+    )
+
+# TODO: Verify the following is not necessary
+#    def _read_conversion(self, **kwargs):
+#        return super()._read_conversion(**kwargs) << 4
 
 def be16_to_native(data, signed=False, count=2):
     """ Unpacks a bytearray respecting big-endianness of outside world

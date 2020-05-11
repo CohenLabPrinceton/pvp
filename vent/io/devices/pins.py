@@ -61,7 +61,7 @@ class Pin(IODeviceBase):
         """ Returns the value of the pin: usually 0 or 1 but can be
         overridden e.g. by PWM which returns duty cycle.
         """
-        self.pig.read(self.pin)
+        return self.pig.read(self.pin)
 
     @pigpio_command
     def write(self, value):

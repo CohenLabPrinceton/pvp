@@ -1,6 +1,9 @@
 # gui requirements
 sudo: required
 
+arch:
+  - amd64
+  - arm64
 
 language: python
 # python versions to use during the tests

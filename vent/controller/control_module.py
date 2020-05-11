@@ -31,7 +31,7 @@ class ControlModuleBase:
         get_logged_alarms():               Returns a List of logged alarms, up to maximum lengh of self._RINGBUFFER_SIZE
         get_control(ControlSetting):       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
         get_past_waveforms():              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self._RINGBUFFER_SIZE, AND clears this archive.
-        start():                           Starts the main-loop of the controller
+        start():                            Starts the main-loop of the controller
         stop():                            Stops the main-loop of the controller
 
     """
@@ -390,6 +390,12 @@ class ControlModuleBase:
                                   self.COPY_I_phase_min,
                                   self.COPY_I_phase_max,
                                   self.COPY_I_phase_lastset)
+        elif control_setting_name == ValueName.PEEP_TIME:
+            return_value = ControlSetting(control_setting_name,
+                                          self.COPY_SET_PEEP_TIME,
+                                          self.COPY_PEEP_time_min,
+                                          self.COPY_PEEP_time_max,
+                                          self.COPY_PEEP_time_lastset)
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
 

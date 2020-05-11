@@ -447,6 +447,16 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         event.accept()
 
+    def start(self):
+        """
+        Click the :meth:`~.gui.widgets.status_bar.Status_Bar.start` button
+
+        Returns:
+
+        """
+        self.status_bar.start_button.click()
+
+
 def launch_gui(coordinator):
 
     # just for testing, should be run from main

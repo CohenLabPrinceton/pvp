@@ -23,6 +23,7 @@ from pytestqt.qt_compat import qt_api
 from vent import gui
 from vent.gui import styles
 from vent.gui import widgets
+from vent.common import message, values
 from vent.coordinator.coordinator import get_coordinator
 
 
@@ -81,6 +82,23 @@ def generic_saferange():
         return abs_min, abs_max
     return _generic_saferange
 
+@pytest.fixture(params=[True, False])
+def spawn_gui(qtbot, request):
+    assert qt_api.QApplication.instance() is not None
+
+    app = qt_api.QApplication.instance()
+    app.setStyle('Fusion')
+    app.setStyleSheet(styles.DARK_THEME)
+    app = styles.set_dark_palette(app)
+
+    coordinator = get_coordinator(sim_mode=True, single_process=request.param)
+    vent_gui = gui.Vent_Gui(coordinator)
+    #app, vent_gui = launch_gui(coordinator)
+    qtbot.addWidget(vent_gui)
+    return app, vent_gui
+
+
+
 
 def test_gui_launch(qtbot):
     assert qt_api.QApplication.instance() is not None
@@ -116,6 +134,71 @@ def test_gui_launch_mp(qtbot):
     qtbot.wait(5000)
 
     assert vent_gui.isVisible()
+
+
+################################
+# test user interaction
+
+@pytest.mark.parametrize("test_value", [(k, v) for k, v in values.CONTROL.items()])
+def test_gui_controls(qtbot, spawn_gui, test_value):
+
+    app, vent_gui = spawn_gui
+
+    vent_gui.start()
+    vent_gui.timer.stop()
+
+    value_name = test_value[0]
+    value_params = test_value[1]
+    abs_range = value_params.abs_range
+
+    # gnerate target value
+    def gen_test_value():
+        test_value = np.random.rand()*(abs_range[1]-abs_range[0]) + abs_range[0]
+        test_value = np.round(test_value, value_params.decimals)
+        return test_value
+
+    ####
+    # test setting controls from control widget
+    # from editablelabel
+
+    control_widget = vent_gui.controls[value_name.name]
+
+    for i in range(n_samples):
+        test_value = gen_test_value()
+
+        control_widget.value_label.setLabelEditableAction()
+        control_widget.value_label.lineEdit.setText(str(test_value))
+        control_widget.value_label.returnPressedAction()
+        # should call labelUpdatedAction and send to controller
+
+        control_value = vent_gui.coordinator.get_control(value_name)
+
+        assert(control_value.value == test_value)
+
+    # from slider
+    # toggle it open
+    assert(control_widget.slider_frame.isVisible() == False)
+    control_widget.toggle_button.click()
+    assert(control_widget.slider_frame.isVisible() == True)
+
+    for i in range(n_samples):
+        test_value = gen_test_value()
+        control_widget.slider.setValue(test_value)
+
+        control_value = vent_gui.coordinator.get_control(value_name)
+        assert(control_value.value == test_value)
+
+    # from set_value
+    for i in range(n_samples):
+        test_value = gen_test_value()
+        vent_gui.set_value(test_value, value_name = value_name)
+
+        control_value = vent_gui.coordinator.get_control(value_name)
+        assert(control_value.value == test_value)
+
+
+
+
 
 
 

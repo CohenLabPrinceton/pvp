@@ -101,7 +101,7 @@ class Monitor(QtWidgets.QWidget):
         # connect widgets
 
         # update boxes when slider changed
-        self.range_slider.valueChanged.connect(self.update_safe)
+        self.range_slider.valueChanged.connect(self.update_boxes)
 
         # and vice versa
         self.min_safe.valueChanged.connect(self.range_slider.setLow)

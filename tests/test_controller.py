@@ -3,7 +3,8 @@ import numpy as np
 import pytest
 import random
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
+from vent.common.message import SensorValues, ControlSetting
+from vent.alarms import AlarmSeverity, Alarm
 from vent.common.values import ValueName
 from vent.coordinator.coordinator import get_coordinator
 from vent.controller.control_module import get_control_module
@@ -118,7 +119,7 @@ def test_control_dynamical(control_type):
     Controller.start()
     time.sleep(0.1)
     vals_start = Controller.get_sensors()
-    time.sleep(30)                                                   # Let this run for half a minute
+    time.sleep(10)                                                   # Let this run for half a minute
 
     Controller.stop() # consecutive stops should be ignored
     Controller.stop() 

@@ -1,5 +1,5 @@
 from PySide2 import QtCore
-from vent.common.message import Alarm, AlarmSeverity
+from vent.alarms import AlarmSeverity, Alarm
 import datetime
 import time
 from vent.common import values, message

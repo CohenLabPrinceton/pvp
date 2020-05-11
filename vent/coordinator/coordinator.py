@@ -4,7 +4,8 @@ from typing import List, Dict
 
 import vent
 import vent.controller.control_module
-from vent.common.message import ControlSetting, Alarm
+from vent.common.message import ControlSetting
+from vent.alarms import Alarm
 from vent.common.message import SensorValues
 from vent.common.values import ValueName
 from vent.coordinator.process_manager import ProcessManager

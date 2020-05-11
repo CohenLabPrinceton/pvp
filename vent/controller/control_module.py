@@ -6,7 +6,8 @@ import copy
 from collections import deque
 import pdb
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
+from vent.common.message import SensorValues, ControlSetting
+from vent.alarms import AlarmSeverity, Alarm
 from vent.common.values import CONTROL, ValueName
 
 

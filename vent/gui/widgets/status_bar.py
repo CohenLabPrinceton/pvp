@@ -7,7 +7,7 @@ from PySide2 import QtWidgets, QtCore
 
 from vent.gui import styles, mono_font
 from vent.gui import get_gui_instance
-from vent.common.message import Alarm, AlarmSeverity
+from vent.alarms import AlarmSeverity, Alarm
 
 
 class Status_Bar(QtWidgets.QWidget):

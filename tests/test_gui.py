@@ -266,19 +266,19 @@ def test_gui_monitor(qtbot, spawn_gui, test_value):
 
 
     # set with range_slider
-    for i in range(n_samples):
-        test_min, test_max = gen_test_values()
-
-
-        with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-            monitor_widget.range_slider.setLow(test_min)
-            sleep(0.01)
-            assert(blocker.args[0][0]==test_min)
-
-        with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-            monitor_widget.range_slider.setHigh(test_max)
-            sleep(0.01)
-            assert(blocker.args[0][1]==test_max)
+    # for i in range(n_samples):
+    #     test_min, test_max = gen_test_values()
+    #
+    #
+    #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
+    #         monitor_widget.range_slider.setLow(test_min)
+    #         sleep(0.01)
+    #         assert(blocker.args[0][0]==test_min)
+    #
+    #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
+    #         monitor_widget.range_slider.setHigh(test_max)
+    #         sleep(0.01)
+    #         assert(blocker.args[0][1]==test_max)
 
 
 

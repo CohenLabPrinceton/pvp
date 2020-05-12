@@ -32,6 +32,7 @@ class ControlModuleBase:
         get_logged_alarms():               Returns a List of logged alarms, up to maximum lengh of self._RINGBUFFER_SIZE
         get_control(ControlSetting):       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
         get_past_waveforms():              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self._RINGBUFFER_SIZE, AND clears this archive.
+        get_target_waveform():             Returns a step-wise linear target waveform, as defined by the current settings.
         start():                           Starts the main-loop of the controller
         stop():                            Stops the main-loop of the controller
 
@@ -51,6 +52,10 @@ class ControlModuleBase:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close
         self._pid_control_flag    = True           # Default is: use PID control
+        self.__KP                 = 80             # The weights for the the PID terms
+        self.__KI                 = 0
+        self.__KD                 = 0
+
 
         # Internal Control variables. "SET" indicates that this is set.
         self.__SET_PIP       = CONTROL[ValueName.PIP].default                     # Target PIP pressure
@@ -70,6 +75,7 @@ class ControlModuleBase:
 
         # These are measurements from the last breath cycle.
         self._DATA_PIP = None         # Measured value of PIP
+        self._DATA_PIP_PLATEAU = None # Measured pressure of the plateau
         self._DATA_PIP_TIME = None    # Measured time of reaching PIP plateau
         self._DATA_PEEP = None        # Measured valued of PEEP
         self._DATA_I_PHASE = None     # Measured duration of inspiratory phase
@@ -262,11 +268,12 @@ class ControlModuleBase:
             # 20/80 percentile of pressure values below/above mean
             # Assumption: waveform is mostly between both plateaus
             self._DATA_PEEP = np.percentile(pressure[ pressure < np.mean(pressure)], 20 )
-            self._DATA_PIP  = np.percentile(pressure[ pressure > np.mean(pressure)], 80 )
+            self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > np.mean(pressure)], 80 )
+            self._DATA_PIP  = np.percentile(pressure[ pressure > np.mean(pressure)], 95 )  #PIP is defined as the maximum, here 95% to account for outliers
 
             # measure time of reaching PIP, and leaving PIP
-            self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP*0.9))]
-            self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP*0.9))]
+            self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
+            self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
 
             # and measure the breaths per minute
             self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform
@@ -410,9 +417,9 @@ class ControlModuleBase:
 
     def __calculate_control_signal_in(self):
         self.__control_signal_in  = 0            # Some setting for the maximum flow.
-        self.__control_signal_in += 1000*self._DATA_P
-        self.__control_signal_in +=  0*self._DATA_I
-        self.__control_signal_in +=  0*self._DATA_D
+        self.__control_signal_in +=  self.__KP*self._DATA_P
+        self.__control_signal_in +=  self.__KI*self._DATA_I
+        self.__control_signal_in +=  self.__KD*self._DATA_D
 
     def _get_control_signal_in(self):
         ''' This is the PID controlled signal on the inspiratory side '''
@@ -421,17 +428,6 @@ class ControlModuleBase:
     def _get_control_signal_out(self):
         ''' This is the control signal (open/close) on the expiratory side '''
         return self.__control_signal_out
-
-    def __get_pressure_derivative(self, dt):
-        if len(self.__cycle_waveform) < 1:
-            sample_dPdt = 0
-        else:
-            latest_sample = self.__cycle_waveform[-1]  #Format of the last sample: [time|pressure|volume]
-            sample_dPdt = (self._DATA_PRESSURE - latest_sample[1])/dt     # this is dP/dt at one moment in time
-
-        s = dt / (0.05 + dt)  #send this through 50ms LP filter
-        self._DATA_dpdt = self._DATA_dpdt + s * (sample_dPdt - self._DATA_dpdt)
-
 
     def _PID_update(self, dt):
         ''' 
@@ -456,52 +452,57 @@ class ControlModuleBase:
         if cycle_phase < self.__SET_PIP_TIME:
 
             if self._pid_control_flag:
-                self.__get_pressure_derivative(dt = dt)
-                target_slope = (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PIP_TIME
-                self.__get_PID_error(yis = self._DATA_dpdt, ytarget = target_slope, dt = dt)   # here, we control dP/dt   
+                target_pressure = cycle_phase*(self.__SET_PIP - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
+                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
                 self.__calculate_control_signal_in()
                 self.__control_signal_out = 0   # close out valve
                 if self._DATA_PRESSURE > self.__SET_PIP:
                     self.__control_signal_in = 0
             else:
-                self.__control_signal_in = np.inf            # STATE CONTROL: to PIP, air in as fast as possible
+                self.__control_signal_in = np.inf                                                        # STATE CONTROL: to PIP, air in as fast as possible
                 self.__control_signal_out = 0
                 if self._DATA_PRESSURE > self.__SET_PIP:
                     self.__control_signal_in = 0
 
-        elif cycle_phase < self.__SET_I_PHASE:                          # then, we control PIP 
+        elif cycle_phase < self.__SET_I_PHASE:                                                           # then, we control PIP
             if self._pid_control_flag:
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt)
                 self.__calculate_control_signal_in()
-                self.__control_signal_out = 0   # close out valve
+                if self._DATA_PRESSURE > self.__SET_PIP+0.5:                                              
+                    self.__control_signal_out = np.inf                                                 # if exceeded, we open the exhaust valve
+                else:
+                    self.__control_signal_out = 0                                                        # close out valve
             else:
-                self.__control_signal_in = 0                             # STATE CONTROL: keep PIP plateau, let air in if below
+                self.__control_signal_in = 0                                                             # STATE CONTROL: keep PIP plateau, let air in if below
                 self.__control_signal_out = 0
                 if self._DATA_PRESSURE < self.__SET_PIP:
                     self.__control_signal_in = np.inf
                 if self._DATA_PRESSURE > self.__SET_PIP:
                     self.__control_signal_out = np.inf
 
-        elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:  # then, we drop pressure as fast as possible
+        elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
             if self._pid_control_flag:
-                self.control_signal_in = 0
-                self.__control_signal_out = np.inf   # open out valve to max, once the pressure is down, let the PID controller take over
-                if self._DATA_PRESSURE < 1.1*self.__SET_PEEP:
+                target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
+                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
+                self.__calculate_control_signal_in()
+                self.__control_signal_out =  np.inf
+                if self._DATA_PRESSURE < self.__SET_PEEP - 1:
                     self.__control_signal_out = 0
+                    self.__control_signal_in = 0
             else:
                 self.__control_signal_in = 0
                 self.__control_signal_out = np.inf
                 if self._DATA_PRESSURE < self.__SET_PEEP:
                     self.__control_signal_out = 0
-        elif cycle_phase < self.__SET_CYCLE_DURATION:                   # and control around PEEP
+        elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
             if self._pid_control_flag:
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
                 self.__calculate_control_signal_in()
-                if self._DATA_PRESSURE > 1.1*self.__SET_PEEP:
+                if self._DATA_PRESSURE > self.__SET_PEEP + 1:
                     self.__control_signal_out = np.inf
                 else:
                     self.__control_signal_out = 0
-            else:                                                       # STATE CONTROL: keeping PEEP, let air in if below
+            else:                                                                                         # STATE CONTROL: keeping PEEP, let air in if below
                 self.__control_signal_in = 0
                 self.__control_signal_out = 0
                 if self._DATA_PRESSURE < self.__SET_PEEP:
@@ -538,6 +539,27 @@ class ControlModuleBase:
         self.__cycle_waveform_archive.append(archive[-1])
         self._lock.release()
         return archive
+
+    def get_target_waveform(self):
+        # Returns the target waveform, drawn as a sketch of a stepwise linear function
+        # Format is time-points, pressure values - to be connected with straight lines
+        #         ______
+        #        /      \                         <- Sketch waveform of single breath cycle
+        #       /        \
+        #      /          \____________
+        #
+        #     ^  ^     ^  ^           ^
+        #     A  B     C  D           E           <- Critical time points
+
+        self._lock.acquire()
+        wv = (
+        (0, self.__SET_PEEP),                                            # A: start of the waveform
+        (self.__SET_PIP_TIME, self.__SET_PIP),                           # B: reaching PIP within PIP_TIME
+        (self.__SET_I_PHASE, self.__SET_PIP),                            # C: keeping the plateau during I_Phase
+        (self.__SET_PEEP_TIME + self.__SET_I_PHASE, self.__SET_PEEP),    # D: reaching PEEP within PEEP TIME
+        (self.__SET_CYCLE_DURATION, self.__SET_PEEP))                    # E: Cycle ends
+        self._lock.release()
+        return wv
 
     def _start_mainloop(self):
         # This will depend on simulation or reality
@@ -650,7 +672,7 @@ class Balloon_Simulator:
         # Hard parameters for the simulation
         self.max_volume = 6    # Liters  - 6?
         self.min_volume = 1.5  # Liters - baloon starts slightly inflated.
-        self.PC = 20           # Proportionality constant that relates pressure to cm-H2O
+        self.PC = 40           # Proportionality constant that relates pressure to cm-H2O
         self.P0 = 0            # Baseline/Minimum pressure.
         self.leak = leak
 
@@ -690,8 +712,8 @@ class Balloon_Simulator:
         Qout_clip = np.min([Qout, 2])                    # Flows have to be positive, and reasonable. Nothing here is faster that 2 l/s
         Qout_clip = np.max([Qout_clip, 0])
         difference_pressure = self.current_pressure - 0  # Convention: outside is "0"
-        resistance = 0.05*Qout_clip                      # This should be in the range of ~1 liter/s for dp=~30 cmH2O
-        self.Qout = difference_pressure * resistance         # Target for flow out
+        conductance = 0.05*Qout_clip                     # This should be in the range of ~1 liter/s for typical max pressure differences
+        self.Qout = difference_pressure * conductance    # Target for flow out
 
     def update(self, dt):  # Performs an update of duration dt [seconds]
         self.current_flow = self.Qin - self.Qout
@@ -702,7 +724,7 @@ class Balloon_Simulator:
             s = dt / (RC + dt)
             self.current_volume = self.current_volume + s * (self.min_volume - self.current_volume)
 
-        # This is fromt the baloon equation, uses helper variable (the baloon radius)
+        # This is from the baloon equation, uses helper variable (the baloon radius)
         self.r_real = (3 * self.current_volume / (4 * np.pi)) ** (1 / 3)
         r0 = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)
 
@@ -737,7 +759,7 @@ class ControlModuleSimulator(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self):
         ControlModuleBase.__init__(self)
-        self.Balloon = Balloon_Simulator(leak=True)          # This is the simulation
+        self.Balloon = Balloon_Simulator(leak=False)          # This is the simulation
         self._sensor_to_COPY()
 
     def __SimulatedPropValve(self, x, dt):
@@ -749,15 +771,12 @@ class ControlModuleSimulator(ControlModuleBase):
         x:  Input current [mA]
         dt: Time since last setting in seconds [for the LP filter]
         '''
-        RC = 0.05 # 50 ms delay
         flow_new = 1.0*(np.tanh(0.03*(x - 130)) + 1)
         if x>160:
             flow_new = 1.72  #Maximum, ~100 l/min
         if x<0:
             flow_new = 0
-
-        s = dt / (RC + dt)
-        return self._DATA_Qin + s * (flow_new - self._DATA_Qin)
+        return flow_new
 
     def __SimulatedSolenoid(self, x):
         '''
@@ -779,7 +798,7 @@ class ControlModuleSimulator(ControlModuleBase):
             ValueName.TEMP.name                 : self.Balloon.temperature,
             ValueName.HUMIDITY.name             : self.Balloon.humidity,
             ValueName.PRESSURE.name             : self.Balloon.current_pressure,
-            ValueName.VTE.name                  : self._DATA_VTE, # FIXME: VTE should be a percentage not a proportion, no
+            ValueName.VTE.name                  : self._DATA_VTE,
             ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
             ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
             'timestamp'                  : time.time(),

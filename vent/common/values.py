@@ -227,7 +227,7 @@ VALUES = odict({
         'safe_range': (0.33, 1),
         'decimals': 2,
         'control': False,
-        'sensor': True
+        'sensor': False
     }),
     ValueName.PIP: Value(**{
         'name': 'PIP', # (Peak Inspiratory Pressure)
@@ -237,7 +237,7 @@ VALUES = odict({
         'default': 22,           # FIXME
         'decimals': 1,
         'control': True,
-        'sensor': False
+        'sensor': True
     }),
     ValueName.PIP_TIME: Value(**{
         'name': 'PIPt',
@@ -257,7 +257,7 @@ VALUES = odict({
         'default': 2.0,  # FIXME
         'decimals': 1,
         'control': True,
-        'sensor': False
+        'sensor': True
     }),
     ValueName.PEEP: Value(**{
         'name': 'PEEP', #  (Positive End Expiratory Pressure)
@@ -267,7 +267,7 @@ VALUES = odict({
         'default': 5,            # FIXME
         'decimals': 1,
         'control': True,
-        'sensor': False
+        'sensor': True
     }),
     ValueName.PEEP_TIME: Value(**{
         'name': 'PEEPt',
@@ -287,7 +287,7 @@ VALUES = odict({
         'default': 17,            # FIXME
         'decimals': 1,
         'control': True,
-        'sensor': False
+        'sensor': True
     }),
 })
 

@@ -7,7 +7,7 @@ import os
 from PySide2 import QtWidgets, QtCore, QtGui
 
 from vent.common.message import ControlSetting
-from vent.alarms import AlarmSeverity, Alarm
+from vent.alarm import AlarmSeverity, Alarm
 from vent.common.values import ValueName
 from vent import gui
 from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS

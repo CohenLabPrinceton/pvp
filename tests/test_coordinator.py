@@ -8,8 +8,8 @@ from unittest.mock import patch, Mock
 import pytest
 
 from vent.common import values
-from vent.common.message import ControlSetting, SensorValues, SensorValueNew
-from vent.alarms import AlarmSeverity, Alarm
+from vent.common.message import ControlSetting, SensorValues
+from vent.alarm import AlarmSeverity, Alarm
 from vent.common.values import ValueName
 from vent.controller.control_module import ControlModuleBase
 from vent.coordinator import rpc

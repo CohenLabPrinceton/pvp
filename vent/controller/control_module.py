@@ -8,7 +8,7 @@ import pdb
 import vent.io as io
 
 from vent.common.message import SensorValues, ControlSetting
-from vent.alarms import AlarmSeverity, Alarm
+from vent.alarm import AlarmSeverity, Alarm
 from vent.common.values import CONTROL, ValueName
 
 

@@ -108,9 +108,12 @@ class ValueCondition(Condition):
     def minmax(self, minmax):
         assert(minmax in ('min', 'max'))
         if minmax == 'min':
-            self.operator = operator.gt
-        elif minmax == 'max':
+            # if we're a minimum, True (raise alarm) if value is less than limit
             self.operator = operator.lt
+        elif minmax == 'max':
+            self.operator = operator.gt
+        else:
+            raise ValueError('needs to be max or min')
         self._minmax = minmax
 
     def check(self, sensor_values):
@@ -160,6 +163,8 @@ class CycleValueCondition(ValueCondition):
                 # if we have progressed the required number of cycles...
                 if breath_cycle >= self._start_cycle + self.n_cycles:
                     return True
+                else:
+                    return False
             else:
                 # otherwise, this is the first time we've gone out of bounds
                 self._mid_check = True

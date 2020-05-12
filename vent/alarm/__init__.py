@@ -20,3 +20,5 @@ class AlarmSeverity(Enum):
     LOW = 2
     TECHNICAL = 1
     OFF = 0
+
+from vent.alarm.alarm import Alarm

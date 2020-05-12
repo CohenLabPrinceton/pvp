@@ -119,7 +119,7 @@ def test_control_dynamical(control_type):
     Controller.start()
     time.sleep(0.1)
     vals_start = Controller.get_sensors()
-    time.sleep(10)                                                   # Let this run for half a minute
+    time.sleep(20)                                                   # Let this run for half a minute
 
     Controller.stop() # consecutive stops should be ignored
     Controller.stop() 

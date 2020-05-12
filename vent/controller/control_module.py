@@ -5,6 +5,8 @@ import numpy as np
 import copy
 from collections import deque
 import pdb
+from itertools import count
+
 import vent.io as io
 
 from vent.common.message import SensorValues, ControlSetting
@@ -80,6 +82,8 @@ class ControlModuleBase:
         self._DATA_P = 0              # Last measurements of the proportional term for PID-control
         self._DATA_I = 0              # Last measurements of the integral term for PID-control
         self._DATA_D = 0              # Last measurements of the differential term for PID-control
+        self._DATA_BREATH_COUNT = 0   # Total number of breaths/id of current breath cycle
+        self._breath_counter = count() # threadsafe counter
 
         # Parameters to keep track of breath-cycle
         self.__cycle_start = time.time()
@@ -123,7 +127,8 @@ class ControlModuleBase:
         # COPY variables that later updated on a regular basis
         self.COPY_active_alarms = {}
         self.COPY_logged_alarms = list(self.__logged_alarms)
-        self.COPY_sensor_values = SensorValues()
+        #self.COPY_sensor_values = SensorValues()
+        self.COPY_sensor_values = None
 
         ###########################  Threading init  #########################
         # Run the start() method as a thread
@@ -523,6 +528,8 @@ class ControlModuleBase:
             next_cycle = True
         
         if next_cycle:                        # if a new breath cycle has started
+            # increment breath_cycle tracker
+            self._DATA_BREATH_COUNT = next(self._breath_counter)
             if len(self.__cycle_waveform) > 1:
                 self.__cycle_waveform_archive.append( self.__cycle_waveform )
             self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])
@@ -598,16 +605,20 @@ class ControlModuleDevice(ControlModuleBase):
     def _sensor_to_COPY(self):
         # And the sensor measurements
         self._lock.acquire()
-        # FIXME use values!!!
-        self.COPY_sensor_values = SensorValues(pip = self._DATA_PIP,
-                                          peep     = self._DATA_PEEP,
-                                          fio2     = NONE,
-                                          pressure = self.HAL.pressure,
-                                          vte      = self._DATA_VTE,
-                                          breaths_per_minute   = self._DATA_BPM,
-                                          inspiration_time_sec = self._DATA_I_PHASE,
-                                          timestamp            = time.time(),
-                                          loop_counter         = self._loop_counter)
+        self.COPY_sensor_values = SensorValues(
+            vals = {
+                ValueName.PIP                  : self._DATA_PIP,
+                ValueName.PEEP                 : self._DATA_PEEP,
+                ValueName.FIO2                 : None,
+                ValueName.PRESSURE             : self.HAL.pressure,
+                ValueName.VTE                  : self._DATA_VTE,
+                ValueName.BREATHS_PER_MINUTE   : self._DATA_BPM,
+                ValueName.INSPIRATION_TIME_SEC : self._DATA_I_PHASE,
+                'timestamp'                    : time.time(),
+                'loop_counter'                 : self._loop_counter,
+                'breath_count'                 : self._DATA_BREATH_COUNT
+            }
+        )
         self._lock.release()
 
     def _start_mainloop(self):
@@ -643,6 +654,12 @@ class ControlModuleDevice(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
+
+        # when finished, cohere
+        self._controls_from_COPY()
+        self._alarm_to_COPY()
+        self._sensor_to_COPY()
+
 
 
 
@@ -780,7 +797,7 @@ class ControlModuleSimulator(ControlModuleBase):
     def _sensor_to_COPY(self):
         # And the sensor measurements
         self._lock.acquire()
-        self.COPY_sensor_values = SensorValues(**{
+        self.COPY_sensor_values = SensorValues(vals={
             ValueName.PIP.name                  : self._DATA_PIP,
             ValueName.PEEP.name                 : self._DATA_PEEP,
             ValueName.FIO2.name                 : self.Balloon.fio2,
@@ -791,7 +808,8 @@ class ControlModuleSimulator(ControlModuleBase):
             ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
             ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
             'timestamp'                  : time.time(),
-            'loop_counter'             : self._loop_counter
+            'loop_counter'             : self._loop_counter,
+            'breath_count': self._DATA_BREATH_COUNT
         })
         self._lock.release()
 

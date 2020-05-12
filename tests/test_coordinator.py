@@ -164,9 +164,10 @@ def test_local_sensors():
 
     values_dict = sensor_values.to_dict()
     # if all of the values are none, then this is just a blank object
+    # FIXME: No longer relevant as blank SensorValues cannot be created anymore -- should ensure no values are None
     assert(not all([v is None for v in values_dict.values()]))
     for k, v in values_dict.items():
-        assert isinstance(k, ValueName)
+        assert isinstance(k, ValueName) or (k in sensor_values.additional_values)
         assert isinstance(v, int) or isinstance(v, float) or v is None
 
 @pytest.mark.timeout(10)
@@ -188,7 +189,7 @@ def test_remote_sensors():
     assert(not all([v is None for v in values_dict.values()]))
 
     for k, v in sensor_values.to_dict().items():
-        assert isinstance(k, ValueName)
+        assert isinstance(k, ValueName) or (k in sensor_values.additional_values)
         assert isinstance(v, int) or isinstance(v, float) or v is None
 
 

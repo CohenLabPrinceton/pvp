@@ -418,7 +418,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     @alarm_state.setter
     def alarm_state(self, state):
-        if state == AlarmSeverity.RED:
+        if state == AlarmSeverity.HIGH:
             pass
 
     @QtCore.Slot(AlarmSeverity)

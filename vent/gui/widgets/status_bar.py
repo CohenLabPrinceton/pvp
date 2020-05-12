@@ -85,9 +85,9 @@ class Message_Display(QtWidgets.QFrame):
         normal_icon = style.standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation, None, self)
         normal_icon = normal_icon.pixmap(size,size)
 
-        self.icons[AlarmSeverity.YELLOW] = normal_icon
-        self.icons[AlarmSeverity.ORANGE] = warning_icon
-        self.icons[AlarmSeverity.RED] = alarm_icon
+        self.icons[AlarmSeverity.LOW] = normal_icon
+        self.icons[AlarmSeverity.MEDIUM] = warning_icon
+        self.icons[AlarmSeverity.HIGH] = alarm_icon
 
 
 
@@ -125,17 +125,17 @@ class Message_Display(QtWidgets.QFrame):
 
     def draw_state(self, state=None):
 
-        if state == AlarmSeverity.YELLOW:
+        if state == AlarmSeverity.LOW:
             self.setStyleSheet(styles.STATUS_NORMAL)
-            self.icon.setPixmap(self.icons[AlarmSeverity.YELLOW])
+            self.icon.setPixmap(self.icons[AlarmSeverity.LOW])
             self.clear_button.setVisible(True)
-        elif state == AlarmSeverity.ORANGE:
+        elif state == AlarmSeverity.MEDIUM:
             self.setStyleSheet(styles.STATUS_WARN)
-            self.icon.setPixmap(self.icons[AlarmSeverity.ORANGE])
+            self.icon.setPixmap(self.icons[AlarmSeverity.MEDIUM])
             self.clear_button.setVisible(True)
-        elif state == AlarmSeverity.RED:
+        elif state == AlarmSeverity.HIGH:
             self.setStyleSheet(styles.STATUS_ALARM)
-            self.icon.setPixmap(self.icons[AlarmSeverity.RED])
+            self.icon.setPixmap(self.icons[AlarmSeverity.HIGH])
             self.clear_button.setVisible(True)
         else:
             self.setStyleSheet(styles.STATUS_NORMAL)

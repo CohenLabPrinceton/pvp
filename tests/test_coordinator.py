@@ -50,10 +50,10 @@ class ControlModuleMock(ControlModuleBase):
         self.control_setting[control_setting.name] = control_setting
 
     def get_active_alarms(self):
-        return {ValueName.PIP: Alarm(ValueName.PIP, True, AlarmSeverity.RED, time.time(), None)}
+        return {ValueName.PIP: Alarm(ValueName.PIP, True, AlarmSeverity.HIGH, time.time(), None)}
 
     def get_logged_alarms(self):
-        return [Alarm(ValueName.PIP, False, AlarmSeverity.RED, time.time(), None)]
+        return [Alarm(ValueName.PIP, False, AlarmSeverity.HIGH, time.time(), None)]
 
 
 def mock_get_control_module(sim_mode):

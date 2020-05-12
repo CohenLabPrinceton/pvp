@@ -24,6 +24,9 @@ from time import sleep
 from pytestqt import qt_compat
 from pytestqt.qt_compat import qt_api
 
+# mock before importing
+
+
 from vent import gui
 from vent.gui import styles
 from vent.gui import widgets

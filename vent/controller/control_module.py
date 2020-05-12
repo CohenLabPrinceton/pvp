@@ -238,7 +238,7 @@ class ControlModuleBase:
         '''
         if (value < min) or (value > max):  # If the variable is not within limits
             if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
-                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmSeverity.RED, value=value,
+                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmSeverity.HIGH, value=value,
                                   alarm_start_time=time.time(), alarm_end_time=None)
                 self.__active_alarms[name] = new_alarm
         else:  # Else: if the variable is within bounds,
@@ -598,6 +598,7 @@ class ControlModuleDevice(ControlModuleBase):
     def _sensor_to_COPY(self):
         # And the sensor measurements
         self._lock.acquire()
+        # FIXME use values!!!
         self.COPY_sensor_values = SensorValues(pip = self._DATA_PIP,
                                           peep     = self._DATA_PEEP,
                                           fio2     = NONE,

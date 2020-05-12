@@ -11,7 +11,7 @@ class SensorValueNew:
 
 
 class SensorValues:
-    def __init__(self, timestamp=None, loop_counter=None, **kwargs):
+    def __init__(self, timestamp, loop_counter, breath_count, **kwargs):
         """
 
         Args:
@@ -21,6 +21,7 @@ class SensorValues:
         # init
         self.timestamp = timestamp
         self.loop_counter = loop_counter
+        self.breath_count = breath_count
 
         # init all sensor values to none
         # use __members__ as the keys are strings rather than enums

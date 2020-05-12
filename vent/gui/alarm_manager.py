@@ -53,7 +53,7 @@ class AlarmManager(QtCore.QObject):
             new_alarm = Alarm(
                 alarm_name=alarm[0],
                 is_active = True,
-                severity = AlarmSeverity.RED,
+                severity = AlarmSeverity.HIGH,
                 alarm_start_time= alarm[2],
                 alarm_end_time = None,
                 value = alarm[1],

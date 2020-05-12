@@ -8,10 +8,15 @@ import pigpio
 
 
 class PigpioConnection(pigpio.pi):
-    """ Subclass that extends pigpio.pi to throw an exception if there are issues connecting to the pigpio daemon.
+    """ Subclass that extends pigpio.pi to throw an exception if there are issues connecting to the pigpio daemon."""
 
-    """
     def __init__(self, *args, **kwargs):
+        """ Calls superclass init and checks if a connection was established; throws a RuntimeError if not.
+
+        Args:
+            *args: parameters to pass through like: pigpio.pi().__init__(*args)
+            **kwargs: parameters to pass through like: pigpio.pi().__init__(**kwargs)
+        """
         super().__init__(*args, **kwargs)
         if not self.connected:
             raise RuntimeError('Could not establish connection with pigpio daemon')
@@ -27,9 +32,12 @@ class IODeviceBase:
     restart it, and reopen the python interface(s)
     """
 
-    def __init__(self, pig=None):
+    def __init__(self, pig: PigpioConnection = None):
         """ Initializes the pigpio python bindings object if necessary,
         and checks that it is actually running.
+
+        Args:
+            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
         """
         self._pig = pig if pig is not None else PigpioConnection(show_errors=False)
         self._handle = -1
@@ -37,26 +45,22 @@ class IODeviceBase:
             raise RuntimeError
 
     @property
-    def pig(self):
-        """ The pigpio python bindings object
-        """
+    def pig(self) -> PigpioConnection:
+        """ The pigpio python bindings object"""
         return self._pig
 
     @property
-    def handle(self):
-        """ Pigpiod handle associated with device (only for i2c/spi)
-        """
+    def handle(self) -> int:
+        """ Pigpiod handle associated with device (only for i2c/spi)"""
         return self._handle
 
     @property
     def pigpiod_ok(self) -> bool:
-        """ Returns True if pigpiod is running and False if not
-        """  # TODO: Could throw an Exception here if not connected
+        """ Returns True if pigpiod is running and False if not"""
         return self.pig.connected
 
     def _close(self):
-        """ Closes an I2C/SPI (or potentially Serial) connection
-        """
+        """ Closes an I2C/SPI (or potentially Serial) connection"""
         if not self.pigpiod_ok or self.handle <= 0:
             return
 
@@ -64,7 +68,7 @@ class IODeviceBase:
 class I2CDevice(IODeviceBase):
     """ A class wrapper for pigpio I2C handles. Defines several methods
     used for reading from and writing to device registers. Defines
-    helper classes Register and RegisterField for handling the
+    helper classes Register and ValueField for handling the
     manipulation of arbitrary registers.
 
     Note: The Raspberry Pi uses LE byte-ordering, while the outside
@@ -79,6 +83,11 @@ class I2CDevice(IODeviceBase):
 
     def __init__(self, i2c_address, i2c_bus, pig=None):
         """ Initializes pigpio bindings and opens i2c connection.
+
+        Args:
+            i2c_address (int): I2C address of the device. (e.g., `i2c_address=0x50`)
+            i2c_bus (int): The I2C bus to use. Should probably be set to 1 on Raspberry Pi.
+            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
         """
         super().__init__(pig)
         self._i2c_bus = i2c_bus
@@ -86,8 +95,7 @@ class I2CDevice(IODeviceBase):
 
     @pigpio_command
     def _open(self, i2c_bus, i2c_address):
-        """ Opens i2c connection given i2c bus and address.
-        """
+        """ Opens i2c connection given i2c bus and address."""
         self._handle = self.pig.i2c_open(i2c_bus, i2c_address)
 
     @pigpio_command
@@ -99,12 +107,12 @@ class I2CDevice(IODeviceBase):
         self.pig.i2c_close(self.handle)
 
     @pigpio_command
-    def read_device(self, num_bytes):
-        """ Read a specified number of bytes directly from the the device without changing the register.
+    def read_device(self, num_bytes) -> tuple:
+        """ Read a specified number of bytes directly from the the device without specifying or changing the register.
         Does NOT perform LE/BE conversion.
 
         Args:
-            num_bytes (int): The number of bytes to read from the device
+            num_bytes (int): The number of bytes to read from the device.
 
         Returns:
             tuple: a tuple of the number of bytes read and a bytearray containing the bytes. If there was an error the
@@ -114,9 +122,13 @@ class I2CDevice(IODeviceBase):
 
     @pigpio_command
     def write_device(self, word, signed=False, count=2):
-        """ Write bytes to the device without specifying register.
-        DOES perform LE/BE conversion. Count should be
-        specified for when passing something other than a word.
+        """ Write bytes to the device without specifying register. DOES perform LE/BE conversion.
+
+        Args:
+            word (int): The integer representation of the data to write.
+            signed (bool): Whether or not `word` is signed.
+            count (int): The number of bytes to write. Should be specified if `word` is something other than a two's
+                complement.
         """
         self.pig.i2c_write_device(
             self.handle,
@@ -124,15 +136,17 @@ class I2CDevice(IODeviceBase):
         )
 
     @pigpio_command
-    def read_register(self, register, signed=False, count=2):
-        """ Read count# bytes from the specified register
-        (denoted by a single byte)
+    def read_register(self, register, signed=False, count=2) -> int:
+        """ Read `count` bytes from the specified register and byteswap the result.
 
         Args:
-            register (int): The index of the register to read
+            signed (bool): Whether or not the data to read is expected to be signed.
+            count (int): The number of bytes to read from the device. Should be specified if `word` is something other
+                than a two's complement.
+            register (int): The index of the register to read.
 
         Returns:
-            int: integer representation of 16 bit register contents
+            int: integer representation of 16 bit register contents.
         """
         return be16_to_native(
             self.pig.i2c_read_i2c_block_data(
@@ -150,13 +164,10 @@ class I2CDevice(IODeviceBase):
         (register denoted by a single byte)
 
         Args:
-            count: The number of bytes to write to the register
-            signed: Whether or not arg 'word' is signed
-            word: The unsigned 16 bit integer to write to the register (must be consistent with 'signed')
+            count (int): The number of bytes to write to the register
+            signed (bool): Whether or not 'word' is signed
+            word (int): The unsigned 16 bit integer to write to the register (must be consistent with 'signed')
             register (int): The index of the register to write to
-
-        Returns:
-            int: integer representation of 16 bit register contents
         """
         self.pig.i2c_write_i2c_block_data(
             self.handle,
@@ -172,23 +183,32 @@ class I2CDevice(IODeviceBase):
         of tuples containing the (human readable) possible settings &
         values for each field.
 
-        Note: The intializer reverses the fields & their values because
+        Note: The initializer reverses the fields & their values because
         a human reads the register, as drawn in the datasheet, from left
         to right - however, the fields furthest to the left are the most
         significant bits of the register.
         """
 
         def __init__(self, fields, values):
-            """ Initializer which loads in (dynamically defined)
-            attributes.
+            """ Initializer which loads (dynamically defined) attributes from tuples.
+
+            Args:
+                fields (tuple): A tuple containing the names of the register's value fields
+                values (tuple): A tuple of tuples containing the possible values for each value field. Length must match
+                    the length of fields. If there are redundant values for a field specified in the datasheet, be sure
+                    to include them. (e.g., a field takes values `A: 0b00`, `B: 0b01`, and `C: 0b10`; but the value for
+                    `0b11` is either not specified by the datasheet or is listed redundantly as `C: 0b11` -> `values`
+                    should list both the 3rd and 4th possible values as 'C' like so: ('A', 'B', 'C', 'C')
             """
+            if len(fields) != len(values):
+                raise ValueError('fields and values must contain the same number of elements')
             self.fields = fields
             offset = 0
             for fld, val in zip(reversed(fields), reversed(values)):
                 setattr(
                     self,
                     fld,
-                    self.RegisterField(
+                    self.ValueField(
                         offset,
                         len(val) - 1,
                         OrderedDict(zip(val, range(len(val))))
@@ -196,9 +216,11 @@ class I2CDevice(IODeviceBase):
                 )
                 offset += (len(val) - 1).bit_length()
 
-        def unpack(self, cfg):
-            """ Given the contents of a register in integer form,
-            returns a dict of fields and their current settings
+        def unpack(self, cfg) -> OrderedDict:
+            """ Given the contents of a register in integer form, returns a dict of fields and their current settings.
+
+            Args:
+                cfg (int): An integer representing a possible configuration value for the register
             """
             return OrderedDict(zip(
                 self.fields,
@@ -207,83 +229,118 @@ class I2CDevice(IODeviceBase):
                     'unpack')(cfg) for field in self.fields)
             ))
 
-        def pack(self, cfg, **kwargs):
-            """ Given an initial integer representation of a register and an
-            arbitrary number of field=value settings, returns an integer
-            representation of the register incorporating the new settings.
+        def pack(self, cfg, **kwargs) -> int:
+            """ Given an initial integer representation of a register and an arbitrary number of field=value settings,
+            returns an integer representation of the register incorporating the new settings.
+
+            Args:
+                cfg (int): An integer representing a possible configuration value for the register
+                **kwargs: The register fields & values to patch into cfg. Takes keyword arguments of the form:
+                    `field=value`
             """
             for field, value in kwargs.items():
                 if hasattr(self, field) and value is not None:
                     cfg = getattr(getattr(self, field), 'insert')(cfg, value)
             return cfg
 
-        class RegisterField:
-            """ Describes a configurable field in a writable register.
-            """
+        class ValueField:
+            """ Describes a configurable value field in a writable register."""
 
             def __init__(self, offset, mask, values):
+                """ Instantiates a value field of a register given the bit offset, mask, and list of possible values.
+
+                Args:
+                    offset (int): The offset bits of the value field in the register, i.e. the distance from LSB
+                    mask (int): integer representation of the value field mask (w/o offset)
+                    values (OrderedDict): The possible values that the field can take.
+                """
                 self._offset = offset
                 self._mask = mask
                 self._values = values
 
-            def offset(self):
-                """ Returns the position of the field's LSB in the
-                register. Example: mask = self._mask << self._offset
-                """
+            def offset(self) -> int:
+                """ Returns the position of the field's LSB in the register. e.g., mask = self._mask << self._offset."""
                 return self._offset
 
-            def info(self):
-                """ Returns a list containing stuff """
+            def info(self) -> list:
+                """ Returns a list containing the ValueField's offset, mask, and a tuple of possible values """
                 return [self._offset, self._mask, self._values]
 
-            def unpack(self, cfg):
-                """ Extracts setting from passed 16-bit config & returns
-                human readable result.
+            def unpack(self, cfg) -> OrderedDict:
+                """ Extracts the ValueField's setting from cfg & returns the result in a human readable form.
+
+                Args:
+                    cfg (int): An integer representing a possible configuration value for the register
                 """
-                # noinspection PyTypeChecker
                 return OrderedDict(map(reversed, self._values.items()))[self.extract(cfg)]
 
-            def pack(self, value):
-                """ Takes a human-readable setting and returns a
-                bit-shifted integer.
-                """
-                return self._values[value] << self._offset
+            def extract(self, cfg) -> int:
+                """ Extracts setting from passed 16-bit config & returns integer representation.
 
-            def insert(self, cfg, value):
-                """ Performs validation and then does a bitwise
-                replacement on passed config with the passed value.
-                Returns integer representation of the new config.
-                """
-                if value not in self._values.keys():
-                    raise ValueError("RegisterField must be one of: {}".format(self._values.keys()))
-                return (cfg & ~(self._mask << self._offset)) | (self._values[value] << self._offset)
-
-            def extract(self, cfg):
-                """ Extracts setting from passed 16-bit config & returns
-                integer representation.
+                Args:
+                    cfg (int): An integer representing a possible configuration value for the register
                 """
                 return (cfg & (self._mask << self._offset)) >> self._offset
 
+            def pack(self, value) -> int:
+                """ Takes a human-readable ValueField setting and returns the corresponding bit-shifted integer.
+
+                Args:
+                    value (int): The integer representation of `value` bit-shifted by the ValueField's offset
+
+                Returns:
+                    int: The integer representation of the ValueField setting according to `value`
+                """
+                if value not in self._values.keys():
+                    raise ValueError("ValueField must be one of: {}".format(self._values.keys()))
+                return self._values[value] << self._offset
+
+            def insert(self, cfg, value) -> int:
+                """ Validates and performs bitwise replacement with the human-readable ValueField setting and integer
+                representation of the register configuration.
+
+                Args:
+                    cfg (int): An integer representing a possible configuration value for the register
+                    value (object): The human readable representation of the desired ValueField setting. Must match a
+                        value in ValueField._values; if not, throws a ValueError
+
+                Returns:
+                    int: The integer representation of the Register's configuration with the value of ValueField patched
+                        according the `value`
+                """
+                if value not in self._values.keys():
+                    raise ValueError("ValueField must be one of: {}".format(self._values.keys()))
+                return (cfg & ~(self._mask << self._offset)) | (self._values[value] << self._offset)
+
 
 class SPIDevice(IODeviceBase):
-    """
-    A class wrapper for pigpio SPI handles. Not really implemented.
-    """
+    """ A class wrapper for pigpio SPI handles. Not really implemented. """
 
     def __init(self, channel, baudrate, pig=None):
+        """ Instantiates an SPIDevice on SPI `channel` with `baudrate` and, optionally, `pigpio.pi = pig`.
+
+        Args:
+            channel (int): The SPI channel
+            baudrate (int): SPI baudrate
+            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
+        """
         super().__init__(pig)
         self._open(channel, baudrate)
 
     @pigpio_command
     def _open(self, channel, baudrate):
-        """ Opens an SPI connection and returns the pigpiod handle.
+        """ Opens an SPI connection and sets the pigpiod handle.
+
+        Args:
+            channel (int): The SPI channel
+            baudrate (int): SPI baudrate
         """
         self._handle = self.pig.spi_open(channel, baudrate)
 
     @pigpio_command
     def _close(self):
-        """ Extends superclass method. Checks that pigpiod is connected
-        and if a handle has been set - if so, closes an SPI connection.
+        """ Extends superclass method. Checks that pigpiod is connected and if a handle has been set - if so, closes an
+        SPI connection.
         """
         super()._close()
         self.pig.spi_close(self.handle)
@@ -352,6 +409,11 @@ class ADS1115(I2CDevice):
         actually on the ADS.Packs default settings into _cfg, but does
         not actually write to ADC - that occurs when read_conversion()
         is called.
+
+        Args:
+            address (int): I2C address of the device. (e.g., `i2c_address=0x48`)
+            i2c_bus (int): The I2C bus to use. Should probably be set to 1 on Raspberry Pi.
+            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
         """
         super().__init__(address, i2c_bus, pig)
         self.pointer = self.Register(self._POINTER_FIELDS, self._POINTER_VALUES)
@@ -359,41 +421,54 @@ class ADS1115(I2CDevice):
         self._last_cfg = self._read_last_cfg()
         self._cfg = self._config.pack(cfg=self._last_cfg, **self._DEFAULT_VALUES)
 
-    def read_conversion(self, **kwargs):
-        """ Returns a voltage (expressed as a float) corresponding to a
-        channel on the ADC. The channel to read from, along with the
-        gain, mode, and sample rate of the conversion may be may be
-        specified as optional parameters. If read_conversion() is called
-        with no parameters, the resulting voltage corresponds to the
-        channel last read from and the same conversion settings.
+    def read_conversion(self, **kwargs) -> float:
+        """ Returns a voltage (expressed as a float) corresponding to a channel on the ADC.
+        The channel to read from, along with the gain, mode, and sample rate of the conversion may be may be  specified
+        as optional parameters. If read_conversion() is called with no parameters, the resulting voltage corresponds to
+        the channel last read from and the same conversion settings.
+
+        Args:
+            MUX: The pin to read from in single channel mode: e.g., `0, 1, 2, 3`
+                or, a tuple of pins over which to make a differential reading.
+                e.g., `(0, 1), (0, 3), (1, 3), (2, 3)`
+            PGA: The full scale voltage (FSV) corresponding to a programmable gain setting.
+                e.g., `(6.144, 4.096, 2.048, 1.024, 0.512, 0.256, 0.256, 0.256)`
+            MODE: Whether to set the ADC to continuous conversion mode, or operate in single-shot mode.
+                e.g., `'CONTINUOUS', 'SINGLE'`
+            DR: The data rate to make the conversion at; units: samples per second.
+                e.g., `8, 16, 32, 64, 128, 250, 475, 860`
         """
         return (
                 self._read_conversion(**kwargs)
                 * self._config.PGA.unpack(self.cfg) / 32767
         )
 
-    def print_config(self):
+    def print_config(self) -> OrderedDict:
         """ Returns the human-readable configuration for the next read.
+
+        Returns:
+            OrderedDict: an ordered dictionary of the form {field: value}, ordered from MSB -> LSB
         """
         return self._config.unpack(self.cfg)
 
     @property
     def config(self):
         """ Returns the Register object of the config register.
+
+        Returns:
+            vent.io.devices.I2CDevice.Register: The Register object initialized for the ADS1115.
         """
         return self._config
 
     @property
-    def cfg(self):
-        """ Returns the contents (as a 16-bit unsigned integer) of the
-        configuration that will be written to the config register when
-        read_conversion() is next called.
+    def cfg(self) -> int:
+        """ Returns the contents (as a 16-bit unsigned integer) of the configuration that will be written to the config
+        register when read_conversion() is next called.
         """
         return self._cfg
 
-    def _read_conversion(self, **kwargs):
-        """ Backend for read_conversion(). Returns the contents of the
-        16-bit conversion register as an unsigned integer.
+    def _read_conversion(self, **kwargs) -> int:
+        """ Backend for read_conversion. Returns the contents of the 16-bit conversion register as an unsigned integer.
 
         If no parameters are passed, one of two things can happen:
 
@@ -412,6 +487,9 @@ class ADS1115(I2CDevice):
         Note: In continuous mode, data can be read from the conversion
         register of the ADS1115 at any time and always reflects the
         most recently completed conversion. So says the datasheet.
+
+        Args:
+            **kwargs: see documentation of vent.io.devices.ADS1115.read_conversion
         """
         self._cfg = self._config.pack(cfg=self.cfg, **kwargs)
         mode = self.print_config()['MODE']
@@ -425,19 +503,17 @@ class ADS1115(I2CDevice):
                     pass  # TODO: implement asyncio.sleep()
         return self.read_register(self.pointer.P.pack('CONVERSION'), signed=True)
 
-    def _read_last_cfg(self):
-        """ Reads the config register and returns the contents as a
-        16-bit unsigned integer; updates internal record _last_cfg.
+    def _read_last_cfg(self) -> int:
+        """ Reads the config register and returns the contents as a 16-bit unsigned integer;
+        updates internal record _last_cfg.
         """
         self._last_cfg = self.read_register(self.pointer.P.pack('CONFIG'))
         return self._last_cfg
 
-    def _ready(self):
-        """ Return status of ADC conversion.
-        OS = 0: Device is currently performing a conversion
-        OS = 1: Device is not currently performing a conversion
+    def _ready(self) -> bool:
+        """ Return status of ADC conversion; True indicates the conversion is complete and the results ready to be read.
         """
-        return self.read_register(self.pointer.P.pack('CONFIG')) >> 15
+        return bool(self.read_register(self.pointer.P.pack('CONFIG')) >> 15)
 
 
 class ADS1015(ADS1115):
@@ -447,7 +523,7 @@ class ADS1015(ADS1115):
 
     Basically the same device as the ADS1115, except has 12 bit resolution instead of 16, and has different (faster)
     data rates. The difference in data rates is handled by overloading _CONFIG_VALUES. The difference in resolution is
-    irrelevant for implementation.  #TODO Check: or by overloading _read_conversion() to bitshift  by 4?
+    irrelevant for implementation.
     """
 
     _DEFAULT_ADDRESS = 0x48
@@ -489,23 +565,30 @@ class ADS1015(ADS1115):
     )
     USER_CONFIGURABLE_FIELDS = ('MUX', 'PGA', 'MODE', 'DR')
 
-
     def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None):
-        super().__init__(address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None)
+        """ See: vent.io.devices.ADS1115.__init__
+        """
+        super().__init__(address=address, i2c_bus=i2c_bus, pig=pig)
 
-# TODO: Verify the following is not necessary
-#    def _read_conversion(self, **kwargs):
-#        return super()._read_conversion(**kwargs) << 4
 
-def be16_to_native(data, signed=False, count=2):
-    """ Unpacks a bytearray respecting big-endianness of outside world
-    and returns an int according to signed.
+def be16_to_native(data, signed=False, count=2) -> int:
+    """ Unpacks a bytes-like object respecting big-endianness of outside world and returns an int according to signed.
+
+    Args:
+        data: bytes-like object. The data to be unpacked & converted
+        signed (bool): Whether or not `data` is signed
+        count (int): The number of bytes to read from `data`. If `count < len(data)` then only the first `count` bytes
+            will be used; the remainder is discarded.
     """
     return int.from_bytes(data[1][:count], 'big', signed=signed)
 
 
-def native16_to_be(word, signed=False, count=2):
-    """ Packs an int into a bytearray while swapping big-endianness
-    of the pi and returns bytearray
+def native16_to_be(word, signed=False, count=2) -> bytes:
+    """ Packs an int into bytes after swapping endianness.
+
+    Args:
+        signed (bool): Whether or not `data` is signed
+        word (int): The integer representation to converted and packed into bytes
+        count (int): The number of bytes to represent `word` as.
     """
     return word.to_bytes(count, 'big', signed=signed)

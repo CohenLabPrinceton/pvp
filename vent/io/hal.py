@@ -17,7 +17,7 @@ class Hal:
     on the ventilator (real or simulated) are specified in a configuration file.
     """
 
-    def __init__(self, config_file='vent/io/config/chasemeister_V1000.ini'):
+    def __init__(self, config_file='vent/io/config/devices.ini'):
         """ Initializes HAL from config_file.
             For each section in config_file, imports the class <type> from module <module>, and sets attribute
             self.<section> = <type>(**opts), where opts is a dict containing all of the options in <section> that are
@@ -30,7 +30,7 @@ class Hal:
                 i2c_bus = 1
 
             The Hal will:
-                1) Import vent.io.devices.ADS1115 as a local variable:
+                1) Import vent.io.devices.ADS1115 (or ADS1015) as a local variable:
                         class_ = getattr(import_module('.devices', 'vent.io'), 'ADS1115')
 
                 2) Instantiate an ADS1115 object with the arguments defined in config_file and set it as an attribute:
@@ -56,14 +56,14 @@ class Hal:
             config_file (str): Path to the configuration file containing the definitions of specific components on the
                 ventilator machine. (e.g., config_file = "vent/io/config/devices.ini")
         """
-        self._setpoint_in = 0.0   # setpoint for inspiratory side
-        self._setpoint_ex = 0.0   # setpoint for expiratory side
+        self._setpoint_in = 0.0  # setpoint for inspiratory side
+        self._setpoint_ex = 0.0  # setpoint for expiratory side
         self._adc = object
         self._inlet_valve = object
         self._control_valve = object
         self._expiratory_valve = object
         self._pressure_sensor = object
-        self._secondary_pressure_sensor = object
+        self._aux_pressure_sensor = object
         self._flow_sensor_in = object
         self._flow_sensor_ex = object
         self._pig = PigpioConnection(show_errors=False)
@@ -77,20 +77,20 @@ class Hal:
             for key in opts.keys():
                 if key == 'adc':
                     opts[key] = self._adc
-                elif key in ('form', 'response'):
-                    pass
                 else:
                     opts[key] = literal_eval(opts[key])
-            print('section: ', section, 'opts: ', opts.items())  # debug
+            print("  [ {device_name:^19} ]  opts: {device_options}".format(
+                device_name=section,
+                device_options=opts
+            ))  # debug
             setattr(self, '_' + section, class_(pig=self._pig, **opts))
         self._pressure_sensor.update()
-        if isinstance(self._secondary_pressure_sensor, Sensor):
-            self._secondary_pressure_sensor.update()
+        if isinstance(self._aux_pressure_sensor, Sensor):
+            self._aux_pressure_sensor.update()
         if isinstance(self._flow_sensor_in, Sensor):
             self._flow_sensor_in.update()
         if isinstance(self._flow_sensor_ex, Sensor):
             self._flow_sensor_ex.update()
-
 
     # TODO: Need exception handling whenever inlet valve is opened
 
@@ -102,72 +102,76 @@ class Hal:
         return self._pressure_sensor.get()
 
     @property
-    def secondary_pressure(self) -> float:
-        """ Returns the pressure from the secondary pressure sensor, if so equipped.
-        If a secondary pressure sensor is not defined, raises a RuntimeWarning
+    def aux_pressure(self) -> float:
+        """ Returns the pressure from the auxiliary pressure sensor, if so equipped.
+        If a secondary pressure sensor is not defined, raises a RuntimeWarning.
         """
-        if isinstance(self._secondary_pressure_sensor, Sensor):
-            self._secondary_pressure_sensor.update()
-            return self._secondary_pressure_sensor.get()
+        if isinstance(self._aux_pressure_sensor, Sensor):
+            self._aux_pressure_sensor.update()
+            return self._aux_pressure_sensor.get()
         else:
             raise RuntimeWarning('Secondary pressure sensor not instantiated. Check your "devices.ini" file.')
 
     @property
     def flow_in(self) -> float:
-        """ The measured flow rate inspiratory side.
-        """
+        """ The measured flow rate inspiratory side."""
         self._flow_sensor_in.update()
         return self._flow_sensor_in.get()
 
     @property
     def flow_ex(self) -> float:
-        """ The measured flow rate expiratory side.
-        """
+        """ The measured flow rate expiratory side."""
         self._flow_sensor_ex.update()
         return self._flow_sensor_ex.get()
 
     @property
-    def setpoint_ex(self) -> float:
-        """ The currently requested flow on the expiratory side. This is solenoid open/close.
-
-        Returns:
-            float: 0<=setpoint<=1; The current set-point for flow control as a proportion of the maximum.
-        """
-        return self._setpoint_ex
-
-
-    @setpoint_ex.setter
-    def setpoint_ex(self, value: float):
-        """
-
-        Args:
-            value: Requested flow, as a proportion of maximum. Must be in [0, 1].
-        """
-        if (isinstance(self._expiratory_valve, valves.OnOffValve) or
-                isinstance(self._expiratory_valve, valves.SimOnOffValve)):
-            assert value in (0, 1)  # TODO catch & log error (ought to rename @pigpio_command and use that)
-        self._expiratory_valve.setpoint = value
-
-    @property
     def setpoint_in(self) -> float:
-        """ The currently requested flow for the prop valve on the inspiratory side
-
-        Returns:
-            float: 0<=setpoint<=1; The current set-point for flow control as a proportion of the maximum.
-        """
+        """ The currently requested flow for the inspiratory proportional control valve as a proportion of maximum."""
         return self._setpoint_in
 
     @setpoint_in.setter
     def setpoint_in(self, value: float):
-        """
+        """ Sets the openness of the inspiratory valve to the requested value.
 
         Args:
             value: Requested flow, as a proportion of maximum. Must be in [0, 1].
         """
         if not 0 <= value <= 100:
             raise ValueError('setpoint must be a number between 0 and 100')
-        if value > 0 and not self._inlet_valve.isopen:
+        if value > 0 and not self._inlet_valve.is_open:
             self._inlet_valve.open()
-        elif value == 0 and self._inlet_valve.isopen:
+        elif value == 0 and self._inlet_valve.is_open:
             self._inlet_valve.close()
         self._control_valve.setpoint = value
+
+    @property
+    def setpoint_ex(self) -> float:
+        """ The currently requested flow on the expiratory side as a proportion of the maximum."""
+        return self._setpoint_ex
+
+    @setpoint_ex.setter
+    def setpoint_ex(self, value):
+        """ Sets the openness of the expiratory valve to the requested value.
+
+        Args:
+            value (float): Requested flow, as a proportion of maximum. Must be either 0 or 1 for OnOffValve, and between
+                0 and 1 for a (proportional) control valve.
+        """
+        if (
+                isinstance(self._expiratory_valve, valves.OnOffValve) or
+                isinstance(self._expiratory_valve, valves.SimOnOffValve)
+        ):
+            if value not in (0, 1):
+                raise ValueError('setpoint must be either 0 or 1 for an On/Off expiratory valve')
+            elif value == 1:
+                self._expiratory_valve.open()
+            else:
+                self._expiratory_valve.close()
+        elif (
+                isinstance(self._expiratory_valve, valves.PWMControlValve) or
+                isinstance(self._expiratory_valve, valves.SimControlValve)
+        ):
+            if 0 <= value <= 1:
+                raise ValueError('setpoint must be between 0 and 1 for an expiratory control valve')
+            else:
+                self._expiratory_valve.setpoint = value

@@ -1,6 +1,8 @@
 from abc import ABC
 from vent.io.devices.pins import Pin, PWMOutput
 
+import numpy as np
+
 
 class SolenoidBase(ABC):
     """ An abstract baseclass that defines methods using valve terminology.

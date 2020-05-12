@@ -205,7 +205,7 @@ class AnalogSensor(Sensor):
         """
         return (
                 self.conversion_factor * (raw - getattr(self, 'offset_voltage'))
-                / (getattr(self, 'output_span') + getattr(self, 'offset_voltage'))
+                / (getattr(self, 'output_span'))
         )
 
     def _raw_read(self):

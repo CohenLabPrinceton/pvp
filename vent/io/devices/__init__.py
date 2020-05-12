@@ -6,6 +6,7 @@ from .base import (
     I2CDevice,
     SPIDevice,
     ADS1115,
+    ADS1015,
     be16_to_native,
     native16_to_be
 )

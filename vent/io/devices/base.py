@@ -449,6 +449,33 @@ class ADS1015(ADS1115):
     data rates. The difference in data rates is handled by overloading _CONFIG_VALUES. The difference in resolution is
     irrelevant for implementation.  #TODO Check: or by overloading _read_conversion() to bitshift  by 4?
     """
+
+    _DEFAULT_ADDRESS = 0x48
+    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 860}
+
+    """ Address Pointer Register (write-only) """
+    _POINTER_FIELDS = ('P',)
+    _POINTER_VALUES = (
+        (
+            'CONVERSION',
+            'CONFIG',
+            'LO_THRESH',
+            'HIGH_THRESH'
+        ),
+    )
+
+    """ Config Register (R/W) """
+    _CONFIG_FIELDS = (
+        'OS',
+        'MUX',
+        'PGA',
+        'MODE',
+        'DR',
+        'COMP_MODE',
+        'COMP_POL',
+        'COMP_LAT',
+        'COMP_QUE'
+    )
     _CONFIG_VALUES = (
         ('NO_EFFECT', 'START_CONVERSION'),
         ((0, 1), (0, 3), (1, 3), (2, 3), 0, 1, 2, 3),
@@ -460,6 +487,11 @@ class ADS1015(ADS1115):
         ('NONLATCHING', 'LATCHING'),
         (1, 2, 3, 'DISABLE')
     )
+    USER_CONFIGURABLE_FIELDS = ('MUX', 'PGA', 'MODE', 'DR')
+
+
+    def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None):
+        super().__init__(address=_DEFAULT_ADDRESS, i2c_bus=1, pig=None)
 
 # TODO: Verify the following is not necessary
 #    def _read_conversion(self, **kwargs):

@@ -5,6 +5,7 @@
 from importlib import import_module
 from ast import literal_eval
 from .devices.sensors import Sensor
+from .devices.base import PigpioConnection
 
 import vent.io.devices.valves as valves
 import configparser

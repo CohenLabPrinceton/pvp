@@ -44,8 +44,8 @@ class SolenoidBase(ABC):
     def close(self):
         """ De-energizes valve if Normally Closed. Energizes if Normally Open."""
 
-    @abstractmethod
     @property
+    @abstractmethod
     def is_open(self) -> bool:
         """ Returns True if valve is open, False if it is closed"""
         pass

@@ -725,26 +725,32 @@ class Balloon_Simulator:
         self.Qout = difference_pressure * conductance    # Target for flow out
 
     def update(self, dt):  # Performs an update of duration dt [seconds]
-        self.current_flow = self.Qin - self.Qout
-        self.current_volume += self.current_flow * dt
 
-        if self.leak:
-            RC = 5  # pulled 5 sec out of my hat
-            s = dt / (RC + dt)
-            self.current_volume = self.current_volume + s * (self.min_volume - self.current_volume)
+        if dt<1:                                        # This is the simulation, so not quite so important, 
+            self.current_flow = self.Qin - self.Qout     # But no update should take longer than that
+            self.current_volume += self.current_flow * dt
 
-        # This is from the baloon equation, uses helper variable (the baloon radius)
-        self.r_real = (3 * self.current_volume / (4 * np.pi)) ** (1 / 3)
-        r0 = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)
+            if self.leak:
+                RC = 5  # pulled 5 sec out of my hat
+                s = dt / (RC + dt)
+                self.current_volume = self.current_volume + s * (self.min_volume - self.current_volume)
 
-        self.current_pressure = self.P0 + (self.PC / (r0 ** 2 * self.r_real)) * (1 - (r0 / self.r_real) ** 6)
+            # This is from the baloon equation, uses helper variable (the baloon radius)
+            self.r_real = (3 * self.current_volume / (4 * np.pi)) ** (1 / 3)
+            r0 = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)
 
-        # Temperature, humidity and o2 fluctuations modelled as OUprocess
-        self.temperature = self.OUupdate(self.temperature, dt=dt, mu=37, sigma=0.3, tau=1)
-        self.fio2 = self.OUupdate(self.fio2, dt=dt, mu=60, sigma=5, tau=1)
-        self.humidity = self.OUupdate(self.humidity, dt=dt, mu=90, sigma=5, tau=1)
-        if self.humidity > 100:
-            self.humidity = 100
+            self.current_pressure = self.P0 + (self.PC / (r0 ** 2 * self.r_real)) * (1 - (r0 / self.r_real) ** 6)
+
+            # Temperature, humidity and o2 fluctuations modelled as OUprocess
+            self.temperature = self.OUupdate(self.temperature, dt=dt, mu=37, sigma=0.3, tau=1)
+            self.fio2 = self.OUupdate(self.fio2, dt=dt, mu=60, sigma=5, tau=1)
+            self.humidity = self.OUupdate(self.humidity, dt=dt, mu=90, sigma=5, tau=1)
+            if self.humidity > 100:
+                self.humidity = 100
+        else:
+            self._reset()
+            print(self.current_pressure)
+
 
     def OUupdate(self, variable, dt, mu, sigma, tau):
         '''

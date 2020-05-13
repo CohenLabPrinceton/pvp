@@ -181,8 +181,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def update_gui(self):
         try:
             # get alarms
-            active_alarms = self.coordinator.get_active_alarms()
-            self.alarms_updated.emit(active_alarms)
+            #active_alarms = self.coordinator.get_active_alarms()
+            #self.alarms_updated.emit(active_alarms)
 
 
             vals = self.coordinator.get_sensors()

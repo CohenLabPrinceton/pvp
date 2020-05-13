@@ -47,6 +47,9 @@ def test_control_settings(control_setting_name):
     assert c_get.max_value == c_set.max_value
     assert c_get.timestamp == c_set.timestamp
 
+    wv = Controller.get_target_waveform()
+    assert len(wv) == 5
+
 def test_restart_controller():
     '''
     This tests whether the controller can be started and stopped 10 times without problems
@@ -89,11 +92,11 @@ def test_control_dynamical(control_type):
     if control_type == "PID":
         Controller.do_pid_control()
         Controller.do_pid_control()
-        Inspiration_CI = 0.4
+        Inspiration_CI = 0.2
     else:
         Controller.do_state_control()
         Controller.do_state_control()
-        Inspiration_CI = 0.8    # State control is not that precise, slightly wider confidence regions.
+        Inspiration_CI = 0.4    # State control is not that precise, slightly wider confidence regions.
 
     vals_start = Controller.get_sensors()
 
@@ -125,17 +128,6 @@ def test_control_dynamical(control_type):
     Controller.stop()
 
     vals_stop = Controller.get_sensors()
-    print(v_peep)
-    print(v_pip)
-    print(v_bpm)
-    print(v_iphase)
-    print(Inspiration_CI)
-
-    assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
-    assert np.abs(vals_stop.PEEP - v_peep)                     < 7.5  # PIP error correct within 5 cmH2O
-    assert np.abs(vals_stop.PIP - v_pip)                       < 7.5  # PIP error correct within 5 cmH2O
-    assert np.abs(vals_stop.BREATHS_PER_MINUTE - v_bpm)        < 3    # Breaths per minute correct within 3 bpm
-    assert np.abs(vals_stop.INSPIRATION_TIME_SEC - v_iphase)   < Inspiration_CI # Inspiration time
 
     # Test whether get_sensors() return the right values
     COPY_peep     = Controller.COPY_sensor_values.PEEP
@@ -161,6 +153,19 @@ def test_control_dynamical(control_type):
     assert COPY_Iinsp    == vals_stop.INSPIRATION_TIME_SEC
     assert COPY_tt       == vals_stop.timestamp
     assert COPY_lc       == vals_stop.loop_counter
+
+    print(v_peep)
+    print(v_pip)
+    print(v_bpm)
+    print(v_iphase)
+    print(Inspiration_CI)
+    print(control_type)
+
+    assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
+    assert np.abs(vals_stop.PEEP - v_peep)                     < 2   # PEEP error correct within 2 cmH2O  - as per document
+    assert np.abs(vals_stop.PIP - v_pip)                       < 2   # PIP  error correct within 2 cmH2O
+    assert np.abs(vals_stop.BREATHS_PER_MINUTE - v_bpm)        < 2   # Breaths per minute correct within 2 bpm
+    assert np.abs(vals_stop.INSPIRATION_TIME_SEC - v_iphase)   < 0.2*vals_stop.INSPIRATION_TIME_SEC # Inspiration time, correct within 20%
 
     hb1 = Controller.heartbeat()
     assert hb1 > 0                                 # Test the heartbeat

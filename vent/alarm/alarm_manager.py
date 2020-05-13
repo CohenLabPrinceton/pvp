@@ -22,32 +22,34 @@ class Alarm_Manager(object):
         pending_clears (list): [:class:`.AlarmType`] list of alarms that have been requested to be cleared
         callbacks (list): list of callables that accept `Alarm` s when they are raised/altered.
     """
+    _instance = None
+
+    # use class attributes because __init__ is called every time instantiated
+
+    active_alarms: typing.Dict[AlarmType, Alarm] = {}
+    logged_alarms: typing.List[Alarm] = []
+
+    # get our alarm rules
+    dependencies = {}
+    pending_clears = {}
+    callbacks = []
+    rules = {}
 
     def __new__(cls):
         """
         If an Alarm_Manager already exists, when initing just return that one
         """
-        if isinstance(globals()['ALARM_MANAGER_INSTANCE'], Alarm_Manager):
-            return globals()['ALARM_MANAGER_INSTANCE']
-        else:
-            # create alarm manager
-            manager_instance = super(Alarm_Manager, cls).__new__(cls)
-            globals()['ALARM_MANAGER_INSTANCE'] = manager_instance
-            return manager_instance
 
+        if not cls._instance:
+            cls._instance = super(Alarm_Manager, cls).__new__(cls)
+
+        return cls._instance
 
 
     def __init__(self):
-        self.active_alarms: typing.Dict[AlarmType, Alarm] = {}
-        self.logged_alarms: typing.List[Alarm] = []
 
-        # get our alarm rules
-        self.dependencies = {}
-        self.pending_clears = {}
-        self.callbacks = []
-        self.rules = {}
-        self.load_rules()
-
+        if len(self.rules) == 0:
+            self.load_rules()
 
     def load_rules(self):
         from vent.alarm import ALARM_RULES
@@ -172,8 +174,8 @@ class Alarm_Manager(object):
                     # if this alarm isn't the one that's active, don't deactivate
                     return
             got_alarm = self.active_alarms.pop(alarm_type)
-            alarm.deactivate()
-            self.logged_alarms.append(alarm)
+            got_alarm.deactivate()
+            self.logged_alarms.append(got_alarm)
         else:
             return
 

@@ -275,8 +275,8 @@ class AlarmSeverityCondition(Condition):
         super(AlarmSeverityCondition, self).__init__(*args, **kwargs)
 
 
-        self.alarm_type = AlarmType
-        self.severity = AlarmSeverity
+        self.alarm_type = alarm_type
+        self.severity = severity
 
         self._mode = None
         self.operator = None

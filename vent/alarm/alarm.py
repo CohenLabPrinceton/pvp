@@ -1,16 +1,12 @@
 import time
 import sys
+import importlib
 
 from itertools import count
 from vent.alarm import AlarmType, AlarmSeverity
 #from vent.alarm.alarm_manager import Alarm_Manager
 
-def get_alarm_manager():
-    try:
-        return Alarm_Manager()
-    except:
-        from vent.alarm.alarm_manager import Alarm_Manager
-        return Alarm_Manager()
+
 
 class Alarm:
     """
@@ -46,7 +42,6 @@ class Alarm:
             managed (bool): if created by the alarm_manager, don't register
         """
 
-        self.manager = get_alarm_manager()
 
         self.id = next(Alarm.id_counter)
         self.active = True
@@ -58,7 +53,7 @@ class Alarm:
         self._alarm_type = alarm_type
 
 
-        if self.start_time is None:
+        if start_time is None:
             self.start_time = time.time()
         else:
             assert isinstance(start_time, float)
@@ -72,6 +67,19 @@ class Alarm:
 
         if not managed:
             self.manager.register_alarm(self)
+
+    @property
+    def manager(self):
+        """
+        have ta do it this janky way to avoid circular imports
+        """
+        try:
+            return Alarm_Manager()
+        except:
+            # import into the module namespace
+            manager_module = importlib.import_module('vent.alarm.alarm_manager')
+            globals()['Alarm_Manager'] = getattr(manager_module, 'Alarm_Manager')
+            return Alarm_Manager()
 
     @property
     def severity(self):

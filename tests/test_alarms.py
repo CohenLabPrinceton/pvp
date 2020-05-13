@@ -1,10 +1,12 @@
 import pytest
 
 import pdb
+import time
 
 import numpy as np
 
-from vent.alarm import condition
+from vent.alarm import condition, ALARM_RULES, AlarmType, AlarmSeverity, Alarm, Alarm_Manager
+from vent.alarm.rule import Alarm_Rule
 
 from vent.common.values import ValueName, SENSOR
 from vent.common.message import SensorValues
@@ -32,9 +34,11 @@ def fake_sensors():
         return sensors
     return _fake_sensor
 
+#############################
+# conditions
 
 @pytest.mark.parametrize("test_value", [k for k in SENSOR.keys()])
-def test_valuecondition(fake_sensors, test_value):
+def test_value_condition(fake_sensors, test_value):
 
 
     for i in range(n_samples):
@@ -79,7 +83,7 @@ def test_valuecondition(fake_sensors, test_value):
             assert other_cond.check(other_sensor) == False
 
 @pytest.mark.parametrize("test_value", [k for k in SENSOR.keys()])
-def test_cyclevaluecondition(fake_sensors, test_value):
+def test_cyclevalue_condition(fake_sensors, test_value):
 
     for i in range(n_samples):
         n_cycles = np.random.randint(1, 100)
@@ -87,7 +91,7 @@ def test_cyclevaluecondition(fake_sensors, test_value):
         cond = condition.CycleValueCondition(
             value_name=test_value,
             limit=1,
-            minmax='max',
+            mode='max',
             n_cycles=n_cycles
         )
 
@@ -120,7 +124,7 @@ def test_cyclevaluecondition(fake_sensors, test_value):
     cond = condition.CycleValueCondition(
             value_name=test_value,
             limit=1,
-            minmax='max',
+            mode='max',
             n_cycles=10
         )
     sensors = fake_sensors()
@@ -134,7 +138,7 @@ def test_cyclevaluecondition(fake_sensors, test_value):
     cond = condition.CycleValueCondition(
         value_name=test_value,
         limit=1,
-        minmax='max',
+        mode='max',
         n_cycles=10
     )
     sensors = fake_sensors()
@@ -147,4 +151,125 @@ def test_cyclevaluecondition(fake_sensors, test_value):
     sensors.breath_count = 11
     sensors[test_value] = 2
     assert cond.check(sensors) == False
+
+def test_alarmseverity_condition():
+    # FIXME
+    pass
+
+def test_cyclealarmseverity_condition():
+    # FIXME
+    pass
+
+def test_condition_addition():
+    # FIXME
+    pass
+
+def test_condition_dependency():
+    # FIXME
+    pass
+
+
+###############################
+
+# rules
+#@pytest.mark.parametrize("alarm_rule", [k for k in ALARM_RULES.values()])
+def test_alarm_rule(fake_sensors):
+    """
+    test the alarm rule class itself
+
+    assume the individual conditions have been tested
+    """
+
+    rule = Alarm_Rule(
+        name=AlarmType.HIGH_PRESSURE,
+        latch=False,
+        persistent=False,
+        conditions=(
+            (
+                AlarmSeverity.LOW,
+                condition.ValueCondition(
+                    value_name=ValueName.PRESSURE,
+                    limit=1,
+                    mode='max',
+                )
+            ),
+            (
+                AlarmSeverity.MEDIUM,
+                condition.ValueCondition(
+                    value_name=ValueName.PRESSURE,
+                    limit=2,
+                    mode='max'
+                ) + \
+                condition.CycleAlarmSeverityCondition(
+                    alarm_type = AlarmType.HIGH_PRESSURE,
+                    severity   = AlarmSeverity.LOW,
+                    n_cycles = 2
+                )
+            ),
+            (
+                AlarmSeverity.HIGH,
+                condition.ValueCondition(
+                    value_name=ValueName.PRESSURE,
+                    limit=3,
+                    mode='max'
+                ) + \
+                condition.CycleAlarmSeverityCondition(
+                    alarm_type = AlarmType.HIGH_PRESSURE,
+                    severity   = AlarmSeverity.MEDIUM,
+                    n_cycles = 2
+                )
+            ),
+        )
+    )
+
+    sensors = fake_sensors()
+
+    # test that initial check is off
+    assert rule.check(sensors) == AlarmSeverity.OFF
+
+    # test low severity alarm
+    sensors.PRESSURE = 1.5
+    sensors.breath_count += 1
+
+    assert rule.check(sensors) == AlarmSeverity.LOW
+
+    # register alarm manually
+    # (alarm should call register_alarm)
+    low_alarm = Alarm(
+        AlarmType.HIGH_PRESSURE,
+        AlarmSeverity.LOW,
+        latch=False
+    )
+
+    # test that we don't jump to medium
+    sensors.PRESSURE = 2.5
+    sensors.breath_count += 1
+
+    assert rule.check(sensors) == AlarmSeverity.LOW
+
+    # now check that we go to medium
+    sensors.breath_count += 2
+
+    assert rule.check(sensors) == AlarmSeverity.MEDIUM
+
+    med_alarm = Alarm(
+        AlarmType.HIGH_PRESSURE,
+        AlarmSeverity.MEDIUM,
+        latch=False
+    )
+
+    # keep at medium
+    sensors.PRESSURE = 3.5
+    sensors.breath_count += 1
+
+    assert rule.check(sensors) == AlarmSeverity.MEDIUM
+
+    sensors.breath_count += 2
+
+    assert rule.check(sensors) == AlarmSeverity.HIGH
+
+
+
+
+
 

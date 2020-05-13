@@ -290,7 +290,10 @@ class ControlModuleBase:
     def get_sensors(self) -> SensorValues:
         # Make sure to return a copy of the instance
         self._lock.acquire()
-        cp = copy.deepcopy( self.COPY_sensor_values )
+        #cp = copy.deepcopy( self.COPY_sensor_values )
+        # don't need to deepcopy because a new SensorValues object is created
+        # each time and it copies each individual value as it's created
+        cp = copy.copy(self.COPY_sensor_values)
         self._lock.release()
         return cp
 

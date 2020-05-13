@@ -260,6 +260,7 @@ class ControlModuleBase:
             data = self.__cycle_waveform_archive[-1]
             phase = data[:, 0]
             pressure = data[:, 1]
+            mean_pressure = np.mean(pressure)
             volume = data[:, 2]
 
             self._DATA_VTE = np.max(volume) - np.min(volume)
@@ -267,13 +268,18 @@ class ControlModuleBase:
             # get the pressure niveau heuristically (much faster than fitting)
             # 20/80 percentile of pressure values below/above mean
             # Assumption: waveform is mostly between both plateaus
-            self._DATA_PEEP = np.percentile(pressure[ pressure < np.mean(pressure)], 20 )
-            self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > np.mean(pressure)], 80 )
-            self._DATA_PIP  = np.percentile(pressure[ pressure > np.mean(pressure)], 95 )  #PIP is defined as the maximum, here 95% to account for outliers
-
-            # measure time of reaching PIP, and leaving PIP
-            self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
-            self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
+            if np.isfinite(mean_pressure):
+                self._DATA_PEEP = np.percentile(pressure[ pressure < mean_pressure], 20 )
+                self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > mean_pressure], 80 )
+                self._DATA_PIP  = np.percentile(pressure[ pressure > mean_pressure], 95 )             #PIP is defined as the maximum, here 95% to account for outliers
+                self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
+                self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
+            else:
+                self._DATA_PEEP = np.nan
+                self._DATA_PIP_PLATEAU  = np.nan
+                self._DATA_PIP  = np.nan
+                self._DATA_PIP_TIME = np.nan
+                self._DATA_I_PHASE = np.nan
 
             # and measure the breaths per minute
             self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform
@@ -598,11 +604,6 @@ class ControlModuleBase:
         self._pid_control_flag = False
 
 
-    @property
-    def running(self):
-        return self._running.is_set()
-
-
 class ControlModuleDevice(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self):
@@ -636,6 +637,11 @@ class ControlModuleDevice(ControlModuleBase):
             self._loop_counter += 1
             now = time.time()
             dt = now - self._last_update                            # Time sincle last cycle of main-loop
+
+            if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
+                print("Restarted cycle.")
+                self._PID_reset()
+                dt = self._LOOP_UPDATE_TIME
 
             self._DATA_PRESSURE = self.HAL.pressure                 # Get a pressure measurement from HAL
 
@@ -759,6 +765,16 @@ class Balloon_Simulator:
         new_variable = variable + dt * (-(variable - mu) / tau) + sigma_bis * sqrtdt * np.random.randn()
         return new_variable
 
+    def _reset(self):
+        ''' resets the ballon to standard parameters. '''
+        self.set_Qin          = 0
+        self.Qin              = 0
+        self.set_Qout         = 0
+        self.Qout             = 0
+        self.current_pressure = 0
+        self.r_real = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)
+        self.current_volume = self.min_volume
+
 class ControlModuleSimulator(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self):
@@ -821,9 +837,10 @@ class ControlModuleSimulator(ControlModuleBase):
             self._loop_counter += 1
             now = time.time()
             dt = now - self._last_update                            # Time sincle last cycle of main-loop
-            if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
+            if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                         # TODO: RAISE HARDWARE ALARM, no update should take that long
                 print("Restarted cycle.")
                 self._PID_reset()
+                self.Balloon._reset()
                 dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation

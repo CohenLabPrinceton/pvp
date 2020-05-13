@@ -57,9 +57,9 @@ def test_valuecondition(fake_sensors, test_value):
         assert max_cond.check(max_no_alarms) == False
         assert max_cond.check(max_yes_alarms) == True
 
-        # test that the @minmax.setter works for already created objects
-        min_cond.minmax = 'max'
-        max_cond.minmax = 'min'
+        # test that the @mode.setter works for already created objects
+        min_cond.mode = 'max'
+        max_cond.mode = 'min'
 
         assert min_cond.check(max_no_alarms) == False
         assert min_cond.check(max_yes_alarms) == True

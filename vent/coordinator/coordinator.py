@@ -29,14 +29,14 @@ class CoordinatorBase:
     def get_sensors(self) -> SensorValues:
         pass
 
-    def get_active_alarms(self) -> Dict[str, Alarm]:
-        pass
-
-    def get_logged_alarms(self) -> List[Alarm]:
-        pass
-
-    def clear_logged_alarms(self):
-        pass
+    # def get_active_alarms(self) -> Dict[str, Alarm]:
+    #     pass
+    #
+    # def get_logged_alarms(self) -> List[Alarm]:
+    #     pass
+    #
+    # def clear_logged_alarms(self):
+    #     pass
 
     def set_control(self, control_setting: ControlSetting):
         pass
@@ -73,15 +73,15 @@ class CoordinatorLocal(CoordinatorBase):
         # return res
         return self.control_module.get_sensors()
 
-    def get_active_alarms(self) -> Dict[str, Alarm]:
-        return self.control_module.get_active_alarms()
+    # def get_active_alarms(self) -> Dict[str, Alarm]:
+    #     return self.control_module.get_active_alarms()
 
-    def get_logged_alarms(self) -> List[Alarm]:
-        return self.control_module.get_logged_alarms()
+    # def get_logged_alarms(self) -> List[Alarm]:
+    #     return self.control_module.get_logged_alarms()
 
-    def clear_logged_alarms(self):
-        # TODO: implement this
-        raise NotImplementedError
+    # def clear_logged_alarms(self):
+    #     # TODO: implement this
+    #     raise NotImplementedError
 
     def set_control(self, control_setting: ControlSetting):
         self.control_module.set_control(control_setting)
@@ -122,17 +122,17 @@ class CoordinatorRemote(CoordinatorBase):
         sensor_values = pickle.loads(self.rpc_client.get_sensors().data)
         return sensor_values
 
-    def get_active_alarms(self) -> Dict[str, Alarm]:
-        pickled_res = self.rpc_client.get_active_alarms().data
-        return pickle.loads(pickled_res)
-
-    def get_logged_alarms(self) -> List[Alarm]:
-        pickled_res = self.rpc_client.get_logged_alarms().data
-        return pickle.loads(pickled_res)
-
-    def clear_logged_alarms(self):
-        # TODO: implement this
-        raise NotImplementedError
+    # def get_active_alarms(self) -> Dict[str, Alarm]:
+    #     pickled_res = self.rpc_client.get_active_alarms().data
+    #     return pickle.loads(pickled_res)
+    #
+    # def get_logged_alarms(self) -> List[Alarm]:
+    #     pickled_res = self.rpc_client.get_logged_alarms().data
+    #     return pickle.loads(pickled_res)
+    #
+    # def clear_logged_alarms(self):
+    #     # TODO: implement this
+    #     raise NotImplementedError
 
     def set_control(self, control_setting: ControlSetting):
         pickled_args = pickle.dumps(control_setting)

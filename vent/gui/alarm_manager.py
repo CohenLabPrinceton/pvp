@@ -46,21 +46,22 @@ class AlarmManager(QtCore.QObject):
             alarm (tuple): (monitor_name, monitor_value, timestamp)
 
         """
-        if alarm[0] in self.active_alarms.keys():
-            return
-        else:
-            # TODO: count these and raise an alarm that says the controller is out of sync
-            new_alarm = Alarm(
-                alarm_name=alarm[0],
-                is_active = True,
-                severity = AlarmSeverity.HIGH,
-                alarm_start_time= alarm[2],
-                alarm_end_time = None,
-                value = alarm[1],
-            )
-            new_alarm = self.parse_message(new_alarm)
-            self.new_alarm.emit(new_alarm)
-            self.active_alarms[alarm[0]] = new_alarm
+        # if alarm[0] in self.active_alarms.keys():
+        #     return
+        # else:
+        #     # TODO: count these and raise an alarm that says the controller is out of sync
+        #     new_alarm = Alarm(
+        #         alarm_name=alarm[0],
+        #         active = True,
+        #         severity = AlarmSeverity.HIGH,
+        #         start_time= alarm[2],
+        #         alarm_end_time = None,
+        #         value = alarm[1],
+        #     )
+        #     new_alarm = self.parse_message(new_alarm)
+        #     self.new_alarm.emit(new_alarm)
+        #     self.active_alarms[alarm[0]] = new_alarm
+        pass
 
 
 

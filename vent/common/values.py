@@ -346,3 +346,4 @@ whether (``True``) or not (``False``) a value is allowed.
 """
 
 MAX_STACK_DEPTH = 20
+

@@ -193,40 +193,40 @@ def test_remote_sensors():
         assert isinstance(v, int) or isinstance(v, float) or v is None
 
 
-def test_local_alarms():
-    coordinator = get_coordinator(single_process=True, sim_mode=True)
-    coordinator.start()
-    #while not coordinator.is_running():
-    #    pass
+# def test_local_alarms():
+#     coordinator = get_coordinator(single_process=True, sim_mode=True)
+#     coordinator.start()
+#     #while not coordinator.is_running():
+#     #    pass
+#
+#     alarms = coordinator.get_active_alarms()
+#     assert isinstance(alarms, dict)
+#     for k, v in alarms.items():
+#         assert isinstance(v, Alarm)
+#
+#     alarms = coordinator.get_logged_alarms()
+#     assert isinstance(alarms, list)
+#     for a in alarms:
+#         assert isinstance(a, Alarm)
 
-    alarms = coordinator.get_active_alarms()
-    assert isinstance(alarms, dict)
-    for k, v in alarms.items():
-        assert isinstance(v, Alarm)
-
-    alarms = coordinator.get_logged_alarms()
-    assert isinstance(alarms, list)
-    for a in alarms:
-        assert isinstance(a, Alarm)
-
-@pytest.mark.timeout(10)
-def test_remote_alarms():
-    # wait before
-    #while not is_port_in_use(rpc.default_port):
-    #    time.sleep(1)
-    coordinator = get_coordinator(single_process=False, sim_mode=True)
-    # TODO need to wait for rpc client start?
-    #time.sleep(1)
-    coordinator.start()
-    #while not coordinator.is_running():
-    #    pass
-
-    alarms = coordinator.get_active_alarms()
-    assert isinstance(alarms, dict)
-    for k, v in alarms.items():
-        assert isinstance(v, Alarm)
-
-    alarms = coordinator.get_logged_alarms()
-    assert isinstance(alarms, list)
-    for a in alarms:
-        assert isinstance(a, Alarm)
+# @pytest.mark.timeout(10)
+# def test_remote_alarms():
+#     # wait before
+#     #while not is_port_in_use(rpc.default_port):
+#     #    time.sleep(1)
+#     coordinator = get_coordinator(single_process=False, sim_mode=True)
+#     # TODO need to wait for rpc client start?
+#     #time.sleep(1)
+#     coordinator.start()
+#     #while not coordinator.is_running():
+#     #    pass
+#
+#     alarms = coordinator.get_active_alarms()
+#     assert isinstance(alarms, dict)
+#     for k, v in alarms.items():
+#         assert isinstance(v, Alarm)
+#
+#     alarms = coordinator.get_logged_alarms()
+#     assert isinstance(alarms, list)
+#     for a in alarms:
+#         assert isinstance(a, Alarm)

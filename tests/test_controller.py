@@ -180,108 +180,108 @@ def test_control_dynamical(control_type):
 #   More involved test, triggers a series of alarms and makes sure they
 #   are raised correctly.
 #
-def test_alarm():
-    '''
-        This is a function to test the alarm functions. It triggers a series of alarms, that remain active for a while, and then are deactivated.
-    '''
-    Controller = get_control_module(sim_mode=True)
-    Controller.start()
-    time.sleep(1)
-
-    for t in np.arange(0, 30, 0.05):
-
-        ### Make a cascade of changes that will not trigger alarms
-        if t == 0:
-            command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=30, timestamp=time.time())
-            Controller.set_control(command)
-            command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=2, timestamp=time.time())
-            Controller.set_control(command)
-        if t == 3:
-            command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
-            Controller.set_control(command)
-        if t == 6:
-            command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
-            Controller.set_control(command)
-
-        ### Make a cascade of changes to trigger four alarms
-        if t == 8:    # trigger a PIP alarm
-            command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=5, timestamp=time.time())
-            Controller.set_control(command)
-        if t == 23:    #resolve the PIP alarm
-            command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
-            Controller.set_control(command)
-        if (t > 8+(60/17)) and (t<23):  #Test whether it is active
-            activealarms = Controller.get_active_alarms()
-            assert len(activealarms.keys()) >= 1
-            assert ValueName.PIP in activealarms.keys()
-
-        if t == 12:    # trigger a PEEP alarm
-            command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=5, timestamp=time.time())
-            Controller.set_control(command)
-        if t == 23:    # resolve it
-            command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
-            Controller.set_control(command)
-        if (t > 12+(60/17)) and (t<23):
-            activealarms = Controller.get_active_alarms()
-            assert len(activealarms.keys()) >= 1
-            assert ValueName.PEEP in activealarms.keys()
-
-        if t == 15:    # trigger a BPM alarm
-            command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=5, timestamp=time.time())
-            Controller.set_control(command)
-        if t == 20:    # resolve it
-            command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=20, timestamp=time.time())
-            Controller.set_control(command)
-        if (t > 15+(60/17)) and (t<20):
-            activealarms = Controller.get_active_alarms()
-            assert len(activealarms.keys()) >= 1
-            assert ValueName.BREATHS_PER_MINUTE in activealarms.keys()
-
-        if t == 17:    # Trigger a INSPIRATION_TIME_SEC alarm
-            command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=1, timestamp=time.time())
-            Controller.set_control(command)
-        if t == 22:    # resolve it
-            command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=3, timestamp=time.time())
-            Controller.set_control(command)
-        if (t > 17+(60/17)) and (t<22):
-            activealarms = Controller.get_active_alarms()
-            assert len(activealarms.keys()) >= 1
-            assert ValueName.INSPIRATION_TIME_SEC in activealarms.keys()
-
-
-        time.sleep(0.05)
-
-    Controller.stop()
-    
-    
-    #Check that the duration of the four alarms was correct
-    sv = Controller.get_sensors()
-    logged_alarms = Controller.get_logged_alarms()
-
-    for a in logged_alarms:
-        print(a.alarm_name)
-        assert not a.is_active
-
-        alarm_duration = a.alarm_end_time - a.alarm_start_time
-        if a.alarm_name == 'PEEP':
-            assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 11/60)) * 60/sv.breaths_per_minute
-        if a.alarm_name == 'BREATHS_PER_MINUTE':
-            assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 5/60)) * 60/sv.breaths_per_minute
-        if a.alarm_name == 'I_PHASE':
-            assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 5/60)) * 60/sv.breaths_per_minute
-        if a.alarm_name == "PIP":
-            assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 15/60)) * 60/sv.breaths_per_minute
-
-    # And that they have been resolved/logged correctly
-    assert len(Controller.get_active_alarms()) == 0
-    assert len(Controller.get_logged_alarms()) >= 4
-    assert len(Controller.get_alarms()) >= 4
-
-    waveformlist_1 = Controller.get_past_waveforms() #This also should work fine
-    waveformlist_2 = Controller.get_past_waveforms()
-
-    assert len([s for s in waveformlist_1 if s is not None]) > len([s for s in waveformlist_2 if s is not None])   #Test: calling the past_waveforms clears ring buffer.
-
+# def test_alarm():
+#     '''
+#         This is a function to test the alarm functions. It triggers a series of alarms, that remain active for a while, and then are deactivated.
+#     '''
+#     Controller = get_control_module(sim_mode=True)
+#     Controller.start()
+#     time.sleep(1)
+#
+#     for t in np.arange(0, 30, 0.05):
+#
+#         ### Make a cascade of changes that will not trigger alarms
+#         if t == 0:
+#             command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=30, timestamp=time.time())
+#             Controller.set_control(command)
+#             command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=2, timestamp=time.time())
+#             Controller.set_control(command)
+#         if t == 3:
+#             command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
+#             Controller.set_control(command)
+#         if t == 6:
+#             command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
+#             Controller.set_control(command)
+#
+#         ### Make a cascade of changes to trigger four alarms
+#         if t == 8:    # trigger a PIP alarm
+#             command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=5, timestamp=time.time())
+#             Controller.set_control(command)
+#         if t == 23:    #resolve the PIP alarm
+#             command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())
+#             Controller.set_control(command)
+#         if (t > 8+(60/17)) and (t<23):  #Test whether it is active
+#             activealarms = Controller.get_active_alarms()
+#             assert len(activealarms.keys()) >= 1
+#             assert ValueName.PIP in activealarms.keys()
+#
+#         if t == 12:    # trigger a PEEP alarm
+#             command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=5, timestamp=time.time())
+#             Controller.set_control(command)
+#         if t == 23:    # resolve it
+#             command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())
+#             Controller.set_control(command)
+#         if (t > 12+(60/17)) and (t<23):
+#             activealarms = Controller.get_active_alarms()
+#             assert len(activealarms.keys()) >= 1
+#             assert ValueName.PEEP in activealarms.keys()
+#
+#         if t == 15:    # trigger a BPM alarm
+#             command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=5, timestamp=time.time())
+#             Controller.set_control(command)
+#         if t == 20:    # resolve it
+#             command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=20, timestamp=time.time())
+#             Controller.set_control(command)
+#         if (t > 15+(60/17)) and (t<20):
+#             activealarms = Controller.get_active_alarms()
+#             assert len(activealarms.keys()) >= 1
+#             assert ValueName.BREATHS_PER_MINUTE in activealarms.keys()
+#
+#         if t == 17:    # Trigger a INSPIRATION_TIME_SEC alarm
+#             command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=1, timestamp=time.time())
+#             Controller.set_control(command)
+#         if t == 22:    # resolve it
+#             command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=3, timestamp=time.time())
+#             Controller.set_control(command)
+#         if (t > 17+(60/17)) and (t<22):
+#             activealarms = Controller.get_active_alarms()
+#             assert len(activealarms.keys()) >= 1
+#             assert ValueName.INSPIRATION_TIME_SEC in activealarms.keys()
+#
+#
+#         time.sleep(0.05)
+#
+#     Controller.stop()
+#
+#
+#     #Check that the duration of the four alarms was correct
+#     sv = Controller.get_sensors()
+#     logged_alarms = Controller.get_logged_alarms()
+#
+#     for a in logged_alarms:
+#         print(a.alarm_name)
+#         assert not a.active
+#
+#         alarm_duration = a.alarm_end_time - a.start_time
+#         if a.alarm_name == 'PEEP':
+#             assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 11/60)) * 60/sv.breaths_per_minute
+#         if a.alarm_name == 'BREATHS_PER_MINUTE':
+#             assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 5/60)) * 60/sv.breaths_per_minute
+#         if a.alarm_name == 'I_PHASE':
+#             assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 5/60)) * 60/sv.breaths_per_minute
+#         if a.alarm_name == "PIP":
+#             assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 15/60)) * 60/sv.breaths_per_minute
+#
+#     # And that they have been resolved/logged correctly
+#     assert len(Controller.get_active_alarms()) == 0
+#     assert len(Controller.get_logged_alarms()) >= 4
+#     assert len(Controller.get_alarms()) >= 4
+#
+#     waveformlist_1 = Controller.get_past_waveforms() #This also should work fine
+#     waveformlist_2 = Controller.get_past_waveforms()
+#
+#     assert len([s for s in waveformlist_1 if s is not None]) > len([s for s in waveformlist_2 if s is not None])   #Test: calling the past_waveforms clears ring buffer.
+#
 
 
 

@@ -241,18 +241,19 @@ class ControlModuleBase:
             value:         test value   (e.g. 3)
             name:          parameter type (e.g. "PIP", "PEEP" etc.)
         '''
-        if (value < min) or (value > max):  # If the variable is not within limits
-            if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
-                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmSeverity.HIGH, value=value,
-                                  alarm_start_time=time.time(), alarm_end_time=None)
-                self.__active_alarms[name] = new_alarm
-        else:  # Else: if the variable is within bounds,
-            if name in self.__active_alarms.keys():  # And an alarm exists -> inactivate it.
-                old_alarm = self.__active_alarms[name]
-                old_alarm.alarm_end_time = time.time()
-                old_alarm.is_active = False
-                self.__logged_alarms.append(old_alarm)
-                del self.__active_alarms[name]
+        pass
+        # if (value < min) or (value > max):  # If the variable is not within limits
+        #     if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
+        #         new_alarm = Alarm(alarm_name=name, active=True, severity=AlarmSeverity.HIGH, value=value,
+        #                           start_time=time.time(), alarm_end_time=None)
+        #         self.__active_alarms[name] = new_alarm
+        # else:  # Else: if the variable is within bounds,
+        #     if name in self.__active_alarms.keys():  # And an alarm exists -> inactivate it.
+        #         old_alarm = self.__active_alarms[name]
+        #         old_alarm.alarm_end_time = time.time()
+        #         old_alarm.active = False
+        #         self.__logged_alarms.append(old_alarm)
+        #         del self.__active_alarms[name]
 
     def __analyze_last_waveform(self):
         ''' This goes through the last waveform, and updates VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
@@ -293,14 +294,14 @@ class ControlModuleBase:
         self._lock.release()
         return cp
 
-    def get_alarms(self) -> List[Alarm]:
-        # Returns all alarms as a list
-        self._lock.acquire()
-        new_alarm_list = self.COPY_logged_alarms.copy()
-        for alarm_key in self.COPY_active_alarms.keys():
-            new_alarm_list.append(self.COPY_active_alarms[alarm_key])
-        self._lock.release()
-        return new_alarm_list
+    # def get_alarms(self) -> List[Alarm]:
+    #     # Returns all alarms as a list
+    #     self._lock.acquire()
+    #     new_alarm_list = self.COPY_logged_alarms.copy()
+    #     for alarm_key in self.COPY_active_alarms.keys():
+    #         new_alarm_list.append(self.COPY_active_alarms[alarm_key])
+    #     self._lock.release()
+    #     return new_alarm_list
 
     def get_active_alarms(self):
         # Returns only the active alarms

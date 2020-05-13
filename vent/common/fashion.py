@@ -1,10 +1,12 @@
 """ Decorators for dangerous functions
 
 """
-from vent.common.values import MAX_STACK_DEPTH
 from vent.common.logging import log_exception
 import traceback
 import functools
+
+
+MAX_STACK_DEPTH = 20
 
 
 def locked(func):

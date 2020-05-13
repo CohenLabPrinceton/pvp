@@ -50,7 +50,7 @@ class ControlModuleBase:
 
         # This is what the machine has controll over:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
-        self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close
+        self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
         self._pid_control_flag    = True           # Default is: use PID control
         self.__KP                 = 80             # The weights for the the PID terms
         self.__KI                 = 0
@@ -429,6 +429,10 @@ class ControlModuleBase:
         ''' This is the control signal (open/close) on the expiratory side '''
         return self.__control_signal_out
 
+    def _PID_reset(self):
+        ''' resets the PID cycle to zero'''
+        self.__cycle_start = time.time()
+
     def _PID_update(self, dt):
         ''' 
         This instantiates the control algorithms.
@@ -469,7 +473,7 @@ class ControlModuleBase:
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt)
                 self.__calculate_control_signal_in()
                 if self._DATA_PRESSURE > self.__SET_PIP+0.5:                                              
-                    self.__control_signal_out = np.inf                                                 # if exceeded, we open the exhaust valve
+                    self.__control_signal_out = 1                                                        # if exceeded, we open the exhaust valve
                 else:
                     self.__control_signal_out = 0                                                        # close out valve
             else:
@@ -478,20 +482,20 @@ class ControlModuleBase:
                 if self._DATA_PRESSURE < self.__SET_PIP:
                     self.__control_signal_in = np.inf
                 if self._DATA_PRESSURE > self.__SET_PIP:
-                    self.__control_signal_out = np.inf
+                    self.__control_signal_out = 1
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
             if self._pid_control_flag:
                 target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
                 self.__calculate_control_signal_in()
-                self.__control_signal_out =  np.inf
+                self.__control_signal_out =  1
                 if self._DATA_PRESSURE < self.__SET_PEEP - 1:
                     self.__control_signal_out = 0
                     self.__control_signal_in = 0
             else:
                 self.__control_signal_in = 0
-                self.__control_signal_out = np.inf
+                self.__control_signal_out = 1
                 if self._DATA_PRESSURE < self.__SET_PEEP:
                     self.__control_signal_out = 0
         elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
@@ -499,7 +503,7 @@ class ControlModuleBase:
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
                 self.__calculate_control_signal_in()
                 if self._DATA_PRESSURE > self.__SET_PEEP + 1:
-                    self.__control_signal_out = np.inf
+                    self.__control_signal_out = 1
                 else:
                     self.__control_signal_out = 0
             else:                                                                                         # STATE CONTROL: keeping PEEP, let air in if below
@@ -508,7 +512,7 @@ class ControlModuleBase:
                 if self._DATA_PRESSURE < self.__SET_PEEP:
                     self.__control_signal_in = np.inf
                 if self._DATA_PRESSURE > self.__SET_PEEP:
-                    self.__control_signal_out = np.inf
+                    self.__control_signal_out = 1
 
         else:
             self.__cycle_start = time.time()  # New cycle starts
@@ -593,9 +597,6 @@ class ControlModuleBase:
             print("Already running State control.")
         self._pid_control_flag = False
 
-    def heartbeat(self):
-        '''only used for fiddling'''
-        return self._loop_counter
 
     @property
     def running(self):
@@ -615,7 +616,7 @@ class ControlModuleDevice(ControlModuleBase):
         self._lock.acquire()
         self.COPY_sensor_values = SensorValues(pip = self._DATA_PIP,
                                           peep     = self._DATA_PEEP,
-                                          fio2     = NONE,
+                                          fio2     = 70,                                    #TODO WHICH IS THE SENSOR?
                                           pressure = self.HAL.pressure,
                                           vte      = self._DATA_VTE,
                                           breaths_per_minute   = self._DATA_BPM,
@@ -643,8 +644,7 @@ class ControlModuleDevice(ControlModuleBase):
             valve_open_in = self._get_control_signal_in()           # Inspiratory side: get control signal for PropValve
             hal.setpoint_in = max(min(100, valve_open_in), 0)
 
-            valve_open_ex = self._get_control_signal_out()          # Expiratory side: get control signal for Solenoid
-            hal.setpoint_out = max(min(100, valve_open_ex), 0)
+            hal.setpoint_ex = self._get_control_signal_out()          # Expiratory side: get control signal for Solenoid
 
             self._DATA_Qout = self.HAL.flow_out                     # Flow sensor on Expiratory side
             self._DATA_Qin  = self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
@@ -658,7 +658,10 @@ class ControlModuleDevice(ControlModuleBase):
             else:
                 update_copies -= 1
 
-
+        # # get final values on stop
+        self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
+        self._alarm_to_COPY()  # Copy current alarms and settings to COPY
+        self._sensor_to_COPY()  # Copy sensor values to COPY
 
 
 
@@ -750,6 +753,7 @@ class Balloon_Simulator:
         returns:
         new_variable :  value of "variable" at next time step
         '''
+        dt = max(dt, 0.05)  #Make sure this doesn't go haywire if anything hangs. Max 50ms
         sigma_bis = sigma * np.sqrt(2. / tau)
         sqrtdt = np.sqrt(dt)
         new_variable = variable + dt * (-(variable - mu) / tau) + sigma_bis * sqrtdt * np.random.randn()
@@ -817,6 +821,10 @@ class ControlModuleSimulator(ControlModuleBase):
             self._loop_counter += 1
             now = time.time()
             dt = now - self._last_update                            # Time sincle last cycle of main-loop
+            if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
+                print("Restarted cycle.")
+                self._PID_reset()
+                dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
             self._DATA_PRESSURE = self.Balloon.get_pressure()       # Get a pressure measurement from balloon and tell controller             --- SENSOR 1

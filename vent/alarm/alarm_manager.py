@@ -1,5 +1,6 @@
 import copy
 import pdb
+import time
 
 
 
@@ -8,6 +9,7 @@ from vent.alarm import AlarmSeverity, AlarmType
 from vent.alarm.condition import Condition
 from vent.common.message import SensorValues, ControlSetting
 from vent.alarm.alarm import Alarm
+from vent.alarm.rule import Alarm_Rule
 
 import typing
 
@@ -17,6 +19,8 @@ class Alarm_Manager(object):
     """
     Attributes:
         active_alarms (dict): {:class:`.AlarmType`: :class:`.Alarm`}
+        pending_clears (list): [:class:`.AlarmType`] list of alarms that have been requested to be cleared
+        callbacks (list): list of callables that accept `Alarm` s when they are raised/altered.
     """
 
     def __new__(cls):
@@ -39,39 +43,139 @@ class Alarm_Manager(object):
 
         # get our alarm rules
         self.dependencies = {}
+        self.pending_clears = {}
+        self.callbacks = []
+        self.rules = {}
         self.load_rules()
 
 
     def load_rules(self):
         from vent.alarm import ALARM_RULES
-        self.rules = copy.deepcopy(ALARM_RULES)
+        rules = copy.deepcopy(ALARM_RULES)
 
         # register dependencies
-        for alarm_name, alarm_rule in self.rules.items():
-            try:
-                for severity, condition in alarm_rule.conditions:
+        for alarm_name, alarm_rule in rules.items():
+            self.load_rule(alarm_rule)
 
 
-                    if isinstance(condition.depends, dict):
-                        self.register_dependency(condition,  condition.depends)
-                    elif isinstance(condition.depends, list) or isinstance(condition.depends, tuple):
-                        for depend in condition.depends:
-                            self.register_dependency(condition, depend)
-            except:
-                pdb.set_trace()
+    def load_rule(self, alarm_rule: Alarm_Rule):
+        self.rules[alarm_rule.name] = alarm_rule
+
+        for severity, condition in alarm_rule.conditions:
+
+            if isinstance(condition.depends, dict):
+                self.register_dependency(condition, condition.depends)
+            elif isinstance(condition.depends, list) or isinstance(condition.depends, tuple):
+                for depend in condition.depends:
+                    self.register_dependency(condition, depend)
+
+
 
     def update(self, sensor_values: SensorValues):
         for alarm_name, rule in self.rules.items():
-            current_severity = rule.check(sensor_values)
+            self.check_rule(rule, sensor_values)
 
-            if alarm_name in self.active_alarms.keys():
-                # if we've got an active alarm of this type
-                # check if the severity has changed
-                if current_severity.value < self.active_alarms[alarm_name].severity.value:
-                    # if we have a lower severity
-                    # TODO
-                    # check if latched
-                    pass
+    def check_rule(self, rule: Alarm_Rule, sensor_values: SensorValues):
+        current_severity = rule.check(sensor_values)
+
+        if rule.name in self.active_alarms.keys():
+            # if we've got an active alarm of this type
+            # check if the severity has changed
+            if current_severity.value > self.active_alarms[rule.name].severity.value:
+                # greater severity always raises
+                self.emit_alarm(rule.name, current_severity)
+            elif current_severity.value < self.active_alarms[rule.name].severity.value:
+                # if alarm isn't latched, emit lower alarm
+                if not rule.latch:
+                    self.emit_alarm(rule.name, current_severity)
+                else:
+                    # if the alarm is latched, but has been previously requested to be cleared...
+                    if rule.name in self.pending_clears:
+                        # clear if the severity is zero
+                        if current_severity == AlarmSeverity.OFF:
+                            self.emit_alarm(rule.name, current_severity)
+        else:
+            # alarm isn't active
+            if current_severity.value > AlarmSeverity.OFF.value:
+                # emit if not off
+                self.emit_alarm(rule.name, current_severity)
+
+
+
+    def emit_alarm(self, alarm_type: AlarmType, severity: AlarmSeverity):
+        """
+        Emit alarm (by calling all callbacks with it).
+
+
+        .. note::
+
+            This method emits *and* clears alarms -- a cleared alarm is emitted with :attr:`AlarmSeverity.OFF`
+
+        Args:
+            alarm_type (:class:`.AlarmType`):
+            severity (:class:`.AlarmSeverity`):
+        """
+        if alarm_type in self.rules.keys():
+            # if another alarm is currently active, deactivate it
+            if alarm_type in self.active_alarms.keys():
+                self.deactivate_alarm(alarm_type)
+
+            # make alarm and emit
+            new_alarm = Alarm(
+                alarm_type = alarm_type,
+                severity   = severity,
+                start_time = time.time(),
+                latch      = self.rules[alarm_type].latch,
+                persistent = self.rules[alarm_type].persistent,
+                managed = True
+            )
+
+            for callback in self.callbacks:
+                callback(new_alarm)
+
+            if severity.value > AlarmSeverity.OFF.value:
+                # don't add OFF alarms to active_alarms...
+                self.active_alarms[alarm_type] = new_alarm
+
+        else:
+            raise ValueError('No  rule found for alarm type {}'.format(alarm_type))
+
+    def deactivate_alarm(self, alarm: (AlarmType, Alarm)):
+        """
+        Mark an alarm's internal active flags and remove from :attr:`.active_alarms`
+
+        .. note::
+
+            This does *not* alert listeners that an alarm has been cleared,
+            for that emit an alarm with AlarmSeverity.OFF
+
+        Args:
+            alarm:
+
+        Returns:
+
+        """
+
+        if isinstance(alarm, Alarm):
+            alarm_type = alarm.alarm_type
+
+        elif isinstance(alarm, AlarmType):
+            alarm_type = alarm
+
+        else:
+            raise ValueError(f'alarm must be AlarmType or Alarm, got {alarm}')
+
+        if alarm_type in self.active_alarms.keys():
+            if isinstance(alarm, Alarm):
+                if not alarm is self.active_alarms[alarm_type]:
+                    # if we were passed an Alarm and
+                    # if this alarm isn't the one that's active, don't deactivate
+                    return
+            got_alarm = self.active_alarms.pop(alarm_type)
+            alarm.deactivate()
+            self.logged_alarms.append(alarm)
+        else:
+            return
 
     def get_alarm_severity(self, alarm_type: AlarmType):
         if alarm_type in self.active_alarms.keys():
@@ -82,7 +186,7 @@ class Alarm_Manager(object):
 
     def register_alarm(self, alarm: Alarm):
         """
-        Add alarm to registry
+        Add alarm to registry.
 
         Args:
             alarm (:class:`.Alarm`)
@@ -124,6 +228,15 @@ class Alarm_Manager(object):
 
 
     def update_dependencies(self, control_setting: ControlSetting):
+        """
+        Update Condition objects that update their value according to some control parameter
+
+        Args:
+            control_setting (:class:`.ControlSetting`):
+
+        Returns:
+
+        """
         if control_setting.name in self.dependencies.keys():
             # dependencies have
             # ('value_name', 'value_attribute', 'condition_attr', 'transform')
@@ -148,25 +261,6 @@ class Alarm_Manager(object):
 
 
 
-
-    def deactivate_alarm(self, alarm: (AlarmType, Alarm)):
-
-        if isinstance(alarm, Alarm):
-            alarm_type = alarm.alarm_type
-
-        elif isinstance(alarm, AlarmType):
-            alarm_type = alarm
-
-        else:
-            raise ValueError(f'alarm must be AlarmType or Alarm, got {alarm}')
-
-        if alarm_type in self.active_alarms.keys():
-
-            got_alarm = self.active_alarms.pop(alarm_type)
-            alarm.deactivate()
-            self.logged_alarms.append(alarm)
-        else:
-            return
 
 
 

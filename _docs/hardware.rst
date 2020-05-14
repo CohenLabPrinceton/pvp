@@ -11,6 +11,15 @@ Mechanical Diagram
 
     Schematic diagram of main mechanical components
 
+.. toctree::
+   :maxdepth: 4
+   :caption: Hardware:
+
+   Flow Actuators <hardware.actuators>
+   Sensors <hardware.sensors>
+   Safety Components <hardware.safety>
+   Tubing and adapters <hardware.tubing>
+   
 Flow actuators
 -------------------    
 - Actuator PCB/overview (link to PCB with BoM, schematic, layout, etc.)    

@@ -44,10 +44,10 @@ def test_read_conversion(mock_pigpio_i2c_base, idx, mux, pga, mode, dr_idx, ads1
         mock_i2c_read_i2c_block_data(swp, idx)
     )
     ads = ads1x15(pig=pig)
-    if isinstance(ads,iodev.ADS1115):
-        dr = dr_ads1115[dr_idx]
-    else:
+    if isinstance(ads, iodev.ADS1015):
         dr = dr_ads1015[dr_idx]
+    else:
+        dr = dr_ads1115[dr_idx]
     kwargs = {"MUX": mux, "PGA": pga, "MODE": mode, "DR": dr}
     expected_word = iodev.native16_to_be(ads._config.pack(ads.cfg, **kwargs))
     monkeypatch.setattr(

@@ -357,7 +357,7 @@ class ADS1115(I2CDevice):
     """
     _DEFAULT_ADDRESS = 0x48
     _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 860}
-
+    _TIMEOUT = 1
     """ Address Pointer Register (write-only) """
     _POINTER_FIELDS = ('P',)
     _POINTER_VALUES = (
@@ -498,6 +498,7 @@ class ADS1115(I2CDevice):
             self._last_cfg = self.cfg
             data_rate = self._config.DR.unpack(self.cfg)
             while not (self._ready() or mode == 'CONTINUOUS'):
+                # TODO: Needs timout
                 tick = time.time()
                 while (time.time() - tick) < 1000000 / data_rate:
                     pass  # TODO: implement asyncio.sleep()

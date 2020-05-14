@@ -5,7 +5,7 @@ swap_dict = {
     "NORMAL": "SWAPPED",
     "SWAPPED": "NORMAL"
 }
-reg_nums = { 'CONVERSION': 0, 'CONFIG': 1, 'SFM': 2}
+reg_nums = {'CONVERSION': 0, 'CONFIG': 1, 'SFM': 2}
 reg_names = ('CONVERSION', 'CONFIG', 'SFM')
 
 

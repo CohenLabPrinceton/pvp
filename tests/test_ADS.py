@@ -1,16 +1,17 @@
 import vent.io.devices as iodev
 from .pigpio_mocks import *
+from collections import OrderedDict
 
 
 @pytest.mark.parametrize("idx", [0, 1])
-@pytest.mark.parametrize("mux", [(0, 1), (0, 3), (1, 3), (2, 3), 0, 1, 2, 3])
-@pytest.mark.parametrize("pga", [6.144, 4.096, 2.048, 1.024, 0.512, 0.256, 0.256, 0.256])
+@pytest.mark.parametrize("mux", [(0, 1),  (2, 3), 0, 3])
+@pytest.mark.parametrize("pga", [6.144, 4.096, 0.256])
 @pytest.mark.parametrize("mode", ['CONTINUOUS', 'SINGLE'])
-@pytest.mark.parametrize("dr_idx", [0, 1, 2, 3, 4, 5, 6, 7])
+@pytest.mark.parametrize("dr_idx", [0, 3, 5, 7])
 @pytest.mark.parametrize("ads1x15", [iodev.ADS1115, iodev.ADS1015])
 def test_read_conversion(mock_pigpio_i2c_base, idx, mux, pga, mode, dr_idx, ads1x15, monkeypatch):
     """__________________________________________________________________________________________________________TEST #1
-    Tests all of the possible (valid) parameter combinations on both the ADS1115 & ADS1x115
+    Tests a subset of the possible (valid) parameter combinations on both the ADS1115 & ADS1x115
 
         - Patches pigpio.pi with the read method used by ads.__init__
         - Initializes an ADS1x15
@@ -28,8 +29,8 @@ def test_read_conversion(mock_pigpio_i2c_base, idx, mux, pga, mode, dr_idx, ads1
         - function: pigpio._pigpio_command      -> mock_pigpio_command
         - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
         - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        + method:   pigpio.pi.i2c_write_i2c_block_data  -> mock_i2c_write_device
-        + method:   pigpio.pi.i2c_read_i2c_block_data   -> mock_i2c_read_i2c_block_data
+        - method:   pigpio.pi.i2c_write_i2c_block_data  -> mock_i2c_write_device
+        - method:   pigpio.pi.i2c_read_i2c_block_data   -> mock_i2c_read_i2c_block_data
     """
     # TODO [code]
 
@@ -61,12 +62,19 @@ def test_read_conversion(mock_pigpio_i2c_base, idx, mux, pga, mode, dr_idx, ads1
     """
 
 
-#def test_print_config():
+@pytest.mark.parametrize(
+    "ads1x15, kwargs", [
+        (iodev.ADS1115, {"MUX": 0, "PGA": 4.096, "MODE": 'SINGLE', "DR": 8}),
+        (iodev.ADS1015, {"MUX": 0, "PGA": 4.096, "MODE": 'SINGLE', "DR": 128})
+    ]
+)
+def test_config(mock_pigpio_i2c_base, kwargs, ads1x15, monkeypatch):
     """__________________________________________________________________________________________________________TEST #2
-    Tests #TODO[stuff]
-        - #TODO[creates what]
-        - #TODO[does what]
-        - #TODO[asserts what]
+    Tests the OrderedDict
+        - Patches pigpio.pi to mock read 0x8583 from the 'CONFIG' register
+        - Initializes an ADS1x15 as ads
+        - Asserts that ads.config is a Register instance
+        - Asserts that ads.config.MUX.info() returns a tuple matching expected mux offset, mask, and possible values
 
     Mocks:
         - function: socket.create_connection()  -> mock_create_connection
@@ -76,118 +84,28 @@ def test_read_conversion(mock_pigpio_i2c_base, idx, mux, pga, mode, dr_idx, ads1
         - function: pigpio._pigpio_command      -> mock_pigpio_command
         - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
         - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        + #TODO[anything else?]
+        - method:   pigpio.pi.i2c_write_i2c_block_data  -> mock_i2c_write_device
+        - method:   pigpio.pi.i2c_read_i2c_block_data   -> mock_i2c_read_i2c_block_data
     """
-    # TODO [code]
-    """__________________________________________________________________________________________________________
-    """
-
-
-#def test_config():
-    """__________________________________________________________________________________________________________TEST #3
-    Tests #TODO[stuff]
-        - #TODO[creates what]
-        - #TODO[does what]
-        - #TODO[asserts what]
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        + #TODO[anything else?]
-    """
-    # TODO [code]
-    """__________________________________________________________________________________________________________
-    """
-
-
-#def test_cfg():
-    """__________________________________________________________________________________________________________TEST #4
-    Tests #TODO[stuff]
-        - #TODO[creates what]
-        - #TODO[does what]
-        - #TODO[asserts what]
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        + #TODO[anything else?]
-    """
-    # TODO [code]
-    """__________________________________________________________________________________________________________
-    """
-
-
-#def test__read_conversion():
-    """__________________________________________________________________________________________________________TEST #5
-    Tests #TODO[stuff]
-        - #TODO[creates what]
-        - #TODO[does what]
-        - #TODO[asserts what]
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        + #TODO[anything else?]
-    """
-    # TODO [code]
-    """__________________________________________________________________________________________________________
-    """
-
-
-#def test__read_last_cfg():
-    """__________________________________________________________________________________________________________TEST #6
-    Tests #TODO[stuff]
-        - #TODO[creates what]
-        - #TODO[does what]
-        - #TODO[asserts what]
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        + #TODO[anything else?]
-    """
-    # TODO [code]
-    """__________________________________________________________________________________________________________
-    """
-
-
-#def test__ready():
-    """__________________________________________________________________________________________________________TEST #7
-    Tests #TODO[stuff]
-        - #TODO[creates what]
-        - #TODO[does what]
-        - #TODO[asserts what]
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        + #TODO[anything else?]
-    """
-    # TODO [code]
+    expected = [12, 0x07, OrderedDict({
+        (0, 1): 0,
+        (0, 3): 1,
+        (1, 3): 2,
+        (2, 3): 3,
+        0: 4,
+        1: 5,
+        2: 6,
+        3: 7
+    })]
+    pig = iodev.PigpioConnection()
+    monkeypatch.setattr(
+        pig,
+        "i2c_read_i2c_block_data",
+        mock_i2c_read_i2c_block_data('SWAPPED', 1)
+    )
+    ads = ads1x15(pig=pig)
+    assert isinstance(ads.config, iodev.I2CDevice.Register)
+    result = ads.config.MUX.info()
+    assert result == expected
     """__________________________________________________________________________________________________________
     """

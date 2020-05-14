@@ -107,18 +107,18 @@ class I2CDevice(IODeviceBase):
         self.pig.i2c_close(self.handle)
 
     @pigpio_command
-    def read_device(self, num_bytes) -> tuple:
+    def read_device(self, count) -> tuple:
         """ Read a specified number of bytes directly from the the device without specifying or changing the register.
         Does NOT perform LE/BE conversion.
 
         Args:
-            num_bytes (int): The number of bytes to read from the device.
+            count (int): The number of bytes to read from the device.
 
         Returns:
             tuple: a tuple of the number of bytes read and a bytearray containing the bytes. If there was an error the
             number of bytes read will be less than zero (and will contain the error code).
         """
-        return self.pig.i2c_read_device(self.handle, num_bytes)
+        return self.pig.i2c_read_device(self.handle, count)
 
     @pigpio_command
     def write_device(self, word, signed=False, count=2):
@@ -140,10 +140,10 @@ class I2CDevice(IODeviceBase):
         """ Read `count` bytes from the specified register and byteswap the result.
 
         Args:
+            register (int): The index of the register to read.
             signed (bool): Whether or not the data to read is expected to be signed.
             count (int): The number of bytes to read from the device. Should be specified if `word` is something other
                 than a two's complement.
-            register (int): The index of the register to read.
 
         Returns:
             int: integer representation of 16 bit register contents.
@@ -164,10 +164,10 @@ class I2CDevice(IODeviceBase):
         (register denoted by a single byte)
 
         Args:
-            count (int): The number of bytes to write to the register
-            signed (bool): Whether or not 'word' is signed
-            word (int): The unsigned 16 bit integer to write to the register (must be consistent with 'signed')
             register (int): The index of the register to write to
+            word (int): The unsigned 16 bit integer to write to the register (must be consistent with 'signed')
+            signed (bool): Whether or not 'word' is signed
+            count (int): The number of bytes to write to the register
         """
         self.pig.i2c_write_i2c_block_data(
             self.handle,
@@ -527,7 +527,7 @@ class ADS1015(ADS1115):
     """
 
     _DEFAULT_ADDRESS = 0x48
-    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 860}
+    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 3300} # FIXME? 6.144 / DR = 3300
 
     """ Address Pointer Register (write-only) """
     _POINTER_FIELDS = ('P',)

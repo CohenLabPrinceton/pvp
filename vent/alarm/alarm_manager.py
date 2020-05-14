@@ -76,6 +76,8 @@ class Alarm_Manager(object):
     def update(self, sensor_values: SensorValues):
         for alarm_name, rule in self.rules.items():
             self.check_rule(rule, sensor_values)
+            # don't want to do alarm emission here because any _check_,
+            # not any full update should trigger an alarm
 
     def check_rule(self, rule: Alarm_Rule, sensor_values: SensorValues):
         current_severity = rule.check(sensor_values)
@@ -258,7 +260,24 @@ class Alarm_Manager(object):
 
                 setattr(depend['condition'], depend['condition_attr'], new_value)
 
+    def add_callback(self, callback: typing.Callable):
+        assert callable(callback)
+        self.callbacks.append(callback)
 
+    def clear_all_alarms(self):
+        # make separate list because dict will be cleared during iteration
+        alarm_keys = list(self.active_alarms.keys())
+        for alarm_type in alarm_keys:
+            self.deactivate_alarm(alarm_type)
+
+    def reset(self):
+        """
+        reset all conditions and clear alarms
+        """
+        for rule in self.rules.values():
+            rule.reset()
+
+        self.clear_all_alarms()
 
 
 

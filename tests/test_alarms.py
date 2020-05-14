@@ -268,8 +268,45 @@ def test_alarm_rule(fake_sensors):
 
     assert rule.check(sensors) == AlarmSeverity.HIGH
 
+def test_rules_individual():
+    # test that each individual rule does what we think it does
+    # FIXME
+    pass
 
 
+##############################
+#
+def test_alarm_manager_raise(fake_sensors):
+
+    manager = Alarm_Manager()
+    manager.clear_all_alarms()
+    assert len(manager.active_alarms) == 0
+
+    # check that we got all the alarm rules
+    for alarm_type, rule in ALARM_RULES.items():
+        assert alarm_type in manager.rules.keys()
+
+    # make callback to count emitted alarms
+    global alarms_emitted
+    alarms_emitted = 0
+    def alarm_cb(alarm):
+        assert isinstance(alarm, Alarm)
+        global alarms_emitted
+        alarms_emitted += 1
+
+    manager.add_callback(alarm_cb)
+
+    # take a value out of range and test that an alarm is raised an emitted
+    sensor = fake_sensors(vals={ValueName.FIO2: })
+
+    manager.update(sensor)
+    assert len(manager.active_alarms) == 0
+    assert alarms_emitted == 0
+
+    sensor.PRESSURE = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0].limit + 1
+    manager.update(sensor)
+    assert AlarmType.HIGH_PRESSURE in manager.active_alarms.keys()
+    assert alarms_emitted == 1
 
 
 

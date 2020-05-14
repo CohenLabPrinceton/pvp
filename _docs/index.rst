@@ -7,12 +7,11 @@ Welcome to ventilator's documentation!
 ======================================
 
 
-
 .. toctree::
    :maxdepth: 4
    :caption: Hardware:
 
-   Hardware Placeholder <hardware>
+   Hardware Overview <hardware>
 
 
 .. toctree::

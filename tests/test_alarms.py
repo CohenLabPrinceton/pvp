@@ -297,13 +297,13 @@ def test_alarm_manager_raise(fake_sensors):
     manager.add_callback(alarm_cb)
 
     # take a value out of range and test that an alarm is raised an emitted
-    sensor = fake_sensors(vals={ValueName.FIO2: })
+    sensor = fake_sensors({ValueName.FIO2: 90})
 
     manager.update(sensor)
     assert len(manager.active_alarms) == 0
     assert alarms_emitted == 0
 
-    sensor.PRESSURE = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0].limit + 1
+    sensor.PRESSURE = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0][1].limit + 1
     manager.update(sensor)
     assert AlarmType.HIGH_PRESSURE in manager.active_alarms.keys()
     assert alarms_emitted == 1

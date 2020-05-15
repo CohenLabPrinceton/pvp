@@ -258,13 +258,14 @@ class I2CDevice(IODeviceBase):
                 self._mask = mask
                 self._values = values
 
+            @property
             def offset(self) -> int:
                 """ Returns the position of the field's LSB in the register. e.g., mask = self._mask << self._offset."""
                 return self._offset
 
             def info(self) -> list:
                 """ Returns a list containing the ValueField's offset, mask, and a tuple of possible values """
-                return [self._offset, self._mask, self._values]
+                return [self.offset, self._mask, self._values]
 
             def unpack(self, cfg) -> OrderedDict:
                 """ Extracts the ValueField's setting from cfg & returns the result in a human readable form.

@@ -1,9 +1,5 @@
 import copy
-import pdb
 import time
-
-
-
 
 from vent.alarm import AlarmSeverity, AlarmType
 from vent.alarm.condition import Condition
@@ -198,7 +194,7 @@ class Alarm_Manager(object):
 
         if alarm_type in self.active_alarms.keys():
             if isinstance(alarm, Alarm):
-                if not alarm is self.active_alarms[alarm_type]:
+                if alarm is not self.active_alarms[alarm_type]:
                     # if we were passed an Alarm and
                     # if this alarm isn't the one that's active, don't deactivate
                     return
@@ -248,16 +244,6 @@ class Alarm_Manager(object):
         else:
             self.cleared_alarms.append(alarm_type)
             self.emit_alarm(alarm_type, AlarmSeverity.OFF)
-
-
-
-
-
-
-
-
-
-
 
     def get_alarm_severity(self, alarm_type: AlarmType):
         if alarm_type in self.active_alarms.keys():

@@ -2,9 +2,7 @@
 Class to declare alarm rules
 """
 
-from vent.common.values import ValueName
 from vent.alarm import AlarmType, AlarmSeverity
-
 
 class Alarm_Rule(object):
     """

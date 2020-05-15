@@ -1,6 +1,4 @@
 from enum import Enum, auto
-from collections import OrderedDict as odict
-
 
 class AlarmType(Enum):
     LOW_PRESSURE  = auto()  # low airway pressure alarm
@@ -20,11 +18,6 @@ class AlarmSeverity(Enum):
     MEDIUM = 2
     LOW = 1
     OFF = 0
-
-# from vent.alarm.alarm import Alarm
-#from vent.alarm.rule import Alarm_Rule
-#from vent.alarm import condition
-#from vent.common.values import VALUES, ValueName
 
 from vent.alarm import condition
 from vent.alarm import AlarmType, AlarmSeverity

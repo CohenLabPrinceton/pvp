@@ -1,9 +1,8 @@
 import operator
 import types
-import pdb
+import importlib
 
 from vent.alarm import AlarmType, AlarmSeverity
-#from vent.alarm.alarm_manager import Alarm_Manager
 from vent.common.message import SensorValues
 from vent.common.values import ValueName
 
@@ -11,7 +10,8 @@ def get_alarm_manager():
     try:
         return Alarm_Manager()
     except:
-        from vent.alarm.alarm_manager import Alarm_Manager
+        manager_module = importlib.import_module('vent.alarm.alarm_manager')
+        globals()['Alarm_Manager'] = getattr(manager_module, 'Alarm_Manager')
         return Alarm_Manager()
 
 
@@ -30,7 +30,7 @@ class Condition(object):
         _child (:class:`Condition`): if another condition is added to this one, store a reference to it
         """
 
-    def __init__(self, depends: (dict) = None, *args, **kwargs):
+    def __init__(self, depends: dict = None, *args, **kwargs):
         """
 
         Args:
@@ -87,7 +87,7 @@ class Condition(object):
             self._check = self.check
 
             def new_check(self, sensor_values):
-                if self._check(sensor_values) == False:
+                if not self._check(sensor_values):
                     # if our stashed condition check is false,
                     # return immediately
                     return False

@@ -204,10 +204,10 @@ VALUES = odict({
     }),
     ValueName.VTE: Value(**{
         'name': 'VTE',
-        'units': '%',
+        'units': 'l',  # Unit is liters :-)
         'abs_range': (0, 100),
         'safe_range': (0, 100),
-        'decimals': 1,
+        'decimals': 2,
         'control': False,
         'sensor': True
     }),
@@ -283,7 +283,7 @@ VALUES = odict({
         'name': 'RR', # Daniel re: FDA labels
         'units': 'BPM', # Daniel re: FDA labels
         'abs_range': (0, 50), # FIXME
-        'safe_range': (10, 30), # Stanford's socshttps://www.vent4us.org/technical
+        'safe_range': (10, 30), # Stanford's socs https://www.vent4us.org/technical
         'default': 17,            # FIXME
         'decimals': 1,
         'control': True,
@@ -344,6 +344,3 @@ Where the first argument in the tuple is a list of the values that will be
 given as argument to the ``callable_returning_boolean`` which will return
 whether (``True``) or not (``False``) a value is allowed.
 """
-
-MAX_STACK_DEPTH = 20
-

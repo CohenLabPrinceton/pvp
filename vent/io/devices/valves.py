@@ -87,7 +87,11 @@ class OnOffValve(SolenoidBase, Pin):
     @property
     def is_open(self) -> bool:
         """ Implements parent's abstractmethod; returns True if valve is open, False if it is closed"""
-        return True if self.read() else False
+        energized = True if self.read() else False
+        if self.form == 'Normally Closed':
+            return energized
+        else:
+            return not energized
 
 
 class PWMControlValve(SolenoidBase, PWMOutput):

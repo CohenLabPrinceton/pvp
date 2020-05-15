@@ -121,58 +121,47 @@ class I2CDevice(IODeviceBase):
         return self.pig.i2c_read_device(self.handle, count)
 
     @pigpio_command
-    def write_device(self, word, signed=False, count=2):
-        """ Write bytes to the device without specifying register. DOES perform LE/BE conversion.
+    def write_device(self, word, signed=False):
+        """ Write 2 bytes to the device without specifying register. DOES perform LE/BE conversion.
 
         Args:
             word (int): The integer representation of the data to write.
             signed (bool): Whether or not `word` is signed.
-            count (int): The number of bytes to write. Should be specified if `word` is something other than a two's
-                complement.
         """
         self.pig.i2c_write_device(
             self.handle,
-            native16_to_be(word, signed=signed, count=count)
+            native16_to_be(word, signed=signed)
         )
 
     @pigpio_command
-    def read_register(self, register, signed=False, count=2) -> int:
-        """ Read `count` bytes from the specified register and byteswap the result.
+    def read_register(self, register, signed=False) -> int:
+        """ Read 2 bytes from the specified register and byteswap the result.
 
         Args:
             register (int): The index of the register to read.
             signed (bool): Whether or not the data to read is expected to be signed.
-            count (int): The number of bytes to read from the device. Should be specified if `word` is something other
-                than a two's complement.
 
         Returns:
             int: integer representation of 16 bit register contents.
         """
-        return be16_to_native(
-            self.pig.i2c_read_i2c_block_data(
-                self.handle,
-                register,
-                count
-            ),
-            signed=signed
-        )
+        return be16_to_native(self.pig.i2c_read_i2c_block_data(
+            self.handle,
+            register,
+        ), signed=signed)
 
     @pigpio_command
-    def write_register(self, register, word, signed=False, count=2):
-        """ Write bytes to the specified register. Count should be
-        specified for when passing something other than a word.
-        (register denoted by a single byte)
+    def write_register(self, register, word, signed=False):
+        """ Write 2 bytes to the specified register.
 
         Args:
             register (int): The index of the register to write to
             word (int): The unsigned 16 bit integer to write to the register (must be consistent with 'signed')
             signed (bool): Whether or not 'word' is signed
-            count (int): The number of bytes to write to the register
         """
         self.pig.i2c_write_i2c_block_data(
             self.handle,
             register,
-            native16_to_be(word, signed=signed, count=count)
+            native16_to_be(word, signed=signed)
         )
 
     class Register:
@@ -573,24 +562,21 @@ class ADS1015(ADS1115):
         super().__init__(address=address, i2c_bus=i2c_bus, pig=pig)
 
 
-def be16_to_native(data, signed=False, count=2) -> int:
+def be16_to_native(data, signed=False) -> int:
     """ Unpacks a bytes-like object respecting big-endianness of outside world and returns an int according to signed.
 
     Args:
         data: bytes-like object. The data to be unpacked & converted
         signed (bool): Whether or not `data` is signed
-        count (int): The number of bytes to read from `data`. If `count < len(data)` then only the first `count` bytes
-            will be used; the remainder is discarded.
     """
-    return int.from_bytes(data[1][:count], 'big', signed=signed)
+    return int.from_bytes(data[1][:2], 'big', signed=signed)
 
 
-def native16_to_be(word, signed=False, count=2) -> bytes:
+def native16_to_be(word, signed=False) -> bytes:
     """ Packs an int into bytes after swapping endianness.
 
     Args:
         signed (bool): Whether or not `data` is signed
         word (int): The integer representation to converted and packed into bytes
-        count (int): The number of bytes to represent `word` as.
     """
-    return word.to_bytes(count, 'big', signed=signed)
+    return word.to_bytes(2, 'big', signed=signed)

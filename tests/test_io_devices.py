@@ -3,43 +3,33 @@ from collections import OrderedDict
 import vent.io.devices as iodev
 
 
-def test_i2c_device_pigpiod_ok(mock_pigpio_i2c_base):
+def test_pigpio_i2c_mock(mock_pigpio_i2c):
     """__________________________________________________________________________________________________________TEST #1
-    Tests the testing environment; more specifically, tests to make sure the pigpiod interface is mocked correctly.
-        - creates an I2CDevice (which will try to connect to the pigpio daemon)
-        - asserts that the I2CDevice believes it is connected to pigpiod
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
+    Tests the basic functionality of the testing environment; more specifically, tests that devices can be added and
+    removed from pig.mock_i2c using pig.i2c_open() and pig.i2c_close(), and that these functions behave the way they are
+    supposed to.
     """
-    i2c_dev = iodev.I2CDevice(i2c_address=0x69, i2c_bus=1)
-    assert i2c_dev.pigpiod_ok
+    i2c_address = 0x48
+    i2c_bus = 1
+    mock_ads = MockI2CHardwareDevice(mock_register('CONVERSION', 'SWAPPED', 0), mock_register('CONFIG', 'SWAPPED', 0))
+    ads = iodev.I2CDevice(i2c_address, i2c_bus)
+    ads._pig.add_mock_i2c_hardware(mock_ads, i2c_address)
+    assert ads.pigpiod_ok
+    assert ads.handle in ads._pig.mock_handles
+    assert ads._pig.mock_handles[ads.handle] == (i2c_bus, i2c_address)
+    assert ads._pig.mock_i2c[i2c_bus][i2c_address] == mock_ads
+    ads._close()
+    assert not ads._pig.mock_i2c[i2c_bus]
     """__________________________________________________________________________________________________________
     """
 
-
+'''
 @pytest.mark.parametrize("idx", [0, 1])
-def test_read_device(mock_pigpio_i2c_base, idx, monkeypatch):
+def test_read_device(mock_pigpio_i2c, idx, monkeypatch):
     """__________________________________________________________________________________________________________TEST #2
     Tests vent.io.devices.I2CDevice.read_device(), which does NOT perform BE/LE conversion
         - creates an I2CDevice (which will try to connect to the pigpio daemon)
         - calls read_device() and verifies results match expected
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        + method:   pigpio.pi.i2c_read_device   -> mock_i2c_read_device
     """
     swp = 'SWAPPED'
     i2c_dev = iodev.I2CDevice(i2c_address=0x69, i2c_bus=1)
@@ -54,22 +44,12 @@ def test_read_device(mock_pigpio_i2c_base, idx, monkeypatch):
 
 
 @pytest.mark.parametrize("idx", [0, 1])
-def test_write_device(mock_pigpio_i2c_base, idx, monkeypatch):
+def test_write_device(mock_pigpio_i2c, idx, monkeypatch):
     """__________________________________________________________________________________________________________TEST #3
     Tests vent.io.devices.I2CDevice.write_device(), which DOES perform BE/LE conversion
         - creates an I2CDevice (which will try to connect to the pigpio daemon)
         - Picks a byte-swapped word from the mock_register and calls write_device(word)
         - Intercepts pigpio.pi.i2c_write_device and asserts word has been correctly converted & byteswapped
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        + method:   pigpio.pi.i2c_write_device  -> mock_i2c_write_device
     """
     reg = 'SFM'
     swp = 'NORMAL'
@@ -83,21 +63,11 @@ def test_write_device(mock_pigpio_i2c_base, idx, monkeypatch):
 
 @pytest.mark.parametrize("idx", [0, 1])
 @pytest.mark.parametrize("reg", ['CONFIG', 'CONVERSION'])
-def test_read_register(mock_pigpio_i2c_base, reg, idx, monkeypatch):
+def test_read_register(mock_pigpio_i2c, reg, idx, monkeypatch):
     """__________________________________________________________________________________________________________TEST #4
     Tests vent.io.devices.I2CDevice.read_register(), which DOES perform BE/LE conversion
         - creates an I2CDevice (which will try to connect to the pigpio daemon)
         - calls read_register() and verifies results match expected
-
-    Mocks:
-        - function: socket.create_connection()          -> mock_create_connection
-            -class:     socket.Socket                       -> MockSocket
-        - class:    pigpio._socklock                    -> MockSockLock
-        - class:    pigpio._callback_thread             -> MockThread
-        - function: pigpio._pigpio_command              -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open                  -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close                 -> mock_pigpio_i2c_close
-        + method:   pigpio.pi.i2c_read_i2c_block_data   -> mock_i2c_read_i2c_block_data
     """
     swp = 'SWAPPED'
     i2c_dev = iodev.I2CDevice(i2c_address=0x69, i2c_bus=1)
@@ -115,22 +85,12 @@ def test_read_register(mock_pigpio_i2c_base, reg, idx, monkeypatch):
 
 @pytest.mark.parametrize("idx", [0, 1])
 @pytest.mark.parametrize("reg", ['CONFIG', 'CONVERSION'])
-def test_write_register(mock_pigpio_i2c_base, reg, idx, monkeypatch):
+def test_write_register(mock_pigpio_i2c, reg, idx, monkeypatch):
     """__________________________________________________________________________________________________________TEST #5
     Tests vent.io.devices.I2CDevice.write_register(), which DOES perform BE/LE conversion
         - creates an I2CDevice (which will try to connect to the pigpio daemon)
         - Picks a byte-swapped word from the mock_register and calls write_register(word)
         - Intercepts pigpio.pi.i2c_write_i2c_block_data and asserts word has been correctly converted & byteswapped
-
-    Mocks:
-        - function: socket.create_connection()          -> mock_create_connection
-            -class:     socket.Socket                       -> MockSocket
-        - class:    pigpio._socklock                    -> MockSockLock
-        - class:    pigpio._callback_thread             -> MockThread
-        - function: pigpio._pigpio_command              -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open                  -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close                 -> mock_pigpio_i2c_close
-        + method:   pigpio.pi.i2c_write_i2c_block_data  -> mock_i2c_write_device
     """
     swp = 'NORMAL'
     i2c_dev = iodev.I2CDevice(i2c_address=0x69, i2c_bus=1)
@@ -151,7 +111,7 @@ def test_write_register(mock_pigpio_i2c_base, reg, idx, monkeypatch):
 @pytest.mark.parametrize("mode", ['CONTINUOUS', 'SINGLE'])
 @pytest.mark.parametrize("dr_idx", [0, 3, 5, 7])
 @pytest.mark.parametrize("ads1x15", [iodev.ADS1115, iodev.ADS1015])
-def test_read_conversion(mock_pigpio_i2c_base, idx, mux, pga, mode, dr_idx, ads1x15, monkeypatch):
+def test_read_conversion(mock_pigpio_i2c, idx, mux, pga, mode, dr_idx, ads1x15, monkeypatch):
     """__________________________________________________________________________________________________________TEST #1
     Tests a subset of the possible (valid) parameter combinations on both the ADS1115 & ADS1x115
 
@@ -162,17 +122,6 @@ def test_read_conversion(mock_pigpio_i2c_base, idx, mux, pga, mode, dr_idx, ads1
             - Builds the expected bytes to be written to the config registry and intercepts them in when
                 pigpio.pi.i2c_write_i2c_block_data is called
         - Asserts that the result matches what is expected
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        - method:   pigpio.pi.i2c_write_i2c_block_data  -> mock_i2c_write_device
-        - method:   pigpio.pi.i2c_read_i2c_block_data   -> mock_i2c_read_i2c_block_data
     """
     dr_ads1115 = [8, 16, 32, 64, 128, 250, 475, 860]
     dr_ads1015 = [128, 250, 490, 920, 1600, 2400, 3300, 3300]
@@ -207,24 +156,13 @@ def test_read_conversion(mock_pigpio_i2c_base, idx, mux, pga, mode, dr_idx, ads1
         (iodev.ADS1015, {"MUX": 0, "PGA": 4.096, "MODE": 'SINGLE', "DR": 128})
     ]
 )
-def test_config(mock_pigpio_i2c_base, kwargs, ads1x15, monkeypatch):
+def test_config(mock_pigpio_i2c, kwargs, ads1x15, monkeypatch):
     """__________________________________________________________________________________________________________TEST #2
     Tests the OrderedDict
         - Patches pigpio.pi to mock read 0x8583 from the 'CONFIG' register
         - Initializes an ADS1x15 as ads
         - Asserts that ads.config is a Register instance
         - Asserts that ads.config.MUX.info() returns a tuple matching expected mux offset, mask, and possible values
-
-    Mocks:
-        - function: socket.create_connection()  -> mock_create_connection
-            -class:     socket.Socket               -> MockSocket
-        - class:    pigpio._socklock            -> MockSockLock
-        - class:    pigpio._callback_thread     -> MockThread
-        - function: pigpio._pigpio_command      -> mock_pigpio_command
-        - method:   pigpio.pi.i2c_open          -> mock_pigpio_i2c_open
-        - method:   pigpio.pi.i2c_close         -> mock_pigpio_i2c_close
-        - method:   pigpio.pi.i2c_write_i2c_block_data  -> mock_i2c_write_device
-        - method:   pigpio.pi.i2c_read_i2c_block_data   -> mock_i2c_read_i2c_block_data
     """
     expected = [12, 0x07, OrderedDict({
         (0, 1): 0,
@@ -248,3 +186,4 @@ def test_config(mock_pigpio_i2c_base, kwargs, ads1x15, monkeypatch):
     assert result == expected
     """__________________________________________________________________________________________________________
     """
+'''

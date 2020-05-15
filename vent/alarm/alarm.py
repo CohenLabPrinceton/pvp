@@ -44,7 +44,6 @@ class Alarm:
 
 
         self.id = next(Alarm.id_counter)
-        self.active = True
 
         assert isinstance(severity, AlarmSeverity)
         self._severity = severity
@@ -52,12 +51,15 @@ class Alarm:
         assert isinstance(alarm_type, AlarmType)
         self._alarm_type = alarm_type
 
-
         if start_time is None:
             self.start_time = time.time()
         else:
             assert isinstance(start_time, float)
             self.start_time = start_time
+
+        self.active = True
+        if self.severity.value == AlarmSeverity.OFF.value:
+            self.active = False
 
         self.alarm_end_time = None
         self.value = value

@@ -21,6 +21,8 @@ class Alarm_Manager(object):
         active_alarms (dict): {:class:`.AlarmType`: :class:`.Alarm`}
         pending_clears (list): [:class:`.AlarmType`] list of alarms that have been requested to be cleared
         callbacks (list): list of callables that accept `Alarm` s when they are raised/altered.
+        cleared_alarms (list): of :class:`.AlarmType` s, alarms that have been cleared but have not dropped back into the 'off' range to enable re-raising
+        snoozed_alarms (dict): of :class:`.AlarmType` s : times, alarms that should not be raised because they have been silenced for a period of time
     """
     _instance = None
 
@@ -31,7 +33,9 @@ class Alarm_Manager(object):
 
     # get our alarm rules
     dependencies = {}
-    pending_clears = {}
+    pending_clears = []
+    cleared_alarms = []
+    snoozed_alarms = {}
     callbacks = []
     rules = {}
 
@@ -82,6 +86,28 @@ class Alarm_Manager(object):
     def check_rule(self, rule: Alarm_Rule, sensor_values: SensorValues):
         current_severity = rule.check(sensor_values)
 
+        ##################
+        # Checks that prevent raising
+
+        # check that we're not being snoozed
+        if rule.name in self.snoozed_alarms.keys():
+            if time.time() >= self.snoozed_alarms[rule.name]:
+                # remove from dict and continue
+                del self.snoozed_alarms[rule.name]
+            else:
+                return
+
+        # if we've been cleared, check if we've gone below zero,
+        # otherwise return (don't re-raise)
+        if rule.name in self.cleared_alarms:
+            if current_severity == AlarmSeverity.OFF:
+                self.cleared_alarms.remove(rule.name)
+            else:
+                return
+
+        #####################
+        # checks that determine type of raise
+
         if rule.name in self.active_alarms.keys():
             # if we've got an active alarm of this type
             # check if the severity has changed
@@ -98,6 +124,7 @@ class Alarm_Manager(object):
                         # clear if the severity is zero
                         if current_severity == AlarmSeverity.OFF:
                             self.emit_alarm(rule.name, current_severity)
+                            self.pending_clears.remove(rule.name)
         else:
             # alarm isn't active
             if current_severity.value > AlarmSeverity.OFF.value:
@@ -180,6 +207,57 @@ class Alarm_Manager(object):
             self.logged_alarms.append(got_alarm)
         else:
             return
+
+    def dismiss_alarm(self,
+                      alarm_type: AlarmType,
+                      duration: float = None,):
+        """
+        GUI or other object requests an alarm to be dismissed & deactivated
+
+        GUI will wait until it receives an `emit_alarm` of severity == OFF to remove
+        alarm widgets. If the alarm is not latched
+
+        If the alarm is latched, alarm_manager will not decrement alarm severity or emit
+        `OFF` until a) the condition returns to `OFF`, and b) the user dismisses the alarm
+
+        Args:
+            alarm_type (:class:`.AlarmType`): Alarm to dismiss
+            duration (float): seconds - amount of time to wait before alarm can be re-raised
+                If a duration is provided, the alarm will not be able to be re-raised
+        """
+
+        assert(alarm_type in self.rules.keys())
+
+        rule = self.rules[alarm_type]
+        # if the alarm is latched, add it to the list of pending_clears
+        if rule.latch:
+            # if the alarm is in the pending_clears list,
+            # when the `rule` returns to OFF, the alarm will be deactivated
+            self.pending_clears.append(alarm_type)
+            # the rest of the logic doesn't apply to latched alarms
+            return
+
+        # if we were provided a snooze duration, add to the snooze dict and clear alarm
+        if duration:
+            assert isinstance(duration, (int, float))
+            assert duration >= 0
+            self.snoozed_alarms[alarm_type] = time.time() + duration
+            self.emit_alarm(alarm_type, AlarmSeverity.OFF)
+
+        #otherwise alarm will be deactivated until condition goes OFF and back on
+        else:
+            self.cleared_alarms.append(alarm_type)
+            self.emit_alarm(alarm_type, AlarmSeverity.OFF)
+
+
+
+
+
+
+
+
+
+
 
     def get_alarm_severity(self, alarm_type: AlarmType):
         if alarm_type in self.active_alarms.keys():
@@ -272,8 +350,14 @@ class Alarm_Manager(object):
 
     def reset(self):
         """
-        reset all conditions and clear alarms
+        reset all conditions, callbacks, and other stateful attributes and clear alarms
         """
+
+        self.pending_clears = []
+        self.cleared_alarms = []
+        self.snoozed_alarms = {}
+        self.callbacks = []
+
         for rule in self.rules.values():
             rule.reset()
 

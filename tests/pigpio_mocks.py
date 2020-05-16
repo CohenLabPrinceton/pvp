@@ -16,6 +16,8 @@ soft_frequencies = (8000, 4000, 2000, 1600, 1000, 800, 500, 400, 320, 250, 200, 
 
 @pytest.fixture()
 def mock_pigpio_base(monkeypatch):
+    """ monkeypatches the bare-minimum elements of pigpio to instantiate pigpio.pi() without communicating with the
+    pigpio daemon (or hardware)"""
     monkeypatch.setattr("socket.create_connection", mock_create_connection)
     monkeypatch.setattr("pigpio._socklock", MockSockLock)
     monkeypatch.setattr("pigpio._callback_thread", MockThread)
@@ -67,8 +69,9 @@ def mock_pigpio_errors(func):
     @functools.wraps(func)
     def mock_pigpio__u2i_exception(self, *args, **kwargs):
         value = func(self, *args, **kwargs)
-        if value < 0:
-            raise pigpio.error(pigpio.error_text(value))
+        v = value if type(value) in(int, bool, float) else value[0]
+        if v < 0:
+            raise pigpio.error(pigpio.error_text(v))
         return value
     return mock_pigpio__u2i_exception
 
@@ -191,15 +194,15 @@ class MockI2CHardwareDevice:
         else:
             TypeError("MockI2CHardwareDevice needs at least one register to initialize")
 
-    def read_device(self, count=None):
-        """Alias for read_register(reg_num=None, count)"""
-        return self.read_register(reg_num=None, count=count)
+    def read_mock_hardware_device(self, count=None):
+        """Alias for read_mock_hardware_register(reg_num=None, count)"""
+        return self.read_mock_hardware_register(reg_num=None, count=count)
 
-    def write_device(self, value):
-        """ Alias for write_register(reg_num=None, value)"""
-        self.write_register(reg_num=None, value=value)
+    def write_mock_hardware_device(self, value):
+        """ Alias for write_mock_hardware_register(reg_num=None, value)"""
+        self.write_mock_hardware_register(reg_num=None, value=value)
 
-    def read_register(self, reg_num=None, count=None):
+    def read_mock_hardware_register(self, reg_num=None, count=None):
         """ Reads count bytes from a specific register
 
         Args:
@@ -219,7 +222,7 @@ class MockI2CHardwareDevice:
         result = self.registers[reg_num][-1]
         return result if count is None else result[:count]
 
-    def write_register(self, reg_num, value):
+    def write_mock_hardware_register(self, reg_num, value):
         """ Writes value to register specified by reg_num
 
         Args:
@@ -239,7 +242,7 @@ class MockI2CHardwareDevice:
         self.registers[reg_num].append(value)
 
 
-def add_mock_i2c_hardware(self, device: MockI2CHardwareDevice, i2c_address, i2c_bus=1):
+def add_mock_i2c_hardware(self, device: MockI2CHardwareDevice, i2c_address, i2c_bus):
     self.mock_i2c[i2c_bus][i2c_address] = device
 
 
@@ -270,7 +273,7 @@ def mock_i2c_read_device(self, handle, count):
         (bus, addr) = self.mock_handles[handle]
         if count != 2:
             raise NotImplementedError
-        return count, self.mock_i2c[bus][addr].read_device(count)
+        return count, self.mock_i2c[bus][addr].read_mock_hardware_device(count)
     else:
         return (pigpio.PI_BAD_HANDLE, )
 
@@ -281,7 +284,7 @@ def mock_i2c_read_i2c_block_data(self, handle, reg, count):
         (bus, addr) = self.mock_handles[handle]
         if count != 2:
             raise NotImplementedError
-        return count, self.mock_i2c[bus][addr].read_register(reg, count)
+        return count, self.mock_i2c[bus][addr].read_mock_hardware_register(reg, count)
     else:
         return (pigpio.PI_BAD_HANDLE, )
 
@@ -296,7 +299,7 @@ def mock_i2c_write_device(self, handle, data):
             data = bytes(reversed(data))
         else:
             raise NotImplementedError
-        self.mock_i2c[bus][addr].write_device(data)
+        self.mock_i2c[bus][addr].write_mock_hardware_device(data)
         return 0
     else:
         return pigpio.PI_BAD_HANDLE
@@ -312,7 +315,7 @@ def mock_i2c_write_i2c_block_data(self, handle, reg, data):
             data = bytes(reversed(data))
         else:
             raise NotImplementedError
-        self.mock_i2c[bus][addr].write_register(reg, data)
+        self.mock_i2c[bus][addr].write_mock_hardware_register(reg, data)
         return 0
     else:
         return pigpio.PI_BAD_HANDLE

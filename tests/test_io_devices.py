@@ -1,110 +1,118 @@
 from .pigpio_mocks import *
+from os import getrandom
 from collections import OrderedDict
 import vent.io.devices as iodev
 
 
-def test_pigpio_i2c_mock(mock_pigpio_i2c):
+def test_mock_pigpio_base(mock_pigpio_base):
     """__________________________________________________________________________________________________________TEST #1
-    Tests the basic functionality of the testing environment; more specifically, tests that devices can be added and
-    removed from pig.mock_i2c using pig.i2c_open() and pig.i2c_close(), and that these functions behave the way they are
-    supposed to.
+        Tests that the base fixture of pigpio mocks is indeed enough to instantiate pigpio.pi()
     """
-    i2c_address = 0x48
-    i2c_bus = 1
-    mock_ads = MockI2CHardwareDevice(mock_register('CONVERSION', 'SWAPPED', 0), mock_register('CONFIG', 'SWAPPED', 0))
-    ads = iodev.I2CDevice(i2c_address, i2c_bus)
-    ads._pig.add_mock_i2c_hardware(mock_ads, i2c_address)
-    assert ads.pigpiod_ok
-    assert ads.handle in ads._pig.mock_handles
-    assert ads._pig.mock_handles[ads.handle] == (i2c_bus, i2c_address)
-    assert ads._pig.mock_i2c[i2c_bus][i2c_address] == mock_ads
-    ads._close()
-    assert not ads._pig.mock_i2c[i2c_bus]
+    pig = iodev.PigpioConnection()
+    assert isinstance(pig, pigpio.pi)
+    assert pig.connected
+    pig.stop()
+    assert not pig.connected
+    """__________________________________________________________________________________________________________
+    """
+
+
+@pytest.mark.parametrize("i2c_bus", [0, 1])
+@pytest.mark.parametrize("seed", [getrandom(8) for x in range(1000)])
+def test_mock_pigpio_i2c(mock_pigpio_i2c, seed, i2c_bus):
+    """__________________________________________________________________________________________________________TEST #2
+    Tests the functionality of the mock pigpio i2c device interface. More specifically, tests that:
+    - mock hardware devices are initialized correctly using both ints and bytes as register values
+    - mock handles, i2c_open(), and i2c_close() can be used to add, interact with, and remove mock hardware devices
+        - correct functioning of i2c_open is implied by the read/write tests
+        - the correct functioning of i2c_close() is ascertained from the assertion that pig.mock_i2c[i2c_bus] is empty
+    - mock i2c read functions work as intended
+        - asserts that bytes read from register match what they were initialized with exactly
+    - mock i2c write functions work as intended
+        - asserts that bytes written to and then read back from the register were byteswapped (during write)
+
+    Setup:
+    - Runs 10 times per i2c_bus
+    """
+    num_registers = []
+    expected = {'init': [], 'write': []}
+    results = {'init': [], 'write': []}
+    handles = []
+    random.seed(seed)
+    num_devices = random.randint(1, 5)
+    i2c_addresses = random.sample(range(128), num_devices)
+    pig = pigpio.pi()
+    for i in range(num_devices):
+        num_registers.append(random.randint(1, 5))
+        for key in expected.keys():
+            expected[key].append([random.getrandbits(16).to_bytes(2, 'little') for x in range(num_registers[i])])
+        init_data = [byte if random.getrandbits(1) else int.from_bytes(byte, 'little') for byte in expected['init'][i]]
+        pig.add_mock_i2c_hardware(MockI2CHardwareDevice(*init_data), i2c_addresses[i], i2c_bus)
+        handles.append(pig.i2c_open(i2c_bus, i2c_addresses[i]))
+        if len(init_data) == 1:
+            (cnt, data) = pig.i2c_read_device(handles[i], 2)
+            results['init'].append([data])
+            pig.i2c_write_device(handles[i], expected['write'][i][0])
+            (cnt, data) = pig.i2c_read_device(handles[i], 2)
+            results['write'].append([data])
+        else:
+            result = {'init': [], 'write': []}
+            for reg in range(num_registers[i]):
+                (cnt, data) = pig.i2c_read_i2c_block_data(handles[i], reg, count=2)
+                result['init'].append(data)
+                pig.i2c_write_i2c_block_data(handles[i], reg, expected['write'][i][reg])
+                (cnt, data) = pig.i2c_read_i2c_block_data(handles[i], reg, count=2)
+                result['write'].append(data)
+            for key in results.keys():
+                results[key].append(result[key])
+        pig.i2c_close(handles[i])
+    for device in range(num_devices):
+        for reg in range(num_registers[device]):
+            assert expected['init'][device][reg] == results['init'][device][reg]
+            assert bytes(reversed(expected['write'][device][reg])) == results['write'][device][reg]
+    assert not pig.mock_i2c[i2c_bus]
+    """__________________________________________________________________________________________________________
+    """
+
+
+@pytest.mark.parametrize("seed", [getrandom(8) for y in range(1000)])
+def test_i2c_device(mock_pigpio_i2c, seed):
+    """__________________________________________________________________________________________________________TEST #1
+    Tests the various basic I2CDevice methods, open, close, read,  write, etc.
+        - Note: i2c_device.read_device() does not byteswap. write_device, read_register, and write_register all DO
+            perform byteswaps. Therefore, `expected` does not get byteswapped like it normally would when num_registers
+            is called (queuing up a read_device() call rather than a read_register() call)
+    """
+    random.seed(seed)
+    i2c_address = random.randint(1, 127)
+    i2c_bus = random.getrandbits(1)
+    num_registers = random.randint(1, 127)
+    register_data = [random.getrandbits(16) for x in range(num_registers)]
+    if num_registers == 1:
+        expected = [data.to_bytes(2, 'little') for data in register_data]
+    else:
+        expected = [int.from_bytes(data.to_bytes(2, 'little'), 'big') for data in register_data]
+    mock_ads = MockI2CHardwareDevice(*register_data)
+    pig = iodev.PigpioConnection()
+    pig.add_mock_i2c_hardware(mock_ads, i2c_address, i2c_bus)
+    i2c_device = iodev.I2CDevice(i2c_address, i2c_bus, pig=pig)
+    assert i2c_device.pigpiod_ok
+    results = []
+    if num_registers == 1:
+        i2c_device.write_device(register_data[0])
+        (count, result) = i2c_device.read_device()
+        results.append(result)
+    else:
+        for register in range(num_registers):
+            i2c_device.write_register(register, register_data[register])
+            results.append(i2c_device.read_register(register))
+    i2c_device._close()
+    assert not i2c_device._pig.mock_i2c[i2c_bus]
+    assert results == expected
     """__________________________________________________________________________________________________________
     """
 
 '''
-@pytest.mark.parametrize("idx", [0, 1])
-def test_read_device(mock_pigpio_i2c, idx, monkeypatch):
-    """__________________________________________________________________________________________________________TEST #2
-    Tests vent.io.devices.I2CDevice.read_device(), which does NOT perform BE/LE conversion
-        - creates an I2CDevice (which will try to connect to the pigpio daemon)
-        - calls read_device() and verifies results match expected
-    """
-    swp = 'SWAPPED'
-    i2c_dev = iodev.I2CDevice(i2c_address=0x69, i2c_bus=1)
-    monkeypatch.setattr(i2c_dev._pig, "i2c_read_device", mock_i2c_read_device('SFM', swap_dict[swp], idx))
-    result = i2c_dev.read_device(count=2)
-    expected = mock_register('SFM', swp, idx).to_bytes(2, 'big')
-    print('\n i2c_read_device returned: {}, expected: {} '.format(result[1], expected))
-    assert result == (len(expected), expected)
-    assert result[1] == expected
-    """__________________________________________________________________________________________________________
-    """
-
-
-@pytest.mark.parametrize("idx", [0, 1])
-def test_write_device(mock_pigpio_i2c, idx, monkeypatch):
-    """__________________________________________________________________________________________________________TEST #3
-    Tests vent.io.devices.I2CDevice.write_device(), which DOES perform BE/LE conversion
-        - creates an I2CDevice (which will try to connect to the pigpio daemon)
-        - Picks a byte-swapped word from the mock_register and calls write_device(word)
-        - Intercepts pigpio.pi.i2c_write_device and asserts word has been correctly converted & byteswapped
-    """
-    reg = 'SFM'
-    swp = 'NORMAL'
-    word = mock_register(reg, swp, idx)
-    i2c_dev = iodev.I2CDevice(i2c_address=0x69, i2c_bus=1)
-    monkeypatch.setattr(i2c_dev._pig, "i2c_write_device", mock_i2c_write_device(reg, swp, idx))
-    i2c_dev.write_device(word)
-    """__________________________________________________________________________________________________________
-    """
-
-
-@pytest.mark.parametrize("idx", [0, 1])
-@pytest.mark.parametrize("reg", ['CONFIG', 'CONVERSION'])
-def test_read_register(mock_pigpio_i2c, reg, idx, monkeypatch):
-    """__________________________________________________________________________________________________________TEST #4
-    Tests vent.io.devices.I2CDevice.read_register(), which DOES perform BE/LE conversion
-        - creates an I2CDevice (which will try to connect to the pigpio daemon)
-        - calls read_register() and verifies results match expected
-    """
-    swp = 'SWAPPED'
-    i2c_dev = iodev.I2CDevice(i2c_address=0x69, i2c_bus=1)
-    monkeypatch.setattr(
-        i2c_dev._pig,
-        "i2c_read_i2c_block_data",
-        mock_i2c_read_i2c_block_data(swp, idx)
-    )
-    result = i2c_dev.read_register(reg_nums[reg])
-    expected = mock_register(reg, swap_dict[swp], idx)
-    assert result == expected
-    """__________________________________________________________________________________________________________
-    """
-
-
-@pytest.mark.parametrize("idx", [0, 1])
-@pytest.mark.parametrize("reg", ['CONFIG', 'CONVERSION'])
-def test_write_register(mock_pigpio_i2c, reg, idx, monkeypatch):
-    """__________________________________________________________________________________________________________TEST #5
-    Tests vent.io.devices.I2CDevice.write_register(), which DOES perform BE/LE conversion
-        - creates an I2CDevice (which will try to connect to the pigpio daemon)
-        - Picks a byte-swapped word from the mock_register and calls write_register(word)
-        - Intercepts pigpio.pi.i2c_write_i2c_block_data and asserts word has been correctly converted & byteswapped
-    """
-    swp = 'NORMAL'
-    i2c_dev = iodev.I2CDevice(i2c_address=0x69, i2c_bus=1)
-    monkeypatch.setattr(
-        i2c_dev._pig,
-        "i2c_write_i2c_block_data",
-        mock_i2c_write_i2c_block_data(swp, idx)
-    )
-    word = mock_register(reg, swp, idx)
-    i2c_dev.write_register(reg_nums[reg], word)
-    """__________________________________________________________________________________________________________
-    """
-
-
 @pytest.mark.parametrize("idx", [0, 1])
 @pytest.mark.parametrize("mux", [(0, 1),  (2, 3), 0, 3])
 @pytest.mark.parametrize("pga", [6.144, 4.096, 0.256])

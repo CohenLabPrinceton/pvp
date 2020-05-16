@@ -107,7 +107,7 @@ class I2CDevice(IODeviceBase):
         self.pig.i2c_close(self.handle)
 
     @pigpio_command
-    def read_device(self, count) -> tuple:
+    def read_device(self, count=2) -> tuple:
         """ Read a specified number of bytes directly from the the device without specifying or changing the register.
         Does NOT perform LE/BE conversion.
 
@@ -147,11 +147,12 @@ class I2CDevice(IODeviceBase):
         return be16_to_native(self.pig.i2c_read_i2c_block_data(
             self.handle,
             register,
+            count=2
         ), signed=signed)
 
     @pigpio_command
     def write_register(self, register, word, signed=False):
-        """ Write 2 bytes to the specified register.
+        """ Write 2 bytes to the specified register. Byteswaps.
 
         Args:
             register (int): The index of the register to write to

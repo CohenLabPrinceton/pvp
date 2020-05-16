@@ -172,10 +172,10 @@ SENSOR = odict({
     }),
     ValueName.VTE: Value(**{
         'name': 'VTE',
-        'units': '%',
+        'units': 'l',  # Unit is liters :-)
         'abs_range': (0, 100),
         'safe_range': (0, 100),
-        'decimals': 1
+        'decimals': 2
     }),
     ValueName.PRESSURE: Value(**{
         'name': 'Pressure',
@@ -252,7 +252,7 @@ CONTROL = odict({
         'name': 'RR', # Daniel re: FDA labels
         'units': 'BPM', # Daniel re: FDA labels
         'abs_range': (0, 50), # FIXME
-        'safe_range': (10, 30), # Stanford's socshttps://www.vent4us.org/technical
+        'safe_range': (10, 30), # Stanford's socs https://www.vent4us.org/technical
         'default': 17,            # FIXME
         'decimals': 1           # FIXME
     }),

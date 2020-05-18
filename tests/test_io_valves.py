@@ -4,7 +4,7 @@ from vent.io.devices.valves import OnOffValve, PWMControlValve
 
 @pytest.mark.parametrize("gpio", [1, 12])
 @pytest.mark.parametrize("form", ['Normally Closed', 'Normally Open'])
-def test_form(mock_pigpio_gpio, gpio, form):
+def test_form(patch_pigpio_gpio, gpio, form):
     """_______________________________________________________________________________________________OnOffValve_TEST #1
      Tests the set/get interface of SolenoidBase/children
          - Initializes an OnOffValve
@@ -20,7 +20,7 @@ def test_form(mock_pigpio_gpio, gpio, form):
 
 @pytest.mark.parametrize("gpio", [1, 12])
 @pytest.mark.parametrize("form", ['Normally Closed', 'Normally Open'])
-def test_on_off_valve(mock_pigpio_gpio, gpio, form):
+def test_on_off_valve(patch_pigpio_gpio, gpio, form):
     """_______________________________________________________________________________________________OnOffValve_TEST #2
      Tests the open/close interface of an OnOffValve
          - Initializes an OnOffValve

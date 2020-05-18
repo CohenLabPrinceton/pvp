@@ -5,7 +5,7 @@ from vent.io.devices.pins import PWMOutput
 
 @pytest.mark.parametrize("mode", random.sample(Pin._PIGPIO_MODES.keys(), 3))
 @pytest.mark.parametrize("gpio", random.sample(range(53), 5))
-def test_mode(mock_pigpio_gpio, gpio, mode):
+def test_mode(patch_pigpio_gpio, gpio, mode):
     """______________________________________________________________________________________________________Pin_TEST #1
      Tests the mode setting & getting methods of Pin
          - Initializes a Pin
@@ -28,7 +28,7 @@ def test_mode(mock_pigpio_gpio, gpio, mode):
 
 @pytest.mark.parametrize("gpio", random.sample(range(31), 10))
 @pytest.mark.parametrize("level", [0, 1])
-def test_read_write_toggle(mock_pigpio_gpio, gpio, level):
+def test_read_write_toggle(patch_pigpio_gpio, gpio, level):
     """______________________________________________________________________________________________________Pin_TEST #2
      Tests the toggle feature of a Pin
          - Initializes a random Pin (in User_GPIO)
@@ -55,7 +55,7 @@ def test_read_write_toggle(mock_pigpio_gpio, gpio, level):
 
 
 @pytest.mark.parametrize("gpio, frequency", [(1, 1000), (12, 1000), (14, 8000), (19, 100000)])
-def test_frequency(mock_pigpio_gpio, gpio, frequency):
+def test_frequency(patch_pigpio_gpio, gpio, frequency):
     """________________________________________________________________________________________________PWMOutput_TEST #1
      Tests the frequency setter & getter properties, and checks that duty is not changed or something weird like that
          - Initializes a PWMOutput
@@ -77,7 +77,7 @@ def test_frequency(mock_pigpio_gpio, gpio, frequency):
 
 @pytest.mark.parametrize("gpio", [1, 12, 14, 19])
 @pytest.mark.parametrize("duty", [x/10 for x in range(11)])
-def test_duty(mock_pigpio_gpio, gpio, duty):
+def test_duty(patch_pigpio_gpio, gpio, duty):
     """________________________________________________________________________________________________PWMOutput_TEST #2
      Tests the duty setter & getter properties (and synonym write())
          - Initializes a PWMOutput

@@ -257,13 +257,13 @@ class I2CDevice(IODeviceBase):
                 """ Returns a list containing the ValueField's offset, mask, and a tuple of possible values """
                 return [self.offset, self._mask, self._values]
 
-            def unpack(self, cfg) -> OrderedDict:
+            def unpack(self, cfg):
                 """ Extracts the ValueField's setting from cfg & returns the result in a human readable form.
 
                 Args:
                     cfg (int): An integer representing a possible configuration value for the register
                 """
-                return OrderedDict(map(reversed, self._values.items()))[self.extract(cfg)]
+                return dict(map(reversed, self._values.items()))[self.extract(cfg)]
 
             def extract(self, cfg) -> int:
                 """ Extracts setting from passed 16-bit config & returns integer representation.
@@ -431,7 +431,7 @@ class ADS1115(I2CDevice):
         """
         return (
                 self._read_conversion(**kwargs)
-                * self._config.PGA.unpack(self.cfg) / 32767
+                * self.config.PGA.unpack(self.cfg) / 32767
         )
 
     def print_config(self) -> OrderedDict:
@@ -440,7 +440,7 @@ class ADS1115(I2CDevice):
         Returns:
             OrderedDict: an ordered dictionary of the form {field: value}, ordered from MSB -> LSB
         """
-        return self._config.unpack(self.cfg)
+        return self.config.unpack(self.cfg)
 
     @property
     def config(self):

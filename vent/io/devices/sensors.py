@@ -256,6 +256,40 @@ class AnalogSensor(Sensor):
         self._fill_attr()
 
 
+class DLiteSensor(AnalogSensor):
+    """ D-Lite flow sensor setup.
+    This consists of the GE D-Lite sensor configured with
+    vacuum lines running to an analog differential pressure sensor.
+
+    """
+    def __init__(self, adc, **kwargs):
+
+        super().__init__(adc, **kwargs)
+
+    def _convert(self, raw) -> float:
+        """ Converts the raw differential voltage signal to
+        a measurement of flow in liters-per-minute (LPM).
+        
+        We calibrate the D-Lite flow readings using the
+        (pre-calibrated) Sensirion flow sensor (see SFM3200). 
+
+        Args:
+            raw (float): The raw sensor reading to convert.
+        """
+        raw = super()._convert(raw)
+        fit_param = 6.0345e-05
+        if(raw >= 0):
+            converted_flow = (-1.0*np.sqrt(raw)/np.sqrt(fit_param))
+        else:
+            converted_flow = (1.0*np.sqrt(-1.0*raw)/np.sqrt(fit_param))
+        return converted_flow
+    def calibrate(self, **kwargs):
+        """ Do not run a calibration routine.
+        Overrides attempt to calibrate. 
+        """
+        return
+
+
 class SFM3200(Sensor, I2CDevice):
     """ I2C Inspiratory flow sensor manufactured by Sensirion AG. Range: +/- 250 SLM
     Datasheet:

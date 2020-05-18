@@ -2,10 +2,6 @@ from .pigpio_mocks import *
 from vent.io.devices.valves import OnOffValve, PWMControlValve, SimOnOffValve, SimControlValve
 import subprocess
 
-IS_RASPI = False
-ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
-if ret == 0:
-    IS_RASPI = True
 
 @pytest.mark.parametrize("gpio", [1, 12])
 @pytest.mark.parametrize("form", ['Normally Closed', 'Normally Open'])
@@ -68,7 +64,7 @@ def test_pwm_control_valve(patch_pigpio_gpio, seed):
         PWMControlValve(gpio, form)'''
     with pytest.raises(NotImplementedError):
         PWMControlValve(gpio, 'Normally Open')
-    if IS_RASPI and random.getrandbits(1):
+    if random.getrandbits(1):
         valve = PWMControlValve(gpio, form)
     else:
         valve = PWMControlValve(gpio, form, response="vent/io/config/calibration/SMC_PVQ31_5G_23_01N_response")

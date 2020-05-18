@@ -29,7 +29,7 @@ class SolenoidBase(ABC):
         """ Performs validation on requested form and then sets it.
 
         Args:
-            f (str): The form of the solenoid; can be either `Normally Open` or `Normally Closed`
+            form (str): The form of the solenoid; can be either `Normally Open` or `Normally Closed`
         """
         if form not in self._FORMS.keys():
             raise ValueError('form must be either NC for Normally Closed or NO for Normally Open')
@@ -48,7 +48,6 @@ class SolenoidBase(ABC):
     @abstractmethod
     def is_open(self) -> bool:
         """ Returns True if valve is open, False if it is closed"""
-        pass
 
 
 class OnOffValve(SolenoidBase, Pin):
@@ -99,21 +98,22 @@ class PWMControlValve(SolenoidBase, PWMOutput):
     compensation of the valve's response.
     """
 
-    def __init__(self, pin, form='Normally Closed', initial_duty=0, frequency=None, response=None, pig=None):
+    def __init__(self, pin, form='Normally Closed', frequency=None, response=None, pig=None):
         """
         Args:
             pin (int): The number of the pin to use
             form (str): The form of the solenoid; can be either `Normally Open` or `Normally Closed`
-            initial_duty (float): The initial duty cycle of the pin. Must be between 0 and 1.
             frequency (float): The PWM frequency to use.
             response (str): "/path/to/response/curve/file"
             pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
         """
-        PWMOutput.__init__(self, pin=pin, initial_duty=initial_duty, frequency=frequency, pig=pig)
+        PWMOutput.__init__(self, pin=pin, initial_duty=0, frequency=frequency, pig=pig)
         SolenoidBase.__init__(self, form=form)
-        if response is None:
-            raise NotImplementedError('You need to implement a default response behavior')
-
+        '''if response is None:
+            raise NotImplementedError('You need to implement a default response behavior')'''
+        if form != 'Normally Closed':
+            raise NotImplementedError('Normally Open PWM control valves have not been implemented')
+        self._rising = True
         self._load_valve_response(response_path=response)
 
     @property
@@ -139,7 +139,7 @@ class PWMControlValve(SolenoidBase, PWMOutput):
         Returns:
             float: A number between 0 and 1 representing the current flow as a proportion of maximum
         """
-        return self.inverse_response(self.duty)
+        return self.inverse_response(self.duty, self._rising)
 
     @setpoint.setter
     def setpoint(self, setpoint):
@@ -150,7 +150,10 @@ class PWMControlValve(SolenoidBase, PWMOutput):
         Args:
             setpoint (float): A number between 0 and 1 representing how much to open the valve
         """
-        self.duty = self.response(setpoint)
+        if not 0 <= setpoint <= 100:
+            raise ValueError('setpoint must be between 0 and 100 for an expiratory control valve')
+        self._rising = setpoint > self.setpoint
+        self.duty = self.response(setpoint, self._rising)
 
     def response(self, setpoint, rising=True):
         """Setpoint takes a value in the range (0,1) so as not to confuse with duty cycle, which takes a value in the
@@ -213,16 +216,16 @@ class PWMControlValve(SolenoidBase, PWMOutput):
         if response_path is not None:
             response_array = np.load(response_path)
         else:
-            response_array = np.linspace([0, 0, 0], [1, 1, 1], num=101)
+            response_array = np.linspace([0, 0, 0], [100, 1, 1], num=101)
         self._response_array = response_array
 
 
 class SimOnOffValve(SolenoidBase):
     """ stub: a simulated on/off valve"""
 
-    def __init__(self, form='Normally Closed', pig=None):
+    def __init__(self, pin=None, form='Normally Closed', pig=None):
         super().__init__(form=form)
-        self.state = 0
+        self.state = 0 if form == 'Normally Closed' else 1
 
     def open(self):
         self.state = 1
@@ -231,16 +234,34 @@ class SimOnOffValve(SolenoidBase):
         self.state = 0
 
     @property
-    def is_open(self):
-        return True if self.state else False
+    def is_open(self) -> bool:
+        return True if self.state == 1 else False
 
 
 class SimControlValve(SolenoidBase):
     """stub: a simulated linear control valve"""
 
+    def __init__(self, pin=None, form='Normally Closed', frequency=None, response=None, pig=None):
+        """
+        Args:
+            pin (int): (unused for sim)
+            form (str): The form of the solenoid; can be either `Normally Open` or `Normally Closed`
+            frequency (float): (unused for sim)
+            response (str): (unused for sim) # TODO implement this (requires refactor)
+            pig (PigpioConnection): (unused for sim)
+        """
+        if response:
+            raise NotImplementedError('This sim is pretty basic - no fancy response for you')
+        if form != 'Normally Closed':
+            raise NotImplementedError('Normally Open sim control valves have not been implemented')
+        super().__init__(form=form)
+        self._setpoint = 0
+
     @property
     def is_open(self) -> bool:
-        """ Implements parent's abstractmethod; returns True if valve is open, False if it is closed"""
+        """ Implements parent's abstractmethod; returns True if valve is open, False if it is closed
+        FIXME: Needs refactor; duplicate property to PWMControlValve.is_open"""
+
         if self.setpoint > 0:
             return True
         else:
@@ -249,21 +270,12 @@ class SimControlValve(SolenoidBase):
     def open(self):
         """ Implements parent's abstractmethod; fully opens the valve
         FIXME: Needs refactor; duplicate method to PWMControlValve.open()"""
-        self.setpoint = 1.0
+        self.setpoint = 100
 
     def close(self):
         """ Implements parent's abstractmethod; fully closes the valve
         FIXME: Needs refactor; duplicate method to PWMControlValve.close()"""
-        self.setpoint = 0.0
-
-    def __init__(self, form='Normally Closed', pig=None):
-        """
-        Args:
-            form (str): The form of the solenoid; can be either `Normally Open` or `Normally Closed`
-            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
-        """
-        super().__init__(form=form)
-        self._setpoint = 0
+        self.setpoint = 0
 
     @property
     def setpoint(self):
@@ -271,18 +283,15 @@ class SimControlValve(SolenoidBase):
 
         Returns:
             float: A number between 0 and 1 representing the current flow as a proportion of maximum
-
         """
         return self._setpoint
 
     @setpoint.setter
-    def setpoint(self, value):
+    def setpoint(self, setpoint):
         """
         Args:
-            value: A float between 0 and 1; the requested set-point of the valve as a proportion of maximum
-
+            setpoint (float): Between 0 and 100; the requested set-point of the valve as a proportion of maximum
         """
-        if not 0 <= value <= 1:
-            raise ValueError('Setpoint must be in [0, 1]')
-        else:
-            self._setpoint = value
+        if not 0 <= setpoint <= 100:
+            raise ValueError('setpoint must be between 0 and 100 for an expiratory control valve')
+        self._setpoint = setpoint

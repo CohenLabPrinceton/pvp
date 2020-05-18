@@ -143,6 +143,7 @@ class Hal:
         elif value == 0 and self._inlet_valve.is_open:
             self._inlet_valve.close()
         self._control_valve.setpoint = value
+        self._setpoint_in = value
 
     @property
     def setpoint_ex(self) -> float:
@@ -171,7 +172,8 @@ class Hal:
                 isinstance(self._expiratory_valve, valves.PWMControlValve) or
                 isinstance(self._expiratory_valve, valves.SimControlValve)
         ):
-            if 0 <= value <= 1:
-                raise ValueError('setpoint must be between 0 and 1 for an expiratory control valve')
+            if not 0 <= value <= 100:
+                raise ValueError('setpoint must be between 0 and 100 for an expiratory control valve')
             else:
                 self._expiratory_valve.setpoint = value
+        self._setpoint_ex = value

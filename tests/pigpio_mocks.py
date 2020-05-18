@@ -5,124 +5,7 @@ from collections import deque
 import pigpio
 from vent.io.devices.pins import Pin
 import os
-
-reg_nums = {'CONVERSION': 0, 'CONFIG': 1, 'SFM': 2}
-reg_names = ('CONVERSION', 'CONFIG', 'SFM')
-registers = {
-    'CONVERSION': {'NORMAL': (0x682A, 0x223F), 'SWAPPED': (0x2A68, 0x3F22)},
-    'CONFIG': {'NORMAL': (0xC3E3, 0x8583, 0x43E3), 'SWAPPED': (0xE3C3, 0x8385, 0xE343)},
-    'SFM': {'NORMAL': (0x8E10, 0x71F0), 'SWAPPED': (0x108E, 0xF071)}
-}
-soft_frequencies = (8000, 4000, 2000, 1600, 1000, 800, 500, 400, 320, 250, 200, 160, 100, 80, 50, 40, 20, 10)
-
-
-class MockI2CHardwareDevice:
-    def __init__(self, *args):
-        """ A simple mock device with registers defined by kwargs. If only one register value is passed, device emulates
-        a single register device that responds to read_device commands (such as the SFM3200). Retains past register
-        values upon writing to a register for logging/assertion convenience.
-
-        Register values are stored as raw bytes. Reading and writing to/from the registers simulates network-endian
-            transactions by byteswapping.
-
-        Args:
-            *args: register_values of type bytes; one, per, register
-        """
-        self.last_register = None
-        self.registers = []
-        if args:
-            for arg in args:
-                if not isinstance(arg, bytes):
-                    raise TypeError("Unknown register value of type {}".format(type(arg)))
-                self.registers.append(deque())
-                self.registers[-1].append(arg)
-            if len(self.registers) == 1:
-                self.last_register = 0
-        else:
-            TypeError("MockI2CHardwareDevice needs at least one register to initialize")
-
-    def read_mock_hardware_device(self, count=None):
-        """Alias for read_mock_hardware_register(reg_num=None, count)"""
-        return self.read_mock_hardware_register(reg_num=None, count=count)
-
-    def write_mock_hardware_device(self, value):
-        """ Alias for write_mock_hardware_register(reg_num=None, value)"""
-        self.write_mock_hardware_register(reg_num=None, value=value)
-
-    def read_mock_hardware_register(self, reg_num=None, count=None):
-        """ Reads count bytes from a specific register
-
-        Args:
-            reg_num: The index of the register to read
-            count (int): The number of bytes to read
-
-        Returns:
-            bytes: the register contents
-        """
-        if reg_num is None:
-            if self.last_register is not None:
-                reg_num = self.last_register
-            else:
-                raise RuntimeError("mock_i2c_device tried to access last register but none have been accessed yet")
-        else:
-            self.last_register = reg_num
-        result = self.registers[reg_num][-1]
-        return result if count is None else result[:count]
-
-    def write_mock_hardware_register(self, reg_num, value):
-        """ Writes value to register specified by reg_num
-
-        Args:
-            reg_num: The index of the register to write
-            value (bytes): The stuff to write to the register
-        """
-        if type(value) is not bytes:
-            raise TypeError("arg 'value' must be of type bytes")
-        if reg_num is None:
-            if self.last_register is not None:
-                reg_num = self.last_register
-            else:
-                raise RuntimeError("mock_i2c_device tried to access last register but none have been accessed yet")
-        else:
-            self.last_register = reg_num
-        self.last_register = reg_num
-        self.registers[reg_num].append(value)
-
-
-def mock_pigpio_errors(func):
-    @functools.wraps(func)
-    def mock_pigpio__u2i_exception(self, *args, **kwargs):
-        value = func(self, *args, **kwargs)
-        v = value if type(value) in (int, bool, float) else value[0]
-        if v < 0:
-            raise pigpio.error(pigpio.error_text(v))
-        return value
-
-    return mock_pigpio__u2i_exception
-
-
-def mock_pigpio_bad_gpio_arg(func):
-    @functools.wraps(func)
-    def check_args(self, gpio, *args, **kwargs):
-        if gpio in range(53):
-            result = func(self, gpio, *args, **kwargs)
-        else:
-            result = pigpio._errors[pigpio.PI_BAD_GPIO]
-        return result
-
-    return check_args
-
-
-def mock_pigpio_bad_user_gpio_arg(func):
-    @functools.wraps(func)
-    def check_args(self, gpio, *args, **kwargs):
-        if gpio in range(31):
-            result = func(self, gpio, *args, **kwargs)
-        else:
-            result = pigpio._errors[-2]
-        return result
-
-    return check_args
+import socket
 
 
 @pytest.fixture()
@@ -173,7 +56,7 @@ def patch_pigpio_base(monkeypatch):
         monkeypatch.delattr("pigpio._pigpio_command_nolock")
         monkeypatch.delattr("pigpio._pigpio_command_ext")
         monkeypatch.delattr("pigpio._pigpio_command_ext_nolock")
-        monkeypatch.setattr("pigpio.pi.connected", 1, raising=False)
+       # monkeypatch.setattr("pigpio.pi.connected", 1, raising=False)
 
     do_monkeypatch()
 
@@ -182,14 +65,14 @@ def patch_pigpio_base(monkeypatch):
 def patch_pigpio_i2c(patch_pigpio_base, monkeypatch):
     """ monkeypatches pigpio.pi() with a mock I2C interface that does not depend on the pigpio daemon"""
 
-    def add_mock_i2c_hardware(self, device: MockI2CHardwareDevice, i2c_address, i2c_bus):
+    def add_mock_hardware(self, device: MockHardwareDevice, i2c_address, i2c_bus):
         self.mock_i2c[i2c_bus][i2c_address] = device
 
     @mock_pigpio_errors
     def mock_i2c_open(self, i2c_bus, i2c_address):
         if i2c_bus in self.mock_i2c:
-            handle = len(self.mock_i2c[i2c_bus])
-            self.mock_handles = {handle: (i2c_bus, i2c_address)}
+            handle = len(self.mock_handles)
+            self.mock_handles[handle] = (i2c_bus, i2c_address)
             return handle
         else:
             return pigpio.PI_BAD_I2C_BUS
@@ -205,11 +88,25 @@ def patch_pigpio_i2c(patch_pigpio_base, monkeypatch):
             return pigpio.PI_BAD_HANDLE
 
     @mock_pigpio_errors
+    def mock_spi_open(self, channel, baudrate):
+        """ Basically the same as I2C open except uses 'spi' as the i2c bus"""
+        if channel in range(21):
+            handle = len(self.mock_handles)
+            self.mock_handles = {handle: ('spi', channel)}
+            return handle
+        else:
+            return pigpio.PI_BAD_SPI_CHANNEL
+
+    @mock_pigpio_errors
+    def mock_spi_close(self, handle):
+        """ Just calls I2C close."""
+        result = self.i2c_close(handle)
+        return result
+
+    @mock_pigpio_errors
     def mock_i2c_read_device(self, handle, count):
         if handle in self.mock_handles:
             (bus, addr) = self.mock_handles[handle]
-            if count != 2:
-                raise NotImplementedError
             return count, bytearray(self.mock_i2c[bus][addr].read_mock_hardware_device(count))
         else:
             return (pigpio.PI_BAD_HANDLE,)
@@ -255,15 +152,17 @@ def patch_pigpio_i2c(patch_pigpio_base, monkeypatch):
             return pigpio.PI_BAD_HANDLE
 
     def do_monkeypatch():
-        monkeypatch.setattr("pigpio.pi.mock_i2c", {0: dict(), 1: dict()}, raising=False)
+        monkeypatch.setattr("pigpio.pi.mock_i2c", {0: dict(), 1: dict(), 'spi': dict()}, raising=False)
         monkeypatch.setattr("pigpio.pi.mock_handles", dict(), raising=False)
-        monkeypatch.setattr("pigpio.pi.add_mock_i2c_hardware", add_mock_i2c_hardware, raising=False)
+        monkeypatch.setattr("pigpio.pi.add_mock_hardware", add_mock_hardware, raising=False)
         monkeypatch.setattr("pigpio.pi.i2c_open", mock_i2c_open)
         monkeypatch.setattr("pigpio.pi.i2c_close", mock_i2c_close)
         monkeypatch.setattr("pigpio.pi.i2c_read_device", mock_i2c_read_device)
         monkeypatch.setattr("pigpio.pi.i2c_read_i2c_block_data", mock_i2c_read_i2c_block_data)
         monkeypatch.setattr("pigpio.pi.i2c_write_device", mock_i2c_write_device)
         monkeypatch.setattr("pigpio.pi.i2c_write_i2c_block_data", mock_i2c_write_i2c_block_data)
+        monkeypatch.setattr("pigpio.pi.spi_open", mock_spi_open)
+        monkeypatch.setattr("pigpio.pi.spi_close", mock_spi_close)
 
     do_monkeypatch()
 
@@ -496,7 +395,7 @@ def patch_pigpio_gpio(patch_pigpio_base, monkeypatch):
 
 @pytest.fixture()
 def mock_i2c_hardware():
-    """ Factory fixture for creating MockI2CHardwareDevice objects
+    """ Factory fixture for creating MockHardwareDevice objects
     """
     def make_mock_hardware(i2c_bus=None, i2c_address=None, n_registers=None, reg_values=None):
         """
@@ -522,6 +421,118 @@ def mock_i2c_hardware():
                     reg_values.append(os.getrandom(2))
             elif n_registers < len(reg_values):
                 raise ValueError("Cannot specify fewer registers than register values provided")
-        device = MockI2CHardwareDevice(*reg_values)
+        device = MockHardwareDevice(*reg_values)
         return {'device': device, 'i2c_bus': i2c_bus, 'i2c_address': i2c_address, 'values': reg_values}
     return make_mock_hardware
+
+
+def mock_pigpio_errors(func):
+    @functools.wraps(func)
+    def mock_pigpio__u2i_exception(self, *args, **kwargs):
+        value = func(self, *args, **kwargs)
+        v = value if type(value) in (int, bool, float) else value[0]
+        if v < 0:
+            raise pigpio.error(pigpio.error_text(v))
+        return value
+
+    return mock_pigpio__u2i_exception
+
+
+def mock_pigpio_bad_gpio_arg(func):
+    @functools.wraps(func)
+    def check_args(self, gpio, *args, **kwargs):
+        if gpio in range(53):
+            result = func(self, gpio, *args, **kwargs)
+        else:
+            result = pigpio._errors[pigpio.PI_BAD_GPIO]
+        return result
+
+    return check_args
+
+
+def mock_pigpio_bad_user_gpio_arg(func):
+    @functools.wraps(func)
+    def check_args(self, gpio, *args, **kwargs):
+        if gpio in range(31):
+            result = func(self, gpio, *args, **kwargs)
+        else:
+            result = pigpio._errors[-2]
+        return result
+
+    return check_args
+
+
+class MockHardwareDevice:
+    def __init__(self, *args):
+        """ A simple mock device with registers defined by kwargs. If only one register value is passed, device emulates
+        a single register device that responds to read_device commands (such as the SFM3200). Retains past register
+        values upon writing to a register for logging/assertion convenience.
+
+        Register values are stored as raw bytes. Reading and writing to/from the registers simulates network-endian
+            transactions by byteswapping.
+
+        Args:
+            *args: register_values of type bytes; one, per, register
+        """
+        self.last_register = None
+        self.registers = []
+        if args:
+            for arg in args:
+                if not isinstance(arg, bytes):
+                    raise TypeError("Unknown register value of type {}".format(type(arg)))
+                self.registers.append(deque())
+                self.registers[-1].append(arg)
+            if len(self.registers) == 1:
+                self.last_register = 0
+        else:
+            TypeError("MockHardwareDevice needs at least one register to initialize")
+
+    def read_mock_hardware_device(self, count=None):
+        """Alias for read_mock_hardware_register(reg_num=None, count)"""
+        return self.read_mock_hardware_register(reg_num=None, count=count)
+
+    def write_mock_hardware_device(self, value):
+        """ Alias for write_mock_hardware_register(reg_num=None, value)"""
+        self.write_mock_hardware_register(reg_num=None, value=value)
+
+    def read_mock_hardware_register(self, reg_num=None, count=None):
+        """ Reads count bytes from a specific register
+
+        Args:
+            reg_num: The index of the register to read
+            count (int): The number of bytes to read
+
+        Returns:
+            bytes: the register contents
+        """
+        if reg_num is None:
+            if self.last_register is not None:
+                reg_num = self.last_register
+            else:
+                raise RuntimeError("mock_i2c_device tried to access last register but none have been accessed yet")
+        else:
+            self.last_register = reg_num
+        result = self.registers[reg_num][-1]
+        return result if count is None else result[:count]
+
+    def write_mock_hardware_register(self, reg_num, value):
+        """ Writes value to register specified by reg_num
+
+        Args:
+            reg_num: The index of the register to write
+            value (bytes): The stuff to write to the register
+        """
+        if type(value) is not bytes:
+            raise TypeError("arg 'value' must be of type bytes")
+        if reg_num is None:
+            if self.last_register is not None:
+                reg_num = self.last_register
+            else:
+                raise RuntimeError("mock_i2c_device tried to access last register but none have been accessed yet")
+        else:
+            self.last_register = reg_num
+        self.last_register = reg_num
+        self.registers[reg_num].append(value)
+
+
+soft_frequencies = (8000, 4000, 2000, 1600, 1000, 800, 500, 400, 320, 250, 200, 160, 100, 80, 50, 40, 20, 10)

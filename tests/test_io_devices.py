@@ -1,6 +1,4 @@
 from .pigpio_mocks import *
-from os import getrandom
-from collections import OrderedDict
 import vent.io.devices as iodev
 
 
@@ -17,9 +15,29 @@ def test_mock_pigpio_base(patch_pigpio_base):
     """
 
 
-@pytest.mark.parametrize("seed", [getrandom(8) for _ in range(10)])
-def test_mock_pigpio_i2c(patch_pigpio_i2c, mock_i2c_hardware, seed):
+def test_pigpio_connection_exception(patch_pigpio_base, monkeypatch):
     """__________________________________________________________________________________________________________TEST #2
+        Tests to make sure an exception is thrown if, upon init, a PigpioConnection finds it is not connected."""
+    def mock_create_bad_connection(host, timeout):
+        """ mock of socket.create_connection(). Returns a bare-bones mock socket"""
+        raise socket.error
+    monkeypatch.setattr("socket.create_connection", mock_create_bad_connection)
+    with pytest.raises(RuntimeError):
+        iodev.PigpioConnection()
+    with pytest.raises(RuntimeError):
+        iodev.IODeviceBase()
+
+
+def test_io_device_base_no_handles_to_close(patch_pigpio_base, monkeypatch):
+    """__________________________________________________________________________________________________________TEST #3
+        Tests that IODeviceBase._close() returns cleanly when it has no handles"""
+    device = iodev.IODeviceBase()
+    device._close()
+
+
+@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(10)])
+def test_mock_pigpio_i2c(patch_pigpio_i2c, mock_i2c_hardware, seed):
+    """__________________________________________________________________________________________________________TEST #4
     Tests the functionality of the mock pigpio i2c device interface. More specifically, tests that:
     - mock hardware devices are initialized correctly
     - mock handles, i2c_open(), and i2c_close() can be used to add, interact with, and remove mock hardware devices
@@ -33,15 +51,19 @@ def test_mock_pigpio_i2c(patch_pigpio_i2c, mock_i2c_hardware, seed):
         and write_register()
     """
     random.seed(seed)
-    n_devices = random.randint(1, 5)
+    n_devices = random.randint(1, 20)
     address_pool = random.sample(range(128), k=n_devices)
     pig = iodev.PigpioConnection()
+    mocks = []
     for i in range(n_devices):
+        mock = mock_i2c_hardware(i2c_address=address_pool.pop())
+        pig.add_mock_hardware(mock['device'], mock['i2c_address'], mock['i2c_bus'])
+        mock['handle'] = pig.i2c_open(mock['i2c_bus'], mock['i2c_address'])
+        mocks.append(mock)
+    for mock in mocks:
+        handle = mock['handle']
         expected = {'init': [], 'write': [], 'read': []}
         result = {'init': [], 'write': [], 'read': []}
-        mock = mock_i2c_hardware(i2c_address=address_pool.pop())
-        pig.add_mock_i2c_hardware(mock['device'], mock['i2c_address'], mock['i2c_bus'])
-        handle = pig.i2c_open(mock['i2c_bus'], mock['i2c_address'])
         for reg in range(len(mock['values'])):
             expected['init'] = mock['values'][reg]
             expected['write'] = expected['init']
@@ -58,14 +80,16 @@ def test_mock_pigpio_i2c(patch_pigpio_i2c, mock_i2c_hardware, seed):
                 result['read'] = pig.i2c_read_i2c_block_data(handle, reg, count=2)[1]
             assert result == expected
         pig.i2c_close(handle)
-        assert not pig.mock_i2c[mock['i2c_bus']]
+    assert not pig.mock_i2c[0]
+    assert not pig.mock_i2c[1]
+    assert not pig.mock_i2c['spi']
     """__________________________________________________________________________________________________________
     """
 
 
-@pytest.mark.parametrize("seed", [getrandom(8) for _ in range(10)])
+@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(100)])
 def test_i2c_device(patch_pigpio_i2c, mock_i2c_hardware, seed):
-    """__________________________________________________________________________________________________________TEST #1
+    """__________________________________________________________________________________________________________TEST #5
     Tests the various basic I2CDevice methods, open, close, read,  write, etc.
         - Note: i2c_device.read_device() does not byteswap. write_device, read_register, and write_register all DO
             perform byteswaps. Therefore, `expected` does not get byteswapped like it normally would when num_registers
@@ -83,7 +107,7 @@ def test_i2c_device(patch_pigpio_i2c, mock_i2c_hardware, seed):
         # We expect to get back what we put in, if byteswapping is happening correctly on both read and write.
         expected = data
     pig = iodev.PigpioConnection()
-    pig.add_mock_i2c_hardware(mock['device'], mock['i2c_address'], mock['i2c_bus'])
+    pig.add_mock_hardware(mock['device'], mock['i2c_address'], mock['i2c_bus'])
     i2c_device = iodev.I2CDevice(mock['i2c_address'], mock['i2c_bus'], pig=pig)
     assert i2c_device.pigpiod_ok
     if n_registers == 1:
@@ -100,10 +124,45 @@ def test_i2c_device(patch_pigpio_i2c, mock_i2c_hardware, seed):
     """
 
 
+def test_register_arg_exception():
+    """__________________________________________________________________________________________________________TEST #6
+        Tests that I2CDevice.Register throws an exception if it tries to init with a mismatched number of arguments
+    """
+    with pytest.raises(ValueError):
+        iodev.I2CDevice.Register(fields=('one', 'two', 'three'), values=((0, 1, 3), (4, 5)))
+
+
+def test_value_field_pack_unknown_value_exception():
+    """__________________________________________________________________________________________________________TEST #7
+        Tests that I2CDevice.Register throws an exception if it tries to init with a mismatched number of arguments
+    """
+    reg = iodev.I2CDevice.Register(fields=('one', 'two', 'three'), values=((0, 1, 3), (4, 5), ('hi', 'mark')))
+    with pytest.raises(ValueError):
+        reg.three.pack('oh')
+
+
+def test_value_field_insert_unknown_value_exception():
+    """__________________________________________________________________________________________________________TEST #8
+        Tests that I2CDevice.Register throws an exception if it tries to init with a mismatched number of arguments
+    """
+    reg = iodev.I2CDevice.Register(fields=('one', 'two', 'three'), values=((0, 1, 3), (4, 5), ('hi', 'mark')))
+    with pytest.raises(ValueError):
+        reg.three.insert(0x0, 'oh')
+
+
+def test_spi_device(patch_pigpio_i2c):
+    channel = random.randint(1, 20)
+    device = iodev.SPIDevice(channel=channel, baudrate=100)
+    mock_device = MockHardwareDevice(os.getrandom(2))
+    device.pig.add_mock_hardware(mock_device, i2c_address=channel, i2c_bus='spi')
+    assert device._handle >= 0
+    device._close()
+
+
 @pytest.mark.parametrize("ads1x15", [iodev.ADS1115, iodev.ADS1015])
-@pytest.mark.parametrize("seed", [getrandom(8) for _ in range(100)])
+@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(100)])
 def test_read_conversion(patch_pigpio_i2c, mock_i2c_hardware, ads1x15, seed):
-    """__________________________________________________________________________________________________________TEST #1
+    """__________________________________________________________________________________________________________TEST #9
     Tests that the proper cfg is generated and written to the config register given kwargs, and tests that the
         conversion register is properly read & converted to signed int
     """
@@ -125,7 +184,7 @@ def test_read_conversion(patch_pigpio_i2c, mock_i2c_hardware, ads1x15, seed):
         ]
     )
     pig = iodev.PigpioConnection()
-    pig.add_mock_i2c_hardware(mock['device'], mock['i2c_address'], mock['i2c_bus'])
+    pig.add_mock_hardware(mock['device'], mock['i2c_address'], mock['i2c_bus'])
     ads = ads1x15(pig=pig)
 
     expected_default_config = ads.config.unpack(0xC3E3)
@@ -136,42 +195,3 @@ def test_read_conversion(patch_pigpio_i2c, mock_i2c_hardware, ads1x15, seed):
     assert result == expected_val
     """__________________________________________________________________________________________________________
     """
-
-'''
-@pytest.mark.parametrize(
-    "ads1x15, kwargs", [
-        (iodev.ADS1115, {"MUX": 0, "PGA": 4.096, "MODE": 'SINGLE', "DR": 8}),
-        (iodev.ADS1015, {"MUX": 0, "PGA": 4.096, "MODE": 'SINGLE', "DR": 128})
-    ]
-)
-def test_config(mock_pigpio_i2c, kwargs, ads1x15, monkeypatch):
-    """__________________________________________________________________________________________________________TEST #2
-    Tests the OrderedDict
-        - Patches pigpio.pi to mock read 0x8583 from the 'CONFIG' register
-        - Initializes an ADS1x15 as ads
-        - Asserts that ads.config is a Register instance
-        - Asserts that ads.config.MUX.info() returns a tuple matching expected mux offset, mask, and possible values
-    """
-    expected = [12, 0x07, OrderedDict({
-        (0, 1): 0,
-        (0, 3): 1,
-        (1, 3): 2,
-        (2, 3): 3,
-        0: 4,
-        1: 5,
-        2: 6,
-        3: 7
-    })]
-    pig = iodev.PigpioConnection()
-    monkeypatch.setattr(
-        pig,
-        "i2c_read_i2c_block_data",
-        mock_i2c_read_i2c_block_data('SWAPPED', 1)
-    )
-    ads = ads1x15(pig=pig)
-    assert isinstance(ads.config, iodev.I2CDevice.Register)
-    result = ads.config.MUX.info()
-    assert result == expected
-    """__________________________________________________________________________________________________________
-    """
-'''

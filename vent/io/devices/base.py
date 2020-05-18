@@ -41,8 +41,6 @@ class IODeviceBase:
         """
         self._pig = pig if pig is not None else PigpioConnection(show_errors=False)
         self._handle = -1
-        if not self.pigpiod_ok:
-            raise RuntimeError
 
     @property
     def pig(self) -> PigpioConnection:
@@ -248,15 +246,6 @@ class I2CDevice(IODeviceBase):
                 self._mask = mask
                 self._values = values
 
-            @property
-            def offset(self) -> int:
-                """ Returns the position of the field's LSB in the register. e.g., mask = self._mask << self._offset."""
-                return self._offset
-
-            def info(self) -> list:
-                """ Returns a list containing the ValueField's offset, mask, and a tuple of possible values """
-                return [self.offset, self._mask, self._values]
-
             def unpack(self, cfg):
                 """ Extracts the ValueField's setting from cfg & returns the result in a human readable form.
 
@@ -307,7 +296,7 @@ class I2CDevice(IODeviceBase):
 class SPIDevice(IODeviceBase):
     """ A class wrapper for pigpio SPI handles. Not really implemented. """
 
-    def __init(self, channel, baudrate, pig=None):
+    def __init__(self, channel, baudrate, pig=None):
         """ Instantiates an SPIDevice on SPI `channel` with `baudrate` and, optionally, `pigpio.pi = pig`.
 
         Args:
@@ -315,7 +304,7 @@ class SPIDevice(IODeviceBase):
             baudrate (int): SPI baudrate
             pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
         """
-        super().__init__(pig)
+        super().__init__(pig=pig)
         self._open(channel, baudrate)
 
     @pigpio_command

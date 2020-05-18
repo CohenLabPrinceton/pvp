@@ -1,6 +1,7 @@
 from vent.io.devices import I2CDevice, be16_to_native
 from abc import ABC, abstractmethod
-from random import random
+import random
+from collections import deque
 
 import time
 import numpy as np
@@ -14,76 +15,81 @@ class Sensor(ABC):
 
     def __init__(self):
         """ Upon creation, calls update() to ensure that if get is called there will be something to return."""
-        self._data = np.zeros(
-            self._DEFAULT_STORED_OBSERVATIONS,
-            dtype=np.float16
-        )
-        self._i = 0
-        self._data_length = self._DEFAULT_STORED_OBSERVATIONS
-        self._last_timestamp = -1
+        self._maxlen_data = self._DEFAULT_STORED_OBSERVATIONS
+        self._data = {
+            'timestamp': deque(maxlen=self.maxlen_data),
+            'value': deque(maxlen=self.maxlen_data)
+        }
 
     def update(self) -> float:
         """ Make a sensor reading, verify that it makes sense and store the result internally. Returns True if reading
         was verified and False if something went wrong.
         """
         value = self._read()
-        if self._verify(value):
-            self.__store_last(value)
-            self._last_timestamp = time.time()
+        self._data['value'].append(value)
+        self._data['timestamp'].append(time.time())
         return self._verify(value)
 
-    def get(self) -> float:
+    def get(self, average=False) -> float:
         """ Return the most recent sensor reading."""
-        if self._last_timestamp == -1:
-            raise RuntimeWarning('get() called before update()')
-        return self._data[(self._i - 1) % self._data_length]
+        if len(self._data['value']) == 0:
+            self.update()
+        if average:
+            value = sum(self._data['value'])/len(self._data['value'])
+            self.reset()
+        else:
+            value = self._data['value'].pop()
+            ts = self._data['timestamp'].pop()
+        return value
 
     def age(self) -> float:
         """ Returns the time in seconds since the last sensor update, or -1 if never updated."""
-        if self._last_timestamp == -1:
+        if not self._data['timestamp']:
             return -1.0
         else:
-            return time.time() - self._last_timestamp
+            return time.time() - self._data['timestamp'][-1]
 
     def reset(self):
         """ Resets the sensors internal memory. May be overloaded by subclasses to extend functionality specific to a
         device.
         """
-        self._data = np.zeros(self.data_length, dtype=np.float16)
-        self._i = 0
+        for key in self._data.keys():
+            self._data[key].clear()
 
     @property
-    def data(self) -> np.ndarray:
-        """ Locally-stored observations.
-        Note: ndarray.astype(bool) returns an equivalent sized array
-        with True for each nonzero element and False everywhere else.
+    def data(self) -> np.array:
+        """ All Locally-stored observations.
 
         Returns:
-            np.ndarray: an ndarray of observations arranged oldest to newest. Result has length equal to the lessor
-                of self.n and the number of observations.
-        made.
+            np.array: An array of timestamped observations arranged oldest to newest.
         """
-        rolled = np.roll(self._data, self.data_length - self._i)
-        return rolled[rolled.astype(bool)]
+        result = np.array(
+            [[timestamp, value] for timestamp, value in zip(self._data['timestamp'], self._data['value'])]
+        )
+        return result
 
     @property
-    def data_length(self) -> int:
+    def maxlen_data(self) -> int:
         """ Returns the number of observations kept in the Sensor's internal ndarray. Once the ndarray has been filled,
         the sensor begins overwriting the oldest elements of the ndarray with new observations such that the size of the
         internal storage stays constant.
         """
-        return self._data_length
+        return self._maxlen_data
 
-    @data_length.setter
-    def data_length(self, new_data_length):
+    @maxlen_data.setter
+    def maxlen_data(self, new_data_length):
         """ Set a new length for stored observations. Clears existing
         observations and resets.
 
         Args:
             new_data_length (int): The new length of internal observation storage
         """
-        self._data_length = new_data_length
-        self.reset()
+        self._maxlen_data = new_data_length
+        new_data = {'value': deque(maxlen=new_data_length), 'timestamp': deque(maxlen=new_data_length)}
+        for key in new_data.keys():
+            new_data[key].extend(self._data[key])
+            self._data[key].clear()
+            self._data[key] = new_data[key]
 
     def _read(self) -> float:
         """ Calls _raw_read and scales the result before returning it."""
@@ -93,30 +99,18 @@ class Sensor(ABC):
     def _verify(self, value):
         """ Validate reading and throw exception/alarm if sensor does not appear to be working correctly.
         """
-        raise NotImplementedError('Subclass must implement _verify()')
 
     @abstractmethod
     def _convert(self, raw):
         """ Converts a raw reading from a sensor in whatever format the device communicates with into a meaningful
         result.
         """
-        raise NotImplementedError('Subclass must implement _raw_read()')
 
     @abstractmethod
     def _raw_read(self):
         """ Requests a new observation from the device and returns the raw result in whatever format/units the device
         communicates with.
         """
-        raise NotImplementedError('Subclass must implement _raw_read()')
-
-    def __store_last(self, value):
-        """ Takes a value and stores it in self.data. Increments
-
-        Args:
-            value (float): Sensor reading to store.
-        """
-        self._data[self._i] = value
-        self._i = (self._i + 1) % self.data_length
 
 
 class AnalogSensor(Sensor):
@@ -124,6 +118,7 @@ class AnalogSensor(Sensor):
     the sensor base class and extends with functionality specific to analog sensors attached to the ADS1115. If
     instantiated without a subclass, conceptually represents a voltmeter with a normalized output.
     """
+    # TODO The offset voltage/output span & verify/calibrate stuff needs a rethink.
     _DEFAULT_offset_voltage = 0
     _DEFAULT_output_span = 5
     _DEFAULT_CALIBRATION = {
@@ -187,8 +182,8 @@ class AnalogSensor(Sensor):
         Args:
             value (float): Sensor reading to validate
         """
-        report = bool(0 <= value / self.conversion_factor <= 1)
-        if not report:
+        report = bool(-1 <= value / self.conversion_factor <= 1)
+       # if not report:
             # FIXME: Right now this just expands the calibration range whenever bounds are exceeded, because we're not
             #  familiar enough with our sensors to know when we should really be rejecting values. This approach should
             #  work for debugging/R&D purposes but really ought to be thought through and/or replaced for production.
@@ -196,9 +191,9 @@ class AnalogSensor(Sensor):
             #  some expected drift around offset voltage and output span, however, and that drift is going to change
             #  depending on the sensor in question; i.e., voltages between offset_voltage and zero may or may not be ok,
             #  and voltages above the offset+span that do not exceed VDD may or may not be ok as well.
-            self.offset_voltage = min(self.offset_voltage, value)
-            self.output_span = max(self.output_span, value - self.offset_voltage)
-            print('Warning: AnalogSensor calibration adjusted')
+        #    self.offset_voltage = min(self.offset_voltage, value)
+        #    self.output_span = max(self.output_span, value - self.offset_voltage)
+        #    print('Warning: AnalogSensor calibration adjusted')
         return report
 
     def _convert(self, raw) -> float:
@@ -208,8 +203,7 @@ class AnalogSensor(Sensor):
             raw (float): The raw sensor reading to convert.
         """
         return (
-                self.conversion_factor * (raw - getattr(self, 'offset_voltage'))
-                / (getattr(self, 'output_span'))
+                self.conversion_factor * ((raw - getattr(self, 'offset_voltage')) / getattr(self, 'output_span'))
         )
 
     def _raw_read(self) -> float:
@@ -288,14 +282,14 @@ class SFM3200(Sensor, I2CDevice):
         """ Extended to add device specific behavior: Asks the sensor to perform a soft reset. 80 ms soft reset time."""
         super().reset()
         self.write_device(0x2000)
-        time.sleep(.08)
+        time.sleep(.08)  # TODO: this should be an await
 
     def _start(self):
         """ Device specific:Sends the 'start measurement' command to the sensor. Start-up time once command has been
         recieved is 'less than 100ms'
         """
         self.write_device(0x1000)
-        time.sleep(.1)
+        time.sleep(.1) # TODO: this should be an await
 
     def _verify(self, value) -> bool:
         """ No further verification needed for this sensor. Onboard chip handles all that. Could throw in a CRC8 checker
@@ -346,10 +340,7 @@ class SimSensor(Sensor):
         Args:
             value (float): The sensor reading to verify
         """
-        if random() > .999:
-            return False
-        else:
-            return True
+        return True
 
     def _convert(self, raw) -> float:
         """ Does nothing for a simulated sensor. Returns what it is passed.
@@ -361,7 +352,4 @@ class SimSensor(Sensor):
 
     def _raw_read(self) -> float:
         """ Initializes randomly, otherwise does a random walk-ish thing."""
-        if self._i == 0:
-            return self.low + random() * self.high
-        else:
-            return self.get() + random() * (self.high / 100)
+        return self.low + random.random() * self.high

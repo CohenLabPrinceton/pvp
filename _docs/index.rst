@@ -25,6 +25,7 @@ Welcome to ventilator's documentation!
    coordinator <coordinator>
    GUI <gui>
    io <io>
+   alarm <alarm>
 
 
 .. toctree::

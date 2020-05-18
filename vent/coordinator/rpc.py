@@ -18,14 +18,14 @@ def get_sensors():
     return pickle.dumps(res)
 
 
-def get_active_alarms():
-    res = remote_controller.get_active_alarms()
-    return pickle.dumps(res)
-
-
-def get_logged_alarms():
-    res = remote_controller.get_logged_alarms()
-    return pickle.dumps(res)
+# def get_active_alarms():
+#     res = remote_controller.get_active_alarms()
+#     return pickle.dumps(res)
+#
+#
+# def get_logged_alarms():
+#     res = remote_controller.get_logged_alarms()
+#     return pickle.dumps(res)
 
 
 def set_control(control_setting):
@@ -48,8 +48,8 @@ def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port)
     remote_controller = vent.controller.control_module.get_control_module(sim_mode)
     server = SimpleXMLRPCServer((addr, port), allow_none=True, logRequests=False)
     server.register_function(get_sensors, "get_sensors")
-    server.register_function(get_active_alarms, "get_active_alarms")
-    server.register_function(get_logged_alarms, "get_logged_alarms")
+    # server.register_function(get_active_alarms, "get_active_alarms")
+    # server.register_function(get_logged_alarms, "get_logged_alarms")
     server.register_function(set_control, "set_control")
     server.register_function(get_control, "get_control")
     server.register_function(remote_controller.start, "start")

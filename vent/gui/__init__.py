@@ -104,7 +104,7 @@ def load_mono_font():
         font_db.addApplicationFont(os.path.join(external_dir, 'FiraCode-Regular.otf'))
         font_db.addApplicationFont(os.path.join(external_dir, 'FiraCode-Bold.otf'))
         mono_font = QtGui.QFont('Fira Code')
-    except:
+    except:   # pragma: no cover
         # if that fails, try to load liberation mono
         # TODO: Log this
         try:

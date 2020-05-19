@@ -6,7 +6,8 @@ import os
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
-from vent.common.message import ControlSetting, Alarm, AlarmSeverity
+from vent.common.message import ControlSetting
+from vent.alarm import AlarmSeverity, Alarm
 from vent.common.values import ValueName
 from vent import gui
 from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS
@@ -91,7 +92,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
 
         if get_gui_instance() is not None and gui.limit_gui():
-            raise Exception('Instance of gui already running!')
+            raise Exception('Instance of gui already running!') # pragma: no cover
         else:
             set_gui_instance(self)
 
@@ -153,7 +154,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         for control_name, control_params in self.CONTROL.items():
             self.set_value(control_params.default, control_name)
 
-
     def set_value(self, new_value, value_name=None):
         """
         Set a control value with the ``coordinator``
@@ -181,8 +181,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def update_gui(self):
         try:
             # get alarms
-            active_alarms = self.coordinator.get_active_alarms()
-            self.alarms_updated.emit(active_alarms)
+            #active_alarms = self.coordinator.get_active_alarms()
+            #self.alarms_updated.emit(active_alarms)
 
 
             vals = self.coordinator.get_sensors()
@@ -418,7 +418,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     @alarm_state.setter
     def alarm_state(self, state):
-        if state == AlarmSeverity.RED:
+        if state == AlarmSeverity.HIGH:
             pass
 
     @QtCore.Slot(AlarmSeverity)
@@ -446,6 +446,16 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 raise Warning('had a thread object, but the thread object couldnt be stopped')
 
         event.accept()
+
+    def start(self):
+        """
+        Click the :meth:`~.gui.widgets.status_bar.Status_Bar.start` button
+
+        Returns:
+
+        """
+        self.status_bar.start_button.click()
+
 
 def launch_gui(coordinator):
 

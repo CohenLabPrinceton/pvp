@@ -5,7 +5,7 @@ from collections import deque
 import pigpio
 from vent.io.devices.pins import Pin
 import os
-import socket
+import secrets
 
 
 @pytest.fixture()
@@ -412,13 +412,13 @@ def mock_i2c_hardware():
         i2c_address = random.getrandbits(7) if i2c_address is None else i2c_address
         if reg_values is None:
             n_registers = random.getrandbits(5) if n_registers is None else n_registers
-            reg_values = [os.getrandom(2) for _ in range(n_registers)]
+            reg_values = [secrets.token_bytes(2) for _ in range(n_registers)]
         else:
             if n_registers is None:
                 pass
             elif n_registers > len(reg_values):
                 for i in range(n_registers-len(reg_values)):
-                    reg_values.append(os.getrandom(2))
+                    reg_values.append(secrets.token_bytes(2))
             elif n_registers < len(reg_values):
                 raise ValueError("Cannot specify fewer registers than register values provided")
         device = MockHardwareDevice(*reg_values)

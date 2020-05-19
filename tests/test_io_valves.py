@@ -43,7 +43,7 @@ def test_on_off_valve(patch_pigpio_gpio, gpio, form):
     """
 
 
-@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(31)])
+@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(31)])
 def test_pwm_control_valve(patch_pigpio_gpio, seed):
     """__________________________________________________________________________________________PWMControlValve_TEST #1
      Tests the open/close interface of an PWMControlValve. This should mimic the behavior of an OnOffValve, but uses a

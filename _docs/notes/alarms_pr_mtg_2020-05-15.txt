@@ -1,0 +1,14 @@
+alarms regulated by intensity, evolving sound.
+	- low tidal volume
+	- low pressure
+	- high pressure
+
+add comments to alarm declarataions
+abstraction layer to instantiating alarms
+- assert that breath cycles increase in condition
+- add condition that checks on the alarm rule not on alarm 2 existence
+think about alarm factory to ensure
+add check that dependency transformations are callable
+reset alarm manager when stop pressed
+
+- make container

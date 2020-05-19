@@ -1,7 +1,6 @@
 # gui requirements
 sudo: required
 
-
 language: python
 # python versions to use during the tests
 python:

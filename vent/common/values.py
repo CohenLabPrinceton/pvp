@@ -46,6 +46,8 @@ class Value(object):
                  abs_range: tuple,
                  safe_range: tuple,
                  decimals: int,
+                 control: bool,
+                 sensor: bool,
                  default: (int, float) = None):
         """
         Definition of a value.
@@ -73,12 +75,16 @@ class Value(object):
         self._safe_range = None
         self._decimals = None
         self._default = None
+        self._control = None
+        self._sensor = None
 
         self.name = name
         self.units = units
         self.abs_range = abs_range
         self.safe_range = safe_range
         self.decimals = decimals
+        self.control = control
+        self.sensor = sensor
 
         if default is not None:
             self.default = default
@@ -130,6 +136,24 @@ class Value(object):
         assert(isinstance(default, int) or isinstance(default, float))
         self._default = default
 
+    @property
+    def control(self):
+        return self._control
+
+    @control.setter
+    def control(self, control):
+        assert(isinstance(control, bool))
+        self._control = control
+
+    @property
+    def sensor(self):
+        return self._sensor
+
+    @sensor.setter
+    def sensor(self, sensor):
+        assert(isinstance(sensor, bool))
+        self._sensor = sensor
+
     def __setitem__(self, key, value):
         self.__setattr__(key, value)
 
@@ -143,54 +167,132 @@ class Value(object):
             'abs_range': self.abs_range,
             'safe_range': self.safe_range,
             'decimals': self.decimals,
-            'default': self.default
+            'default': self.default,
+            'control': self.control,
+            'sensor': self.sensor
                 }
 
 
 
 
-SENSOR = odict({
+VALUES = odict({
     ValueName.FIO2: Value(**{ 'name': 'FiO2',
         'units': '%',
         'abs_range': (0, 100),
         'safe_range': (20, 100),
-        'decimals' : 1
+        'decimals' : 1,
+        'control': False,
+        'sensor': True
     }),
     ValueName.TEMP: Value(**{
         'name': 'Temp',
         'units': '\N{DEGREE SIGN}C',
         'abs_range': (35, 40),
         'safe_range': (36, 39),
-        'decimals': 1
+        'decimals': 1,
+        'control': False,
+        'sensor': True
     }),
     ValueName.HUMIDITY: Value(**{
         'name': 'Humidity',
         'units': '%',
         'abs_range': (0, 100),
         'safe_range': (70, 100),
-        'decimals': 1
+        'decimals': 1,
+        'control': False,
+        'sensor': True
     }),
     ValueName.VTE: Value(**{
         'name': 'VTE',
         'units': 'l',  # Unit is liters :-)
         'abs_range': (0, 100),
         'safe_range': (0, 100),
-        'decimals': 2
+        'decimals': 2,
+        'control': False,
+        'sensor': True
     }),
     ValueName.PRESSURE: Value(**{
         'name': 'Pressure',
         'units': 'mmH2O',
         'abs_range': (0,70),
         'safe_range': (0,60),
-        'decimals': 1
+        'decimals': 1,
+        'control': False,
+        'sensor': True
     }),
     ValueName.IE_RATIO: Value(**{
         'name': 'I:E Ratio',
         'units': '',
         'abs_range': (0, 2),
         'safe_range': (0.33, 1),
-        'decimals': 2
-    })
+        'decimals': 2,
+        'control': False,
+        'sensor': False
+    }),
+    ValueName.PIP: Value(**{
+        'name': 'PIP', # (Peak Inspiratory Pressure)
+        'units': 'cm H2O',
+        'abs_range': (0, 70), # FIXME
+        'safe_range': (0, 50), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
+        'default': 22,           # FIXME
+        'decimals': 1,
+        'control': True,
+        'sensor': True
+    }),
+    ValueName.PIP_TIME: Value(**{
+        'name': 'PIPt',
+        'units': 'seconds',
+        'abs_range': (0, 5),  # FIXME
+        'safe_range': (0.2, 0.5),  # FIXME
+        'default': 0.3,  # FIXME
+        'decimals': 1,
+        'control': True,
+        'sensor': False
+    }),
+    ValueName.INSPIRATION_TIME_SEC: Value(**{
+        'name': 'INSPt',
+        'units': 'seconds',
+        'abs_range': (0, 5),  # FIXME
+        'safe_range': (1, 3.0),  # FIXME
+        'default': 2.0,  # FIXME
+        'decimals': 1,
+        'control': True,
+        'sensor': True
+    }),
+    ValueName.PEEP: Value(**{
+        'name': 'PEEP', #  (Positive End Expiratory Pressure)
+        'units': 'cm H2O',
+        'abs_range': (0, 20),  # FIXME
+        'safe_range': (0, 16), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
+        'default': 5,            # FIXME
+        'decimals': 1,
+        'control': True,
+        'sensor': True
+    }),
+    ValueName.PEEP_TIME: Value(**{
+        'name': 'PEEPt',
+        'units': 'seconds',
+        'abs_range': (0, 2),  # FIXME
+        'safe_range': (0, 1.0),  # FIXME
+        'default': 0.5,  # FIXME
+        'decimals': 1,
+        'control': True,
+        'sensor': False
+    }),
+    ValueName.BREATHS_PER_MINUTE: Value(**{
+        'name': 'RR', # Daniel re: FDA labels
+        'units': 'BPM', # Daniel re: FDA labels
+        'abs_range': (0, 50), # FIXME
+        'safe_range': (10, 30), # Stanford's socs https://www.vent4us.org/technical
+        'default': 17,            # FIXME
+        'decimals': 1,
+        'control': True,
+        'sensor': True
+    }),
+})
+
+SENSOR = odict({
+    k:v for k, v in VALUES.items() if v.sensor == True
 })
 """
 Values to monitor but not control. 
@@ -208,65 +310,7 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 
 
 CONTROL = odict({
-    ValueName.PIP: Value(**{
-        'name': 'PIP', # (Peak Inspiratory Pressure)
-        'units': 'cm H2O',
-        'abs_range': (0, 70), # FIXME
-        'safe_range': (0, 50), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
-        'default': 22,           # FIXME
-        'decimals': 1          # FIXME
-    }),
-    ValueName.PIP_TIME: Value(**{
-        'name': 'PIPt',
-        'units': 'seconds',
-        'abs_range': (0, 5),  # FIXME
-        'safe_range': (0.2, 0.5),  # FIXME
-        'default': 0.3,  # FIXME
-        'decimals': 1  # FIXME
-    }),
-    ValueName.INSPIRATION_TIME_SEC: Value(**{
-        'name': 'INSPt',
-        'units': 'seconds',
-        'abs_range': (0, 5),  # FIXME
-        'safe_range': (1, 3.0),  # FIXME
-        'default': 2.0,  # FIXME
-        'decimals': 1  # FIXME
-    }),
-    ValueName.PEEP: Value(**{
-        'name': 'PEEP', #  (Positive End Expiratory Pressure)
-        'units': 'cm H2O',
-        'abs_range': (0, 20),  # FIXME
-        'safe_range': (0, 16), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
-        'default': 5,            # FIXME
-        'decimals': 1           # FIXME
-    }),
-    ValueName.PEEP_TIME: Value(**{
-        'name': 'PEEPt',
-        'units': 'seconds',
-        'abs_range': (0, 2),  # FIXME
-        'safe_range': (0, 1.0),  # FIXME
-        'default': 0.5,  # FIXME
-        'decimals': 1  # FIXME
-    }),
-    ValueName.BREATHS_PER_MINUTE: Value(**{
-        'name': 'RR', # Daniel re: FDA labels
-        'units': 'BPM', # Daniel re: FDA labels
-        'abs_range': (0, 50), # FIXME
-        'safe_range': (10, 30), # Stanford's socs https://www.vent4us.org/technical
-        'default': 17,            # FIXME
-        'decimals': 1           # FIXME
-    }),
-
-
-
-    # 'ie': Value(**{
-    #     'name': 'I:E',
-    #     'units': '',
-    #     'abs_range': (0, 100),  # FIXME
-    #     'safe_range': (0, 100),  # FIXME
-    #     'default': 80,  # FIXME
-    #     'decimals': 1  # FIXME
-    # })
+    k: v for k, v in VALUES.items() if v.control == True
 })
 """
 Values to control but not monitor.

@@ -1,5 +1,6 @@
 from .pigpio_mocks import *
 import vent.io.devices as iodev
+from socket import error as socket_error
 
 
 def test_mock_pigpio_base(patch_pigpio_base):
@@ -20,7 +21,7 @@ def test_pigpio_connection_exception(patch_pigpio_base, monkeypatch):
         Tests to make sure an exception is thrown if, upon init, a PigpioConnection finds it is not connected."""
     def mock_create_bad_connection(host, timeout):
         """ mock of socket.create_connection(). Returns a bare-bones mock socket"""
-        raise socket.error
+        raise socket_error
     monkeypatch.setattr("socket.create_connection", mock_create_bad_connection)
     with pytest.raises(RuntimeError):
         iodev.PigpioConnection()
@@ -35,7 +36,7 @@ def test_io_device_base_no_handles_to_close(patch_pigpio_base, monkeypatch):
     device._close()
 
 
-@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(10)])
+@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(10)])
 def test_mock_pigpio_i2c(patch_pigpio_i2c, mock_i2c_hardware, seed):
     """__________________________________________________________________________________________________________TEST #4
     Tests the functionality of the mock pigpio i2c device interface. More specifically, tests that:
@@ -87,7 +88,7 @@ def test_mock_pigpio_i2c(patch_pigpio_i2c, mock_i2c_hardware, seed):
     """
 
 
-@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(100)])
+@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(100)])
 def test_i2c_device(patch_pigpio_i2c, mock_i2c_hardware, seed):
     """__________________________________________________________________________________________________________TEST #5
     Tests the various basic I2CDevice methods, open, close, read,  write, etc.
@@ -153,14 +154,14 @@ def test_value_field_insert_unknown_value_exception():
 def test_spi_device(patch_pigpio_i2c):
     channel = random.randint(1, 20)
     device = iodev.SPIDevice(channel=channel, baudrate=100)
-    mock_device = MockHardwareDevice(os.getrandom(2))
+    mock_device = MockHardwareDevice(secrets.token_bytes(2))
     device.pig.add_mock_hardware(mock_device, i2c_address=channel, i2c_bus='spi')
     assert device._handle >= 0
     device._close()
 
 
 @pytest.mark.parametrize("ads1x15", [iodev.ADS1115, iodev.ADS1015])
-@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(100)])
+@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(100)])
 def test_read_conversion(patch_pigpio_i2c, mock_i2c_hardware, ads1x15, seed):
     """__________________________________________________________________________________________________________TEST #9
     Tests that the proper cfg is generated and written to the config register given kwargs, and tests that the
@@ -172,7 +173,7 @@ def test_read_conversion(patch_pigpio_i2c, mock_i2c_hardware, ads1x15, seed):
         "PGA": random.choice(ads1x15._CONFIG_VALUES[2]),
         "MODE": random.choice(ads1x15._CONFIG_VALUES[3]),
         "DR": random.choice(ads1x15._CONFIG_VALUES[4])}
-    conversion_bytes = os.getrandom(2)
+    conversion_bytes = secrets.token_bytes(2)
     expected_val = int.from_bytes(conversion_bytes, 'big', signed=True) * kwargs['PGA'] / 32767
     mock = mock_i2c_hardware(
         i2c_bus=1,

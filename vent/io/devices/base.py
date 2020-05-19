@@ -3,8 +3,9 @@
 from collections import OrderedDict
 from vent.common.fashion import pigpio_command
 
-import time
 import pigpio
+import time
+
 
 
 class PigpioConnection(pigpio.pi):

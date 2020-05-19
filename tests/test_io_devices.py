@@ -1,6 +1,6 @@
 from .pigpio_mocks import *
 import vent.io.devices as iodev
-
+import socket
 
 def test_mock_pigpio_base(patch_pigpio_base):
     """__________________________________________________________________________________________________________TEST #1

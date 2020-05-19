@@ -6,7 +6,11 @@
 Welcome to ventilator's documentation!
 ======================================
 
+.. toctree::
+   :maxdepth: 4
+   :caption: Overview
 
+   Control Overview <control_overview>
 
 .. toctree::
    :maxdepth: 4
@@ -25,6 +29,7 @@ Welcome to ventilator's documentation!
    coordinator <coordinator>
    GUI <gui>
    io <io>
+   alarm <alarm>
 
 
 .. toctree::

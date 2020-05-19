@@ -1,0 +1,80 @@
+- LAPA - low airway pressure alarm
+	50ms rolling average, end of expiratory phase
+	* start low priority alarm, escalate if persists through next cycle
+	* can suppress this alarm
+
+- HAPA - high airway pressure alarm
+	* HIGH alarm sounds immediately
+	* 15% spike over PIP.
+	* cannot suppress alarm
+
+	- HAPA limit has to be below hardware limit. 
+
+	- Controller will drop PIP, so has to communicate changed PIP.
+
+- Hypoventilation, Low VTE
+	* VTE (tidal volume) < low
+	* priority LOW, escalate MEDIUM if exists
+		escalate to med if > 15%
+
+	* give some button to recalibrate if needed
+
+	- hard minimum and max as well
+	- 15% deviation of mean VTE
+
+- PEEP max/min
+	* MEDIUM alarm, operator fixes
+
+- Obstruction
+	* Technical alarm, HIGH priority
+	* Alarm delay < 2 ccles
+	* active alarm must trigger response in 1 cycle
+
+	* drop pressure to atmospheric or PEEP
+	* need to allow spontaneous breathing
+	* algorithm for calculating obstruction
+		- tubing kinked
+		- valve
+		- blocked viral/bacterial filter
+
+	* If P_airway > PIP for 2 cycles, open EXP valve
+	* if EXP valve doesn't work, cut input flow until at PEEP
+	* assumption is hospital is measuring CO2 and SpO2
+
+- disconnection/high leakage
+	* technical alarm
+	* MEDIUM priority
+	* VTE and airway pressure low.
+
+- oxygenation alarms
+	* priority MEDIUM
+	* fires for low and high.
+	* +/- 5% 
+
+
+UX stuff
+- inadvertent high pressure
+	* cannot set PIP to > 60 hPa without 2+ actions
+
+
+
+- protection against acidental change
+	* confirm settings on startup
+	* must not be able to turn vent off
+	* show confirmation on start with set values.
+
+
+
+- todo
+	*** need to add unit conversion to hPa
+	* reduce volume of alarm while fixing alarm.
+
+----------------------------------
+
+* startup
+	- set stable PEEP
+	- leak detection
+
+
+* patient tuning routine
+	- three breaths after 

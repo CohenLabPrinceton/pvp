@@ -5,9 +5,12 @@ import numpy as np
 import copy
 from collections import deque
 import pdb
+from itertools import count
+
 import vent.io as io
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
+from vent.common.message import SensorValues, ControlSetting
+from vent.alarm import AlarmSeverity, Alarm
 from vent.common.values import CONTROL, ValueName
 
 
@@ -85,6 +88,8 @@ class ControlModuleBase:
         self._DATA_P = 0              # Last measurements of the proportional term for PID-control
         self._DATA_I = 0              # Last measurements of the integral term for PID-control
         self._DATA_D = 0              # Last measurements of the differential term for PID-control
+        self._DATA_BREATH_COUNT = 0   # Total number of breaths/id of current breath cycle
+        self._breath_counter = count() # threadsafe counter
 
         # Parameters to keep track of breath-cycle
         self.__cycle_start = time.time()
@@ -128,7 +133,7 @@ class ControlModuleBase:
         # COPY variables that later updated on a regular basis
         self.COPY_active_alarms = {}
         self.COPY_logged_alarms = list(self.__logged_alarms)
-        self.COPY_sensor_values = SensorValues()
+        self.COPY_sensor_values = None # empty SensorValues can no longer be instantiated -jls
 
         ###########################  Threading init  #########################
         # Run the start() method as a thread
@@ -241,18 +246,19 @@ class ControlModuleBase:
             value:         test value   (e.g. 3)
             name:          parameter type (e.g. "PIP", "PEEP" etc.)
         '''
-        if (value < min) or (value > max):  # If the variable is not within limits
-            if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
-                new_alarm = Alarm(alarm_name=name, is_active=True, severity=AlarmSeverity.RED, value=value,
-                                  alarm_start_time=time.time(), alarm_end_time=None)
-                self.__active_alarms[name] = new_alarm
-        else:  # Else: if the variable is within bounds,
-            if name in self.__active_alarms.keys():  # And an alarm exists -> inactivate it.
-                old_alarm = self.__active_alarms[name]
-                old_alarm.alarm_end_time = time.time()
-                old_alarm.is_active = False
-                self.__logged_alarms.append(old_alarm)
-                del self.__active_alarms[name]
+        pass
+        # if (value < min) or (value > max):  # If the variable is not within limits
+        #     if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
+        #         new_alarm = Alarm(alarm_name=name, active=True, severity=AlarmSeverity.HIGH, value=value,
+        #                           start_time=time.time(), alarm_end_time=None)
+        #         self.__active_alarms[name] = new_alarm
+        # else:  # Else: if the variable is within bounds,
+        #     if name in self.__active_alarms.keys():  # And an alarm exists -> inactivate it.
+        #         old_alarm = self.__active_alarms[name]
+        #         old_alarm.alarm_end_time = time.time()
+        #         old_alarm.active = False
+        #         self.__logged_alarms.append(old_alarm)
+        #         del self.__active_alarms[name]
 
     def __analyze_last_waveform(self):
         ''' This goes through the last waveform, and updates VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
@@ -296,18 +302,21 @@ class ControlModuleBase:
     def get_sensors(self) -> SensorValues:
         # Make sure to return a copy of the instance
         self._lock.acquire()
-        cp = copy.deepcopy( self.COPY_sensor_values )
+        #cp = copy.deepcopy( self.COPY_sensor_values )
+        # don't need to deepcopy because a new SensorValues object is created
+        # each time and it copies each individual value as it's created
+        cp = copy.copy(self.COPY_sensor_values)
         self._lock.release()
         return cp
 
-    def get_alarms(self) -> List[Alarm]:
-        # Returns all alarms as a list
-        self._lock.acquire()
-        new_alarm_list = self.COPY_logged_alarms.copy()
-        for alarm_key in self.COPY_active_alarms.keys():
-            new_alarm_list.append(self.COPY_active_alarms[alarm_key])
-        self._lock.release()
-        return new_alarm_list
+    # def get_alarms(self) -> List[Alarm]:
+    #     # Returns all alarms as a list
+    #     self._lock.acquire()
+    #     new_alarm_list = self.COPY_logged_alarms.copy()
+    #     for alarm_key in self.COPY_active_alarms.keys():
+    #         new_alarm_list.append(self.COPY_active_alarms[alarm_key])
+    #     self._lock.release()
+    #     return new_alarm_list
 
     def get_active_alarms(self):
         # Returns only the active alarms
@@ -404,6 +413,12 @@ class ControlModuleBase:
                                   self.COPY_I_phase_min,
                                   self.COPY_I_phase_max,
                                   self.COPY_I_phase_lastset)
+        elif control_setting_name == ValueName.PEEP_TIME:
+            return_value = ControlSetting(control_setting_name,
+                                          self.COPY_SET_PEEP_TIME,
+                                          self.COPY_PEEP_time_min,
+                                          self.COPY_PEEP_time_max,
+                                          self.COPY_PEEP_time_lastset)
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting_name))
 
@@ -527,6 +542,8 @@ class ControlModuleBase:
             next_cycle = True
         
         if next_cycle:                        # if a new breath cycle has started
+            # increment breath_cycle tracker
+            self._DATA_BREATH_COUNT = next(self._breath_counter)
             if len(self.__cycle_waveform) > 1:
                 self.__cycle_waveform_archive.append( self.__cycle_waveform )
             self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])
@@ -615,15 +632,20 @@ class ControlModuleDevice(ControlModuleBase):
     def _sensor_to_COPY(self):
         # And the sensor measurements
         self._lock.acquire()
-        self.COPY_sensor_values = SensorValues(pip = self._DATA_PIP,
-                                          peep     = self._DATA_PEEP,
-                                          fio2     = 70,                                    #TODO WHICH IS THE SENSOR?
-                                          pressure = self.HAL.pressure,
-                                          vte      = self._DATA_VTE,
-                                          breaths_per_minute   = self._DATA_BPM,
-                                          inspiration_time_sec = self._DATA_I_PHASE,
-                                          timestamp            = time.time(),
-                                          loop_counter         = self._loop_counter)
+        self.COPY_sensor_values = SensorValues(
+            vals = {
+                ValueName.PIP                  : self._DATA_PIP,
+                ValueName.PEEP                 : self._DATA_PEEP,
+                ValueName.FIO2                 : 70,
+                ValueName.PRESSURE             : self.HAL.pressure,
+                ValueName.VTE                  : self._DATA_VTE,
+                ValueName.BREATHS_PER_MINUTE   : self._DATA_BPM,
+                ValueName.INSPIRATION_TIME_SEC : self._DATA_I_PHASE,
+                'timestamp'                    : time.time(),
+                'loop_counter'                 : self._loop_counter,
+                'breath_count'                 : self._DATA_BREATH_COUNT
+            }
+        )
         self._lock.release()
 
     def _start_mainloop(self):
@@ -726,7 +748,7 @@ class Balloon_Simulator:
 
     def update(self, dt):  # Performs an update of duration dt [seconds]
 
-        if dt<1:                                        # This is the simulation, so not quite so important, 
+        if dt<1:                                        # This is the simulation, so not quite so important,
             self.current_flow = self.Qin - self.Qout     # But no update should take longer than that
             self.current_volume += self.current_flow * dt
 
@@ -817,7 +839,7 @@ class ControlModuleSimulator(ControlModuleBase):
     def _sensor_to_COPY(self):
         # And the sensor measurements
         self._lock.acquire()
-        self.COPY_sensor_values = SensorValues(**{
+        self.COPY_sensor_values = SensorValues(vals={
             ValueName.PIP.name                  : self._DATA_PIP,
             ValueName.PEEP.name                 : self._DATA_PEEP,
             ValueName.FIO2.name                 : self.Balloon.fio2,
@@ -828,7 +850,8 @@ class ControlModuleSimulator(ControlModuleBase):
             ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
             ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
             'timestamp'                  : time.time(),
-            'loop_counter'             : self._loop_counter
+            'loop_counter'             : self._loop_counter,
+            'breath_count': self._DATA_BREATH_COUNT
         })
         self._lock.release()
 

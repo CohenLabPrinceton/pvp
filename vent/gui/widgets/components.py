@@ -308,6 +308,40 @@ class RangeSlider(DoubleSlider):
 
         #self.setTickInterval(self.levels[1]-self.levels[0])
 
+    def get_handle_rect(self, which=0):
+        """
+
+        Args:
+            which (int): 0 = low, 1 = high
+
+        Returns:
+            :class:`QtCore.QRect` of handle
+        """
+
+        painter = QtGui.QPainter(self)
+        #style = QtWidgets.QApplication.style()
+        style = self.style()
+
+        if which == 0 or which is False:
+            value = self._low
+        elif which == 1 or which is True:
+            value = self._high
+        else:
+            raise ValueError(f'needs to be 0 for low handle or 1 for high handle, got {which}')
+
+
+        opt = QtWidgets.QStyleOptionSlider()
+        self.initStyleOption(opt)
+        opt.subControls = style.SC_SliderHandle
+        opt.sliderPosition = value
+        opt.sliderValue = value
+
+        return style.subControlRect(QtWidgets.QStyle.CC_Slider, opt, QtWidgets.QStyle.SC_SliderHandle, self)
+
+
+
+
+
 
     def mousePressEvent(self, event):
         event.accept()

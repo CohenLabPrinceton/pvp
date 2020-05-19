@@ -2,7 +2,7 @@ from .pigpio_mocks import *
 from vent.io.devices.pins import PWMOutput
 
 
-@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(16)])
+@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(16)])
 @pytest.mark.parametrize("gpio", random.sample(range(53), 4))
 def test_mode(patch_pigpio_gpio, seed, gpio):
     """______________________________________________________________________________________________________Pin_TEST #1
@@ -67,7 +67,7 @@ def test_read_write_toggle(patch_pigpio_gpio, gpio, level):
     """
 
 
-@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(16)])
+@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(16)])
 def test_frequency(patch_pigpio_gpio, seed):
     """________________________________________________________________________________________________PWMOutput_TEST #1
      Tests the frequency setter & getter properties, and checks that duty is not changed or something weird like that

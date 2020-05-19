@@ -30,7 +30,7 @@ def test_sim_sensor(patch_pigpio_i2c, mock_i2c_hardware):
 
 
 @pytest.mark.parametrize("ads1x15", [ADS1115, ADS1015])
-@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(64)])
+@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(64)])
 @pytest.mark.parametrize("pga", random.sample(ADS1115._CONFIG_VALUES[2], 4))
 @pytest.mark.parametrize("mode", ['SINGLE', 'CONTINUOUS'])
 def test_analog_sensor_single_read(patch_pigpio_i2c, mock_i2c_hardware, ads1x15, seed, pga, mode):
@@ -79,7 +79,7 @@ def test_analog_sensor_single_read(patch_pigpio_i2c, mock_i2c_hardware, ads1x15,
         AnalogSensor(ads, **bad_kwargs)
     a_sensor = AnalogSensor(ads, **kwargs)
     n_iter = random.randint(1, 100)
-    conversion_bytes = [os.getrandom(2) for _ in range(n_iter)]
+    conversion_bytes = [secrets.token_bytes(2) for _ in range(n_iter)]
     raw_voltage = [int.from_bytes(cb, 'big', signed=True) * kwargs['PGA'] / 32767 for cb in conversion_bytes]
     expected = [conversion_factor * (rv - kwargs['offset_voltage']) / kwargs['output_span'] for rv in raw_voltage]
     for i in range(n_iter):
@@ -91,7 +91,7 @@ def test_analog_sensor_single_read(patch_pigpio_i2c, mock_i2c_hardware, ads1x15,
 
 
 @pytest.mark.parametrize("ads1x15", [ADS1115, ADS1015])
-@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(4)])
+@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(4)])
 @pytest.mark.parametrize("pga", random.sample(ADS1115._CONFIG_VALUES[2], 4))
 @pytest.mark.parametrize("mode", ['SINGLE', 'CONTINUOUS'])
 def test_analog_sensor_average_read(patch_pigpio_i2c, mock_i2c_hardware, ads1x15, seed, pga, mode):
@@ -143,7 +143,7 @@ def test_analog_sensor_average_read(patch_pigpio_i2c, mock_i2c_hardware, ads1x15
     """
 
 
-@pytest.mark.parametrize("seed", [os.getrandom(8) for _ in range(4)])
+@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(4)])
 def test_sfm_single_read(patch_pigpio_i2c, mock_i2c_hardware, seed):
     """__________________________________________________________________________________________________________TEST #5
     Tests the proper functioning of an SFM sensor. similar to single read of analog sensor, except starts with 4 bytes
@@ -160,7 +160,7 @@ def test_sfm_single_read(patch_pigpio_i2c, mock_i2c_hardware, seed):
     sfm = SFM3200(address=mock['i2c_address'], i2c_bus=mock['i2c_bus'], pig=pig)
 
     n_iter = random.randint(1, 1000)
-    conversion_bytes = [os.getrandom(4) for _ in range(n_iter)]
+    conversion_bytes = [secrets.token_bytes(4) for _ in range(n_iter)]
     raw_int = [int.from_bytes(cb[:2], 'big') for cb in conversion_bytes]
     expected = [(rv - sfm._FLOW_OFFSET) / sfm._FLOW_SCALE_FACTOR for rv in raw_int]
     for i in range(n_iter):

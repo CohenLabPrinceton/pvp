@@ -9,14 +9,13 @@ import vent.io as io
 import logging
 import tables as pytb
 
-from vent.common.message import SensorValues, ControlSetting, Alarm, AlarmSeverity
+from vent.common.message import SensorValues, ControlSetting
 from vent.common.values import CONTROL, ValueName
 
 
 class DataSample(pytb.IsDescription):
     timestamp    = pytb.Float64Col()    # current time of the measurement
     pressure     = pytb.Float32Col()    # float  (single-precision)  -- because we'll have a whole bunch of these
-    volume       = pytb.Float32Col()    # float  (single-precision)
     cycle_number = pytb.Int32Col()      # Breath Cycle No.
 
 
@@ -49,13 +48,12 @@ class DataLogger:
         current_cycle (int): current breath cycle
     """
 
-    def __init__(self):
-        self.file = "controller_log.h5"   # Filename
+    def __init__(self, filename):
+        self.file = filename    # Filename
         
     def open_logfile(self):
         """
         Opens the hdf5 file.
-        This should be called at the start of every method that accesses the h5 file
         """
         try:
             if not self.h5file.isopen:
@@ -77,32 +75,36 @@ class DataLogger:
             self.data_table = self.h5file.root.waveforms.readout
             self.control_table = self.h5file.root.controls.readout
             
-
     def close_logfile(self):
         """
         Flushes & closes the open hdf file.
         """
-        try:
-            self.data_table.flush()
-            self.h5file.close()
-        except:
-            self.h5file.close()
+        self.data_table.flush()
+        self.h5file.close()
 
         
-    def store_waveform(self):
+    def store_waveform_data(self, sensor_values: SensorValues):
         """
         Appends a datapoint to the file.
         """
-        self.open_logfile()
+
+        #Make sure hdf5 file is open
+        if not self.h5file.isopen:
+            self.open_logfile()
         
         datapoint                 = self.data_table.row
-        datapoint['timestamp']    = time.time()
-        datapoint['pressure']     = 14.766
-        datapoint['volume']       = np.random.random()
-        datapoint['cycle_number'] = 12
+
+        datapoint['timestamp'] = sensor_values.timestamp
+        datapoint['pressure'] = sensor_values.PRESSURE
+        datapoint['cycle_number'] = sensor_values.breath_count
+
         datapoint.append()
+
+
     
-        self.close_logfile()
+    def flush_logfile(self):
+        #Should be done sporadically
+         self.data_table.flush()
         
         
     def save_controls(self):

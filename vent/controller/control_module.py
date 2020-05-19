@@ -12,6 +12,7 @@ import vent.io as io
 from vent.common.message import SensorValues, ControlSetting
 from vent.alarm import AlarmSeverity, Alarm
 from vent.common.values import CONTROL, ValueName
+from vent.logger.logger import DataLogger
 
 
 class ControlModuleBase:
@@ -48,7 +49,7 @@ class ControlModuleBase:
         self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec
         self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      # After every 10 main control loop iterations, update COPYs.
         self._RINGBUFFER_SIZE                    = 100     # Maximum number of breath cycles kept in memory
-        self.safe_logs                           = True    # Keep logs in a file
+        self._save_logs                          = True    # Keep logs in a file
 
         #########################  Control management  #########################
 
@@ -149,6 +150,16 @@ class ControlModuleBase:
         # self.__thread.start()
         self.__thread = None
 
+        ############################# Logging ################################
+        # Create an instance of the DataLogger class
+        if self._save_logs:
+            self.logfile = "./controller_log.h5"
+            self.dl = DataLogger(filename = self.logfile)
+            self.dl.open_logfile()
+
+    def __del__(self):
+        if self._save_logs:
+            self.dl.close_logfile()
 
     def _initialize_set_to_COPY(self):
         self._lock.acquire()
@@ -551,8 +562,30 @@ class ControlModuleBase:
             self.__analyze_last_waveform()    # Analyze last waveform
             self.__update_alarms()            # Run alarm detection over last cycle's waveform
             self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
+
+            if self._save_logs:               # If we kept records, flush the data from the previous breath cycle
+                self.dl.flush_logfile()
         else:
             self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
+
+        if self._save_logs:
+
+            sensor_values =  SensorValues(vals={
+            ValueName.PIP.name                  : self._DATA_PIP,
+            ValueName.PEEP.name                 : self._DATA_PEEP,
+            ValueName.FIO2.name                 : 0,
+            ValueName.TEMP.name                 : 0,
+            ValueName.HUMIDITY.name             : 0,
+            ValueName.PRESSURE.name             : self._DATA_PRESSURE,
+            ValueName.VTE.name                  : self._DATA_VTE,
+            ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+            ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+            'timestamp'                         : time.time(),
+            'loop_counter'                      : self._loop_counter,
+            'breath_count'                      : self._DATA_BREATH_COUNT
+            })
+
+            self.dl.store_waveform_data(sensor_values)
 
     def get_past_waveforms(self):
         # Returns a list of past waveforms.
@@ -602,6 +635,9 @@ class ControlModuleBase:
             print("Main Loop already running.")
 
     def stop(self):
+        if self._save_logs:               # If we kept records, flush the data
+            self.dl.close_logfile()
+
         if self.__thread is not None and self.__thread.is_alive():
             self._running.clear()
         else:

@@ -26,20 +26,19 @@ class Sensor(ABC):
         was verified and False if something went wrong.
         """
         value = self._read()
-        self._data['value'].append(value)
         self._data['timestamp'].append(time.time())
+        self._data['value'].append(value)
         return self._verify(value)
 
     def get(self, average=False) -> float:
-        """ Return the most recent sensor reading."""
+        """ Return the most recent sensor reading, or an average of readings since last get(). Clears internal memory so as not to have stale data."""
         if len(self._data['value']) == 0:
             self.update()
         if average:
             value = sum(self._data['value'])/len(self._data['value'])
-            self.reset()
         else:
             value = self._data['value'].pop()
-            ts = self._data['timestamp'].pop()
+        self._clear()
         return value
 
     def age(self) -> float:
@@ -53,12 +52,16 @@ class Sensor(ABC):
         """ Resets the sensors internal memory. May be overloaded by subclasses to extend functionality specific to a
         device.
         """
+        self._clear()
+            
+    def _clear(self):
+        """ Resets the sensors internal memory. """
         for key in self._data.keys():
             self._data[key].clear()
 
     @property
     def data(self) -> np.array:
-        """ All Locally-stored observations.
+        """ Returns all Locally-stored observations. 
 
         Returns:
             np.array: An array of timestamped observations arranged oldest to newest.
@@ -66,6 +69,7 @@ class Sensor(ABC):
         result = np.array(
             [[timestamp, value] for timestamp, value in zip(self._data['timestamp'], self._data['value'])]
         )
+        self._clear()
         return result
 
     @property
@@ -283,6 +287,7 @@ class DLiteSensor(AnalogSensor):
         else:
             converted_flow = (1.0*np.sqrt(-1.0*raw)/np.sqrt(fit_param))
         return converted_flow
+        
     def calibrate(self, **kwargs):
         """ Do not run a calibration routine.
         Overrides attempt to calibrate. 

@@ -508,7 +508,7 @@ class ADS1015(ADS1115):
     """
 
     _DEFAULT_ADDRESS = 0x48
-    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 3300} # FIXME? 6.144 / DR = 3300
+    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 3300} 
 
     """ Address Pointer Register (write-only) """
     _POINTER_FIELDS = ('P',)

@@ -1,6 +1,7 @@
 from .pigpio_mocks import *
 import vent.io.devices as iodev
-import socket
+from socket import error as socket_error
+
 
 def test_mock_pigpio_base(patch_pigpio_base):
     """__________________________________________________________________________________________________________TEST #1
@@ -20,7 +21,7 @@ def test_pigpio_connection_exception(patch_pigpio_base, monkeypatch):
         Tests to make sure an exception is thrown if, upon init, a PigpioConnection finds it is not connected."""
     def mock_create_bad_connection(host, timeout):
         """ mock of socket.create_connection(). Returns a bare-bones mock socket"""
-        raise socket.error
+        raise socket_error
     monkeypatch.setattr("socket.create_connection", mock_create_bad_connection)
     with pytest.raises(RuntimeError):
         iodev.PigpioConnection()

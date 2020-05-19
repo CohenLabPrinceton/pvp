@@ -14,12 +14,17 @@ from vent.common.values import CONTROL, ValueName
 
 
 class DataSample(pytb.IsDescription):
+    """
+    Structure for the hdf5-table for data
+    """
     timestamp    = pytb.Float64Col()    # current time of the measurement
     pressure     = pytb.Float32Col()    # float  (single-precision)  -- because we'll have a whole bunch of these
     cycle_number = pytb.Int32Col()      # Breath Cycle No.
 
-
 class ControlCommand(pytb.IsDescription):
+    """
+    Structure for the hdf5-table to store control commands
+    """
     name      = pytb.StringCol(16)   # Control setting name
     min_value = pytb.Float64Col()    # double (double-precision)
     max_value = pytb.Float64Col()    # double (double-precision)
@@ -29,23 +34,23 @@ class ControlCommand(pytb.IsDescription):
 class DataLogger:
     """
     Class for logging numerical respiration data and control settings.
-    
-    Creates a hdf5 file with the general structure:
+    Creates a hdf5 file with this general structure:
         / root
         |--- waveforms (group)
-        |    |--- time | pressure_data | volume | Cycle No.    --- DISCUSS THIS
+        |    |--- time | pressure_data | volume | Cycle No.    --- TODO: WHAT TO SAVE?
         |
-        |--- controls (group)                                  --- DISCUSS THIS
+        |--- controls (group)                                  --- TODO: WHAT TO SAVE? DO THIS HERE?
         |    |--- (time, controllsignal)
         |
 
-    Attributes:
-        name (str): Subject ID
-        file (str): Path to hdf5 file - usually `{prefs.DATADIR}/{self.name}.h5`
-        current (dict): current task parameters. loaded from
-            the 'current' :mod:`~tables.filenode` of the h5 file
-        step (int): current step
-        current_cycle (int): current breath cycle
+    Public Methods:
+        open_logfile():                       Opens a log-file, creates one if necessary. 
+        close_logfile():                      Flushes, and closes the logfile.
+        store_waveform_data(SensorValues):    Takes data from SensorValues, but DOES NOT FLUSH 
+        store_controls():                     Store controls in the same file? TODO: Discuss 
+        flush_logfile():                      Flush the data into the file
+        check_size():                         Make sure that the files don't grow too big TODO: Implement
+
     """
 
     def __init__(self, filename):
@@ -55,6 +60,8 @@ class DataLogger:
         """
         Opens the hdf5 file.
         """
+
+        #If it isn't already open, open it.
         try:
             if not self.h5file.isopen:
                 self.h5file = pytb.open_file(self.file, mode = "a")
@@ -63,14 +70,13 @@ class DataLogger:
         except:
             self.h5file = pytb.open_file(self.file, mode = "w")
     
+        #If it doesn't contain our structure, create it.
         try:
             group = self.h5file.create_group("/", 'waveforms', 'Respiration waveforms')
             self.data_table    = self.h5file.create_table(group, 'readout', DataSample, "Breath Cycles")
             
             group = self.h5file.create_group("/", 'controls', 'Control signal history')
             self.control_table = self.h5file.create_table(group, 'readout', ControlCommand, "Control Commands")
-
-
         except:
             self.data_table = self.h5file.root.waveforms.readout
             self.control_table = self.h5file.root.controls.readout
@@ -81,11 +87,11 @@ class DataLogger:
         """
         self.data_table.flush()
         self.h5file.close()
-
         
     def store_waveform_data(self, sensor_values: SensorValues):
         """
         Appends a datapoint to the file.
+        NOTE: Not flushed yet.
         """
 
         #Make sure hdf5 file is open
@@ -99,17 +105,17 @@ class DataLogger:
         datapoint['cycle_number'] = sensor_values.breath_count
 
         datapoint.append()
-
-
     
     def flush_logfile(self):
-        #Should be done sporadically
-         self.data_table.flush()
-        
-        
-    def save_controls(self):
         """
-        Saves a new controlsetting to the file.
+        This flushes the datapoints to the file.
+        To be executed every other second, e.g. at the end of breath cycle.
+        """
+        self.data_table.flush()
+        
+    def store_controls(self):
+        """
+        Saves a new controlsetting to the file. TODO: SHOULD WE DO THIS HERE?
         """
         
         self.open_logfile()

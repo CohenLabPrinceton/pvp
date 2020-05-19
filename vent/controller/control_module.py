@@ -45,6 +45,7 @@ class ControlModuleBase:
         self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec
         self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      # After every 10 main control loop iterations, update COPYs.
         self._RINGBUFFER_SIZE                    = 100     # Maximum number of breath cycles kept in memory
+        self.safe_logs                           = True    # Keep logs in a file
 
         #########################  Control management  #########################
 

@@ -63,7 +63,11 @@ class DataLogger:
         # If initialized, make a new file
         today = datetime.today()
         date_string = today.strftime("%Y-%m-%d-%H-%M")
+
+        if not os.path.exists('logfiles'):
+            os.makedirs('logfiles')
         self.file = "vent/logfiles/" + date_string + "_controller_log.h5"
+
         self.storage_used = self.check_files()  # Make sure there is space. Sum of all logfiles in bytes
 
     def open_logfile(self):
@@ -71,32 +75,27 @@ class DataLogger:
         Opens the hdf5 file.
         """
 
-        #If it isn't already open, open it.
-        try:
-            if not self.h5file.isopen:
-                self.h5file = pytb.open_file(self.file, mode = "a")
-            else:
-                print("This should't happen. hdf5 file was open.")
-        except:
-            self.h5file = pytb.open_file(self.file, mode = "w")
-    
+        #Open the file
+        self.h5file = pytb.open_file(self.file, mode = "a")
+
         #If it doesn't contain our structure, create it.
-        try:
+        if "/waveforms" not in self.h5file:
             group = self.h5file.create_group("/", 'waveforms', 'Respiration waveforms')
             self.data_table    = self.h5file.create_table(group, 'readout', DataSample, "Breath Cycles")
-            
+        else:
+            self.data_table = self.h5file.root.waveforms.readout
+
+        if "/controls" not in self.h5file:
             group = self.h5file.create_group("/", 'controls', 'Control signal history')
             self.control_table = self.h5file.create_table(group, 'readout', ControlCommand, "Control Commands")
-        except:
-            self.data_table = self.h5file.root.waveforms.readout
+        else:
             self.control_table = self.h5file.root.controls.readout
             
     def close_logfile(self):
         """
         Flushes & closes the open hdf file.
         """
-        self.data_table.flush()
-        self.h5file.close()
+        self.h5file.close() # Also flushes the remaining buffers
         
     def __rescale_save(self, raw_value, value, target, scalingconstant):
         """

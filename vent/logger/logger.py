@@ -73,6 +73,7 @@ class DataLogger:
         # Make sure that the file doesn't exist yet, if it does, append alphabet ('a','b','c'...)
         # In rarely happens, but for Travis-tests, this is needed.
         ls = list(string.ascii_lowercase)
+        ls = ls + list(string.ascii_uppercase)
         while os.path.exists(self.file):
             self.file = "vent/logfiles/" + date_string + ls[0] + "_controller_log.h5"
             ls.pop(0)

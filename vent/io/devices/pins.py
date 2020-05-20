@@ -1,6 +1,7 @@
-from pigpio import error_text
 from vent.io.devices import IODeviceBase
 from vent.common.fashion import pigpio_command
+
+import pigpio
 
 
 class Pin(IODeviceBase):
@@ -97,7 +98,11 @@ class PWMOutput(Pin):
 
     @property
     def hardware_enabled(self):
-        """ Return true if this is a hardware-enabled PWM pin; False if not"""
+        """ Return true if this is a hardware-enabled PWM pin; False if not. The Raspberry Pi only supports hardware-
+        generated PWM on pins 12, 13, 18, and 19, so generally `hardware_enabled` will be true if this is one of those,
+        and false if it is not. However, `hardware_enabled` can also by dynamically set to False if for some reason
+        pigpio is unable to start a hardware PWM (i.e. if the clock is unavailable or in use or something)
+        """
         return self._hardware_enabled
 
     @property
@@ -160,7 +165,7 @@ class PWMOutput(Pin):
             duty (float): The PWM duty cycle to set. Must be between 0 and 1.
         """
         if not 0 <= duty <= 1:
-            raise ValueError('Duty cycle must be between 0 and 1')
+            raise ValueError('Duty cycle must be between 0 and 1 but got {}'.format(duty))
         _duty = int(duty * self.pig.get_PWM_range(self.pin))
         if self._hardware_enabled:
             self.__hardware_pwm(frequency, _duty)
@@ -180,10 +185,9 @@ class PWMOutput(Pin):
         try:
             self.pig.hardware_PWM(self.pin, frequency, duty)
             self._hardware_enabled = True
-        except Exception:
+        except pigpio.error:
             self._hardware_enabled = False
             self.__software_pwm(frequency, duty)
-
 
     @pigpio_command
     def __software_pwm(self, frequency, duty):

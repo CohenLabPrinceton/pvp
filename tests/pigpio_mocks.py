@@ -1,11 +1,12 @@
-import random
-import pytest
-import functools
-from collections import deque
-import pigpio
 from vent.io.devices.pins import Pin
-import os
-import secrets
+from collections import deque
+from functools import wraps
+from random import getrandbits, choice
+from secrets import token_bytes
+from socket import error as socket_error
+
+import pigpio
+import pytest
 
 
 @pytest.fixture()
@@ -57,6 +58,21 @@ def patch_pigpio_base(monkeypatch):
         monkeypatch.delattr("pigpio._pigpio_command_ext")
         monkeypatch.delattr("pigpio._pigpio_command_ext_nolock")
        # monkeypatch.setattr("pigpio.pi.connected", 1, raising=False)
+
+    do_monkeypatch()
+
+
+@pytest.fixture()
+def patch_bad_socket(monkeypatch):
+    """ Monkeypatches socket.create_connection() to always throw an Exception as if things had gone poorly (instead of
+            doing anything else)
+    """
+    def mock_create_bad_connection(host, timeout):
+        """ mock of socket.create_connection(). Returns a bare-bones mock socket"""
+        raise socket_error
+
+    def do_monkeypatch():
+        monkeypatch.setattr("socket.create_connection", mock_create_bad_connection)
 
     do_monkeypatch()
 
@@ -193,7 +209,7 @@ def patch_pigpio_gpio(patch_pigpio_base, monkeypatch):
             """
             self.errors = dict(pigpio._errors)
             assert gpio in range(53)
-            self._mode = random.choice([*Pin._PIGPIO_MODES.values()])
+            self._mode = choice([*Pin._PIGPIO_MODES.values()])
             self.gpio = gpio
             self.level = 0
             self.soft_pwm_frequency = 800
@@ -408,17 +424,17 @@ def mock_i2c_hardware():
         Returns:
             dict: keys = ('device', 'i2c_bus', 'i2c_address', 'expected') #todo explain what they are
         """
-        i2c_bus = random.getrandbits(1) if i2c_bus is None else i2c_bus
-        i2c_address = random.getrandbits(7) if i2c_address is None else i2c_address
+        i2c_bus = getrandbits(1) if i2c_bus is None else i2c_bus
+        i2c_address = getrandbits(7) if i2c_address is None else i2c_address
         if reg_values is None:
-            n_registers = random.getrandbits(5) if n_registers is None else n_registers
-            reg_values = [secrets.token_bytes(2) for _ in range(n_registers)]
+            n_registers = getrandbits(5) if n_registers is None else n_registers
+            reg_values = [token_bytes(2) for _ in range(n_registers)]
         else:
             if n_registers is None:
                 pass
             elif n_registers > len(reg_values):
                 for i in range(n_registers-len(reg_values)):
-                    reg_values.append(secrets.token_bytes(2))
+                    reg_values.append(token_bytes(2))
             elif n_registers < len(reg_values):
                 raise ValueError("Cannot specify fewer registers than register values provided")
         device = MockHardwareDevice(*reg_values)
@@ -427,7 +443,7 @@ def mock_i2c_hardware():
 
 
 def mock_pigpio_errors(func):
-    @functools.wraps(func)
+    @wraps(func)
     def mock_pigpio__u2i_exception(self, *args, **kwargs):
         value = func(self, *args, **kwargs)
         v = value if type(value) in (int, bool, float) else value[0]
@@ -439,7 +455,7 @@ def mock_pigpio_errors(func):
 
 
 def mock_pigpio_bad_gpio_arg(func):
-    @functools.wraps(func)
+    @wraps(func)
     def check_args(self, gpio, *args, **kwargs):
         if gpio in range(53):
             result = func(self, gpio, *args, **kwargs)
@@ -451,7 +467,7 @@ def mock_pigpio_bad_gpio_arg(func):
 
 
 def mock_pigpio_bad_user_gpio_arg(func):
-    @functools.wraps(func)
+    @wraps(func)
     def check_args(self, gpio, *args, **kwargs):
         if gpio in range(31):
             result = func(self, gpio, *args, **kwargs)

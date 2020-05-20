@@ -7,7 +7,6 @@ import pigpio
 import time
 
 
-
 class PigpioConnection(pigpio.pi):
     """ Subclass that extends pigpio.pi to throw an exception if there are issues connecting to the pigpio daemon."""
 
@@ -246,6 +245,7 @@ class I2CDevice(IODeviceBase):
                 self._offset = offset
                 self._mask = mask
                 self._values = values
+                self._reversed_values = OrderedDict(map(reversed, self._values.items()))
 
             def unpack(self, cfg):
                 """ Extracts the ValueField's setting from cfg & returns the result in a human readable form.
@@ -253,7 +253,7 @@ class I2CDevice(IODeviceBase):
                 Args:
                     cfg (int): An integer representing a possible configuration value for the register
                 """
-                return dict(map(reversed, self._values.items()))[self.extract(cfg)]
+                return self._reversed_values[self.extract(cfg)]
 
             def extract(self, cfg) -> int:
                 """ Extracts setting from passed 16-bit config & returns integer representation.

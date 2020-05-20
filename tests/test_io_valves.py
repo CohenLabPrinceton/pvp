@@ -1,12 +1,15 @@
-from .pigpio_mocks import *
+from .pigpio_mocks import patch_pigpio_base, patch_pigpio_gpio, soft_frequencies
 from vent.io.devices.valves import OnOffValve, PWMControlValve, SimOnOffValve, SimControlValve
-import subprocess
+from secrets import token_bytes
+
+import pytest
+import random
 
 
-@pytest.mark.parametrize("gpio", [1, 12])
+@pytest.mark.parametrize("gpio", random.sample(range(31), 16))
 @pytest.mark.parametrize("form", ['Normally Closed', 'Normally Open'])
 def test_form(patch_pigpio_gpio, gpio, form):
-    """_______________________________________________________________________________________________OnOffValve_TEST #1
+    """__________________________________________________________________________________________________________TEST #1
      Tests the set/get interface of SolenoidBase/children
          - Initializes an OnOffValve
          - Sets a form
@@ -19,10 +22,10 @@ def test_form(patch_pigpio_gpio, gpio, form):
     """
 
 
-@pytest.mark.parametrize("gpio", [1, 12])
+@pytest.mark.parametrize("gpio", random.sample(range(31), 16))
 @pytest.mark.parametrize("form", ['Normally Closed', 'Normally Open'])
 def test_on_off_valve(patch_pigpio_gpio, gpio, form):
-    """_______________________________________________________________________________________________OnOffValve_TEST #2
+    """__________________________________________________________________________________________________________TEST #2
      Tests the open/close interface of an OnOffValve
          - Initializes an OnOffValve
          - records is_open
@@ -43,9 +46,9 @@ def test_on_off_valve(patch_pigpio_gpio, gpio, form):
     """
 
 
-@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(31)])
+@pytest.mark.parametrize("seed", [token_bytes(8) for _ in range(31)])
 def test_pwm_control_valve(patch_pigpio_gpio, seed):
-    """__________________________________________________________________________________________PWMControlValve_TEST #1
+    """__________________________________________________________________________________________________________TEST #3
      Tests the open/close interface of an PWMControlValve. This should mimic the behavior of an OnOffValve, but uses a
         different backend.
          - Tests that an exception is raised if an attempt is made to initialize w/o a response curve
@@ -92,10 +95,10 @@ def test_pwm_control_valve(patch_pigpio_gpio, seed):
     """
 
 
-@pytest.mark.parametrize("gpio", random.sample(range(31), k=5))
+@pytest.mark.parametrize("gpio", random.sample(range(31), 16))
 @pytest.mark.parametrize("form", ['Normally Closed', 'Normally Open'])
 def test_sim_on_off_valve(patch_pigpio_gpio, gpio, form):
-    """____________________________________________________________________________________________SimOnOffValve_TEST #1
+    """__________________________________________________________________________________________________________TEST #4
      Tests the open/close interface of an SimOnOffValve
          - Initializes an OnOffValve
          - records is_open
@@ -114,9 +117,9 @@ def test_sim_on_off_valve(patch_pigpio_gpio, gpio, form):
     """
 
 
-@pytest.mark.parametrize("gpio", random.sample(range(31), k=5))
+@pytest.mark.parametrize("gpio", random.sample(range(31), 16))
 def test_sim_control_valve(patch_pigpio_gpio, gpio):
-    """__________________________________________________________________________________________PWMControlValve_TEST #1
+    """__________________________________________________________________________________________________________TEST #5
      Tests SimControlValve in much the same way as PWMControlValve.
     """
     form = 'Normally Closed'

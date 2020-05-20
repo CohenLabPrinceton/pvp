@@ -32,7 +32,7 @@ class SolenoidBase(ABC):
             form (str): The form of the solenoid; can be either `Normally Open` or `Normally Closed`
         """
         if form not in self._FORMS.keys():
-            raise ValueError('form must be either NC for Normally Closed or NO for Normally Open')
+            raise ValueError('form must be one of {}'.format(self._FORMS.keys()))
         else:
             self._form = self._FORMS[form]
 
@@ -148,7 +148,7 @@ class PWMControlValve(SolenoidBase, PWMOutput):
         response curve
 
         Args:
-            setpoint (float): A number between 0 and 1 representing how much to open the valve
+            setpoint (float): A number between 0 and 100 representing how much to open the valve
         """
         if not 0 <= setpoint <= 100:
             raise ValueError('setpoint must be between 0 and 100 for an expiratory control valve')
@@ -156,7 +156,7 @@ class PWMControlValve(SolenoidBase, PWMOutput):
         self.duty = self.response(setpoint, self._rising)
 
     def response(self, setpoint, rising=True):
-        """Setpoint takes a value in the range (0,1) so as not to confuse with duty cycle, which takes a value in the
+        """Setpoint takes a value in the range (0,100) so as not to confuse with duty cycle, which takes a value in the
         range (0,1). Response curves are specific to individual valves and are to be implemented by subclasses.
         Different curves are calibrated to 'rising = True' (valves opening) or'rising = False' (valves closing), as
         different characteristic flow behavior can be observed.
@@ -181,7 +181,7 @@ class PWMControlValve(SolenoidBase, PWMOutput):
     def inverse_response(self, duty_cycle, rising=True):
 
         """Inverse of response. Given a duty cycle in the range (0,1), returns the corresponding linear setpoint in the
-        range (0,1).
+        range (0,100).
 
         Args:
             duty_cycle: The PWM duty cycle

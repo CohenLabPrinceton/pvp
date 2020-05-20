@@ -1,11 +1,15 @@
-from .pigpio_mocks import *
-from vent.io.devices.pins import PWMOutput
+from .pigpio_mocks import patch_pigpio_base, patch_pigpio_gpio, soft_frequencies
+from vent.io.devices.pins import Pin, PWMOutput
+from secrets import token_bytes
+
+import pytest
+import random
 
 
-@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(16)])
-@pytest.mark.parametrize("gpio", random.sample(range(53), 4))
+@pytest.mark.parametrize("seed", [token_bytes(8) for _ in range(2)])
+@pytest.mark.parametrize("gpio", range(53))
 def test_mode(patch_pigpio_gpio, seed, gpio):
-    """______________________________________________________________________________________________________Pin_TEST #1
+    """__________________________________________________________________________________________________________TEST #1
      Tests the mode setting & getting methods of Pin
          - Initializes a Pin
          - Reads mode off pin (should be random)
@@ -15,11 +19,7 @@ def test_mode(patch_pigpio_gpio, seed, gpio):
          - Asserts that the second mode is the mode we set
     """
     random.seed(seed)
-    if random.getrandbits(3) == 7:
-        mode = 'Fake Mode'
-    else:
-        mode = random.choice([key for key in Pin._PIGPIO_MODES.keys()])
-
+    mode = random.choice([key for key in Pin._PIGPIO_MODES.keys()])
     results = []
     pin = Pin(gpio)
     results.append(pin.mode)
@@ -36,10 +36,23 @@ def test_mode(patch_pigpio_gpio, seed, gpio):
     """
 
 
-@pytest.mark.parametrize("gpio", random.sample(range(31), 10))
+def test_bad_mode_exception(patch_pigpio_gpio):
+    """__________________________________________________________________________________________________________TEST #2
+     Tests that an exception is thrown if an attempt is made to set an unrecognized mode
+    """
+    gpio = random.choice(range(53))
+    mode = 'Fake Mode'
+    pin = Pin(gpio)
+    with pytest.raises(ValueError):
+        pin.mode = mode
+    """__________________________________________________________________________________________________________
+    """
+
+
+@pytest.mark.parametrize("gpio", range(31))
 @pytest.mark.parametrize("level", [0, 1])
 def test_read_write_toggle(patch_pigpio_gpio, gpio, level):
-    """______________________________________________________________________________________________________Pin_TEST #2
+    """__________________________________________________________________________________________________________TEST #3
      Tests the toggle feature of a Pin
          - Initializes a random Pin (in User_GPIO)
          - Sets mode to 'OUTPUT'
@@ -59,17 +72,17 @@ def test_read_write_toggle(patch_pigpio_gpio, gpio, level):
     pin.write(level)
     pin.toggle()
     results.append(pin.read())
-    assert sum(results) == 1
-    assert results[0] is not results[1]
+    assert results[0] == level
+    assert results[1] is not level
     with pytest.raises(ValueError):
         pin.write(-1)
     """__________________________________________________________________________________________________________
     """
 
 
-@pytest.mark.parametrize("seed", [secrets.token_bytes(8) for _ in range(16)])
+@pytest.mark.parametrize("seed", [token_bytes(8) for _ in range(128)])
 def test_frequency(patch_pigpio_gpio, seed):
-    """________________________________________________________________________________________________PWMOutput_TEST #1
+    """__________________________________________________________________________________________________________TEST #4
      Tests the frequency setter & getter properties, and checks that duty is not changed or something weird like that
          - Initializes a PWMOutput
          - Sets frequency
@@ -107,10 +120,10 @@ def test_frequency(patch_pigpio_gpio, seed):
     """
 
 
-@pytest.mark.parametrize("gpio", [1, 12, 14, 19])
-@pytest.mark.parametrize("duty", [x/10 for x in range(11)])
+@pytest.mark.parametrize("gpio", random.sample(range(31), 16))
+@pytest.mark.parametrize("duty", random.sample([x/100 for x in range(101)], k=32))
 def test_duty(patch_pigpio_gpio, gpio, duty):
-    """________________________________________________________________________________________________PWMOutput_TEST #2
+    """__________________________________________________________________________________________________________TEST #5
      Tests the duty setter & getter properties (and synonym write())
          - Initializes a PWMOutput
          - Reads frequency and appends to results

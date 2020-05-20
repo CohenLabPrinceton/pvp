@@ -32,10 +32,11 @@ class Sensor(ABC):
 
     def get(self, average=False) -> float:
         """ Return the most recent sensor reading, or an average of readings since last get(). Clears internal memory so as not to have stale data."""
+        # FIXME - timeout decorators for everyone
         if len(self._data['value']) == 0:
             self.update()
         if average:
-            value = sum(self._data['value'])/len(self._data['value'])
+            value = np.mean(self._data['value'])
         else:
             value = self._data['value'].pop()
         self._clear()
@@ -66,9 +67,7 @@ class Sensor(ABC):
         Returns:
             np.array: An array of timestamped observations arranged oldest to newest.
         """
-        result = np.array(
-            [[timestamp, value] for timestamp, value in zip(self._data['timestamp'], self._data['value'])]
-        )
+        result = np.column_stack([self._data['timestamp'], self._data['value']])
         self._clear()
         return result
 
@@ -88,12 +87,14 @@ class Sensor(ABC):
         Args:
             new_data_length (int): The new length of internal observation storage
         """
-        self._maxlen_data = new_data_length
+        if type(new_data_length) != int:
+            raise ValueError
         new_data = {'value': deque(maxlen=new_data_length), 'timestamp': deque(maxlen=new_data_length)}
         for key in new_data.keys():
             new_data[key].extend(self._data[key])
             self._data[key].clear()
             self._data[key] = new_data[key]
+        self._maxlen_data = new_data_length
 
     def _read(self) -> float:
         """ Calls _raw_read and scales the result before returning it."""
@@ -282,7 +283,7 @@ class DLiteSensor(AnalogSensor):
         """
         raw = super()._convert(raw)
         fit_param = 6.0345e-05
-        if(raw >= 0):
+        if raw >= 0:
             converted_flow = (-1.0*np.sqrt(raw)/np.sqrt(fit_param))
         else:
             converted_flow = (1.0*np.sqrt(-1.0*raw)/np.sqrt(fit_param))

@@ -9,7 +9,7 @@ import vent.io as io
 import logging
 import tables as pytb
 
-from vent.common.message import SensorValues, ControlSetting
+from vent.common.message import SensorValues, ControlValues, ControlSetting
 from vent.common.values import CONTROL, ValueName
 
 
@@ -17,15 +17,18 @@ class DataSample(pytb.IsDescription):
     """
     Structure for the hdf5-table for data
     """
-    timestamp    = pytb.Float64Col()    # current time of the measurement
-    pressure     = pytb.Float32Col()    # float  (single-precision)  -- because we'll have a whole bunch of these
-    cycle_number = pytb.Int32Col()      # Breath Cycle No.
+    timestamp    = pytb.Float64Col()    # current time of the measurement - has to be 64 bit
+    pressure     = pytb.UInt8Col()
+    flow_in      = pytb.UInt8Col()
+    flow_out     = pytb.UInt8Col()
+    cycle_number = pytb.UInt32Col()     # Max is 2147483647 Breath Cycles (~78 years)
 
 class ControlCommand(pytb.IsDescription):
     """
     Structure for the hdf5-table to store control commands
     """
     name      = pytb.StringCol(16)   # Control setting name
+    value     = pytb.Float64Col()    # double (double-precision)
     min_value = pytb.Float64Col()    # double (double-precision)
     max_value = pytb.Float64Col()    # double (double-precision)
     timestamp = pytb.Float64Col()    # double (double-precision)
@@ -88,7 +91,16 @@ class DataLogger:
         self.data_table.flush()
         self.h5file.close()
         
-    def store_waveform_data(self, sensor_values: SensorValues):
+    def __rescale_save(self, raw_value, value, target, scalingconstant):
+        """
+        Rescales values to fit into the ranges specified in DataSample
+        """
+        if DataSample.columns[value].dtype == target.dtype:
+            return np.int8( raw_value * scalingconstant )    # type cast to unsigned int 8, flow between 0 and 1.28 l/sec
+        else:
+            raise ValueError('Dynamic range unclear.')
+
+    def store_waveform_data(self, sensor_values: SensorValues, control_values: ControlValues):
         """
         Appends a datapoint to the file.
         NOTE: Not flushed yet.
@@ -99,13 +111,29 @@ class DataLogger:
             self.open_logfile()
         
         datapoint                 = self.data_table.row
-
-        datapoint['timestamp'] = sensor_values.timestamp
-        datapoint['pressure'] = sensor_values.PRESSURE
+        datapoint['timestamp']    = sensor_values.timestamp
+        datapoint['pressure']     = self.__rescale_save(raw_value = sensor_values.PRESSURE, value = 'pressure', target=pytb.UInt8Col(), scalingconstant=5)
         datapoint['cycle_number'] = sensor_values.breath_count
-
+        datapoint['flow_in']      = self.__rescale_save(raw_value = control_values.flow_in, value = 'flow_in', target=pytb.UInt8Col(), scalingconstant=100)
+        datapoint['flow_out']     = self.__rescale_save(raw_value = control_values.flow_out, value = 'flow_out', target=pytb.UInt8Col(), scalingconstant=100)
         datapoint.append()
     
+    def store_control_command(self, control_setting: ControlSetting):
+        """
+        Appends a control signal to the hdf5 file.
+        NOTE: Also not flushed yet.
+        """
+        if not self.h5file.isopen:
+            self.open_logfile()
+
+        datapoint               = self.control_table.row
+        datapoint['name']       = control_setting.name
+        datapoint['value']      = control_setting.value
+        datapoint['min_value']  = control_setting.min_value
+        datapoint['max_value']  = control_setting.max_value
+        datapoint['timestamp']  = control_setting.timestamp
+        datapoint.append()
+
     def flush_logfile(self):
         """
         This flushes the datapoints to the file.

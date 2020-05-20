@@ -98,6 +98,8 @@ def test_frequency(patch_pigpio_gpio, seed):
             frequency = random.choice(soft_frequencies)
         else:
             frequency = random.randint(1, 10000)
+            while frequency in soft_frequencies:
+                frequency = random.randint(1, 10000)
             offspec = True
     else:
         frequency = random.randint(1, 20000000)

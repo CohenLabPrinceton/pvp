@@ -10,6 +10,7 @@ import logging
 import tables as pytb
 from datetime import datetime
 import os
+import string
 
 from vent.common.message import SensorValues, ControlValues, ControlSetting
 from vent.common.values import CONTROL, ValueName
@@ -64,9 +65,17 @@ class DataLogger:
         today = datetime.today()
         date_string = today.strftime("%Y-%m-%d-%H-%M")
 
+        # Make the log folder
         if not os.path.exists('vent/logfiles'):
             os.makedirs('vent/logfiles')
         self.file = "vent/logfiles/" + date_string + "_controller_log.h5"
+
+        # Make sure that the file doesn't exist yet, if it does, append alphabet ('a','b','c'...)
+        # In rarely happens, but for Travis-tests, this is needed.
+        ls = list(string.ascii_lowercase)
+        while os.path.exists(self.file):
+            self.file = "vent/logfiles/" + date_string + ls[0] + "_controller_log.h5"
+            ls.pop(0)
 
         self.storage_used = self.check_files()  # Make sure there is space. Sum of all logfiles in bytes
 

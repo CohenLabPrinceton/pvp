@@ -64,8 +64,8 @@ class DataLogger:
         today = datetime.today()
         date_string = today.strftime("%Y-%m-%d-%H-%M")
 
-        if not os.path.exists('logfiles'):
-            os.makedirs('logfiles')
+        if not os.path.exists('vent/logfiles'):
+            os.makedirs('vent/logfiles')
         self.file = "vent/logfiles/" + date_string + "_controller_log.h5"
 
         self.storage_used = self.check_files()  # Make sure there is space. Sum of all logfiles in bytes
@@ -179,3 +179,21 @@ class DataLogger:
             raise OSError('Too many logfiles in /vent/logfiles/ (>10GB). Free disk space')
         else:
             return total_size  # size in bytes
+
+    def load_file(self, filename = None):
+        """
+        This loads a hdf5 file, and returns data to the user as a dictionary with two keys: waveform_data and control_data 
+        """
+        if filename == None:
+            filename = self.file
+
+        with pytb.open_file(filename, mode = "r") as file:
+
+            table = file.root.waveforms.readout
+            waveform_data = table.read()
+
+            table = file.root.controls.readout
+            control_data = table.read()
+        
+        data_dict = {"waveform_data": waveform_data, "control_data": control_data}
+        return data_dict

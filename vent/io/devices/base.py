@@ -481,7 +481,7 @@ class ADS1115(I2CDevice):
             while not (self._ready() or mode == 'CONTINUOUS'):
                 # TODO: Needs timout
                 tick = time.time()
-                while (time.time() - tick) < 1000000 / data_rate:
+                while (time.time() - tick) < (1 / data_rate):
                     pass  # TODO: implement asyncio.sleep()
         return self.read_register(self.pointer.P.pack('CONVERSION'), signed=True)
 

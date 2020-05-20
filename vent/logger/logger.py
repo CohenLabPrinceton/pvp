@@ -8,6 +8,8 @@ import pdb
 import vent.io as io
 import logging
 import tables as pytb
+from datetime import datetime
+import os
 
 from vent.common.message import SensorValues, ControlValues, ControlSetting
 from vent.common.values import CONTROL, ValueName
@@ -56,9 +58,14 @@ class DataLogger:
 
     """
 
-    def __init__(self, filename):
-        self.file = filename    # Filename
-        
+    def __init__(self):
+
+        # If initialized, make a new file
+        today = datetime.today()
+        date_string = today.strftime("%Y-%m-%d-%H-%M")
+        self.file = "vent/logfiles/" + date_string + "_controller_log.h5"
+        self.storage_used = self.check_files()  # Make sure there is space. Sum of all logfiles in bytes
+
     def open_logfile(self):
         """
         Opens the hdf5 file.
@@ -158,8 +165,18 @@ class DataLogger:
     
         self.close_logfile()
                 
-    def check_size(self):
+    def check_files(self):
         """
         make sure that the file's are not getting too large.
         """
-        pass
+        total_size = 0
+        logpath = 'vent/logfiles'
+        for filenames in os.listdir(logpath):
+            fp = os.path.join(logpath, filenames)
+            # skip if it is symbolic link
+            if not os.path.islink(fp):
+                total_size += os.path.getsize(fp)
+        if total_size>1e10:     #
+            raise OSError('Too many logfiles in /vent/logfiles/ (>10GB). Free disk space')
+        else:
+            return total_size  # size in bytes

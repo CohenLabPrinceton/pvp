@@ -49,7 +49,7 @@ class ControlModuleBase:
         self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec
         self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      # After every 10 main control loop iterations, update COPYs.
         self._RINGBUFFER_SIZE                    = 100     # Maximum number of breath cycles kept in memory
-        self._save_logs                          = False   # Keep logs in a file
+        self._save_logs                          = True   # Keep logs in a file
 
         #########################  Control management  #########################
 
@@ -153,8 +153,7 @@ class ControlModuleBase:
         ############################# Logging ################################
         # Create an instance of the DataLogger class
         if self._save_logs:
-            self.logfile = "./controller_log.h5"
-            self.dl = DataLogger(filename = self.logfile)
+            self.dl = DataLogger()
             self.dl.open_logfile()
 
     def __del__(self):

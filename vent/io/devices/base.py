@@ -5,10 +5,9 @@ from vent.common.fashion import pigpio_command
 
 import time
 import sys
+import platform
 
-if 'pytest' not in sys.modules:
-    import pigpio
-else:
+if 'pytest' in sys.modules or platform.machine() == 'x86_64':
     class pigpio_mock(object):
         class pi_mock(object):
             def __init__(self, *args, **kwargs):
@@ -18,6 +17,10 @@ else:
             self.pi = self.pi_mock(*args, **kwargs)
 
     pigpio = pigpio_mock()
+
+else:
+    import pigpio
+
 
 
 

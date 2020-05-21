@@ -579,12 +579,12 @@ class ControlModuleBase:
         #     A  B     C  D           E           <- Critical time points
 
         self._lock.acquire()
-        wv = (
+        wv = np.array([
         (0, self.__SET_PEEP),                                            # A: start of the waveform
         (self.__SET_PIP_TIME, self.__SET_PIP),                           # B: reaching PIP within PIP_TIME
         (self.__SET_I_PHASE, self.__SET_PIP),                            # C: keeping the plateau during I_Phase
         (self.__SET_PEEP_TIME + self.__SET_I_PHASE, self.__SET_PEEP),    # D: reaching PEEP within PEEP TIME
-        (self.__SET_CYCLE_DURATION, self.__SET_PEEP))                    # E: Cycle ends
+        (self.__SET_CYCLE_DURATION, self.__SET_PEEP)])                    # E: Cycle ends
         self._lock.release()
         return wv
 

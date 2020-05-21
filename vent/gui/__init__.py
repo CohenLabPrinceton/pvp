@@ -26,7 +26,7 @@ def limit_gui(limit=None):
 PLOTS = odict({
     ValueName.PRESSURE: SENSOR[ValueName.PRESSURE].to_dict(),
     ValueName.TEMP: SENSOR[ValueName.TEMP].to_dict(),
-    ValueName.HUMIDITY: SENSOR[ValueName.HUMIDITY].to_dict()
+    #ValueName.HUMIDITY: SENSOR[ValueName.HUMIDITY].to_dict()
 })
 """
 Values to plot.
@@ -45,7 +45,7 @@ such that the set limit range is updated when the horizontal bars on the plot ar
 
 PLOTS[ValueName.PRESSURE]['color'] = styles.SUBWAY_COLORS['orange']
 PLOTS[ValueName.TEMP]['color'] = styles.SUBWAY_COLORS['red']
-PLOTS[ValueName.HUMIDITY]['color'] = styles.SUBWAY_COLORS['blue']
+#PLOTS[ValueName.HUMIDITY]['color'] = styles.SUBWAY_COLORS['blue']
 
 
 ########################

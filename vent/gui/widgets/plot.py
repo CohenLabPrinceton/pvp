@@ -10,6 +10,7 @@ import pyqtgraph as pg
 from vent.gui import styles
 from vent.gui import mono_font
 from vent.gui import get_gui_instance
+from vent.common.message import SensorValues
 
 PLOT_TIMER = None
 """
@@ -20,6 +21,64 @@ PLOT_FREQ = 5
 """
 Update frequency of :class:`.Plot` s in Hz
 """
+
+class Pressure_Waveform(pg.PlotWidget):
+    """
+    Display the ideal piecewise function parameterized by the controls and a history of traces
+    """
+    def __init__(self, n_waveforms = 10, **kwargs):
+        super(Pressure_Waveform, self).__init__(background=styles.BACKGROUND_COLOR,
+                                                title="Pressure Control Waveform")
+
+        # create a dq of plot items to hold waveforms
+        self.n_waveforms = n_waveforms
+        self.waveforms = deque(maxlen=self.n_waveforms)
+
+        for i in range(self.n_waveforms):
+            self.waveforms.append(self.plot())
+
+        self.colors = np.linspace(255, 0, self.n_waveforms)
+
+        self.target = self.plot(width=3, symbolBrush=(255,0,0), symbolPen='w')
+        self.target.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
+
+        self._last_target = np.array(())
+        self._last_cycle = None
+        self._last_cycle_timestamp = 0
+        self._current_timestamps = []
+        self._current_values = []
+        self.enableAutoRange(axis=pg.ViewBox.YAxis)
+
+    def update_target(self, target):
+        if not np.array_equal(target, self._last_target):
+            self.target.setData(target[:,0], target[:,1])
+            self._last_target = target
+            xrange_min, xrange_max = np.min(target[:,0]), np.max(target[:,0])
+            # # xrange_size = xrange_max-xrange_min
+            self.setXRange(xrange_min, xrange_max)
+            # self.setYRange()
+
+    def update_waveform(self, sensors: SensorValues):
+        if self._last_cycle is None or sensors.breath_count > self._last_cycle:
+            self._last_cycle = sensors.breath_count
+            self._last_cycle_timestamp = sensors.timestamp
+
+            self.waveforms.rotate()
+            for i, wave in enumerate(self.waveforms):
+                wave.setPen(color=(self.colors[i],self.colors[i],self.colors[i]))
+
+            self._current_timestamps = []
+            self._current_values = []
+
+        self._current_values.append(sensors.PRESSURE)
+        self._current_timestamps.append(sensors.timestamp - self._last_cycle_timestamp)
+        self.waveforms[0].setData(np.array(self._current_timestamps),
+                                  np.array(self._current_values))
+
+
+
+
+
 
 
 class Plot(pg.PlotWidget):

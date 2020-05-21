@@ -38,6 +38,10 @@ def get_control(control_setting_name):
     res = remote_controller.get_control(args)
     return pickle.dumps(res)
 
+def get_target_waveform():
+    res = remote_controller.get_target_waveform()
+    return pickle.dumps(res)
+
 
 def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port):
     global remote_controller
@@ -52,6 +56,7 @@ def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port)
     # server.register_function(get_logged_alarms, "get_logged_alarms")
     server.register_function(set_control, "set_control")
     server.register_function(get_control, "get_control")
+    server.register_function(get_target_waveform, "get_target_waveform")
     server.register_function(remote_controller.start, "start")
     server.register_function(remote_controller.is_running, "is_running")
     server.register_function(remote_controller.stop, "stop")

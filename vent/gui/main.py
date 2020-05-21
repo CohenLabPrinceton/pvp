@@ -60,7 +60,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     computed from ``status_height+main_height``
     """
 
-    def __init__(self, coordinator, update_period = 0.1):
+    def __init__(self, coordinator, update_period = 0.05):
         """
         The Main GUI window.
 
@@ -187,6 +187,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
             vals = self.coordinator.get_sensors()
 
+            # update ideal waveform
+            # pdb.set_trace()
+            self.pressure_waveform.update_target(self.coordinator.get_target_waveform())
+            self.pressure_waveform.update_waveform(vals)
+
             for plot_key, plot_obj in self.plots.items():
                 if hasattr(vals, plot_key):
                     plot_obj.update_value((time.time(), getattr(vals, plot_key)))
@@ -287,6 +292,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.display_layout.setContentsMargins(0,0,0,0)
 
         for display_key, display_params in self.MONITOR.items():
+            if display_key in self.CONTROL.keys():
+                continue
             self.monitor[display_key.name] = widgets.Monitor(display_params, enum_name=display_key)
             self.display_layout.addWidget(self.monitor[display_key.name])
             self.display_layout.addWidget(widgets.components.QHLine())
@@ -332,7 +339,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # the plot widgets themselves
         for plot_key, plot_params in self.PLOTS.items():
             self.plots[plot_key.name] = widgets.Plot(**plot_params)
-            self.plot_layout.addWidget(self.plots[plot_key.name])
+            self.plot_layout.addWidget(self.plots[plot_key.name], 1)
+
+        # the idealized waveform display
+        self.pressure_waveform = widgets.Pressure_Waveform()
+        self.plot_layout.addWidget(self.pressure_waveform, len(self.plots))
+
 
         # self.main_layout.addLayout(self.plot_layout,5)
         self.monitor_layout.addLayout(self.plot_layout, self.plot_width)
@@ -356,7 +368,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         for control_name, control_params in self.CONTROL.items():
             self.controls[control_name.name] = widgets.Control(control_params)
             self.controls[control_name.name].setObjectName(control_name.name)
-            self.controls[control_name.name].value_changed.connect(self.set_value)
             self.controls_layout.addWidget(self.controls[control_name.name])
             self.controls_layout.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
 
@@ -388,6 +399,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # FIXME: THis should be handled by alarm manager, that's what it's there for!
         #self.status_bar.status_message.level_changed.connect(self.alarm_state_changed)
         self.status_bar.status_message.message_cleared.connect(self.handle_cleared_alarm)
+
+        # connect controls
+        for control in self.controls.values():
+            control.value_changed.connect(self.set_value)
+            control.value_changed.connect(self.set_value)
 
         # connect start button to coordinator start
         self.status_bar.start_button.clicked.connect(self.coordinator.start)
@@ -430,6 +446,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         for plot in self.plots.values():
             plot.set_duration(dur)
+
+    @QtCore.Slot()
+    def update_target_waveform(self):
+        target_waveform = self.coordinator.get
 
     def closeEvent(self, event):
         """

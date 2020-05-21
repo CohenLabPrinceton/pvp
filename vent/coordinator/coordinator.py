@@ -44,6 +44,9 @@ class CoordinatorBase:
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         pass
 
+    def get_target_waveform(self):
+        pass
+
     def start(self):
         pass
 
@@ -88,6 +91,9 @@ class CoordinatorLocal(CoordinatorBase):
 
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         return self.control_module.get_control(control_setting_name)
+
+    def get_target_waveform(self):
+        return self.control_module.get_target_waveform()
 
     def start(self):
         """
@@ -141,6 +147,10 @@ class CoordinatorRemote(CoordinatorBase):
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         pickled_args = pickle.dumps(control_setting_name)
         pickled_res = self.rpc_client.get_control(pickled_args).data
+        return pickle.loads(pickled_res)
+
+    def get_target_waveform(self):
+        pickled_res = self.rpc_client.get_target_waveform().data
         return pickle.loads(pickled_res)
 
     def start(self):

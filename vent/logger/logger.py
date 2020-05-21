@@ -77,18 +77,20 @@ class DataLogger:
         while os.path.exists(self.file):
             self.file = "vent/logfiles/" + date_string + ls[0] + "_controller_log.h5"
             ls.pop(0)
-
         self.storage_used = self.check_files()  # Make sure there is space. Sum of all logfiles in bytes
+        self.h5file = pytb.open_file(self.file, mode = "a") # Open logfile
+        self._open_logfile()                                # and make tables available
 
-    def open_logfile(self):
+    def __del__(self):
+        self.close_logfile()
+
+    def _open_logfile(self):
         """
         Opens the hdf5 file.
         """
+        if not self.h5file.isopen:
+            self.h5file = pytb.open_file(self.file, mode = "a")
 
-        #Open the file
-        self.h5file = pytb.open_file(self.file, mode = "a")
-
-        #If it doesn't contain our structure, create it.
         if "/waveforms" not in self.h5file:
             group = self.h5file.create_group("/", 'waveforms', 'Respiration waveforms')
             self.data_table    = self.h5file.create_table(group, 'readout', DataSample, "Breath Cycles")
@@ -106,7 +108,7 @@ class DataLogger:
         Flushes & closes the open hdf file.
         """
         self.h5file.close() # Also flushes the remaining buffers
-        
+
     def __rescale_save(self, raw_value, value, target, scalingconstant):
         """
         Rescales values to fit into the ranges specified in DataSample
@@ -121,16 +123,12 @@ class DataLogger:
         Appends a datapoint to the file.
         NOTE: Not flushed yet.
         """
-
-        #Make sure hdf5 file is open
-        if not self.h5file.isopen:
-            self.open_logfile()
-        
+        self._open_logfile()
         datapoint                 = self.data_table.row
         datapoint['timestamp']    = sensor_values.timestamp
-        datapoint['pressure']     = self.__rescale_save(raw_value = sensor_values.PRESSURE, value = 'pressure', target=pytb.UInt8Col(), scalingconstant=5)
+        datapoint['pressure']     = self.__rescale_save(raw_value = sensor_values.PRESSURE,  value = 'pressure', target=pytb.UInt8Col(), scalingconstant=5)
         datapoint['cycle_number'] = sensor_values.breath_count
-        datapoint['flow_in']      = self.__rescale_save(raw_value = control_values.flow_in, value = 'flow_in', target=pytb.UInt8Col(), scalingconstant=100)
+        datapoint['flow_in']      = self.__rescale_save(raw_value = control_values.flow_in,  value = 'flow_in',  target=pytb.UInt8Col(), scalingconstant=100)
         datapoint['flow_out']     = self.__rescale_save(raw_value = control_values.flow_out, value = 'flow_out', target=pytb.UInt8Col(), scalingconstant=100)
         datapoint.append()
     
@@ -139,9 +137,7 @@ class DataLogger:
         Appends a control signal to the hdf5 file.
         NOTE: Also not flushed yet.
         """
-        if not self.h5file.isopen:
-            self.open_logfile()
-
+        self._open_logfile()
         datapoint               = self.control_table.row
         datapoint['name']       = control_setting.name
         datapoint['value']      = control_setting.value
@@ -156,24 +152,7 @@ class DataLogger:
         To be executed every other second, e.g. at the end of breath cycle.
         """
         self.data_table.flush()
-        
-    def store_controls(self):
-        """
-        Saves a new controlsetting to the file. TODO: SHOULD WE DO THIS HERE?
-        """
-        
-        self.open_logfile()
-        
-        datapoint                 = self.data_table.row
-        datapoint['name']         = ValueName.PEEP
-        datapoint['value']        = 3
-        datapoint['min_value']    = 1
-        datapoint['max_value']    = 4
-        datapoint['timestamp']    = time.time()
-        datapoint.append()
-    
-        self.close_logfile()
-                
+                    
     def check_files(self):
         """
         make sure that the file's are not getting too large.
@@ -185,8 +164,11 @@ class DataLogger:
             # skip if it is symbolic link
             if not os.path.islink(fp):
                 total_size += os.path.getsize(fp)
-        if total_size>1e10:     #
-            raise OSError('Too many logfiles in /vent/logfiles/ (>10GB). Free disk space')
+
+        if len(os.listdir(logpath)) > 1000:
+            raise OSError('Too many logfiles in /vent/logfiles/ (>1000 files). Delete some.')
+        elif total_size>1e10:     #
+            raise OSError('Too many logfiles in /vent/logfiles/ (>10GB). Free disk space.')
         else:
             return total_size  # size in bytes
 

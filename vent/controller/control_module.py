@@ -154,7 +154,6 @@ class ControlModuleBase:
         # Create an instance of the DataLogger class
         if self._save_logs:
             self.dl = DataLogger()
-            self.dl.open_logfile()
 
     def __del__(self):
         if self._save_logs:
@@ -440,13 +439,12 @@ class ControlModuleBase:
 
         return return_value
 
-
     def __get_PID_error(self, ytarget, yis, dt):
         error_new = ytarget - yis                   # New value of the error
 
         RC = 0.5  # Time constant in seconds
         s = dt / (dt + RC)
-        self._DATA_I = self._DATA_I + s*(error_new - self._DATA_I)     # Integral term on some timescale RC
+        self._DATA_I = self._DATA_I + s*(error_new - self._DATA_I)     # Integral term on some timescale RC  -- TODO: If used, for real system, add integral windup
         self._DATA_D = error_new - self._DATA_P
         self._DATA_P = error_new
 

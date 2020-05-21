@@ -3,6 +3,10 @@ import os
 import subprocess
 
 depend_links = []
+# get wheel name
+external_files = os.listdir(os.path.join(os.getcwd(), 'external'))
+pyside_wheel = [whl for whl in external_files if whl.endswith('.whl') and whl.startswith("PySide2")][0]
+depend_links.append(os.path.join(os.getcwd(), 'external', pyside_wheel))
 
 # detect if on raspberry pi, and
 # set location to wheel if we are
@@ -14,10 +18,6 @@ if ret == 0:
     os.system("sudo ./INSTALL")
 
     # keeping this around for proper packaging later
-    # get wheel name
-    #external_files = os.listdir(os.path.join(os.getcwd(), 'external'))
-    #pyside_wheel = [whl for whl in external_files if whl.endswith('.whl') and whl.startswith("PySide2")][0]
-    #depend_links.append(os.path.join(os.getcwd(), 'external', pyside_wheel))
 
 
 setup(
@@ -35,7 +35,7 @@ setup(
         'pyqtgraph>=0.11.0rc0',
         'pytest-qt',
         'pytest-timeout',
-        'pigpio'
+        'pigpio;platform_machine!="x84_64"'
     ],
     dependency_links=depend_links
 )

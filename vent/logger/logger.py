@@ -178,8 +178,12 @@ class DataLogger:
         """
         This loads a hdf5 file, and returns data to the user as a dictionary with two keys: waveform_data and control_data 
         """
+        self.close_logfile()
+        
         if filename == None:
             filename = self.file
+
+        print("Reading... " + filename)
 
         with pytb.open_file(filename, mode = "r") as file:
 

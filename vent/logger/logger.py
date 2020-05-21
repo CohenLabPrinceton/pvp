@@ -78,8 +78,10 @@ class DataLogger:
             self.file = "vent/logfiles/" + date_string + ls[0] + "_controller_log.h5"
             ls.pop(0)
         self.storage_used = self.check_files()  # Make sure there is space. Sum of all logfiles in bytes
-        self.h5file = pytb.open_file(self.file, mode = "a") # Open logfile
-        self._open_logfile()                                # and make tables available
+
+        ## For data storage ##
+        self.h5file = pytb.open_file(self.file, mode = "a")      # Open logfile
+        self.compression_level = 4 # From 1 to 9, see tables documentation
 
     def __del__(self):
         self.close_logfile()
@@ -93,13 +95,13 @@ class DataLogger:
 
         if "/waveforms" not in self.h5file:
             group = self.h5file.create_group("/", 'waveforms', 'Respiration waveforms')
-            self.data_table    = self.h5file.create_table(group, 'readout', DataSample, "Breath Cycles")
+            self.data_table = self.h5file.create_table(group, 'readout', DataSample, "Breath Cycles", filters = pytb.Filters(complevel=self.compression_level, complib='zlib'))
         else:
             self.data_table = self.h5file.root.waveforms.readout
 
         if "/controls" not in self.h5file:
             group = self.h5file.create_group("/", 'controls', 'Control signal history')
-            self.control_table = self.h5file.create_table(group, 'readout', ControlCommand, "Control Commands")
+            self.control_table = self.h5file.create_table(group, 'readout', ControlCommand, "Control Commands", filters = pytb.Filters(complevel=self.compression_level, complib='zlib'))
         else:
             self.control_table = self.h5file.root.controls.readout
             

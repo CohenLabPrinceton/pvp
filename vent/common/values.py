@@ -121,8 +121,9 @@ class Value(object):
 
     @safe_range.setter
     def safe_range(self, safe_range):
-        assert(isinstance(safe_range, tuple) or isinstance(safe_range, list))
-        assert(all([isinstance(x, int) or isinstance(x, float) for x in safe_range]))
+        assert(isinstance(safe_range, tuple) or isinstance(safe_range, list) or safe_range is None)
+        if isinstance(safe_range, tuple) or isinstance(safe_range, list):
+            assert(all([isinstance(x, int) or isinstance(x, float) for x in safe_range]))
         self._safe_range = safe_range
 
     @property
@@ -217,28 +218,6 @@ VALUES = odict({
         'sensor': True,
         'display': True
     }),
-    ValueName.PIP_TIME: Value(**{
-        'name': 'RISEt',
-        'units': 'seconds',
-        'abs_range': (0, 5),  # FIXME
-        'safe_range': (0.2, 0.5),  # FIXME
-        'default': 0.3,  # FIXME
-        'decimals': 1,
-        'control': True,
-        'sensor': False,
-        'display': True
-    }),
-    ValueName.PEEP_TIME: Value(**{
-        'name': 'PEEPt',
-        'units': 'seconds',
-        'abs_range': (0, 2),  # FIXME
-        'safe_range': (0, 1.0),  # FIXME
-        'default': 0.5,  # FIXME
-        'decimals': 1,
-        'control': True,
-        'sensor': False,
-        'display': True
-    }),
     ValueName.BREATHS_PER_MINUTE: Value(**{
         'name': 'RR', # Daniel re: FDA labels
         'units': 'BPM', # Daniel re: FDA labels
@@ -262,14 +241,37 @@ VALUES = odict({
         'display': True
     }),
     ValueName.IE_RATIO: Value(**{
-        'name': 'I:E Ratio',
+        'name': 'I:E',
         'units': '',
         'abs_range': (0, 2),
         'safe_range': (0.33, 1),
         'decimals': 2,
+        'default':0.5,
         'control': False,
         'sensor': False,
         'display': False
+    }),
+    ValueName.PIP_TIME: Value(**{
+        'name': 'RISEt',
+        'units': 'seconds',
+        'abs_range': (0, 5),  # FIXME
+        'safe_range': (0.2, 0.5),  # FIXME
+        'default': 0.3,  # FIXME
+        'decimals': 1,
+        'control': True,
+        'sensor': False,
+        'display': True
+    }),
+    ValueName.PEEP_TIME: Value(**{
+        'name': 'PEEPt',
+        'units': 'seconds',
+        'abs_range': (0, 2),  # FIXME
+        'safe_range': (0, 1.0),  # FIXME
+        'default': 0.5,  # FIXME
+        'decimals': 1,
+        'control': True,
+        'sensor': False,
+        'display': True
     }),
     ValueName.PRESSURE: Value(**{
         'name': 'Pressure',
@@ -285,7 +287,7 @@ VALUES = odict({
         'name': 'Volume',
         'units': 'L',
         'abs_range': (1,2),
-        'safe_range': (1,2),
+        'safe_range': None,
         'decimals': 1,
         'control': False,
         'sensor': True,

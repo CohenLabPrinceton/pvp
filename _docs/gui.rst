@@ -103,6 +103,7 @@ ______________
 
 * use loop_counter to check on controller advancement
 * choice between pressure/volume over time and combined P/V plot
+* display flow in SLM (liters per minute)
 
 
 

@@ -110,11 +110,19 @@ class Plot(pg.PlotWidget):
         self.abs_range = None
         if abs_range:
             self.abs_range = abs_range
-            self.setYRange(self.abs_range[0], self.abs_range[1])
+            #self.setYRange(self.abs_range[0], self.abs_range[1])
 
-        self.safe_range = (0,0)
+        #self.enableAutoRange(y=True)
+
+        self.safe_range = None
         if safe_range:
             self.safe_range = safe_range
+            self.min_safe = pg.InfiniteLine(movable=True, angle=0, pos=self.safe_range[0])
+            self.max_safe = pg.InfiniteLine(movable=True, angle=0, pos=self.safe_range[1])
+            self.min_safe.sigPositionChanged.connect(self._safe_limits_changed)
+            self.max_safe.sigPositionChanged.connect(self._safe_limits_changed)
+            self.addItem(self.min_safe)
+            self.addItem(self.max_safe)
 
 
         self.setXRange(0, plot_duration)
@@ -122,15 +130,11 @@ class Plot(pg.PlotWidget):
         # split plot curve into two so that the endpoint doesn't get connected to the start point
         self.early_curve = self.plot(width=3)
         self.late_curve = self.plot(width=3)
-        self.time_marker = self.plot()
+        self.time_marker = pg.InfiniteLine(movable=False, angle=90, pos=0)
 
-        self.min_safe = pg.InfiniteLine(movable=True, angle=0, pos=self.safe_range[0])
-        self.max_safe = pg.InfiniteLine(movable=True, angle=0, pos=self.safe_range[1])
-        self.min_safe.sigPositionChanged.connect(self._safe_limits_changed)
-        self.max_safe.sigPositionChanged.connect(self._safe_limits_changed)
 
-        self.addItem(self.min_safe)
-        self.addItem(self.max_safe)
+
+
 
         if color:
             self.early_curve.setPen(color=color, width=3)
@@ -151,8 +155,9 @@ class Plot(pg.PlotWidget):
             #time_diff = this_time-self._last_time
             limits = self.getPlotItem().viewRange()
             current_relative_time = (this_time-self._start_time) % self.plot_duration
-            self.time_marker.setData([current_relative_time, current_relative_time],
-                                     [limits[1][0], limits[1][1]])
+            # self.time_marker.setData([current_relative_time, current_relative_time],
+            #                          [limits[1][0], limits[1][1]])
+            self.time_marker.setValue(current_relative_time)
 
             self.timestamps.append(new_value[0])
             self.history.append(new_value[1])
@@ -190,8 +195,16 @@ class Plot(pg.PlotWidget):
 
     @QtCore.Slot(tuple)
     def set_safe_limits(self, limits):
+        if self.safe_range is None:
+            return
+
         self.max_safe.setPos(limits[1])
         self.min_safe.setPos(limits[0])
+
+    def reset_start_time(self):
+        self._start_time = time.time()
+        self._last_time = time.time()
+        self._last_relative_time = 0
     #
     # def plot(self, *args, **kargs):
     #     """

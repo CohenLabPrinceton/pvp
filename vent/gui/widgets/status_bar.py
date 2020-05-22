@@ -39,6 +39,9 @@ class Status_Bar(QtWidgets.QWidget):
         self.layout.addWidget(self.heartbeat)
 
         self.start_button = QtWidgets.QPushButton('start!!!')
+        self.start_button.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                        QtWidgets.QSizePolicy.Expanding)
+        self.start_button.setCheckable(True)
         self.layout.addWidget(self.start_button)
 
 

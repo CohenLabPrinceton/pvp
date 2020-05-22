@@ -44,22 +44,22 @@ class Monitor(QtWidgets.QWidget):
         #########
         # create widgets
         # make range slider
-        self.range_slider = RangeSlider(self.abs_range, self.safe_range,
-                                        decimals=self.decimals,
-                                        orientation=QtCore.Qt.Orientation.Horizontal)
-
-        # make comboboxes to display numerical value
-        self.max_safe = QtWidgets.QDoubleSpinBox()
-        self.max_safe.setDecimals(self.decimals)
-        self.max_safe.setRange(self.abs_range[0], self.abs_range[1])
-        self.max_safe.setSingleStep(10 ** (self.decimals * -1))
-        self.max_safe.setValue(self.safe_range[1])
-
-        self.min_safe = QtWidgets.QDoubleSpinBox()
-        self.min_safe.setDecimals(self.decimals)
-        self.min_safe.setRange(self.abs_range[0], self.abs_range[1])
-        self.min_safe.setSingleStep(10 ** (self.decimals * -1))
-        self.min_safe.setValue(self.safe_range[0])
+        # self.range_slider = RangeSlider(self.abs_range, self.safe_range,
+        #                                 decimals=self.decimals,
+        #                                 orientation=QtCore.Qt.Orientation.Horizontal)
+        #
+        # # make comboboxes to display numerical value
+        # self.max_safe = QtWidgets.QDoubleSpinBox()
+        # self.max_safe.setDecimals(self.decimals)
+        # self.max_safe.setRange(self.abs_range[0], self.abs_range[1])
+        # self.max_safe.setSingleStep(10 ** (self.decimals * -1))
+        # self.max_safe.setValue(self.safe_range[1])
+        #
+        # self.min_safe = QtWidgets.QDoubleSpinBox()
+        # self.min_safe.setDecimals(self.decimals)
+        # self.min_safe.setRange(self.abs_range[0], self.abs_range[1])
+        # self.min_safe.setSingleStep(10 ** (self.decimals * -1))
+        # self.min_safe.setValue(self.safe_range[0])
 
         # labels to display values
         self.value_label = QtWidgets.QLabel()
@@ -68,8 +68,10 @@ class Monitor(QtWidgets.QWidget):
         self.value_label.setAlignment(QtCore.Qt.AlignRight)
         self.value_label.setMargin(0)
         self.value_label.setContentsMargins(0,0,0,0)
-        self.value_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                       QtWidgets.QSizePolicy.Expanding)
+        # at minimum make space for 4 digits
+        self.value_label.setMinimumWidth(4 * styles.VALUE_SIZE * .6)
+        self.value_label.setSizePolicy(QtWidgets.QSizePolicy.Minimum,
+                                       QtWidgets.QSizePolicy.Minimum)
 
         self.name_label = QtWidgets.QLabel()
         self.name_label.setStyleSheet(styles.DISPLAY_NAME)
@@ -99,23 +101,23 @@ class Monitor(QtWidgets.QWidget):
 
         #########
         # connect widgets
-
-        # update boxes when slider changed
-        self.range_slider.valueChanged.connect(self.update_boxes)
-
-        # and vice versa
-        self.min_safe.valueChanged.connect(self.range_slider.setLow)
-        self.max_safe.valueChanged.connect(self.range_slider.setHigh)
-
-        # and connect them all to a general limits_changed method
-        # that also checks the alarm
-        self.range_slider.valueChanged.connect(self._limits_changed)
-        self.min_safe.valueChanged.connect(self._limits_changed)
-        self.max_safe.valueChanged.connect(self._limits_changed)
-
-        #########
-        # layout widgets
-
+        #
+        # # update boxes when slider changed
+        # self.range_slider.valueChanged.connect(self.update_boxes)
+        #
+        # # and vice versa
+        # self.min_safe.valueChanged.connect(self.range_slider.setLow)
+        # self.max_safe.valueChanged.connect(self.range_slider.setHigh)
+        #
+        # # and connect them all to a general limits_changed method
+        # # that also checks the alarm
+        # self.range_slider.valueChanged.connect(self._limits_changed)
+        # self.min_safe.valueChanged.connect(self._limits_changed)
+        # self.max_safe.valueChanged.connect(self._limits_changed)
+        #
+        # #########
+        # # layout widgets
+        #
         # first make label layout
         label_layout = QtWidgets.QGridLayout()
         label_layout.setContentsMargins(0,0,0,0)
@@ -125,24 +127,24 @@ class Monitor(QtWidgets.QWidget):
         label_layout.addWidget(self.units_label, 1,2,1,1)
         # label_layout.addStretch()
         self.layout.addLayout(label_layout, 5)
-
-        # then combine sliders and boxes
-        self.slider_layout = QtWidgets.QVBoxLayout()
-
-        minmax_layout = QtWidgets.QHBoxLayout()
-        minmax_layout.addWidget(QtWidgets.QLabel('Min:'))
-        minmax_layout.addWidget(self.min_safe)
-        minmax_layout.addStretch()
-        minmax_layout.addWidget(QtWidgets.QLabel('Max:'))
-        minmax_layout.addWidget(self.max_safe)
-        self.slider_layout.addLayout(minmax_layout)
-
-        self.slider_layout.addWidget(self.range_slider)
-
-        # and wrap them in a widget so we can show/hide more robustly
-        self.slider_frame = QtWidgets.QFrame()
-        self.slider_frame.setLayout(self.slider_layout)
-        self.slider_frame.setVisible(False)
+        #
+        # # then combine sliders and boxes
+        # self.slider_layout = QtWidgets.QVBoxLayout()
+        #
+        # minmax_layout = QtWidgets.QHBoxLayout()
+        # minmax_layout.addWidget(QtWidgets.QLabel('Min:'))
+        # minmax_layout.addWidget(self.min_safe)
+        # minmax_layout.addStretch()
+        # minmax_layout.addWidget(QtWidgets.QLabel('Max:'))
+        # minmax_layout.addWidget(self.max_safe)
+        # self.slider_layout.addLayout(minmax_layout)
+        #
+        # self.slider_layout.addWidget(self.range_slider)
+        #
+        # # and wrap them in a widget so we can show/hide more robustly
+        # self.slider_frame = QtWidgets.QFrame()
+        # self.slider_frame.setLayout(self.slider_layout)
+        # self.slider_frame.setVisible(False)
 
 
         #self.layout.addLayout(self.slider_layout)
@@ -180,7 +182,7 @@ class Monitor(QtWidgets.QWidget):
             # TODO: Should this raise an alarm?
             return
         self.value = new_value
-        self.check_alarm()
+        #self.check_alarm()
 
     @QtCore.Slot(tuple)
     def update_limits(self, new_limits):
@@ -235,16 +237,16 @@ class Monitor(QtWidgets.QWidget):
         else:
             self.alarm_state = False
 
-    def check_alarm(self, value=None):
-        if value is None:
-            value = self.value
-
-        if value:
-            if (value > self.max_safe.value()) or (value < self.min_safe.value()):
-                self.alarm.emit((self.enum_name, value, time.time()))
-
-                if self.alarm == False:
-                    self.toggle_alarm_state(True)
-            else:
-                if self.alarm == True:
-                    self.toggle_alarm_state(False)
+    # def check_alarm(self, value=None):
+    #     if value is None:
+    #         value = self.value
+    #
+    #     if value:
+    #         if (value > self.max_safe.value()) or (value < self.min_safe.value()):
+    #             self.alarm.emit((self.enum_name, value, time.time()))
+    #
+    #             if self.alarm == False:
+    #                 self.toggle_alarm_state(True)
+    #         else:
+    #             if self.alarm == True:
+    #                 self.toggle_alarm_state(False)

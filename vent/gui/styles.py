@@ -2,6 +2,7 @@ from PySide2 import QtGui
 
 SUBWAY_COLORS = {
     'blue': "#0039A6",
+    'ltblue': "#00A1DE",
     'lime': "#6CBE45",
     'gray': "A7A9AC",
     'orange': "#FF6319",
@@ -14,8 +15,11 @@ SUBWAY_COLORS = {
 BACKGROUND_COLOR = "#111111"
 BOX_BACKGROUND = "#333333"
 TEXT_COLOR = "#EEEEEE"
+GRAY_TEXT = BOX_BACKGROUND
 CONTROL_BACKGROUND = "#EEEEEE"
+CONTROL_SENSOR_BACKGROUND = "#CCCCCC"
 CONTROL_TEXT = BACKGROUND_COLOR
+CONTROL_SENSOR_BAR_WIDTH = 50
 HANDLE_HEIGHT = 10
 SLIDER_WIDTH = 80
 SLIDER_HEIGHT = 50
@@ -28,6 +32,7 @@ DIVIDER_COLOR = "#FFFFFF"
 DIVIDER_COLOR_DARK = BOX_BACKGROUND
 
 VALUE_SIZE = 72
+VALUE_MINOR_SIZE = 46
 NAME_SIZE = 36
 UNIT_SIZE = 18
 TICK_SIZE = 12
@@ -156,6 +161,31 @@ QLineEdit {{
 
 """
 
+CONTROL_SENSOR_LABEL = f"""
+QLabel {{
+    color: {GRAY_TEXT};
+    font-size: {VALUE_MINOR_SIZE}pt;
+    background-color: {CONTROL_SENSOR_BACKGROUND};
+}}
+"""
+
+CONTROL_SENSOR_FRAME = f"""
+QFrame {{
+    background-color: {CONTROL_SENSOR_BACKGROUND};
+    border-radius: 10px;
+    border-color: {BACKGROUND_COLOR};
+    border-style: outset;
+    border-width: 2px;
+}}
+
+QFrame QWidget {{
+    border-radius: 0px;
+    border-color: {BACKGROUND_COLOR};
+    border-style: outset;
+    border-width: 0px;
+}}
+"""
+
 CONTROL_BOX = f"""
 QGroupBox {{
     background-color: {TEXT_COLOR};
@@ -183,6 +213,32 @@ QLabel {{
     color: {BACKGROUND_COLOR}; 
     font-size: {UNIT_SIZE}pt;
 }}"""
+
+CONTROL_CYCLE_BOX = f"""
+QGroupBox {{
+    color: {BACKGROUND_COLOR};
+}}
+
+QGroupBox QRadioButton {{
+    color: {BACKGROUND_COLOR};
+}}
+
+QRadioButton::indicator {{
+    width:                  10px;
+    height:                 10px;
+    border-radius:          7px;
+}}
+
+QRadioButton::indicator:checked {{
+    background-color:       black;
+    border:                 2px solid black;
+}}
+
+QRadioButton::indicator:unchecked {{
+    background-color:       white;
+    border:                 2px solid black;
+}}
+"""
 
 TITLE_STYLE = """
 font-size: 32pt;
@@ -259,10 +315,6 @@ QGroupBox {{
 
 QGroupBox::title {{
     background-color: transparent;
-}}
-
-QGroupBox#CONTROLBOX {{
-    background-color: {CONTROL_BACKGROUND};
 }}
 
 /*

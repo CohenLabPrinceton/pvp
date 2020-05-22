@@ -122,6 +122,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self._update_period = None
         self.update_period = update_period
 
+        self.running = False
+
         # initialize controls to starting values
         self.init_controls()
 
@@ -182,6 +184,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     def update_gui(self):
         try:
+
+            if not self.running:
+                return
             # get alarms
             #active_alarms = self.coordinator.get_active_alarms()
             #self.alarms_updated.emit(active_alarms)
@@ -201,6 +206,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
             for monitor_key, monitor_obj in self.monitor.items():
                 if hasattr(vals, monitor_key):
                     monitor_obj.update_value(getattr(vals, monitor_key))
+
+            for control_key, control in self.controls.items():
+                if hasattr(vals, control_key):
+                    control.update_sensor(getattr(vals, control_key))
 
         #
         finally:
@@ -356,27 +365,97 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.time_buttons[times[2][0]].click()
 
     def init_ui_controls(self):
+        # FIXME: Jonny this is shameful comment your work
+
         ####################
-        # Controls
-        self.controls_box = QtWidgets.QGroupBox("Ventilator Controls")
-        # set name so it catches the stylesheet
-        self.controls_box.setObjectName('CONTROLBOX')
-        # controls_box.setStyleSheet(styles.CONTROL_BOX)
-
-        self.controls_box.setContentsMargins(0, 0, 0, 0)
-
+        # Controls - Pressure
         self.controls_layout = QtWidgets.QVBoxLayout()
-        self.controls_layout.setContentsMargins(0, 0, 0, 0)
-        for control_name, control_params in self.CONTROL.items():
+
+        self.controls_box_pressure = QtWidgets.QGroupBox("Pressure Controls")
+        self.controls_box_pressure.setStyleSheet(styles.CONTROL_BOX)
+        self.controls_box_pressure.setContentsMargins(0, 0, 0, 0)
+
+        self.controls_layout_pressure = QtWidgets.QVBoxLayout()
+        self.controls_layout_pressure.setContentsMargins(0, 0, 0, 0)
+        for control_name in (ValueName.PIP, ValueName.PEEP):
+            control_params = self.CONTROL[control_name]
             self.controls[control_name.name] = widgets.Control(control_params)
             self.controls[control_name.name].setObjectName(control_name.name)
-            self.controls_layout.addWidget(self.controls[control_name.name])
-            self.controls_layout.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+            self.controls_layout_pressure.addWidget(self.controls[control_name.name])
+            self.controls_layout_pressure.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
 
-        self.controls_layout.addStretch(10)
-        self.controls_box.setLayout(self.controls_layout)
+        #self.controls_layout_pressure.addStretch(10)
+        self.controls_box_pressure.setLayout(self.controls_layout_pressure)
 
-        self.main_layout.addWidget(self.controls_box, self.control_width)
+        ####################
+        # Controls - Cycle
+        self.controls_box_cycle = QtWidgets.QGroupBox("Breath Cycle Controls")
+        self.controls_box_cycle.setStyleSheet(styles.CONTROL_BOX)
+        #self.controls_box_cycle.setContentsMargins(0, 0, 0, 0)
+
+
+        self.controls_cycle_layout = QtWidgets.QVBoxLayout()
+        # one row of radio buttons to select which is autoset
+        # then the control widgets are added below
+        self.controls_cycle_group = QtWidgets.QGroupBox('Auto-Calculate')
+        self.controls_cycle_button_group = QtWidgets.QButtonGroup()
+        self.controls_cycle_group.setStyleSheet(styles.CONTROL_CYCLE_BOX)
+        self.controls_cycle_buttons = {}
+        self.controls_layout_cycle_buttons = QtWidgets.QHBoxLayout()
+        self.controls_layout_cycle_widgets = QtWidgets.QVBoxLayout()
+        self.controls_cycle_layout.setContentsMargins(0, 0, 0, 0)
+        self.controls_layout_cycle_widgets.setContentsMargins(0, 0, 0, 0)
+        for control_name in (ValueName.BREATHS_PER_MINUTE, ValueName.INSPIRATION_TIME_SEC, ValueName.IE_RATIO):
+            control_params = values.VALUES[control_name]
+            self.controls[control_name.name] = widgets.Control(control_params)
+            self.controls[control_name.name].setObjectName(control_name.name)
+
+            self.controls_cycle_buttons[control_name] = QtWidgets.QRadioButton(control_params.name)
+            self.controls_cycle_buttons[control_name].setObjectName(control_name.name)
+            self.controls_layout_cycle_buttons.addWidget(self.controls_cycle_buttons[control_name])
+            self.controls_cycle_button_group.addButton(self.controls_cycle_buttons[control_name])
+            #self.controls_layout_cycle_buttons.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+            if control_name != ValueName.IE_RATIO:
+                self.controls_layout_cycle_widgets.addWidget(self.controls[control_name.name])
+                self.controls_layout_cycle_widgets.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+            else:
+                self.controls[control_name.name].setVisible(False)
+                self.controls_cycle_buttons[control_name].setChecked(True)
+
+        self.controls_cycle_button_group.buttonClicked.connect(self.toggle_cycle_widget)
+
+        self.controls_cycle_group.setLayout(self.controls_layout_cycle_buttons)
+
+        self.controls_cycle_layout.addWidget(self.controls_cycle_group)
+        self.controls_cycle_layout.addLayout(self.controls_layout_cycle_widgets)
+
+        self.controls_box_cycle.setLayout(self.controls_cycle_layout)
+
+        ########
+        # Controls - ramp
+
+        self.controls_box_ramp = QtWidgets.QGroupBox("Ramp Controls")
+        self.controls_box_ramp.setStyleSheet(styles.CONTROL_BOX)
+        self.controls_box_ramp.setContentsMargins(0, 0, 0, 0)
+
+        self.controls_layout_ramp = QtWidgets.QVBoxLayout()
+        self.controls_layout_ramp.setContentsMargins(0, 0, 0, 0)
+        for control_name in (ValueName.PIP_TIME, ValueName.PEEP_TIME):
+            control_params = self.CONTROL[control_name]
+            self.controls[control_name.name] = widgets.Control(control_params)
+            self.controls[control_name.name].setObjectName(control_name.name)
+            self.controls_layout_ramp.addWidget(self.controls[control_name.name])
+            self.controls_layout_ramp.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+
+        # self.controls_layout_ramp.addStretch(10)
+        self.controls_box_ramp.setLayout(self.controls_layout_ramp)
+
+
+        self.controls_layout.addWidget(self.controls_box_pressure)
+        self.controls_layout.addWidget(self.controls_box_cycle)
+        self.controls_layout.addWidget(self.controls_box_ramp)
+
+        self.main_layout.addLayout(self.controls_layout, self.control_width)
 
     def init_ui_signals(self):
         """
@@ -408,7 +487,35 @@ class Vent_Gui(QtWidgets.QMainWindow):
             control.value_changed.connect(self.set_value)
 
         # connect start button to coordinator start
-        self.status_bar.start_button.clicked.connect(self.coordinator.start)
+        self.status_bar.start_button.toggled.connect(self.setState)
+
+    @QtCore.Slot(QtWidgets.QAbstractButton)
+    def toggle_cycle_widget(self, button):
+        # get name of button
+        value_name = button.objectName()
+        #pdb.set_trace()
+
+        # clear everything
+        while self.controls_layout_cycle_widgets.count():
+            _ = self.controls_layout_cycle_widgets.takeAt(0)
+
+        line_added = False
+        for value in (ValueName.BREATHS_PER_MINUTE, ValueName.INSPIRATION_TIME_SEC, ValueName.IE_RATIO):
+            control = self.controls[value.name]
+            if value.name == value_name:
+                control.setVisible(False)
+                #self.controls_layout_cycle_widgets.removeWidget(control)
+            else:
+                #if not control.isVisible():
+                control.setVisible(True)
+                self.controls_layout_cycle_widgets.addWidget(control)
+                control.adjustSize()
+                # if not line_added:
+                #     self.controls_layout_cycle_widgets.addWidget(
+                #         widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+                #     line_added = True
+
+        #self.adjustSize()
 
     @QtCore.Slot(Alarm)
     def handle_alarm(self, alarm):
@@ -477,6 +584,25 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         """
         self.status_bar.start_button.click()
+
+    def setState(self, state: bool):
+        """
+        set running true or not
+
+        Args:
+            state (bool): running or no?
+
+        Returns:
+
+        """
+        if state:
+            self.running = True
+            for plot in self.plots.values():
+                plot.reset_start_time()
+            self.coordinator.start()
+        else:
+            # TODO: what happens when u stop lol
+            pass
 
 
 def launch_gui(coordinator):

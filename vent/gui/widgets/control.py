@@ -1,13 +1,20 @@
 import numpy as np
 from PySide2 import QtWidgets, QtCore
+import PySide2
+import pyqtgraph as pg
 
 from vent.gui import styles, mono_font
 from vent.gui.widgets.components import EditableLabel, DoubleSlider
 
 
 class Control(QtWidgets.QWidget):
+    """
+    Attributes:
+        sensor (int, float): Value from the sensor
+    """
 
     value_changed = QtCore.Signal(float)
+    limits_changed = QtCore.Signal(tuple)
 
     def __init__(self, value):
         super(Control, self).__init__()
@@ -18,6 +25,7 @@ class Control(QtWidgets.QWidget):
         self.safe_range = value.safe_range
         self.value = value.default
         self.decimals = value.decimals
+        self.sensor = None
 
         self.init_ui()
 
@@ -31,14 +39,6 @@ class Control(QtWidgets.QWidget):
         #        min,   max
         # Name
         # Units
-
-        self.value_label = EditableLabel()
-        self.value_label.setStyleSheet(styles.CONTROL_VALUE)
-        self.value_label.label.setFont(mono_font())
-        self.value_label.lineEdit.setFont(mono_font())
-        self.value_label.label.setAlignment(QtCore.Qt.AlignRight)
-        #self.value_label.setMargin(0)
-        self.value_label.setContentsMargins(0,0,0,0)
 
         # # set max size based on range
         # # FIXME: TEMPORARY HACK - get sizing to work intelligibly with the dial
@@ -54,11 +54,75 @@ class Control(QtWidgets.QWidget):
         # to simplify things for now, if we're supposed to display _more_
         # than the 5 we assume (eg. 100.0), then use the n_ints
         # otherwise just use 5
-        if n_ints <= 5:
-            n_ints = 5
+        if n_ints <= 4:
+            n_ints = 4
+
+        ########
+        # Sensor box
+        self.sensor_frame = QtWidgets.QFrame()
+        self.sensor_frame.setStyleSheet(styles.CONTROL_SENSOR_FRAME)
+        self.sensor_frame.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                        QtWidgets.QSizePolicy.Maximum)
+        self.sensor_layout = QtWidgets.QHBoxLayout()
+        #self.sensor_layout.setContentsMargins(0,0,0,0)
+
+
+        self.sensor_label = QtWidgets.QLabel()
+        self.sensor_label.setStyleSheet(styles.CONTROL_SENSOR_LABEL)
+        self.sensor_label.setFont(mono_font())
+        self.sensor_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+        self.sensor_label.setFixedWidth(n_ints * styles.VALUE_MINOR_SIZE * .6)
+
+        # bar graph that's an indicator of current value
+        self.sensor_plot = pg.PlotWidget(background=styles.CONTROL_SENSOR_BACKGROUND)
+        # self.sensor_plot = pg.PlotWidget()
+        self.sensor_plot.getPlotItem().hideAxis('bottom')
+        self.sensor_plot.getPlotItem().hideAxis('left')
+        self.sensor_plot.setRange(xRange=(-0.5, 0.5))
+        self.sensor_plot.enableAutoRange(y=True)
+        #self.sensor_plot.autoRange(padding=.001)
+        # self.sensor_plot.enableAutoRange()
+
+        # bar itself
+        self.sensor_bar = pg.BarGraphItem(x=np.array([0]), y1=np.array([0]), width=np.array([1]), brush=styles.GRAY_TEXT)
+
+        # error bars for limit indicators
+        self.sensor_limits = pg.ErrorBarItem(beam=1, x=np.array([0]), y=np.array([self.value]),
+                                             top=self.safe_range[1]-self.value,
+                                             bottom=self.value-self.safe_range[0],
+                                             pen={
+                                                 'color':styles.SUBWAY_COLORS['red'],
+                                                 'width':2
+                                             })
+
+        # the set value
+        self.sensor_set = pg.InfiniteLine(movable=False, angle=0, pos=self.value,
+                                          pen={'color':styles.BACKGROUND_COLOR, 'width':5})
+
+
+        self.sensor_plot.addItem(self.sensor_bar)
+        self.sensor_plot.addItem(self.sensor_limits)
+        self.sensor_plot.addItem(self.sensor_set)
+        self.sensor_plot.setFixedWidth(styles.CONTROL_SENSOR_BAR_WIDTH)
+
+        self.sensor_layout.addWidget(self.sensor_label)
+        self.sensor_layout.addWidget(self.sensor_plot)
+        self.sensor_frame.setLayout(self.sensor_layout)
+
+
+
+        self.value_label = EditableLabel()
+        self.value_label.setStyleSheet(styles.CONTROL_VALUE)
+        self.value_label.label.setFont(mono_font())
+        self.value_label.lineEdit.setFont(mono_font())
+        self.value_label.label.setAlignment(QtCore.Qt.AlignRight)
+        #self.value_label.setMargin(0)
+        self.value_label.setContentsMargins(0,0,0,0)
+
+
         self.value_label.setFixedWidth(n_ints*styles.VALUE_SIZE*.6)
-        # self.value_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-        #                             QtWidgets.QSizePolicy.Maximum)
+        self.value_label.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                         QtWidgets.QSizePolicy.Maximum)
 
 
 
@@ -66,17 +130,17 @@ class Control(QtWidgets.QWidget):
         self.name_label.setStyleSheet(styles.CONTROL_NAME)
         self.name_label.setText(self.name)
         self.name_label.setWordWrap(True)
-        self.name_label.setAlignment(QtCore.Qt.AlignRight)
-        # self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-        #                             QtWidgets.QSizePolicy.Expanding)
+        self.name_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom)
+        self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                    QtWidgets.QSizePolicy.Expanding)
 
 
         self.units_label = QtWidgets.QLabel()
         self.units_label.setStyleSheet(styles.CONTROL_UNITS)
         self.units_label.setText(self.units)
-        self.units_label.setAlignment(QtCore.Qt.AlignRight)
+        self.units_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                    QtWidgets.QSizePolicy.Expanding)
+                                    QtWidgets.QSizePolicy.Maximum)
 
         # Expand drawer button
         self.toggle_button = QtWidgets.QToolButton(checkable=True,
@@ -93,13 +157,14 @@ class Control(QtWidgets.QWidget):
 
         ###
         # layout
-        self.layout.addWidget(self.value_label, 0, 0, 2, 1, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.sensor_frame, 0, 0, 2, 1)
+        self.layout.addWidget(self.value_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight)
         #self.layout.addWidget(self.dial, 0, 1, 2, 2, alignment=QtCore.Qt.AlignVCenter)
         #self.layout.addWidget(self.slider_min, 2, 1, 1, 1)
         #self.layout.addWidget(self.slider_max, 2, 2, 1, 1)
-        self.layout.addWidget(self.name_label, 0, 1, 1, 1)
-        self.layout.addWidget(self.units_label, 1, 1, 1, 1)
-        self.layout.addWidget(self.toggle_button, 0, 2, 2, 1, alignment=QtCore.Qt.AlignRight)
+        self.layout.addWidget(self.name_label, 0, 2, 1, 1, alignment=QtCore.Qt.AlignLeft)
+        self.layout.addWidget(self.units_label, 1, 2, 1, 1, alignment=QtCore.Qt.AlignLeft)
+        self.layout.addWidget(self.toggle_button, 0, 3, 2, 1, alignment=QtCore.Qt.AlignRight)
 
         self.setLayout(self.layout)
 
@@ -184,3 +249,15 @@ class Control(QtWidgets.QWidget):
         self.value_label.setText(value_str)
 
         self.slider.setValue(self.value)
+        self.sensor_set.setValue(self.value)
+
+    def update_limits(self, new_limits):
+        pass
+
+    def update_sensor(self, new_value):
+        if new_value is None:
+            return
+        value_str = str(np.round(new_value, self.decimals))
+        self.sensor_label.setText(value_str)
+        self.sensor_bar.setOpts(y1=np.array([new_value]))
+        # self.sensor_plot.autoRange(padding=.001)

@@ -10,13 +10,15 @@ from vent.common.message import SensorValues
 from vent.common.values import ValueName
 from vent.coordinator.process_manager import ProcessManager
 from vent.coordinator.rpc import get_rpc_client
+import logging
 
 
 class CoordinatorBase:
     def __init__(self, sim_mode=False):
         # get_ui_control_module handles single_process flag
         # self.lock = threading.Lock()
-        pass
+        self.logger = logging.getLogger(__name__)
+        self.logger.info('coordinator init')
 
     # TODO: do we still need this
     # def get_msg_timestamp(self):

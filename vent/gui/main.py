@@ -13,6 +13,7 @@ from vent import gui
 from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS
 from vent.gui.alarm_manager import AlarmManager
 from vent.common import values
+import logging
 
 
 class Vent_Gui(QtWidgets.QMainWindow):
@@ -90,6 +91,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         """
+        self.logger = logging.getLogger(__name__)
+        self.logger.info('gui init')
 
         if get_gui_instance() is not None and gui.limit_gui():
             raise Exception('Instance of gui already running!') # pragma: no cover

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import argparse
+import logging
+import logging.handlers
 import sys
 from vent.gui.main import launch_gui
 from vent.coordinator.coordinator import get_coordinator
@@ -19,7 +21,22 @@ def parse_cmd_args():
     return parser.parse_args()
 
 
+def init_logger():
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch = logging.StreamHandler()
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+    # max = 8 file x 16 MB = 128 MB
+    fh = logging.handlers.RotatingFileHandler('/tmp/gui_process.log', maxBytes=16 * 2 ** 20, backupCount=7)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    return logger
+
+
 def main():
+    init_logger()
     args = parse_cmd_args()
     coordinator = get_coordinator(single_process=args.single_process, sim_mode=args.simulation)
     app, gui = launch_gui(coordinator)

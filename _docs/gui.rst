@@ -102,7 +102,7 @@ jonny todo
 ______________
 
 * use loop_counter to check on controller advancement
-* implement single values list with properties 'controllable' vs not.
+* choice between pressure/volume over time and combined P/V plot
 
 
 

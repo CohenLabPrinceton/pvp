@@ -30,9 +30,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
     empty dict if there are no active alarms.
     """
 
-    MONITOR = values.SENSOR
+    MONITOR = values.DISPLAY
     """
-    see :data:`.gui.defaults.SENSOR`
+    see :data:`.gui.defaults.DISPLAY`
     """
 
     CONTROL = values.CONTROL
@@ -152,6 +152,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
 
         for control_name, control_params in self.CONTROL.items():
+            if control_name == ValueName.IE_RATIO:
+                continue
             self.set_value(control_params.default, control_name)
 
     def set_value(self, new_value, value_name=None):

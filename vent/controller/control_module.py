@@ -641,6 +641,8 @@ class ControlModuleDevice(ControlModuleBase):
                 ValueName.VTE                  : self._DATA_VTE,
                 ValueName.BREATHS_PER_MINUTE   : self._DATA_BPM,
                 ValueName.INSPIRATION_TIME_SEC : self._DATA_I_PHASE,
+                ValueName.VOLUME               : self.__DATA_VOLUME,
+                ValueName.FLOW                 : self._DATA_Qin-self._DATA_Qout,
                 'timestamp'                    : time.time(),
                 'loop_counter'                 : self._loop_counter,
                 'breath_count'                 : self._DATA_BREATH_COUNT
@@ -840,20 +842,23 @@ class ControlModuleSimulator(ControlModuleBase):
         # And the sensor measurements
         self._lock.acquire()
         self.COPY_sensor_values = SensorValues(vals={
-            ValueName.PIP.name                  : self._DATA_PIP,
-            ValueName.PEEP.name                 : self._DATA_PEEP,
-            ValueName.FIO2.name                 : self.Balloon.fio2,
-            ValueName.TEMP.name                 : self.Balloon.temperature,
-            ValueName.HUMIDITY.name             : self.Balloon.humidity,
-            ValueName.PRESSURE.name             : self.Balloon.current_pressure,
-            ValueName.VTE.name                  : self._DATA_VTE,
-            ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
-            ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
-            'timestamp'                  : time.time(),
-            'loop_counter'             : self._loop_counter,
-            'breath_count': self._DATA_BREATH_COUNT
+            ValueName.PIP                       : self._DATA_PIP,
+            ValueName.PEEP                      : self._DATA_PEEP,
+            ValueName.FIO2                      : self.Balloon.fio2,
+            ValueName.TEMP                      : self.Balloon.temperature,
+            ValueName.HUMIDITY                  : self.Balloon.humidity,
+            ValueName.PRESSURE                  : self.Balloon.current_pressure,
+            ValueName.VTE                       : self._DATA_VTE,
+            ValueName.VOLUME                    : self.Balloon.current_volume,
+            ValueName.BREATHS_PER_MINUTE        : self._DATA_BPM,
+            ValueName.INSPIRATION_TIME_SEC      : self._DATA_I_PHASE,
+            ValueName.FLOW                      : self._DATA_Qin-self._DATA_Qout,
+            'timestamp'                         : time.time(),
+            'loop_counter'                      : self._loop_counter,
+            'breath_count'                      : self._DATA_BREATH_COUNT
         })
         self._lock.release()
+
 
     def _start_mainloop(self):
         # start running, this should be run as a thread! 

@@ -70,13 +70,13 @@ class DataLogger:
             os.makedirs('vent/logfiles')
         self.file = "vent/logfiles/" + date_string + "_controller_log.h5"
 
-        # Make sure that the file doesn't exist yet, if it does, append alphabet ('a','b','c'...)
+        # Make sure that the file doesn't exist yet, if it does, append another number
         # In rarely happens, but for Travis-tests, this is needed.
-        ls = list(string.ascii_lowercase)
-        ls = ls + list(string.ascii_uppercase)
+        c=0
         while os.path.exists(self.file):
-            self.file = "vent/logfiles/" + date_string + ls[0] + "_controller_log.h5"
-            ls.pop(0)
+            self.file = "vent/logfiles/" + date_string + '-' + str(c) + "_controller_log.h5"
+            c = c + 1
+
         self.storage_used = self.check_files()  # Make sure there is space. Sum of all logfiles in bytes
 
         ## For data storage ##
@@ -168,9 +168,9 @@ class DataLogger:
                 total_size += os.path.getsize(fp)
 
         if len(os.listdir(logpath)) > 1000:
-            raise OSError('Too many logfiles in /vent/logfiles/ (>1000 files). Delete some.')
+            raise OSError('Too many logfiles in /vent/logfiles/ (>1000 files). There are ' + str(len(os.listdir(logpath))) + ' files. Delete some.')
         elif total_size>1e10:     #
-            raise OSError('Too many logfiles in /vent/logfiles/ (>10GB). Free disk space.')
+            raise OSError('Too many logfiles in /vent/logfiles/ (>10GB). Used ' + '{0:.2f}'.format(total_size*1e-9) +  ' GB, free disk space.')
         else:
             return total_size  # size in bytes
 

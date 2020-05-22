@@ -11,6 +11,7 @@ import tables as pytb
 from datetime import datetime
 import os
 import string
+import shutil
 
 from vent.common.message import SensorValues, ControlValues, ControlSetting
 from vent.common.values import CONTROL, ValueName
@@ -167,10 +168,14 @@ class DataLogger:
             if not os.path.islink(fp):
                 total_size += os.path.getsize(fp)
 
+        #Check file system
+        total_space_hd, used, free = shutil.disk_usage('/')
+        max_size = np.min([total_space_hd*0.2, 1e10])      # Limit to whatever is smaller, 20% of the file system or 10 GB
+
         if len(os.listdir(logpath)) > 1000:
             raise OSError('Too many logfiles in /vent/logfiles/ (>1000 files). There are ' + str(len(os.listdir(logpath))) + ' files. Delete some.')
-        elif total_size>1e10:     #
-            raise OSError('Too many logfiles in /vent/logfiles/ (>10GB). Used ' + '{0:.2f}'.format(total_size*1e-9) +  ' GB, free disk space.')
+        elif total_size>max_size:     #
+            raise OSError('Logfiles in /vent/logfiles/ are too large. Max allowed is ' + '{0:.2f}'.format(max_size*1e-9) + 'GB, used is ' + '{0:.2f}'.format(total_size*1e-9) +  'GB. Free disk space.')
         else:
             return total_size  # size in bytes
 

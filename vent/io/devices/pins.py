@@ -1,6 +1,7 @@
-from pigpio import error_text
 from vent.io.devices import IODeviceBase
 from vent.common.fashion import pigpio_command
+
+import pigpio
 
 
 class Pin(IODeviceBase):
@@ -36,7 +37,7 @@ class Pin(IODeviceBase):
     @pigpio_command
     def mode(self) -> str:
         """ The currently active pigpio mode of the pin."""
-        return dict(map(reversed, self._PIGPIO_MODES.items()))[self.pig.get_mode(self.pin)]
+        return {value: key for key, value in self._PIGPIO_MODES.items()}[self.pig.get_mode(self.pin)]
 
     @mode.setter
     @pigpio_command
@@ -46,8 +47,8 @@ class Pin(IODeviceBase):
         Args:
             mode (str): A mode in _PIGPIO_MODES
         """
-        if mode not in self._PIGPIO_MODES.keys():
-            raise ValueError("Pin mode must be one of: {}".format(self._PIGPIO_MODES.keys()))
+        if mode not in self._PIGPIO_MODES:
+            raise ValueError("Pin mode must be one of: {}".format([*self._PIGPIO_MODES.keys()]))
         result = self.pig.set_mode(self.pin, self._PIGPIO_MODES[mode])
         if result != 0:
             raise RuntimeError('Failed to write mode {} on pin {}'.format(mode, self.pin))
@@ -82,7 +83,7 @@ class PWMOutput(Pin):
     _HARDWARE_PWM_PINS = (12, 13, 18, 19)
 
     def __init__(self, pin, initial_duty=0, frequency=None, pig=None):
-        """ Inherits attributes from parent Pin.
+        """ Inherits attributes from parent Pin, then sets PWM frequency & initial duty (use defaults if None)
 
         Args:
             pin (int): The number of the pin to use. Hardware PWM pins are 12, 13, 18, and 19.
@@ -90,17 +91,19 @@ class PWMOutput(Pin):
             frequency (float): The PWM frequency to use.
             pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
         """
-        super().__init__(pin, pig)
-        if self.pin not in self._HARDWARE_PWM_PINS:
-            self.hardware_enabled = False
-            frequency = self._DEFAULT_SOFT_FREQ if frequency is None else frequency
-            raise RuntimeWarning(
-                'PWMOutput called on pin {} but that is not a PWM channel.',
-                'Available frequencies will be limited.'.format(self.pin))
-        else:
-            self.hardware_enabled = True
-            frequency = self._DEFAULT_FREQUENCY if frequency is None else frequency
-        self.__pwm(frequency, initial_duty)
+        super().__init__(pin=pin, pig=pig)
+        self._hardware_enabled = True if self.pin in self._HARDWARE_PWM_PINS else False
+        default_f = self._DEFAULT_FREQUENCY if self._hardware_enabled else self._DEFAULT_SOFT_FREQ
+        self.__pwm(default_f if frequency is None else frequency, initial_duty)
+
+    @property
+    def hardware_enabled(self):
+        """ Return true if this is a hardware-enabled PWM pin; False if not. The Raspberry Pi only supports hardware-
+        generated PWM on pins 12, 13, 18, and 19, so generally `hardware_enabled` will be true if this is one of those,
+        and false if it is not. However, `hardware_enabled` can also by dynamically set to False if for some reason
+        pigpio is unable to start a hardware PWM (i.e. if the clock is unavailable or in use or something)
+        """
+        return self._hardware_enabled
 
     @property
     @pigpio_command
@@ -134,13 +137,11 @@ class PWMOutput(Pin):
     @duty.setter
     @pigpio_command
     def duty(self, duty_cycle):
-        """
+        """ Sets the duty cycle.
         Args:
-            duty_cycle (float): The PWM duty cycle to set. Must be between 0 and 1.
+            duty_cycle (float): The PWM duty cycle to set. Must be between 0 and 1 (verified upon calling __pwm()).
         """
-        if not 0 <= duty_cycle <= 1:
-            raise ValueError('Duty cycle must be between 0 and 1')
-        self.__pwm(self.frequency, int(duty_cycle * self.pig.get_PWM_range(self.pin)))
+        self.__pwm(self.frequency, duty_cycle)
 
     def read(self) -> float:
         """ Overridden to return duty cycle instead of reading the value on the pin."""
@@ -155,19 +156,21 @@ class PWMOutput(Pin):
         self.duty = value
 
     def __pwm(self, frequency, duty):
-        """ Description:
-        -If hardware_enabled is True, start a hardware pwm with the requested duty.
-        -Otherwise (or if setting a hardware pwm fails and hardware_enabled is write to False),
-         write a software pwm in the same manner.
+        """ Sets a PWM frequency and duty using either hardware or software generated PWM according to the value of
+        `self.hardware_enabled`. If hardware_enabled, starts a hardware pwm with the requested duty. If not
+        hardware_enabled, or if there is a problem setting a hardware generated PWM, starts a software PWM.
 
         Args:
-            frequency: A new PWM frequency to use.
-            duty (int): A pigpio integer representation of duty cycle
+            frequency (float): A new PWM frequency to use.
+            duty (float): The PWM duty cycle to set. Must be between 0 and 1.
         """
-        if self.hardware_enabled:
-            self.__hardware_pwm(frequency, duty)
-        if not self.hardware_enabled:
-            self.__software_pwm(frequency, duty)
+        if not 0 <= duty <= 1:
+            raise ValueError('Duty cycle must be between 0 and 1 but got {}'.format(duty))
+        _duty = int(duty * self.pig.get_PWM_range(self.pin))
+        if self._hardware_enabled:
+            self.__hardware_pwm(frequency, _duty)
+        if not self._hardware_enabled:
+            self.__software_pwm(frequency, _duty)
 
     @pigpio_command
     def __hardware_pwm(self, frequency, duty):
@@ -177,21 +180,14 @@ class PWMOutput(Pin):
 
         Args:
             frequency: A new PWM frequency to use.
-            duty (int): A pigpio integer representation of duty cycle
+            duty (int): The PWM duty cycle to set. Must be between 0 and 1.
         """
-        # print('pin: %3.0d freq: %5.0d duty: %4.2f'%(self.pin,frequency,duty))
-        result = self.pig.hardware_PWM(self.pin, frequency, duty)
-        if result != 0:
-            self.hardware_enabled = False
-            raise RuntimeWarning(
-                'Failed to start hardware PWM with frequency {} on pin {}. Error: {}'.format(
-                    frequency,
-                    self.pin,
-                    error_text(result)
-                )
-            )
-        else:
-            self.hardware_enabled = True
+        try:
+            self.pig.hardware_PWM(self.pin, frequency, duty)
+            self._hardware_enabled = True
+        except pigpio.error:
+            self._hardware_enabled = False
+            self.__software_pwm(frequency, duty)
 
     @pigpio_command
     def __software_pwm(self, frequency, duty):
@@ -210,4 +206,4 @@ class PWMOutput(Pin):
                     realized_frequency
                 )
             )
-        self.hardware_enabled = False
+        self._hardware_enabled = False

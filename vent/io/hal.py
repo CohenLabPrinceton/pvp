@@ -84,13 +84,6 @@ class Hal:
                 device_options=opts
             ))  # debug
             setattr(self, '_' + section, class_(pig=self._pig, **opts))
-        self._pressure_sensor.update()
-        if isinstance(self._aux_pressure_sensor, Sensor):
-            self._aux_pressure_sensor.update()
-        if isinstance(self._flow_sensor_in, Sensor):
-            self._flow_sensor_in.update()
-        if isinstance(self._flow_sensor_ex, Sensor):
-            self._flow_sensor_ex.update()
 
     # TODO: Need exception handling whenever inlet valve is opened
 
@@ -98,7 +91,6 @@ class Hal:
     def pressure(self) -> float:
         """ Returns the pressure from the primary pressure sensor.
         """
-        self._pressure_sensor.update()
         return self._pressure_sensor.get()
 
     @property
@@ -107,7 +99,6 @@ class Hal:
         If a secondary pressure sensor is not defined, raises a RuntimeWarning.
         """
         if isinstance(self._aux_pressure_sensor, Sensor):
-            self._aux_pressure_sensor.update()
             return self._aux_pressure_sensor.get()
         else:
             raise RuntimeWarning('Secondary pressure sensor not instantiated. Check your "devices.ini" file.')
@@ -115,13 +106,11 @@ class Hal:
     @property
     def flow_in(self) -> float:
         """ The measured flow rate inspiratory side."""
-        self._flow_sensor_in.update()
         return self._flow_sensor_in.get()
 
     @property
     def flow_ex(self) -> float:
         """ The measured flow rate expiratory side."""
-        self._flow_sensor_ex.update()
         return self._flow_sensor_ex.get()
 
     @property
@@ -143,6 +132,7 @@ class Hal:
         elif value == 0 and self._inlet_valve.is_open:
             self._inlet_valve.close()
         self._control_valve.setpoint = value
+        self._setpoint_in = value
 
     @property
     def setpoint_ex(self) -> float:
@@ -171,7 +161,8 @@ class Hal:
                 isinstance(self._expiratory_valve, valves.PWMControlValve) or
                 isinstance(self._expiratory_valve, valves.SimControlValve)
         ):
-            if 0 <= value <= 1:
-                raise ValueError('setpoint must be between 0 and 1 for an expiratory control valve')
+            if not 0 <= value <= 100:
+                raise ValueError('setpoint must be between 0 and 100 for an expiratory control valve')
             else:
                 self._expiratory_valve.setpoint = value
+        self._setpoint_ex = value

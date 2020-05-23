@@ -3,10 +3,14 @@
 from .base import (
     PigpioConnection,
     IODeviceBase,
+    SMBus2Asyncio,
     I2CDevice,
+    AsyncI2CDevice,
     SPIDevice,
     ADS1115,
     ADS1015,
+    AsyncADS1115,
+    AsyncADS1015,
     be16_to_native,
     native16_to_be
 )

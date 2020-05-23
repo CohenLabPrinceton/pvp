@@ -6,6 +6,11 @@ from vent.common.fashion import pigpio_command
 import pigpio
 import time
 
+import asyncio
+import uvloop
+from smbus2 import SMBus
+from functools import partial
+
 
 class PigpioConnection(pigpio.pi):
     """ Subclass that extends pigpio.pi to throw an exception if there are issues connecting to the pigpio daemon."""
@@ -17,9 +22,13 @@ class PigpioConnection(pigpio.pi):
             *args: parameters to pass through like: pigpio.pi().__init__(*args)
             **kwargs: parameters to pass through like: pigpio.pi().__init__(**kwargs)
         """
+        if 'show_errors' not in kwargs:
+            kwargs['show_errors'] = False
         super().__init__(*args, **kwargs)
         if not self.connected:
             raise RuntimeError('Could not establish connection with pigpio daemon')
+        else:
+            self.sl.s.settimeout(0.005)
 
 
 class IODeviceBase:
@@ -294,6 +303,82 @@ class I2CDevice(IODeviceBase):
                 return (cfg & ~(self._mask << self._offset)) | (self._values[value] << self._offset)
 
 
+class SMBus2Asyncio:
+    """Asyncio version of SMBus2."""
+
+    def __init__(self, bus, *, loop=None, executor=None):
+        """Initialise SMBus2 Asyncio."""
+        self.bus = bus
+        self.smbus = None
+        if not loop:
+            if not isinstance(asyncio.get_event_loop_policy(), uvloop.EventLoopPolicy):
+                uvloop.install()
+            loop = asyncio.get_event_loop()
+        self.loop = loop
+        self.executor = executor
+        self.lock = asyncio.Lock(loop=loop)
+
+    def open_sync(self):
+        """Open synchronous."""
+        self.smbus = SMBus(self.bus)
+
+    async def open(self):
+        """Open async."""
+        return self.loop.run_in_executor(self.executor, self.open_sync)
+
+    async def read_byte_data(self, i2c_addr, register):
+        """Read a single byte from a designated register."""
+        assert self.smbus
+        async with self.lock:
+            return await self.loop.run_in_executor(self.executor, partial(self.smbus.read_byte_data,
+                                                                          i2c_addr, register))
+
+    async def read_i2c_block_data(self, i2c_addr, register, length):
+        """Read a block of byte data from a given register."""
+        assert self.smbus
+        async with self.lock:
+            return await self.loop.run_in_executor(self.executor, partial(self.smbus.read_i2c_block_data,
+                                                                          i2c_addr, register, length))
+
+    async def write_byte_data(self, i2c_addr, register, value):
+        """Write a byte to a given register."""
+        assert self.smbus
+        async with self.lock:
+            await self.loop.run_in_executor(
+                self.executor,
+                partial(
+                    self.smbus.write_byte_data,
+                    i2c_addr,
+                    register,
+                    value
+                )
+            )
+
+    async def write_i2c_block_data(self, i2c_addr, register, data):
+        """Write a block of byte data to a given register."""
+        assert self.smbus
+        async with self.lock:
+            await self.loop.run_in_executor(
+                self.executor, self.smbus.write_i2c_block_data, i2c_addr, register, data
+            )
+
+
+class AsyncI2CDevice:
+    Register = I2CDevice.Register
+
+    def __init__(self, i2c_address, i2c_bus, smbus=None, loop=None, executor=None):
+        self._i2c_bus = i2c_bus
+        self._i2c_address = i2c_address
+        self._smbus = smbus or SMBus2Asyncio(i2c_bus, loop=loop, executor=executor)
+
+    async def read_register(self, register, signed=False):
+        data = await self._smbus.read_i2c_block_data(self._i2c_address, register, length=2)
+        return be16_to_native((2, bytearray(data)), signed=signed)
+
+    async def write_register(self, register, word, signed=False):
+        await self._smbus.write_i2c_block_data(self._i2c_address, register, native16_to_be(word, signed=signed))
+
+
 class SPIDevice(IODeviceBase):
     """ A class wrapper for pigpio SPI handles. Not really implemented. """
 
@@ -325,6 +410,235 @@ class SPIDevice(IODeviceBase):
         """
         super()._close()
         self.pig.spi_close(self.handle)
+
+
+class AsyncADS1115(AsyncI2CDevice):
+    """ ADS1115 16 bit, 4 Channel Analog to Digital Converter.
+    Datasheet:
+     http://www.ti.com/lit/ds/symlink/ads1114.pdf?ts=1587872241912
+
+    Default Values:
+     Default configuration for vent:     0xC3E3
+     Default configuration on power-up:  0x8583
+    """
+    _DEFAULT_ADDRESS = 0x48
+    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 860}
+    _TIMEOUT = 1
+    """ Address Pointer Register (write-only) """
+    _POINTER_FIELDS = ('P',)
+    _POINTER_VALUES = (
+        (
+            'CONVERSION',
+            'CONFIG',
+            'LO_THRESH',
+            'HIGH_THRESH'
+        ),)
+    """ Config Register (R/W) """
+    _CONFIG_FIELDS = (
+        'OS',
+        'MUX',
+        'PGA',
+        'MODE',
+        'DR',
+        'COMP_MODE',
+        'COMP_POL',
+        'COMP_LAT',
+        'COMP_QUE')
+    _CONFIG_VALUES = (
+        ('NO_EFFECT', 'START_CONVERSION'),
+        ((0, 1), (0, 3), (1, 3), (2, 3), 0, 1, 2, 3),
+        (6.144, 4.096, 2.048, 1.024, 0.512, 0.256, 0.256, 0.256),
+        ('CONTINUOUS', 'SINGLE'),
+        (8, 16, 32, 64, 128, 250, 475, 860),
+        ('TRADIONAL', 'WINDOW'),
+        ('ACTIVE_LOW', 'ACTIVE_HIGH'),
+        ('NONLATCHING', 'LATCHING'),
+        (1, 2, 3, 'DISABLE'))
+    USER_CONFIGURABLE_FIELDS = ('MUX', 'PGA', 'MODE', 'DR')
+    """ Note:
+    The Conversion Register is read-only and contains a 16bit
+    representation of the requested value (provided the conversion is
+    ready).
+
+    The Lo-thresh & Hi-thresh Registers are not Utilized here. However,
+    their function and usage are described in the datasheet. Should you
+    want to extend the functionality implemented here.
+    """
+
+    def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, smbus=None, loop=None, executor=None):
+        """ Initializes registers: Pointer register is write only,
+        config is R/W. Sets initial value of _last_cfg to what is
+        actually on the ADS.Packs default settings into _cfg, but does
+        not actually write to ADC - that occurs when read_conversion()
+        is called.
+
+        Args:
+            address (int): I2C address of the device. (e.g., `i2c_address=0x48`)
+            i2c_bus (int): The I2C bus to use. Should probably be set to 1 on Raspberry Pi.
+            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
+        """
+        super().__init__(address, i2c_bus, smbus, loop, executor)
+        self.pointer = self.Register(self._POINTER_FIELDS, self._POINTER_VALUES)
+        self._config = self.Register(self._CONFIG_FIELDS, self._CONFIG_VALUES)
+        self._last_cfg = None
+        self._cfg = None
+        self._conversion_lock = asyncio.Lock(loop=loop)
+
+    async def start(self):
+        self._last_cfg = self._read_last_cfg()
+        self._cfg = self._config.pack(cfg=await self._last_cfg, **self._DEFAULT_VALUES)
+
+    async def read_conversion(self, **kwargs) -> float:
+        """ Returns a voltage (expressed as a float) corresponding to a channel on the ADC.
+        The channel to read from, along with the gain, mode, and sample rate of the conversion may be may be  specified
+        as optional parameters. If read_conversion() is called with no parameters, the resulting voltage corresponds to
+        the channel last read from and the same conversion settings.
+
+        Args:
+            MUX: The pin to read from in single channel mode: e.g., `0, 1, 2, 3`
+                or, a tuple of pins over which to make a differential reading.
+                e.g., `(0, 1), (0, 3), (1, 3), (2, 3)`
+            PGA: The full scale voltage (FSV) corresponding to a programmable gain setting.
+                e.g., `(6.144, 4.096, 2.048, 1.024, 0.512, 0.256, 0.256, 0.256)`
+            MODE: Whether to set the ADC to continuous conversion mode, or operate in single-shot mode.
+                e.g., `'CONTINUOUS', 'SINGLE'`
+            DR: The data rate to make the conversion at; units: samples per second.
+                e.g., `8, 16, 32, 64, 128, 250, 475, 860`
+        """
+        return (
+                await self._read_conversion(**kwargs)
+                * self.config.PGA.unpack(self.cfg) / 32767
+        )
+
+    def print_config(self) -> OrderedDict:
+        """ Returns the human-readable configuration for the next read.
+
+        Returns:
+            OrderedDict: an ordered dictionary of the form {field: value}, ordered from MSB -> LSB
+        """
+        return self.config.unpack(self.cfg)
+
+    @property
+    def config(self):
+        """ Returns the Register object of the config register.
+
+        Returns:
+            vent.io.devices.I2CDevice.Register: The Register object initialized for the ADS1115.
+        """
+        return self._config
+
+    @property
+    def cfg(self) -> int:
+        """ Returns the contents (as a 16-bit unsigned integer) of the configuration that will be written to the config
+        register when read_conversion() is next called.
+        """
+        return self._cfg
+
+    async def _read_conversion(self, **kwargs) -> int:
+        """ Backend for read_conversion. Returns the contents of the 16-bit conversion register as an unsigned integer.
+
+        If no parameters are passed, one of two things can happen:
+
+            1)  If the ADC is in single-shot (mode='SINGLE') conversion
+                mode, _last_cfg is written to the config register; once
+                the ADC indicates it is ready, the contents of the
+                conversion register are read and the result is returned.
+            2)  If the ADC is in CONTINUOUS mode, the contents of the
+                conversion register are read immediately and returned.
+
+        If any of channel, gain, mode, or data_rate are specified as
+        parameters, a new _cfg is packed and written to the config
+        register; once the ADC indicates it is ready, the contents of
+        the conversion register are read and the result is returned.
+
+        Note: In continuous mode, data can be read from the conversion
+        register of the ADS1115 at any time and always reflects the
+        most recently completed conversion. So says the datasheet.
+
+        Args:
+            **kwargs: see documentation of vent.io.devices.ADS1115.read_conversion
+        """
+        self._cfg = self._config.pack(cfg=self.cfg, **kwargs)
+        mode = self.print_config()['MODE']
+        if self._cfg != self._last_cfg or mode == 'SINGLE':
+            async with self._conversion_lock:
+                await self.write_register(self.pointer.P.pack('CONFIG'), self.cfg)
+                self._last_cfg = self.cfg
+                result = await self._get_conversion()
+        return result
+
+    async def _get_conversion(self):
+        data_rate = self.print_config()['DR']
+        await asyncio.sleep(1/data_rate)
+        result = await self.read_register(self.pointer.P.pack('CONVERSION'), signed=True)
+        return result
+
+    async def _read_last_cfg(self) -> int:
+        """ Reads the config register and returns the contents as a 16-bit unsigned integer;
+        updates internal record _last_cfg.
+        """
+        self._last_cfg = await self.read_register(self.pointer.P.pack('CONFIG'))
+        return self._last_cfg
+
+    async def _ready(self) -> bool:
+        """ Return status of ADC conversion; True indicates the conversion is complete and the results ready to be read.
+        """
+        return bool(await self.read_register(self.pointer.P.pack('CONFIG')) >> 15)
+
+
+class AsyncADS1015(AsyncADS1115):
+    """ ADS1015 16 bit, 4 Channel Analog to Digital Converter.
+    Datasheet:
+      http://www.ti.com/lit/ds/symlink/ads1015.pdf?&ts=1589228228921
+
+    Basically the same device as the ADS1115, except has 12 bit resolution instead of 16, and has different (faster)
+    data rates. The difference in data rates is handled by overloading _CONFIG_VALUES. The difference in resolution is
+    irrelevant for implementation.
+    """
+
+    _DEFAULT_ADDRESS = 0x48
+    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 3300}
+
+    """ Address Pointer Register (write-only) """
+    _POINTER_FIELDS = ('P',)
+    _POINTER_VALUES = (
+        (
+            'CONVERSION',
+            'CONFIG',
+            'LO_THRESH',
+            'HIGH_THRESH'
+        ),
+    )
+
+    """ Config Register (R/W) """
+    _CONFIG_FIELDS = (
+        'OS',
+        'MUX',
+        'PGA',
+        'MODE',
+        'DR',
+        'COMP_MODE',
+        'COMP_POL',
+        'COMP_LAT',
+        'COMP_QUE'
+    )
+    _CONFIG_VALUES = (
+        ('NO_EFFECT', 'START_CONVERSION'),
+        ((0, 1), (0, 3), (1, 3), (2, 3), 0, 1, 2, 3),
+        (6.144, 4.096, 2.048, 1.024, 0.512, 0.256, 0.256, 0.256),
+        ('CONTINUOUS', 'SINGLE'),
+        (128, 250, 490, 920, 1600, 2400, 3300, 3300),  # This one is different
+        ('TRADIONAL', 'WINDOW'),
+        ('ACTIVE_LOW', 'ACTIVE_HIGH'),
+        ('NONLATCHING', 'LATCHING'),
+        (1, 2, 3, 'DISABLE')
+    )
+    USER_CONFIGURABLE_FIELDS = ('MUX', 'PGA', 'MODE', 'DR')
+
+    def __init__(self, address=_DEFAULT_ADDRESS, i2c_bus=1, smbus=None, loop=None, executor=None):
+        """ See: vent.io.devices.ADS1115.__init__
+        """
+        super().__init__(address, i2c_bus, smbus, loop, executor)
 
 
 class ADS1115(I2CDevice):
@@ -477,12 +791,8 @@ class ADS1115(I2CDevice):
         if self._cfg != self._last_cfg or mode == 'SINGLE':
             self.write_register(self.pointer.P.pack('CONFIG'), self.cfg)
             self._last_cfg = self.cfg
-            data_rate = self._config.DR.unpack(self.cfg)
-            while not (self._ready() or mode == 'CONTINUOUS'):
-                # TODO: Needs timout
-                tick = time.time()
-                while (time.time() - tick) < (1 / data_rate):
-                    pass  # TODO: implement asyncio.sleep()
+            data_rate = self.print_config()['DR']
+            time.sleep(1 / data_rate)
         return self.read_register(self.pointer.P.pack('CONVERSION'), signed=True)
 
     def _read_last_cfg(self) -> int:

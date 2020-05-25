@@ -8,16 +8,17 @@ from vent.common.message import ControlSetting
 from vent.alarm import Alarm
 from vent.common.message import SensorValues
 from vent.common.values import ValueName
+from vent.common.logging import init_logger
 from vent.coordinator.process_manager import ProcessManager
 from vent.coordinator.rpc import get_rpc_client
-import logging
+
 
 
 class CoordinatorBase:
     def __init__(self, sim_mode=False):
         # get_ui_control_module handles single_process flag
         # self.lock = threading.Lock()
-        self.logger = logging.getLogger(__name__)
+        self.logger = init_logger(__name__)
         self.logger.info('coordinator init')
 
     # TODO: do we still need this

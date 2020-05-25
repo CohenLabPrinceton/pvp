@@ -10,9 +10,11 @@ from itertools import count
 import vent.io as io
 
 from vent.common.message import SensorValues, ControlSetting
-from vent.alarm import AlarmSeverity, Alarm
+from vent.common.logging import init_logger
 from vent.common.values import CONTROL, ValueName
-import logging
+from vent.alarm import AlarmSeverity, Alarm
+
+
 
 class ControlModuleBase:
     """This is an abstract class for controlling simulation and hardware.
@@ -42,7 +44,7 @@ class ControlModuleBase:
     """
 
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.logger = init_logger(__name__)
         self.logger.info('controller init')
         #####################  Algorithm/Program parameters  ##################
         # Hyper-Parameters

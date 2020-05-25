@@ -1,11 +1,11 @@
 import logging
-import logging.handlers
 import pickle
 import socket
 import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
 
 import vent.controller.control_module
+from vent.common.logging import init_logger
 
 default_addr = 'localhost'
 default_port = 9533
@@ -16,7 +16,9 @@ remote_controller = None
 
 
 def get_sensors():
-    logging.info('remote runnnnnnn')
+    # left as example of how to get loggers within these callbacks
+    #logger = logging.getLogger(__name__)
+    #logger.info('remote runnnnnnn')
     res = remote_controller.get_sensors()
     return pickle.dumps(res)
 
@@ -42,24 +44,8 @@ def get_control(control_setting_name):
     return pickle.dumps(res)
 
 
-def init_logger():
-    logger = logging.getLogger()
-    # remove the handlers in gui process
-    logger.handlers = []
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch = logging.StreamHandler()
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-    # max = 8 file x 16 MB = 128 MB
-    fh = logging.handlers.RotatingFileHandler('/tmp/controller_process.log', maxBytes=16 * 2 ** 20, backupCount=7)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    return logger
-
-
 def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port):
-    logger = init_logger()
+    logger = init_logger(__name__)
     logger.info('controller process init')
     global remote_controller
     if addr != default_addr:

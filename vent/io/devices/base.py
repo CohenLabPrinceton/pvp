@@ -16,7 +16,11 @@ if 'pytest' in sys.modules or platform.machine() == 'x86_64':
         def __init__(self, *args, **kwargs):
             self.pi = self.pi_mock(*args, **kwargs)
 
+
     pigpio = pigpio_mock()
+else:
+    import pigpio
+
 
 else:
     import pigpio

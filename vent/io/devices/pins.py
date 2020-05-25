@@ -20,6 +20,7 @@ if 'pytest' in sys.modules or platform.machine() == 'x86_64':
 
 else:
     from pigpio import error_text
+
 from vent.io.devices import IODeviceBase
 from vent.common.fashion import pigpio_command
 

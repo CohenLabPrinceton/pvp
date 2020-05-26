@@ -62,7 +62,7 @@ class DataLogger:
     def __init__(self):
 
         # general parameters for logging
-        self._MAX_FILE_SIZE = 12000 #1e8          # Maximum allowed file size for circular logging
+        self._MAX_FILE_SIZE = 1e8          # Maximum allowed file size for circular logging
         self._MAX_NUM_LOGFILES = 10        # Maximum allowed file number for circular logging
 
         # If initialized, make a new file

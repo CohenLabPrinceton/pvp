@@ -90,7 +90,7 @@ class SensorValues:
 
 
 class ControlSetting:
-    def __init__(self, name: values.ValueName, value: float, min_value: float =None, max_value: float=None, timestamp=None):
+    def __init__(self, name: values.ValueName, value: float = None, min_value: float =None, max_value: float=None, timestamp=None):
         """
         TODO: if enum is hard to use, we may just use a predefined set, e.g. {'PIP', 'PEEP', ...}
         :param name: enum belong to ValueName
@@ -99,6 +99,7 @@ class ControlSetting:
         :param max_value:
         :param timestamp:
         """
+        # FIXME: check that at least one value is nonzero, check that everything can handle Nones
         assert isinstance(name, values.ValueName)
 
         self.name = name

@@ -41,6 +41,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     :class:`PySide2.QtCore.Signal` emitted when the gui is started (True) or stopped (False)
     """
 
+
     MONITOR = values.DISPLAY
     """
     see :data:`.gui.defaults.DISPLAY`
@@ -143,6 +144,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self._update_period = None
         self.update_period = update_period
 
+        self._plot_control = False
+
         self.running = False
 
         # initialize controls to starting values
@@ -224,6 +227,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         Args:
             new_value (float): Som
         """
+        if self._plot_control:
+            return
         # get sender ID
         if value_name is None:
             value_name = self.sender().objectName()
@@ -238,8 +243,21 @@ class Vent_Gui(QtWidgets.QMainWindow):
                                         #min_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][0],
                                         #max_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][1],
                                         timestamp = time.time())
+        self.set_control(control_object)
+
+    def set_control(self, control_object: ControlSetting):
+        # FIXME: replace set_value with this kinda thing
+        #self.logger.debug(control_object.__dict__)
         self.alarm_manager.update_dependencies(control_object)
         self.coordinator.set_control(control_object)
+        # FIXME: The recursion here is bad. should do a separate value_updated and update_value for outgoing/ingoing updates
+        if control_object.name.name in self.controls.keys():
+            self.controls[control_object.name.name].update_value(control_object.value)
+
+    @QtCore.Slot(bool)
+    def set_plot_control(self, plot_control: bool):
+        if plot_control != self._plot_control:
+            self._plot_control = plot_control
 
 
     def update_gui(self, vals: SensorValues = None):
@@ -567,6 +585,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         # connect heartbeat indicator to set off before controller starts
         self.state_changed.connect(self.status_bar.heartbeat.set_state)
+
+        # connect waveform plot elements to controls
+        self.pressure_waveform.control_changed.connect(self.set_control)
+        self.pressure_waveform.controlling_plot.connect(self.set_plot_control)
 
     @QtCore.Slot(QtWidgets.QAbstractButton)
     def toggle_cycle_widget(self, button):

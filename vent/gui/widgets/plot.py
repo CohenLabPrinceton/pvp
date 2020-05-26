@@ -1,5 +1,7 @@
 import time
 from collections import deque
+import pdb
+import typing
 
 import numpy as np
 from PySide2 import QtCore
@@ -10,7 +12,8 @@ import pyqtgraph as pg
 from vent.gui import styles
 from vent.gui import mono_font
 from vent.gui import get_gui_instance
-from vent.common.message import SensorValues
+from vent.common.message import SensorValues, ControlSetting
+from vent.common.values import ValueName
 
 PLOT_TIMER = None
 """
@@ -26,6 +29,10 @@ class Pressure_Waveform(pg.PlotWidget):
     """
     Display the ideal piecewise function parameterized by the controls and a history of traces
     """
+    control_changed = QtCore.Signal(ControlSetting)
+
+    controlling_plot = QtCore.Signal(bool)
+
     def __init__(self, n_waveforms = 10, **kwargs):
         super(Pressure_Waveform, self).__init__(background=styles.BACKGROUND_COLOR,
                                                 title="Pressure Control Waveform")
@@ -39,19 +46,143 @@ class Pressure_Waveform(pg.PlotWidget):
 
         self.colors = np.linspace(255, 0, self.n_waveforms)
 
-        self.target = self.plot(width=3, symbolBrush=(255,0,0), symbolPen='w')
-        self.target.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
+        # store last values, see param_changed
+        self._pip = None
+        self._peep = None
+        self._pipt = None
+        self._inspt = None
+        self._peept = None
 
         self._last_target = np.array(())
         self._last_cycle = None
         self._last_cycle_timestamp = 0
         self._current_timestamps = []
         self._current_values = []
+        self.__controlling_plot = False
         self.enableAutoRange(axis=pg.ViewBox.YAxis)
 
+        self.init_plot()
+
+    def init_plot(self):
+
+        # self.getViewBox().setMouseEnabled(False, False)
+
+        # draw lines
+        # upward line
+        self.segment_inhale = self.plot(width=3, symbolPen='w')
+        self.segment_pip = NamedLine(ValueName.PIP, movable=True, angle=0, pos=0)
+        self.segment_exhale = self.plot(width=3, symbolPen='w')
+        self.segment_peep = NamedLine(ValueName.PEEP, movable=True, angle=0, pos=0)
+
+        self.addItem(self.segment_pip)
+        self.addItem(self.segment_peep)
+
+        self.segment_inhale.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
+        self.segment_pip.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
+        self.segment_exhale.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
+        self.segment_peep.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
+
+        # draw points
+        self.point_pipt = ScatterDrag(value_name=ValueName.PIP_TIME, width=3, symbolBrush=(255, 0, 0), symbolPen='w')
+        self.point_inspt = ScatterDrag(value_name=ValueName.INSPIRATION_TIME_SEC, width=3, symbolBrush=(255, 0, 0), symbolPen='w')
+        self.point_peept = ScatterDrag(value_name=ValueName.PEEP_TIME, width=3, symbolBrush=(255, 0, 0), symbolPen='w')
+
+        self.addItem(self.point_pipt)
+        self.addItem(self.point_inspt)
+        self.addItem(self.point_peept)
+
+
+
+        # connect signals to a general update method
+        #self.segment_pip.sigPositionChanged.connect(self.param_changed)
+        #self.segment_peep.sigPositionChanged.connect(self.param_changed)
+
+        self.segment_pip.value_changed.connect(self.param_changed)
+        self.segment_peep.value_changed.connect(self.param_changed)
+        self.point_pipt.value_changed.connect(self.param_changed)
+        self.point_inspt.value_changed.connect(self.param_changed)
+        self.point_peept.value_changed.connect(self.param_changed)
+
+        self.point_pipt.controlling_plot.connect(self._controlling_plot)
+        self.point_peept.controlling_plot.connect(self._controlling_plot)
+        self.point_inspt.controlling_plot.connect(self._controlling_plot)
+        #self.target = self.plot(width=3, symbolBrush=(255,0,0), symbolPen='w')
+        #self.target.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
+
+    @QtCore.Slot(bool)
+    def _controlling_plot(self, controlling_plot: bool):
+        if self.__controlling_plot != controlling_plot:
+            self.__controlling_plot = controlling_plot
+            self.controlling_plot.emit(controlling_plot)
+            if controlling_plot:
+                self.segment_pip.setMovable(False)
+                self.segment_peep.setMovable(False)
+            else:
+                self.segment_pip.setMovable(True)
+                self.segment_peep.setMovable(True)
+
+
+
+    @QtCore.Slot(tuple)
+    def param_changed(self, param: typing.Tuple[ValueName, typing.Union[tuple, float]]):
+        # fuck it just going to hardcode
+        value_name = param[0]
+        new_val = param[1]
+        if value_name in (ValueName.PIP, ValueName.PEEP):
+            # these are fine and don't need changing
+            pass
+        elif value_name in (ValueName.PIP_TIME, ValueName.INSPIRATION_TIME_SEC, ValueName.PEEP_TIME):
+            # points
+            # these need to be subtracted back inta shape
+            #pdb.set_trace()
+            x, y = new_val
+            if value_name == ValueName.PIP_TIME:
+                new_val = x-self._last_target[0,0]
+            elif value_name == ValueName.INSPIRATION_TIME_SEC:
+                new_val = x-self._last_target[1,0]
+            elif value_name == ValueName.PEEP_TIME:
+                new_val = x-self._last_target[2,0]
+        else:
+            raise ValueError(f"parameter sent from waveform plot not understood: {param}")
+
+        control = ControlSetting(
+            name=value_name,
+            value=new_val
+        )
+        self.control_changed.emit(control)
+
+
+
+
     def update_target(self, target):
-        if not np.array_equal(target, self._last_target):
-            self.target.setData(target[:,0], target[:,1])
+        # pdb.set_trace()
+        #if not np.array_equal(target, self._last_target):
+        if True:
+        #     view_range = np.min(target[:, 0]), np.max(target[:, 0])
+            view_range = self.getViewBox().state['viewRange'][0]
+            x_range = view_range[1] - view_range[0]
+            pip_bounds = ((target[1, 0]-view_range[0])/ x_range,
+                          (target[2, 0]-view_range[0])/ x_range)
+            peep_bounds = ((target[3,0]-view_range[0]) / x_range,
+                        (target[4,0]-view_range[0]) /x_range)
+
+            self.segment_inhale.setData(target[0:2,0], target[0:2,1])
+            self.segment_pip.setSpan(mn=pip_bounds[0], mx=pip_bounds[1])
+            self.segment_pip.setValue(target[1,1])
+            self.segment_exhale.setData(target[2:4, 0], target[2:4, 1])
+            self.segment_peep.setSpan(peep_bounds[0], peep_bounds[1], )
+            self.segment_peep.setValue(target[3,1])
+
+            # pdb.set_trace()
+
+
+            #pdb.set_trace()
+            self.point_pipt.setData([target[1,0]], [target[1,1]])
+            self.point_inspt.setData([target[2,0]], [target[2,1]])
+            self.point_peept.setData([target[3,0]], [target[3,1]])
+
+
+            # self.target.setData(target[:,0], target[:,1])
             self._last_target = target
             xrange_min, xrange_max = np.min(target[:,0]), np.max(target[:,0])
             # # xrange_size = xrange_max-xrange_min
@@ -74,6 +205,122 @@ class Pressure_Waveform(pg.PlotWidget):
         self._current_timestamps.append(sensors.timestamp - self._last_cycle_timestamp)
         self.waveforms[0].setData(np.array(self._current_timestamps),
                                   np.array(self._current_values))
+
+class NamedLine(pg.InfiniteLine):
+    value_changed = QtCore.Signal(tuple)
+
+    def __init__(self, name: ValueName, *args, **kwargs):
+        super(NamedLine, self).__init__(*args, **kwargs)
+        self.name = name
+        self.sigPositionChanged.connect(self._value_changed)
+
+    def _value_changed(self):
+        self.value_changed.emit((self.name, self.value()))
+
+    def setSpan(self, mn, mx):
+        if self.span != (mn, mx):
+            self.span = (mn, mx)
+            self._invalidateCache()
+            self.update()
+
+class ScatterDrag(pg.ScatterPlotItem):
+    """
+    A scatterplot but u can drag the points horizontally and they uh tell u.
+
+    """
+    value_changed = QtCore.Signal(tuple)
+    controlling_plot = QtCore.Signal(bool)
+
+    def __init__(self, value_name: ValueName, pos=(0, 0), *args, **kwargs):
+        self.mouseHovering = False
+        self.mouseDragging = False
+        super(ScatterDrag, self).__init__(*args, **kwargs)
+        self.setSize(10)
+        self._name = value_name
+        self._pos = pos
+
+        self.setAcceptHoverEvents(True)
+        self.setData([pos[0]], [pos[1]])
+        # self.normal_brush = self.opts['brush']
+        # self.hover_brush = pg.mkBrush(#)
+
+    def mouseDragEvent(self, ev):
+        """
+        from the CustomGraphItem example
+
+        Args:
+            ev:
+
+        Returns:
+
+        """
+        if ev.button() != QtCore.Qt.LeftButton:
+            ev.ignore()
+            return
+
+        if ev.isStart():
+            # We are already one step into the drag.
+            # Find the point(s) at the mouse cursor when the button was first
+            # pressed:
+            pos = ev.buttonDownPos()
+            #pts = self.pointsAt(pos)
+            if not self.mouseHovering:
+                ev.ignore()
+                return
+            # if len(pts) == 0:
+
+            pts = self.points()
+
+            self.mouseDragging = True
+            self.dragPoint = pts[0]
+            #self.drag_offset_x = self.dragPoint.pos().x() - pos.x()
+            #pdb.set_trace()
+            #ind = pts[0].data()[0]
+            #self.dragOffset = self.dragPoint.pos() - pos
+        elif ev.isFinish():
+            #self.value_changed.emit((self._name, (drag_pos_x, self.dragPoint.pos().y())))
+            self.dragPoint = None
+            self.mouseDragging = False
+
+            return
+        else:
+            if self.dragPoint is None:
+                ev.ignore()
+                return
+
+        #self.drag_pos_x -= ev.pos().x()
+
+        #ind = self.dragPoint.data()[0]
+        #self.data['pos'][ind] = ev.pos() + self.dragOffset
+        #self.updateGraph()
+        self.setData([ev.pos().x()], [self.dragPoint.pos().y()])
+        self.value_changed.emit((self._name, (ev.pos().x(), self.dragPoint.pos().y())))
+
+        ev.accept()
+
+    def hoverEvent(self, ev):
+        if (not ev.isExit()):
+            self.setMouseHover(True)
+
+        else:
+            #if not self.mouseDragging:
+            self.setMouseHover(False)
+
+    def setMouseHover(self, hover):
+        if self.mouseHovering == hover:
+            return
+        self.mouseHovering = hover
+        if hover:
+            self.controlling_plot.emit(True)
+            self.setSize(30, update=True)
+        else:
+            self.controlling_plot.emit(False)
+            self.setSize(10,update=True)
+        self.update()
+
+    def setData(self, *args, **kwargs):
+        if not self.mouseHovering:
+            super(ScatterDrag, self).setData(*args, **kwargs)
 
 
 

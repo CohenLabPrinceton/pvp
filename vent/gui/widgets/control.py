@@ -263,10 +263,11 @@ class Control(QtWidgets.QWidget):
 
         self.slider.setValue(self.value)
         self.sensor_set.setValue(self.value)
+        self.sensor_limits.setData(**{'y': np.array([self.value])})
 
     def update_limits(self, control: ControlSetting):
 
-        self.update_value(control.value)
+        #self.update_value(control.value)
         if control.min_value and control.min_value != self.safe_range[0]:
             self.sensor_limits.setData(**{'bottom': self.value-control.min_value})
             self.safe_range = (control.min_value, self.safe_range[1])
@@ -275,8 +276,6 @@ class Control(QtWidgets.QWidget):
             self.sensor_limits.setData(**{'top': control.max_value-self.value})
             self.safe_range = (self.safe_range[0], control.max_value)
 
-        # update the error bar center value
-        self.sensor_limits.setData(**{'y': np.array([control.value])})
 
 
 

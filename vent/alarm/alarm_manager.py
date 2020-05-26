@@ -342,7 +342,7 @@ class Alarm_Manager(object):
                 if isinstance(depend['condition'], condition.ValueCondition):
                     control_kwargs = {
                         'name': control_setting.name,
-                        'value': control_setting.value
+                        #'value': control_setting.value
                     }
                     if depend['condition'].mode == 'min':
                         control_kwargs['min_value'] = new_value

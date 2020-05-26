@@ -177,10 +177,8 @@ class DataLogger:
 
         if len(os.listdir(logpath)) > 1000:
             raise OSError('Too many logfiles in /vent/logfiles/ (>1000 files). There are ' + str(len(os.listdir(logpath))) + ' files. Delete some.')
-
-            # log a warning
-            # Turn off save data flag
-            # TODO: Rotate files.
+            # TODO: log a warning
+            # TODO: Turn off save data flag
         elif total_size>max_size:     #
             raise OSError('Logfiles in /vent/logfiles/ are too large. Max allowed is ' + '{0:.2f}'.format(max_size*1e-9) + 'GB, used is ' + '{0:.2f}'.format(total_size*1e-9) +  'GB. Free disk space.')
         else:
@@ -188,21 +186,22 @@ class DataLogger:
 
     def rotation_newfile(self):
         logfile_size = os.path.getsize(self.file)                       # Measure active logfile "..._log.0.h5"
-        print ("I have been summoned")
-        print(logfile_size)
 
         if logfile_size > self._MAX_FILE_SIZE:                          # If too big:
             self.close_logfile()                                        # Close current logfile
 
-            parts = self.file.split(".0.")                               # Go through all logfiles, and increase idx;  "..._log.0.h5" -> "..._log.1.h5" etc
+            parts = self.file.split(".0.")                              # Go through all logfiles, and increase idx;  "..._log.0.h5" -> "..._log.1.h5" etc
             for file_idx in range(self._MAX_NUM_LOGFILES-1, -1, -1):    # Have to start at index of last allowed file
                 old_filename = parts[0] + '.' + str(file_idx    ) + '.' + parts[1]
                 new_filename = parts[0] + '.' + str(file_idx + 1) + '.' + parts[1]
                 if os.path.exists(old_filename):                        # On only if logfile already exists
                     os.rename(old_filename, new_filename)
+            print("Making new .0.log")
+            print(self.file)
 
-            self.h5file = pytb.open_file(self.file, mode = "w")         # Make a new and empty "..._log.0.h5"
-            self._open_logfile()                                        # Generate file structure
+            self.h5file.close()                                         # Generate new file with right file structure
+            self.h5file = pytb.open_file(self.file, mode = "w")
+            self._open_logfile()                                        
 
     def load_file(self, filename = None):
         """

@@ -302,7 +302,7 @@ class AlarmSeverityCondition(Condition):
 
     def check(self, sensor_values):
         alarm_severity = self.manager.get_alarm_severity(self.alarm_type)
-        return self.operator(alarm_severity.value, self.severity.value)
+        return self.operator(alarm_severity, self.severity)
 
     def reset(self):
         pass

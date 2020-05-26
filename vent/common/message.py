@@ -1,6 +1,7 @@
 from vent.common import values
 from copy import copy
 from collections import OrderedDict as odict
+from time import time
 
 class SensorValues:
 
@@ -89,7 +90,7 @@ class SensorValues:
 
 
 class ControlSetting:
-    def __init__(self, name, value, min_value, max_value, timestamp):
+    def __init__(self, name: values.ValueName, value: float, min_value: float =None, max_value: float=None, timestamp=None):
         """
         TODO: if enum is hard to use, we may just use a predefined set, e.g. {'PIP', 'PEEP', ...}
         :param name: enum belong to ValueName
@@ -98,10 +99,14 @@ class ControlSetting:
         :param max_value:
         :param timestamp:
         """
+        assert isinstance(name, values.ValueName)
+
         self.name = name
         self.value = value
         self.min_value = min_value
         self.max_value = max_value
+        if not timestamp:
+            timestamp = time()
         self.timestamp = timestamp
 
 

@@ -3,6 +3,7 @@ import sys
 import threading
 import pdb
 import os
+import typing
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
@@ -10,11 +11,12 @@ from PySide2 import QtWidgets, QtCore, QtGui
 from vent.alarm import AlarmSeverity, Alarm
 from vent.common import values
 from vent.common.values import ValueName
-from vent.common.message import ControlSetting
+from vent.common.message import ControlSetting, SensorValues
 from vent.common.logging import init_logger
+from vent.coordinator import coordinator
 from vent import gui
 from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS
-from vent.gui.alarm_manager import AlarmManager
+from vent.alarm import Alarm_Manager
 
 
 
@@ -32,6 +34,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
     
     Returns the result of ``self.coordinator.get_active_alarms``, so will emit an
     empty dict if there are no active alarms.
+    """
+
+    state_changed = QtCore.Signal(bool)
+    """
+    :class:`PySide2.QtCore.Signal` emitted when the gui is started (True) or stopped (False)
     """
 
     MONITOR = values.DISPLAY
@@ -64,7 +71,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
     computed from ``status_height+main_height``
     """
 
-    def __init__(self, coordinator, update_period = 0.05):
+    def __init__(self,
+                 coordinator: typing.Type[coordinator.CoordinatorBase],
+                 update_period: float = 0.05):
         """
         The Main GUI window.
 
@@ -85,7 +94,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
             control_module (:class:`vent.controller.control_module.ControlModuleBase`): Reference to the control module, retrieved from coordinator
             start_time (float): Start time as returned by :func:`time.time`
             update_period (float): The global delay between redraws of the GUI (seconds)
-            alarm_manager (:class:`~.AlarmManager`)
+            alarm_manager (:class:`~.alarm.alarm_manager.Alarm_Manager`)
+            _alarm_state (:class:`~.alarm.AlarmSeverity`): current maximum alarm severity
+            alarms (dict): any active alarms that are being displayed
 
 
         Arguments:
@@ -104,12 +115,16 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         super(Vent_Gui, self).__init__()
 
-        self.alarm_manager = AlarmManager()
+        self.alarm_manager = Alarm_Manager()
         self._alarm_state = AlarmSeverity.OFF
+        self.alarms = {}
+        # connect alarm manager signals to slots
+        self.alarm_manager.add_callback(self.handle_alarm)
+        self.alarm_manager.add_dependency_callback(self.limits_updated)
 
-        self.monitor = {}
-        self.plots = {}
-        self.controls = {}
+        self.monitor = {} # type: typing.Dict[ValueName: widgets.Monitor]
+        self.plots = {} # type: typing.Dict[ValueName: widgets.Plot]
+        self.controls = {} # type: typing.Dict[ValueName.name: widgets.Control]
 
         self.coordinator = coordinator
         try:
@@ -136,7 +151,45 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.init_ui()
         self.start_time = time.time()
 
-        self.update_gui()
+        #self.update_gui()
+        self._testing = False
+        if self._testing:
+            self.test_alarms()
+        else:
+            self.update_gui()
+
+    def test_alarms(self):
+
+        self.running = True
+        # throw low alarm
+        sensors = SensorValues(
+            vals = {
+                ValueName.PIP                  : values.VALUES[ValueName.PIP].default,
+                ValueName.PEEP                 : values.VALUES[ValueName.PEEP].default,
+                ValueName.FIO2                 : 80,
+                ValueName.PRESSURE             : values.VALUES[ValueName.PIP].default,
+                ValueName.VTE                  : values.VALUES[ValueName.VTE]['safe_range'][0]-0.1,
+                ValueName.BREATHS_PER_MINUTE   : 20,
+                ValueName.INSPIRATION_TIME_SEC : 2,
+                ValueName.VOLUME               : 1,
+                ValueName.FLOW                 : 1,
+                ValueName.TEMP                 : 30,
+                ValueName.HUMIDITY:            80,
+                'timestamp'                    : time.time(),
+                'loop_counter'                 : 1,
+                'breath_count'                 : 1
+            }
+        )
+        self.update_gui(sensors)
+
+        # throw high before medium, test position
+        sensors[ValueName.PRESSURE] = values.VALUES[ValueName.PIP]['safe_range'][1]+1
+        self.update_gui(sensors)
+        time.sleep(0.1)
+
+        sensors[ValueName.PEEP] = values.VALUES[ValueName.PEEP]['safe_range'][0]-0.1
+        self.update_gui(sensors)
+
 
     @property
     def update_period(self):
@@ -182,28 +235,40 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         control_object = ControlSetting(name=getattr(ValueName, value_name),
                                         value=new_value,
-                                        min_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][0],
-                                        max_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][1],
+                                        #min_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][0],
+                                        #max_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][1],
                                         timestamp = time.time())
+        self.alarm_manager.update_dependencies(control_object)
         self.coordinator.set_control(control_object)
 
 
-    def update_gui(self):
+    def update_gui(self, vals: SensorValues = None):
+        """
+
+        Args:
+            vals (:class:`.SensorValue`): Default None, but SensorValues can be passed manually -- usually for debugging
+
+        """
         try:
-
-            if not self.running:
-                return
-            # get alarms
-            #active_alarms = self.coordinator.get_active_alarms()
-            #self.alarms_updated.emit(active_alarms)
-
-
-            vals = self.coordinator.get_sensors()
+            if not vals:
+                vals = self.coordinator.get_sensors()
 
             # update ideal waveform
-            # pdb.set_trace()
-            self.pressure_waveform.update_target(self.coordinator.get_target_waveform())
-            self.pressure_waveform.update_waveform(vals)
+            # be extra cautious here, don't want to break before being able to check alarms
+            try:
+                self.pressure_waveform.update_target(self.coordinator.get_target_waveform())
+                self.pressure_waveform.update_waveform(vals)
+            except Exception as e:
+                self.logger.exception(f'Couldnt draw ideal waveform, got error {e}')
+
+            # if not running yet, don't update anything else.
+            if not self.running:
+                return
+
+            # update alarms
+            # only after first breath! many values are only defined after first cyce
+            if vals.breath_count > 1:
+                self.alarm_manager.update(vals)
 
             for plot_key, plot_obj in self.plots.items():
                 if hasattr(vals, plot_key):
@@ -217,23 +282,24 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 if hasattr(vals, control_key):
                     control.update_sensor(getattr(vals, control_key))
 
+            # let our  timer know we got some data
+            self.status_bar.heartbeat.beatheart(vals.timestamp)
         #
         finally:
-            self.timer.start()
+            if not self._testing:
+                self.timer.start()
 
-
-
-
-    def update_value(self, value_name, new_value):
-        """
-        Arguments:
-            value_name (str): Name of key in :attr:`.Vent_Gui.monitor` and :attr:`.Vent_Gui.plots` to update
-            new_value (int, float): New value to display/plot
-        """
-        if value_name in self.monitor.keys():
-            self.monitor[value_name].update_value(new_value)
-        elif value_name in self.plots.keys():
-            self.plots[value_name].update_value(new_value)
+    # def update_value(self, value_name, new_value):
+    #     """
+    #     Arguments:
+    #         value_name (str): Name of key in :attr:`.Vent_Gui.monitor` and :attr:`.Vent_Gui.plots` to update
+    #         new_value (int, float): New value to display/plot
+    #     """
+    #     # FIXME: delete me?
+    #     if value_name in self.monitor.keys():
+    #         self.monitor[value_name].update_value(new_value)
+    #     if value_name in self.plots.keys():
+    #         self.plots[value_name].update_value(new_value)
 
     def init_ui(self):
         """
@@ -311,7 +377,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
         for display_key, display_params in self.MONITOR.items():
             if display_key in self.CONTROL.keys():
                 continue
-            self.monitor[display_key.name] = widgets.Monitor(display_params, enum_name=display_key)
+            if display_key in (ValueName.VTE, ValueName.FIO2):
+                range_slider = True
+            else:
+                range_slider = False
+            self.monitor[display_key.name] = widgets.Monitor(display_params, enum_name=display_key,
+                                                             range_slider=range_slider)
             self.display_layout.addWidget(self.monitor[display_key.name])
             self.display_layout.addWidget(widgets.components.QHLine())
 
@@ -477,23 +548,25 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     self.monitor[value.name].update_limits)
 
         # connect monitors to alarm_manager
-        for monitor in self.monitor.values():
-            monitor.alarm.connect(self.alarm_manager.monitor_alarm)
+        # for monitor in self.monitor.values():
+        #     monitor.alarm.connect(self.alarm_manager.monitor_alarm)
 
         # connect alarms to alarm manager, and then back to us
-        self.alarms_updated.connect(self.alarm_manager.update_alarms)
-        self.alarm_manager.new_alarm.connect(self.handle_alarm)
+        # self.alarms_updated.connect(self.alarm_manager.update_alarms)
+        # self.alarm_manager.new_alarm.connect(self.handle_alarm)
         # FIXME: THis should be handled by alarm manager, that's what it's there for!
-        #self.status_bar.status_message.level_changed.connect(self.alarm_state_changed)
-        self.status_bar.status_message.message_cleared.connect(self.handle_cleared_alarm)
+        #self.status_bar.alarm_bar.level_changed.connect(self.alarm_state_changed)
+        self.status_bar.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
 
         # connect controls
         for control in self.controls.values():
             control.value_changed.connect(self.set_value)
-            control.value_changed.connect(self.set_value)
 
         # connect start button to coordinator start
         self.status_bar.start_button.toggled.connect(self.setState)
+
+        # connect heartbeat indicator to set off before controller starts
+        self.state_changed.connect(self.status_bar.heartbeat.set_state)
 
     @QtCore.Slot(QtWidgets.QAbstractButton)
     def toggle_cycle_widget(self, button):
@@ -524,15 +597,35 @@ class Vent_Gui(QtWidgets.QMainWindow):
         #self.adjustSize()
 
     @QtCore.Slot(Alarm)
-    def handle_alarm(self, alarm):
-        self.status_bar.status_message.update_message(alarm)
+    def handle_alarm(self, alarm: Alarm):
+        """
+        Update :class:`~.Status_Bar` and any affected widgets
+
+        Args:
+            alarm (:class:`~.Alarm`)
+
+
+        """
+        self.logger.info(str(alarm))
+
+        if alarm.severity > AlarmSeverity.OFF:
+
+            self.status_bar.add_alarm(alarm)
+        else:
+            self.status_bar.clear_alarm(alarm)
+        #self.status_bar.alarm_bar.update_message(alarm)
         try:
             self.monitor[alarm.alarm_name.name].alarm_state = True
         except:
             # FIXME: will be fixed when values are displayed next to controls
             pass
-        if alarm.severity.value > self.alarm_state.value:
+        if alarm.severity > self.alarm_state:
             self.alarm_state = alarm.severity
+
+    @QtCore.Slot(ControlSetting)
+    def limits_updated(self, control:ControlSetting):
+        if control.name.name in self.controls.keys():
+            self.controls[control.name.name].update_limits(control)
 
     @QtCore.Slot(Alarm)
     def handle_cleared_alarm(self, alarm):
@@ -564,7 +657,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def update_target_waveform(self):
-        target_waveform = self.coordinator.get
+        #target_waveform = self.coordinator.get
+        pass
 
     def closeEvent(self, event):
         """
@@ -609,6 +703,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         else:
             # TODO: what happens when u stop lol
             pass
+
+        self.state_changed.emit(state)
 
 
 def launch_gui(coordinator):

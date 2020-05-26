@@ -267,7 +267,7 @@ def test_control_dynamical(control_type):
 #         print(a.alarm_name)
 #         assert not a.active
 #
-#         alarm_duration = a.alarm_end_time - a.start_time
+#         alarm_duration = a.end_time - a.start_time
 #         if a.alarm_name == 'PEEP':
 #             assert alarm_duration < (1+np.ceil(sv.breaths_per_minute * 11/60)) * 60/sv.breaths_per_minute
 #         if a.alarm_name == 'BREATHS_PER_MINUTE':

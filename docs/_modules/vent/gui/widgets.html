@@ -485,7 +485,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
 
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span> <span class="o">=</span> <span class="n">Message_Display</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_console</span> <span class="o">=</span> <span class="n">Alarm_Bar</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_console</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat</span> <span class="o">=</span> <span class="n">HeartBeat</span><span class="p">()</span>
@@ -506,7 +506,7 @@
 
 
 
-<div class="viewcode-block" id="Message_Display"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Message_Display">[docs]</a><span class="k">class</span> <span class="nc">Message_Display</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
+<div class="viewcode-block" id="Message_Display"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Message_Display">[docs]</a><span class="k">class</span> <span class="nc">Alarm_Bar</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
 
     <span class="n">message_cleared</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
@@ -517,7 +517,7 @@
     <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Message_Display</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Alarm_Bar</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">icons</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">messages</span> <span class="o">=</span> <span class="p">{}</span>

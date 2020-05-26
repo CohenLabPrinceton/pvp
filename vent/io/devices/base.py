@@ -21,13 +21,6 @@ if 'pytest' in sys.modules or platform.machine() == 'x86_64':
 else:
     import pigpio
 
-
-else:
-    import pigpio
-
-
-
-
 class PigpioConnection(pigpio.pi):
     """ Subclass that extends pigpio.pi to throw an exception if there are issues connecting to the pigpio daemon."""
 

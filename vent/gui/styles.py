@@ -1,4 +1,5 @@
 from PySide2 import QtGui
+from vent.alarm import AlarmSeverity
 
 SUBWAY_COLORS = {
     'blue': "#0039A6",
@@ -6,8 +7,11 @@ SUBWAY_COLORS = {
     'lime': "#6CBE45",
     'gray': "A7A9AC",
     'orange': "#FF6319",
+    'orange_darker': "#CC4E14",
     'yellow': "#FCCC0A",
+    'yellow_darker': "#CCA408",
     'red': "#EE352E",
+    'red_darker': "#B72722",
     'green': "#00933C",
     'purple': "#B933AD"
 }
@@ -36,6 +40,9 @@ VALUE_MINOR_SIZE = 46
 NAME_SIZE = 36
 UNIT_SIZE = 18
 TICK_SIZE = 12
+
+CARD_TITLE_SIZE = 24
+CARD_TIMESTAMP_SIZE = 12
 
 MONITOR_UPDATE_INTERVAL = 0.5
 """
@@ -269,6 +276,81 @@ QFrame {{
 }}
 """
 
+ALARM_CARD_LOW = f"""
+QFrame {{
+    border: 3px solid {SUBWAY_COLORS['yellow_darker']};
+    border-radius: 4px;
+    background-color: {SUBWAY_COLORS['yellow']};
+}}
+
+QFrame > QLabel {{
+    border: 0px;
+    border-radius: 0px;
+    color: {BACKGROUND_COLOR};
+}}
+"""
+
+ALARM_CARD_MEDIUM = f"""
+QFrame {{
+    border: 3px solid {SUBWAY_COLORS['orange_darker']};
+    border-radius: 4px;
+    background-color: {SUBWAY_COLORS['orange']};
+}}
+
+QFrame > QLabel {{
+    border: 0px;
+    border-radius: 0px;
+    color: {BACKGROUND_COLOR};
+}}
+"""
+
+ALARM_CARD_HIGH = f"""
+QFrame {{
+    border: 3px solid {SUBWAY_COLORS['red_darker']};
+    border-radius: 4px;
+    background-color: {SUBWAY_COLORS['red']};
+}}
+
+QFrame > QLabel {{
+    border: 0px;
+    border-radius: 0px;
+    color: {TEXT_COLOR};
+}}
+"""
+
+ALARM_CARD_TITLE = f"""
+QLabel {{
+    font-size: {CARD_TITLE_SIZE}pt;
+    font-weight: bold;
+}}
+"""
+
+ALARM_CARD_TIMESTAMP = f"""
+QLabel {{
+    font-size: {CARD_TIMESTAMP_SIZE}pt;
+}}
+"""
+
+ALARM_CARD_BUTTON = f"""
+QPushButton {{
+    font-size: 42pt;
+    color: {TEXT_COLOR};
+}}
+"""
+
+ALARM_CARD_BUTTON_INACTIVE = f"""
+QPushButton {{
+    font-size: 42pt;
+    color: {GRAY_TEXT};
+}}
+"""
+
+ALARM_CARD_STYLES = {
+    AlarmSeverity.LOW: ALARM_CARD_LOW,
+    AlarmSeverity.MEDIUM: ALARM_CARD_MEDIUM,
+    AlarmSeverity.HIGH: ALARM_CARD_HIGH
+}
+
 HEARTBEAT_NORMAL = f"""
 QRadioButton::indicator {{
     background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 {SUBWAY_COLORS['blue']});
@@ -288,6 +370,17 @@ QRadioButton::indicator {{
 
 QLabel {{
     color: {SUBWAY_COLORS['red']};
+}}
+"""
+
+HEARTBEAT_OFF = f"""
+QRadioButton::indicator {{
+    background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 #DDDDDD);
+    border-radius: 5px;
+}}
+
+QLabel {{
+    color: {TEXT_COLOR};
 }}
 """
 

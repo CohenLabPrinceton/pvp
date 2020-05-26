@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum, IntEnum, auto
 
 class AlarmType(Enum):
     LOW_PRESSURE  = auto()  # low airway pressure alarm
@@ -12,8 +12,12 @@ class AlarmType(Enum):
     OBSTRUCTION   = auto()
     LEAK          = auto()
 
+    @property
+    def human_name(self):
+        return self.name.replace('_', ' ')
 
-class AlarmSeverity(Enum):
+
+class AlarmSeverity(IntEnum):
     HIGH = 3
     MEDIUM = 2
     LOW = 1
@@ -37,7 +41,7 @@ ALARM_RULES = odict({
             (
             AlarmSeverity.LOW,
                 condition.ValueCondition(
-                    value_name=ValueName.PRESSURE,
+                    value_name=ValueName.PIP,
                     limit=VALUES[ValueName.PIP]['safe_range'][0],
                     mode='min',
                     depends={
@@ -51,7 +55,7 @@ ALARM_RULES = odict({
             (
             AlarmSeverity.MEDIUM,
                 condition.ValueCondition(
-                    value_name=ValueName.PRESSURE,
+                    value_name=ValueName.PIP,
                     limit=VALUES[ValueName.PIP]['safe_range'][0]- \
                           VALUES[ValueName.PIP]['safe_range'][0]*0.15,
                     mode='min'
@@ -74,7 +78,13 @@ ALARM_RULES = odict({
                 condition.ValueCondition(
                     value_name=ValueName.PRESSURE,
                     limit=VALUES[ValueName.PIP]['safe_range'][1],
-                    mode='max'
+                    mode='max',
+                    depends={
+                        'value_name': ValueName.PIP,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x : x+(x*0.15)
+                    }
                 )
             ),
         )

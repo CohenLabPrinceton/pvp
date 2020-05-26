@@ -5,6 +5,8 @@ import pyqtgraph as pg
 
 from vent.gui import styles, mono_font
 from vent.gui.widgets.components import EditableLabel, DoubleSlider
+from vent.common.message import ControlSetting
+from vent.common.values import Value
 
 
 class Control(QtWidgets.QWidget):
@@ -16,13 +18,16 @@ class Control(QtWidgets.QWidget):
     value_changed = QtCore.Signal(float)
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, value):
+    def __init__(self, value: Value):
         super(Control, self).__init__()
 
         self.name = value.name
         self.units = value.units
         self.abs_range = value.abs_range
-        self.safe_range = value.safe_range
+        if not value.safe_range:
+            self.safe_range = (0, 0)
+        else:
+            self.safe_range = value.safe_range
         self.value = value.default
         self.decimals = value.decimals
         self.sensor = None
@@ -232,11 +237,19 @@ class Control(QtWidgets.QWidget):
             #self.adjustSize()
 
 
-    def update_value(self, new_value):
+    def update_value(self, new_value: float):
+        """
+        Updates the controlled value. Emits :attr:`.value_changed` if value within :attr:`.abs_range` and different than previous :attr:`.value`
+
+        Also updates the slider and sensor bar in the UI.
+
+        Args:
+            new_value (float):
+        """
         if isinstance(new_value, str):
             new_value = float(new_value)
 
-        if (new_value <= self.abs_range[1]) and (new_value >= self.abs_range[0]):
+        if (new_value <= self.abs_range[1]) and (new_value >= self.abs_range[0]) and (new_value != self.value):
             self.value = new_value
 
             self.value_changed.emit(self.value)
@@ -251,8 +264,23 @@ class Control(QtWidgets.QWidget):
         self.slider.setValue(self.value)
         self.sensor_set.setValue(self.value)
 
-    def update_limits(self, new_limits):
-        pass
+    def update_limits(self, control: ControlSetting):
+
+        self.update_value(control.value)
+        if control.min_value and control.min_value != self.safe_range[0]:
+            self.sensor_limits.setData(**{'bottom': self.value-control.min_value})
+            self.safe_range = (control.min_value, self.safe_range[1])
+
+        if control.max_value and control.max_value != self.safe_range[1]:
+            self.sensor_limits.setData(**{'top': control.max_value-self.value})
+            self.safe_range = (self.safe_range[0], control.max_value)
+
+        # update the error bar center value
+        self.sensor_limits.setData(**{'y': np.array([control.value])})
+
+
+
+
 
     def update_sensor(self, new_value):
         if new_value is None:

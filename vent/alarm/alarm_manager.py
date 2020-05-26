@@ -1,11 +1,14 @@
 import copy
 import time
+from pprint import pformat
 
 from vent.alarm import AlarmSeverity, AlarmType
 from vent.alarm.condition import Condition
 from vent.common.message import SensorValues, ControlSetting
+from vent.common.logging import init_logger
 from vent.alarm.alarm import Alarm
 from vent.alarm.rule import Alarm_Rule
+from vent.alarm import condition
 
 import typing
 
@@ -33,7 +36,14 @@ class Alarm_Manager(object):
     cleared_alarms = []
     snoozed_alarms = {}
     callbacks = []
+    depends_callbacks = []
+    """
+    When we :meth:`.update_dependencies`, we send back a :class:`.ControlSetting` with the new min/max
+    """
     rules = {}
+
+    logger = init_logger(__name__)
+
 
     def __new__(cls):
         """
@@ -71,6 +81,8 @@ class Alarm_Manager(object):
                 for depend in condition.depends:
                     self.register_dependency(condition, depend)
 
+        self.logger.info(f'Registered rule:\n{pformat(alarm_rule.__dict__)}')
+
 
 
     def update(self, sensor_values: SensorValues):
@@ -107,10 +119,10 @@ class Alarm_Manager(object):
         if rule.name in self.active_alarms.keys():
             # if we've got an active alarm of this type
             # check if the severity has changed
-            if current_severity.value > self.active_alarms[rule.name].severity.value:
+            if current_severity > self.active_alarms[rule.name].severity:
                 # greater severity always raises
                 self.emit_alarm(rule.name, current_severity)
-            elif current_severity.value < self.active_alarms[rule.name].severity.value:
+            elif current_severity < self.active_alarms[rule.name].severity:
                 # if alarm isn't latched, emit lower alarm
                 if not rule.latch:
                     self.emit_alarm(rule.name, current_severity)
@@ -123,7 +135,7 @@ class Alarm_Manager(object):
                             self.pending_clears.remove(rule.name)
         else:
             # alarm isn't active
-            if current_severity.value > AlarmSeverity.OFF.value:
+            if current_severity > AlarmSeverity.OFF:
                 # emit if not off
                 self.emit_alarm(rule.name, current_severity)
 
@@ -132,7 +144,6 @@ class Alarm_Manager(object):
     def emit_alarm(self, alarm_type: AlarmType, severity: AlarmSeverity):
         """
         Emit alarm (by calling all callbacks with it).
-
 
         .. note::
 
@@ -160,9 +171,11 @@ class Alarm_Manager(object):
             for callback in self.callbacks:
                 callback(new_alarm)
 
-            if severity.value > AlarmSeverity.OFF.value:
+            if severity> AlarmSeverity.OFF:
                 # don't add OFF alarms to active_alarms...
                 self.active_alarms[alarm_type] = new_alarm
+
+            self.logger.info('Alarm Raised:\n    '+str(new_alarm))
 
         else:
             raise ValueError('No  rule found for alarm type {}'.format(alarm_type))
@@ -201,6 +214,7 @@ class Alarm_Manager(object):
             got_alarm = self.active_alarms.pop(alarm_type)
             got_alarm.deactivate()
             self.logged_alarms.append(got_alarm)
+            self.logger.info('Deactivated Alarm:\n    ' + str(got_alarm))
         else:
             return
 
@@ -265,7 +279,7 @@ class Alarm_Manager(object):
                 return
             # if another alarm is already active,
             # check if this is a higher severity
-            if alarm.severity.value > self.active_alarms[alarm.alarm_type].severity.value:
+            if alarm.severity > self.active_alarms[alarm.alarm_type].severity:
                 self.deactivate_alarm(alarm.alarm_type)
                 self.active_alarms[alarm.alarm_type] = alarm
             else:
@@ -287,7 +301,7 @@ class Alarm_Manager(object):
         """
 
         # invert the structure of the dependency so it's keyed by the ValueName being updated
-        dependency['condition'] = condition,
+        dependency['condition'] = condition
         value_name = dependency.pop('value_name')
         if value_name not in self.dependencies.keys():
             self.dependencies[value_name] = [dependency]
@@ -311,7 +325,7 @@ class Alarm_Manager(object):
             for depend in self.dependencies[control_setting.name]:
 
                 # get the value from the control setting we want to update from
-                new_value = getattr(control_setting, depend['value_attribute'])
+                new_value = getattr(control_setting, depend['value_attr'])
 
                 # if the attribute we're looking to update from is None, then
                 # this control isn't being set right now
@@ -324,9 +338,29 @@ class Alarm_Manager(object):
 
                 setattr(depend['condition'], depend['condition_attr'], new_value)
 
+                # emit control signal with new info
+                if isinstance(depend['condition'], condition.ValueCondition):
+                    control_kwargs = {
+                        'name': control_setting.name,
+                        'value': control_setting.value
+                    }
+                    if depend['condition'].mode == 'min':
+                        control_kwargs['min_value'] = new_value
+                    elif depend['condition'].mode == 'max':
+                        control_kwargs['max_value'] = new_value
+
+                    control_out = ControlSetting(**control_kwargs)
+                    for cb in self.depends_callbacks:
+                        cb(control_out)
+
+
     def add_callback(self, callback: typing.Callable):
         assert callable(callback)
         self.callbacks.append(callback)
+
+    def add_dependency_callback(self, callback: typing.Callable):
+        assert callable(callback)
+        self.depends_callbacks.append(callback)
 
     def clear_all_alarms(self):
         # make separate list because dict will be cleared during iteration

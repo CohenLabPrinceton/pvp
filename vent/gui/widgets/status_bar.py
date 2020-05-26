@@ -1,13 +1,14 @@
 import logging
 import time
 import datetime
+import typing
 
 import numpy as np
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 
 from vent.gui import styles, mono_font
 from vent.gui import get_gui_instance
-from vent.alarm import AlarmSeverity, Alarm
+from vent.alarm import AlarmSeverity, Alarm, AlarmType, Alarm_Manager
 
 
 class Status_Bar(QtWidgets.QWidget):
@@ -30,8 +31,8 @@ class Status_Bar(QtWidgets.QWidget):
         self.layout = QtWidgets.QHBoxLayout()
 
 
-        self.status_message = Message_Display()
-        self.layout.addWidget(self.status_message)
+        self.alarm_bar = Alarm_Bar()
+        self.layout.addWidget(self.alarm_bar)
         self.layout.setContentsMargins(5,5,5,5)
 
         self.heartbeat = HeartBeat()
@@ -56,17 +57,41 @@ class Status_Bar(QtWidgets.QWidget):
         # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
         #                    QtWidgets.QSizePolicy.Expanding)
 
+    def add_alarm(self, alarm: Alarm):
+        """
+        Wraps  :meth:`.Alarm_Bar.add_alarm`
 
-class Message_Display(QtWidgets.QFrame):
+        Args:
+            alarm (:class:`.Alarm`): passed to :class:`Alarm_Bar`
+        """
+        self.alarm_bar.add_alarm(alarm)
+
+    def clear_alarm(self, alarm: Alarm = None, alarm_type: AlarmType = None):
+        """
+        Wraps :meth:`.Alarm_Bar.clear_alarm`
+        """
+        self.alarm_bar.clear_alarm(alarm, alarm_type)
+
+
+
+class Alarm_Bar(QtWidgets.QFrame):
+    """
+    Holds and manages a collection of :class:`Alarm_Card` s
+    """
 
     message_cleared = QtCore.Signal()
     level_changed = QtCore.Signal()
+    alarm_dismissed = QtCore.Signal(AlarmType)
+    """
+    Wraps :attr:`.Alarm_Card.alarm_dismissed`
+    """
 
     def __init__(self):
-        super(Message_Display, self).__init__()
+        super(Alarm_Bar, self).__init__()
 
         self.icons = {}
-        self.alarms = {}
+        self.alarms = [] # type: typing.List[Alarm]
+        self.alarm_cards = [] # type: typing.List[Alarm_Card]
         self.current_alarm = None
         self._alarm_level = AlarmSeverity.OFF
         self.setContentsMargins(0,0,0,0)
@@ -88,6 +113,7 @@ class Message_Display(QtWidgets.QFrame):
         normal_icon = style.standardIcon(QtWidgets.QStyle.SP_MessageBoxInformation, None, self)
         normal_icon = normal_icon.pixmap(size,size)
 
+
         self.icons[AlarmSeverity.LOW] = normal_icon
         self.icons[AlarmSeverity.MEDIUM] = warning_icon
         self.icons[AlarmSeverity.HIGH] = alarm_icon
@@ -97,11 +123,16 @@ class Message_Display(QtWidgets.QFrame):
     def init_ui(self):
 
         self.layout = QtWidgets.QHBoxLayout()
+        self.layout.setContentsMargins(0,0,0,0)
+        self.layout.addStretch(10)
+        self.layout.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
 
-        self.message = QtWidgets.QLabel('')
-        self.message.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        self.message.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                           QtWidgets.QSizePolicy.Expanding)
+        # self.message = QtWidgets.QLabel('')
+        # self.message.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        # self.message.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                    QtWidgets.QSizePolicy.Expanding)
+
+        self.alarm_layout = QtWidgets.QHBoxLayout()
 
         self.icon = QtWidgets.QLabel()
         #self.icon.setEnabled(False)
@@ -114,35 +145,111 @@ class Message_Display(QtWidgets.QFrame):
         self.icon.setFixedWidth(size)
 
 
-        self.clear_button = QtWidgets.QPushButton('Clear Message')
-        self.clear_button.setVisible(False)
-        self.clear_button.clicked.connect(self.clear_message)
+        # self.clear_button = QtWidgets.QPushButton('Clear Message')
+        # self.clear_button.setVisible(False)
+        # self.clear_button.clicked.connect(self.clear_message)
         #clear_icon = QtGui.QIcon.fromTheme('window-close')
         #self.clear_button.setIcon(clear_icon)
 
-        self.layout.addWidget(self.message, 5)
+        #self.layout.addWidget(self.message, 6)
+        self.layout.addLayout(self.alarm_layout, 6)
         self.layout.addWidget(self.icon, 1)
-        self.layout.addWidget(self.clear_button,1)
+        # self.layout.addWidget(self.clear_button,1)
         self.setLayout(self.layout)
         self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Raised)
 
-    def draw_state(self, state=None):
+    def add_alarm(self, alarm:Alarm):
+        """
+        Add an alarm created by the :class:`.Alarm_Manager` to the bar.
+
+        Args:
+            alarm:
+
+        """
+        for existing_alarm in self.alarms:
+            if existing_alarm.alarm_type == alarm.alarm_type:
+                self.clear_alarm(existing_alarm)
+
+        # make new alarm widget
+        alarm_card = Alarm_Card(alarm)
+        alarm_card.alarm_dismissed.connect(self.alarm_dismissed)
+
+        # alarm priority should go low on left, high on right
+        # newer alarms should be on the right of older alarms of same severity
+        for i, existing_alarm in enumerate(self.alarms):
+            if alarm.severity < existing_alarm.severity:
+                self.alarms.insert(i, alarm)
+                self.alarm_cards.insert(i, alarm_card)
+                self.alarm_layout.insertWidget(i, alarm_card)
+                break
+
+        else:
+            # no alarm was greater than us, we should go at the end
+            self.alarms.append(alarm)
+            self.alarm_cards.append(alarm_card)
+            self.alarm_layout.addWidget(alarm_card)
+
+        # update our icon
+        self.update_icon()
+
+
+
+    def clear_alarm(self, alarm:Alarm=None, alarm_type:AlarmType=None):
+        if (alarm is None) and (alarm_id is None):
+            raise ValueError('Need to provide either alarm object or alarm id to clear')
+
+
+        if alarm:
+            alarm_type = alarm.alarm_type
+
+
+        for existing_alarm, alarm_card in zip(self.alarms, self.alarm_cards):
+            if alarm_type == existing_alarm.alarm_type:
+                self.alarms.remove(existing_alarm)
+                self.alarm_layout.removeWidget(alarm_card)
+                self.alarm_cards.remove(alarm_card)
+                alarm_card.deleteLater()
+
+        self.update_icon()
+
+    def update_icon(self):
+        """
+        Call :meth:`.set_icon` with highest severity in :attr:`Alarm_Bar.alarms`
+        """
+        severity = AlarmSeverity.OFF
+        for alarm in self.alarms:
+            if alarm.severity > severity:
+                severity = alarm.severity
+
+        self.set_icon(severity)
+
+
+    def set_icon(self, state: AlarmSeverity=None):
+        """
+        Change the icon to reflect the alarm severity
+
+        Args:
+            state:
+
+        Returns:
+
+        """
 
         if state == AlarmSeverity.LOW:
             self.setStyleSheet(styles.STATUS_NORMAL)
             self.icon.setPixmap(self.icons[AlarmSeverity.LOW])
-            self.clear_button.setVisible(True)
+            #self.clear_button.setVisible(True)
         elif state == AlarmSeverity.MEDIUM:
             self.setStyleSheet(styles.STATUS_WARN)
             self.icon.setPixmap(self.icons[AlarmSeverity.MEDIUM])
-            self.clear_button.setVisible(True)
+            #self.clear_button.setVisible(True)
         elif state == AlarmSeverity.HIGH:
             self.setStyleSheet(styles.STATUS_ALARM)
             self.icon.setPixmap(self.icons[AlarmSeverity.HIGH])
-            self.clear_button.setVisible(True)
+            #self.clear_button.setVisible(True)
         else:
             self.setStyleSheet(styles.STATUS_NORMAL)
-            self.clear_button.setVisible(False)
+            #self.clear_button.setVisible(False)
             self.icon.clear()
 
 
@@ -157,7 +264,7 @@ class Message_Display(QtWidgets.QFrame):
         if alarm is None:
             # clear
             self.current_alarm = None
-            self.draw_state()
+            self.set_icon()
             self.message.setText("")
             return
 
@@ -165,8 +272,8 @@ class Message_Display(QtWidgets.QFrame):
 
         if self.current_alarm:
             # see if we are outranked by current message
-            if alarm.severity.value >= self.current_alarm.severity.value:
-                self.draw_state(alarm.severity)
+            if alarm.severity >= self.current_alarm.severity:
+                self.set_icon(alarm.severity)
                 self.message.setText(alarm.message)
                 self.current_alarm = alarm
                 self.alarm_level = alarm.severity
@@ -174,7 +281,7 @@ class Message_Display(QtWidgets.QFrame):
                 return
 
         else:
-            self.draw_state(alarm.severity)
+            self.set_icon(alarm.severity)
             self.message.setText(alarm.message)
             self.current_alarm = alarm
             self.alarm_level = alarm.severity
@@ -195,7 +302,7 @@ class Message_Display(QtWidgets.QFrame):
         # check if we have another message to display
         if len(self.alarms)>0:
             # get message priorities
-            paired_priorities = [(alarm.id, alarm.severity.value) for alarm in self.alarms.values()]
+            paired_priorities = [(alarm.id, alarm.severity) for alarm in self.alarmss()]
             priorities = np.array([msg[1] for msg in paired_priorities])
             # find the max priority
             max_ind = np.argmax(priorities)
@@ -217,6 +324,79 @@ class Message_Display(QtWidgets.QFrame):
             self.level_changed.emit(alarm_level)
             self._alarm_level = alarm_level
 
+class Alarm_Card(QtWidgets.QFrame):
+    """
+    Representation of an alarm raised by :class:`.Alarm_Manager` in GUI.
+
+    If allowed by alarm, allows user to dismiss/silence alarm
+    """
+    alarm_dismissed = QtCore.Signal(AlarmType)
+
+    def __init__(self, alarm: Alarm):
+        super(Alarm_Card, self).__init__()
+
+        assert isinstance(alarm, Alarm)
+        self.alarm = alarm
+        self.severity = self.alarm.severity
+
+
+        self.init_ui()
+
+    def init_ui(self):
+        self.setStyleSheet(styles.ALARM_CARD_STYLES[self.severity])
+        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                           QtWidgets.QSizePolicy.Expanding)
+
+        self.layout = QtWidgets.QGridLayout()
+        self.name_label = QtWidgets.QLabel(self.alarm.alarm_type.human_name)
+        self.name_label.setStyleSheet(styles.ALARM_CARD_TITLE)
+
+        timestamp = datetime.datetime.fromtimestamp(self.alarm.start_time)
+        theday = timestamp.strftime('%Y-%m-%d')
+        thetime = timestamp.strftime('%H:%M:%S')
+
+        self.timestamp_label = QtWidgets.QLabel(
+            '\n'.join([theday, thetime])
+        )
+        self.timestamp_label.setStyleSheet(styles.ALARM_CARD_TIMESTAMP)
+        self.timestamp_label.setFont(mono_font())
+
+        # close button
+        # style = self.style()
+        # size = style.pixelMetric(QtWidgets.QStyle.PM_MessageBoxIconSize, None, self)
+        # close_icon = style.standardIcon(QtWidgets.QStyle.SP_TitleBarCloseButton, None, self)
+        # close_icon = close_icon.pixmap(size, size)
+        #
+        self.close_button = QtWidgets.QPushButton('X')
+        self.close_button.setSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Expanding)
+        self.close_button.setStyleSheet(styles.ALARM_CARD_BUTTON)
+        self.close_button.clicked.connect(self._dismiss)
+
+        self.layout.addWidget(self.name_label,0, 0)
+        self.layout.addWidget(self.timestamp_label, 1,0)
+        self.layout.addWidget(self.close_button, 0, 1, 2, 1)
+
+        self.setLayout(self.layout)
+
+    def _dismiss(self):
+
+        Alarm_Manager().dismiss_alarm(self.alarm.alarm_type)
+        self.close_button.setStyleSheet(styles.ALARM_CARD_BUTTON_INACTIVE)
+        self.close_button.setText('...')
+
+
+
+
+
+
+
+
+
+
+
+
 
 class HeartBeat(QtWidgets.QFrame):
 
@@ -225,6 +405,9 @@ class HeartBeat(QtWidgets.QFrame):
 
     def __init__(self, update_interval = 100, timeout_dur = 5000):
         """
+        Attributes:
+            _state (bool): whether the system is running or not
+
         Args:
             update_interval (int): How often to do the heartbeat, in ms
             timeout (int): how long to wait before hearing from control process
@@ -265,20 +448,37 @@ class HeartBeat(QtWidgets.QFrame):
 
         self.setLayout(self.layout)
 
+    @QtCore.Slot(bool)
+    def set_state(self, state):
+        # if current state is false and turning on, reset _last_heartbeat so we don't
+        # jump immediately into timeout
+        if not self._state and state:
+            self._last_heartbeat = time.time()
+        self._state = state
+
+
     def check_timeout(self):
-        if (time.time() - self._last_heartbeat) > (self.timeout_dur/1000):
-            self._state = True
-            self.set_indicator("alarm")
-            self.timeout.emit(True)
+        if not self._state:
+            self.set_indicator("off")
+
         else:
-            self._state = False
-            self.set_indicator("")
+
+            if (time.time() - self._last_heartbeat) > (self.timeout_dur/1000):
+                self._state = True
+                self.set_indicator("alarm")
+                self.timeout.emit(True)
+
+            else:
+                self._state = False
+                self.set_indicator("")
 
     def set_indicator(self, state=None):
 
         if state == 'alarm':
             self.setStyleSheet(styles.HEARTBEAT_ALARM)
-
+        elif state == 'off':
+            # eg. before controller starts
+            self.setStyleSheet(styles.HEARTBEAT_OFF)
         else:
             self.setStyleSheet(styles.HEARTBEAT_NORMAL)
 

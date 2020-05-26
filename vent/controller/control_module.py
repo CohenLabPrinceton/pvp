@@ -95,7 +95,8 @@ class ControlModuleBase:
         self._breath_counter = count() # threadsafe counter
 
         # Parameters to keep track of breath-cycle
-        self.__cycle_start = time.time()
+        #self.__cycle_start = time.time()
+        self.__cycle_start = 0
         self.__cycle_waveform = np.array([[0, 0, 0]])                            # To build up the current cycle's waveform
         self.__cycle_waveform_archive = deque(maxlen = self._RINGBUFFER_SIZE)          # An archive of past waveforms.
 
@@ -241,7 +242,7 @@ class ControlModuleBase:
     def __test_critical_levels(self, min, max, value, name):
         '''
         This tests whether a variable is within bounds.
-        If it is, and an alarm existed, then the "alarm_end_time" is set.
+        If it is, and an alarm existed, then the "end_time" is set.
         If it is NOT, a new alarm is generated and appendede to the alarm-list.
         Input:
             min:           minimum value  (e.g. 2)
@@ -253,12 +254,12 @@ class ControlModuleBase:
         # if (value < min) or (value > max):  # If the variable is not within limits
         #     if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
         #         new_alarm = Alarm(alarm_name=name, active=True, severity=AlarmSeverity.HIGH, value=value,
-        #                           start_time=time.time(), alarm_end_time=None)
+        #                           start_time=time.time(), end_time=None)
         #         self.__active_alarms[name] = new_alarm
         # else:  # Else: if the variable is within bounds,
         #     if name in self.__active_alarms.keys():  # And an alarm exists -> inactivate it.
         #         old_alarm = self.__active_alarms[name]
-        #         old_alarm.alarm_end_time = time.time()
+        #         old_alarm.end_time = time.time()
         #         old_alarm.active = False
         #         self.__logged_alarms.append(old_alarm)
         #         del self.__active_alarms[name]
@@ -598,6 +599,7 @@ class ControlModuleBase:
     def start(self):
         if self.__thread is None or not self.__thread.is_alive():  # If the previous thread has been stopped, make a new one.
             self._running.set()
+            #self.__cycle_start = time.time()
             self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
             self.__thread.start()
         else:

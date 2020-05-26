@@ -282,8 +282,8 @@ class DLiteSensor(AnalogSensor):
             raw (float): The raw sensor reading to convert.
         """
         raw = super()._convert(raw)
-        fit_param = 6.0345e-05
-        if raw >= 0:
+        fit_param = 2.5837e-05
+        if(raw >= 0):
             converted_flow = (-1.0*np.sqrt(raw)/np.sqrt(fit_param))
         else:
             converted_flow = (1.0*np.sqrt(-1.0*raw)/np.sqrt(fit_param))

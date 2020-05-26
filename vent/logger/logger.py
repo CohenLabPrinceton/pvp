@@ -51,7 +51,6 @@ class DataLogger:
         |
 
     Public Methods:
-        open_logfile():                       Opens a log-file, creates one if necessary. 
         close_logfile():                      Flushes, and closes the logfile.
         store_waveform_data(SensorValues):    Takes data from SensorValues, but DOES NOT FLUSH 
         store_controls():                     Store controls in the same file? TODO: Discuss 
@@ -62,6 +61,10 @@ class DataLogger:
 
     def __init__(self):
 
+        # general parameters for logging
+        self._MAX_FILE_SIZE = 12000 #1e8          # Maximum allowed file size for circular logging
+        self._MAX_NUM_LOGFILES = 10        # Maximum allowed file number for circular logging
+
         # If initialized, make a new file
         today = datetime.today()
         date_string = today.strftime("%Y-%m-%d-%H-%M")
@@ -69,13 +72,13 @@ class DataLogger:
         # Make the log folder
         if not os.path.exists('vent/logfiles'):
             os.makedirs('vent/logfiles')
-        self.file = "vent/logfiles/" + date_string + "_controller_log.h5"
+        self.file = "vent/logfiles/" + date_string + "_controller_log.0.h5"
 
         # Make sure that the file doesn't exist yet, if it does, append another number
         # In rarely happens, but for Travis-tests, this is needed.
         c=0
         while os.path.exists(self.file):
-            self.file = "vent/logfiles/" + date_string + '-' + str(c) + "_controller_log.h5"
+            self.file = "vent/logfiles/" + date_string + '-' + str(c) + "_controller_log.0.h5"
             c = c + 1
 
         self.storage_used = self.check_files()  # Make sure there is space. Sum of all logfiles in bytes
@@ -174,10 +177,32 @@ class DataLogger:
 
         if len(os.listdir(logpath)) > 1000:
             raise OSError('Too many logfiles in /vent/logfiles/ (>1000 files). There are ' + str(len(os.listdir(logpath))) + ' files. Delete some.')
+
+            # log a warning
+            # Turn off save data flag
+            # TODO: Rotate files.
         elif total_size>max_size:     #
             raise OSError('Logfiles in /vent/logfiles/ are too large. Max allowed is ' + '{0:.2f}'.format(max_size*1e-9) + 'GB, used is ' + '{0:.2f}'.format(total_size*1e-9) +  'GB. Free disk space.')
         else:
             return total_size  # size in bytes
+
+    def rotation_newfile(self):
+        logfile_size = os.path.getsize(self.file)                       # Measure active logfile "..._log.0.h5"
+        print ("I have been summoned")
+        print(logfile_size)
+
+        if logfile_size > self._MAX_FILE_SIZE:                          # If too big:
+            self.close_logfile()                                        # Close current logfile
+
+            parts = self.file.split(".0.")                               # Go through all logfiles, and increase idx;  "..._log.0.h5" -> "..._log.1.h5" etc
+            for file_idx in range(self._MAX_NUM_LOGFILES-1, -1, -1):    # Have to start at index of last allowed file
+                old_filename = parts[0] + '.' + str(file_idx    ) + '.' + parts[1]
+                new_filename = parts[0] + '.' + str(file_idx + 1) + '.' + parts[1]
+                if os.path.exists(old_filename):                        # On only if logfile already exists
+                    os.rename(old_filename, new_filename)
+
+            self.h5file = pytb.open_file(self.file, mode = "w")         # Make a new and empty "..._log.0.h5"
+            self._open_logfile()                                        # Generate file structure
 
     def load_file(self, filename = None):
         """

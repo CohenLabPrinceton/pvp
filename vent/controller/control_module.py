@@ -563,8 +563,10 @@ class ControlModuleBase:
             self.__update_alarms()            # Run alarm detection over last cycle's waveform
             self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
 
-            if self._save_logs:               # If we kept records, flush the data from the previous breath cycle
-                self.dl.flush_logfile()
+            if self._save_logs:               
+                self.dl.flush_logfile()        # If we kept records, flush the data from the previous breath cycle
+                self.dl.rotation_newfile()     # And Check whether we run out of space for the logger
+
         else:
             self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
 

@@ -971,7 +971,7 @@ class ControlModuleSimulator(ControlModuleBase):
                 dt = self.simulator_dt
             else:
                 dt = now - self._last_update                            # Time sincle last cycle of main-loop
-                if dt > self.__SET_BPM / 4:                                                         # TODO: RAISE HARDWARE ALARM, no update should take that long
+                if dt > 0.5:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
                     # TODO: Log this
                     print("Restarted cycle.")
                     self._PID_reset()

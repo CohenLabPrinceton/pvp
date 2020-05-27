@@ -42,7 +42,7 @@ class ControlModuleBase:
 
     """
 
-    def __init__(self, save_logs: bool = True, flush_every: int = 10):
+    def __init__(self, save_logs: bool = True, flush_every: int = 1):
         """
 
         Args:

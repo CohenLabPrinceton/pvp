@@ -7,19 +7,7 @@ import time
 import sys
 import platform
 
-if 'pytest' not in sys.modules or platform.machine() == 'x86_64':
-    class pigpio_mock(object):
-        class pi_mock(object):
-            def __init__(self, *args, **kwargs):
-                pass
-
-        def __init__(self, *args, **kwargs):
-            self.pi = self.pi_mock(*args, **kwargs)
-
-
-    pigpio = pigpio_mock()
-else:
-    import pigpio
+import pigpio
 
 
 

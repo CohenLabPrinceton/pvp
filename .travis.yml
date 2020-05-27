@@ -18,25 +18,30 @@ addons:
 
 services:
   - xvfb
-  - herbstluftwm
 
 env:
-  - DISPLAY=":99.0" # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
+  - DISPLAY=":99.0" QT_DEBUG_PLUGINS=1  # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
 
 install:
   - pip install -U pip
   - pip install -U pytest
   - pip install -U pytest-cov
   - pip install -U coveralls
-  - pip install -U numpy
-  - pip install -U PySide2
+  - pip install -U numpy~=1.18.4
+  - pip install -U PySide2~=5.11
   - pip install -U pyqtgraph>=0.11.0rc0
   - pip install -e .
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
+  - sleep 3
 
 # command to run tests
 before_script:
+  - "herbstluftwm &"
+  - sleep 1
   - mkdir -p /home/travis/vent/logs # make directories for logs
+
 script:
   - pytest --cov=vent --cov-report term-missing tests
+
 after_success:
   - coveralls

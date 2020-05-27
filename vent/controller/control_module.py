@@ -628,27 +628,26 @@ class ControlModuleDevice(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self):
         ControlModuleBase.__init__(self)
-        self.HAL = io.Hal(config_file='vent/io/config/devices.ini')
+        self.HAL = io.Hal()
         self._sensor_to_COPY()
-
-
+        
     def _sensor_to_COPY(self):
         # And the sensor measurements
         self._lock.acquire()
-        self.COPY_sensor_values = SensorValues(
-            vals = {
-                ValueName.PIP                  : self._DATA_PIP,
-                ValueName.PEEP                 : self._DATA_PEEP,
-                ValueName.FIO2                 : 70,
-                ValueName.PRESSURE             : self.HAL.pressure,
-                ValueName.VTE                  : self._DATA_VTE,
-                ValueName.BREATHS_PER_MINUTE   : self._DATA_BPM,
-                ValueName.INSPIRATION_TIME_SEC : self._DATA_I_PHASE,
-                'timestamp'                    : time.time(),
-                'loop_counter'                 : self._loop_counter,
-                'breath_count'                 : self._DATA_BREATH_COUNT
-            }
-        )
+        self.COPY_sensor_values = SensorValues(vals={
+            ValueName.PIP.name                  : self._DATA_PIP,
+            ValueName.PEEP.name                 : self._DATA_PEEP,
+            ValueName.FIO2.name                 : 70,
+            ValueName.TEMP.name                 : -1,
+            ValueName.HUMIDITY.name             : -1,
+            ValueName.PRESSURE.name             : self.HAL.pressure,
+            ValueName.VTE.name                  : self._DATA_VTE,
+            ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+            ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+            'timestamp'                  : time.time(),
+            'loop_counter'             : self._loop_counter,
+            'breath_count': self._DATA_BREATH_COUNT
+        })
         self._lock.release()
 
     def _start_mainloop(self):
@@ -673,11 +672,17 @@ class ControlModuleDevice(ControlModuleBase):
             self._PID_update(dt = dt)                               # Update the PID Controller
 
             valve_open_in = self._get_control_signal_in()           # Inspiratory side: get control signal for PropValve
-            hal.setpoint_in = max(min(100, valve_open_in), 0)
+            self.HAL.setpoint_in = max(min(100, valve_open_in), 0)
 
-            hal.setpoint_ex = self._get_control_signal_out()          # Expiratory side: get control signal for Solenoid
+            self.HAL.setpoint_ex = self._get_control_signal_out()          # Expiratory side: get control signal for Solenoid
+            '''
+            if(self.HAL.setpoint_ex == 0):
+                self.HAL._expiratory_valve.close()
+            else:
+                self.HAL._expiratory_valve.open()
+            '''
 
-            self._DATA_Qout = self.HAL.flow_out                     # Flow sensor on Expiratory side
+            self._DATA_Qout = self.HAL.flow_ex                     # Flow sensor on Expiratory side
             self._DATA_Qin  = self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
             self._last_update = now
 

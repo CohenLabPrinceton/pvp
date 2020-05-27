@@ -76,6 +76,9 @@ class ControlModuleBase:
         self.__SET_T_PLATEAU      = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP         = self.__SET_E_PHASE - self.__SET_PEEP_TIME
 
+        # Alarm management; controller can only react to High airway pressure alarms
+        self.HAPA = None
+
         #########################  Data management  #########################
 
         # These are measurements from the last breath cycle.
@@ -553,6 +556,11 @@ class ControlModuleBase:
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
         
+        if self.check_high_pressure_alert():   # HAPA overwrites all other signals
+            self.__SET_PIP = 30                # Default: PIP to 30
+            self.__control_signal_out = np.inf
+            self.__control_signal_in  = 0
+
         if next_cycle:                        # if a new breath cycle has started
             # increment breath_cycle tracker
             self._DATA_BREATH_COUNT = next(self._breath_counter)
@@ -573,6 +581,19 @@ class ControlModuleBase:
         if self._save_logs:
             self.__save_values()
     
+    def check_high_pressure_alert(self):
+        """
+        The only alarm that has to be raised by the controller is High Airway Pressure.
+        """
+        if self._DATA_PRESSURE > 80:                             # TODO: WHAT IS THE LIMIT?
+            if self.HAPA is None:
+                self.HAPA = time.time()
+            if time.time() - self.HAPA > 0.1:  # 100 ms active to avoid being triggered by coughs
+                return True
+        else:
+            self.HAPA = None
+        return False
+
     def __save_values(self):
         """
             Small helper function to store key parameters in the main PID control loop

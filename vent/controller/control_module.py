@@ -715,7 +715,7 @@ class ControlModuleDevice(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self):
         ControlModuleBase.__init__(self)
-        self.HAL = io.Hal()
+        self.HAL = io.Hal(config_file='vent/io/config/dinky-devices.ini')
         self._sensor_to_COPY()
         
     def _sensor_to_COPY(self):

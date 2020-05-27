@@ -96,7 +96,8 @@ Jonny Questions
 
 * Which alarm sounds to use?
 * Final final final breakdown on values and ranges plzzz
-
+* RR always has to be present, can only auto calculate InspT, I:E
+* make alarm dismissals all latch and snooze.
 
 jonny todo
 ______________

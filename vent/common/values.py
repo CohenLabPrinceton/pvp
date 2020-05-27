@@ -244,7 +244,7 @@ VALUES = odict({
         'name': 'I:E',
         'units': '',
         'abs_range': (0, 2),
-        'safe_range': (0.33, 1),
+        'safe_range': (1, 1.3),
         'decimals': 2,
         'default':0.5,
         'control': False,

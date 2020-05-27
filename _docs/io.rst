@@ -1,21 +1,21 @@
-io module
+vent.io package
 ===============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   vent.io.devices
 
 Submodules
 ----------
 
-vent.io.devices module
-----------------------
+vent.io.hal module
+------------------
 
-.. automodule:: vent.io.devices
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-vent.io.iobase module
----------------------
-
-.. automodule:: vent.io.iobase
+.. automodule:: vent.io.hal
    :members:
    :undoc-members:
    :show-inheritance:

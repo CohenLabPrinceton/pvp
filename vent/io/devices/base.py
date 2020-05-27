@@ -3,6 +3,7 @@
 from collections import OrderedDict
 from vent.common.fashion import pigpio_command
 
+import pigpio
 import time
 import sys
 import platform
@@ -20,7 +21,6 @@ if 'pytest' in sys.modules or platform.machine() == 'x86_64':
     pigpio = pigpio_mock()
 else:
     import pigpio
-
 
 
 class PigpioConnection(pigpio.pi):
@@ -57,8 +57,6 @@ class IODeviceBase:
         """
         self._pig = pig if pig is not None else PigpioConnection(show_errors=False)
         self._handle = -1
-        if not self.pigpiod_ok:
-            raise RuntimeError
 
     @property
     def pig(self) -> PigpioConnection:
@@ -123,72 +121,62 @@ class I2CDevice(IODeviceBase):
         self.pig.i2c_close(self.handle)
 
     @pigpio_command
-    def read_device(self, num_bytes) -> tuple:
+    def read_device(self, count=2) -> tuple:
         """ Read a specified number of bytes directly from the the device without specifying or changing the register.
         Does NOT perform LE/BE conversion.
 
         Args:
-            num_bytes (int): The number of bytes to read from the device.
+            count (int): The number of bytes to read from the device.
 
         Returns:
             tuple: a tuple of the number of bytes read and a bytearray containing the bytes. If there was an error the
             number of bytes read will be less than zero (and will contain the error code).
         """
-        return self.pig.i2c_read_device(self.handle, num_bytes)
+        return self.pig.i2c_read_device(self.handle, count)
 
     @pigpio_command
-    def write_device(self, word, signed=False, count=2):
-        """ Write bytes to the device without specifying register. DOES perform LE/BE conversion.
+    def write_device(self, word, signed=False):
+        """ Write 2 bytes to the device without specifying register. DOES perform LE/BE conversion.
 
         Args:
             word (int): The integer representation of the data to write.
             signed (bool): Whether or not `word` is signed.
-            count (int): The number of bytes to write. Should be specified if `word` is something other than a two's
-                complement.
         """
         self.pig.i2c_write_device(
             self.handle,
-            native16_to_be(word, signed=signed, count=count)
+            native16_to_be(word, signed=signed)
         )
 
     @pigpio_command
-    def read_register(self, register, signed=False, count=2) -> int:
-        """ Read `count` bytes from the specified register and byteswap the result.
+    def read_register(self, register, signed=False) -> int:
+        """ Read 2 bytes from the specified register and byteswap the result.
 
         Args:
-            signed (bool): Whether or not the data to read is expected to be signed.
-            count (int): The number of bytes to read from the device. Should be specified if `word` is something other
-                than a two's complement.
             register (int): The index of the register to read.
+            signed (bool): Whether or not the data to read is expected to be signed.
 
         Returns:
             int: integer representation of 16 bit register contents.
         """
-        return be16_to_native(
-            self.pig.i2c_read_i2c_block_data(
-                self.handle,
-                register,
-                count
-            ),
-            signed=signed
-        )
+        return be16_to_native(self.pig.i2c_read_i2c_block_data(
+            self.handle,
+            register,
+            count=2
+        ), signed=signed)
 
     @pigpio_command
-    def write_register(self, register, word, signed=False, count=2):
-        """ Write bytes to the specified register. Count should be
-        specified for when passing something other than a word.
-        (register denoted by a single byte)
+    def write_register(self, register, word, signed=False):
+        """ Write 2 bytes to the specified register. Byteswaps.
 
         Args:
-            count (int): The number of bytes to write to the register
-            signed (bool): Whether or not 'word' is signed
-            word (int): The unsigned 16 bit integer to write to the register (must be consistent with 'signed')
             register (int): The index of the register to write to
+            word (int): The unsigned 16 bit integer to write to the register (must be consistent with 'signed')
+            signed (bool): Whether or not 'word' is signed
         """
         self.pig.i2c_write_i2c_block_data(
             self.handle,
             register,
-            native16_to_be(word, signed=signed, count=count)
+            native16_to_be(word, signed=signed)
         )
 
     class Register:
@@ -273,22 +261,15 @@ class I2CDevice(IODeviceBase):
                 self._offset = offset
                 self._mask = mask
                 self._values = values
+                self._reversed_values = OrderedDict(map(reversed, self._values.items()))
 
-            def offset(self) -> int:
-                """ Returns the position of the field's LSB in the register. e.g., mask = self._mask << self._offset."""
-                return self._offset
-
-            def info(self) -> list:
-                """ Returns a list containing the ValueField's offset, mask, and a tuple of possible values """
-                return [self._offset, self._mask, self._values]
-
-            def unpack(self, cfg) -> OrderedDict:
+            def unpack(self, cfg):
                 """ Extracts the ValueField's setting from cfg & returns the result in a human readable form.
 
                 Args:
                     cfg (int): An integer representing a possible configuration value for the register
                 """
-                return OrderedDict(map(reversed, self._values.items()))[self.extract(cfg)]
+                return self._reversed_values[self.extract(cfg)]
 
             def extract(self, cfg) -> int:
                 """ Extracts setting from passed 16-bit config & returns integer representation.
@@ -332,7 +313,7 @@ class I2CDevice(IODeviceBase):
 class SPIDevice(IODeviceBase):
     """ A class wrapper for pigpio SPI handles. Not really implemented. """
 
-    def __init(self, channel, baudrate, pig=None):
+    def __init__(self, channel, baudrate, pig=None):
         """ Instantiates an SPIDevice on SPI `channel` with `baudrate` and, optionally, `pigpio.pi = pig`.
 
         Args:
@@ -340,7 +321,7 @@ class SPIDevice(IODeviceBase):
             baudrate (int): SPI baudrate
             pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established
         """
-        super().__init__(pig)
+        super().__init__(pig=pig)
         self._open(channel, baudrate)
 
     @pigpio_command
@@ -373,7 +354,7 @@ class ADS1115(I2CDevice):
     """
     _DEFAULT_ADDRESS = 0x48
     _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 860}
-
+    _TIMEOUT = 1
     """ Address Pointer Register (write-only) """
     _POINTER_FIELDS = ('P',)
     _POINTER_VALUES = (
@@ -456,7 +437,7 @@ class ADS1115(I2CDevice):
         """
         return (
                 self._read_conversion(**kwargs)
-                * self._config.PGA.unpack(self.cfg) / 32767
+                * self.config.PGA.unpack(self.cfg) / 32767
         )
 
     def print_config(self) -> OrderedDict:
@@ -465,7 +446,7 @@ class ADS1115(I2CDevice):
         Returns:
             OrderedDict: an ordered dictionary of the form {field: value}, ordered from MSB -> LSB
         """
-        return self._config.unpack(self.cfg)
+        return self.config.unpack(self.cfg)
 
     @property
     def config(self):
@@ -514,8 +495,9 @@ class ADS1115(I2CDevice):
             self._last_cfg = self.cfg
             data_rate = self._config.DR.unpack(self.cfg)
             while not (self._ready() or mode == 'CONTINUOUS'):
+                # TODO: Needs timout
                 tick = time.time()
-                while (time.time() - tick) < 1000000 / data_rate:
+                while (time.time() - tick) < (1 / data_rate):
                     pass  # TODO: implement asyncio.sleep()
         return self.read_register(self.pointer.P.pack('CONVERSION'), signed=True)
 
@@ -543,7 +525,7 @@ class ADS1015(ADS1115):
     """
 
     _DEFAULT_ADDRESS = 0x48
-    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 860}
+    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 3300} 
 
     """ Address Pointer Register (write-only) """
     _POINTER_FIELDS = ('P',)
@@ -587,24 +569,21 @@ class ADS1015(ADS1115):
         super().__init__(address=address, i2c_bus=i2c_bus, pig=pig)
 
 
-def be16_to_native(data, signed=False, count=2) -> int:
+def be16_to_native(data, signed=False) -> int:
     """ Unpacks a bytes-like object respecting big-endianness of outside world and returns an int according to signed.
 
     Args:
         data: bytes-like object. The data to be unpacked & converted
         signed (bool): Whether or not `data` is signed
-        count (int): The number of bytes to read from `data`. If `count < len(data)` then only the first `count` bytes
-            will be used; the remainder is discarded.
     """
-    return int.from_bytes(data[1][:count], 'big', signed=signed)
+    return int.from_bytes(data[1][:2], 'big', signed=signed)
 
 
-def native16_to_be(word, signed=False, count=2) -> bytes:
+def native16_to_be(word, signed=False) -> bytes:
     """ Packs an int into bytes after swapping endianness.
 
     Args:
         signed (bool): Whether or not `data` is signed
         word (int): The integer representation to converted and packed into bytes
-        count (int): The number of bytes to represent `word` as.
     """
-    return word.to_bytes(count, 'big', signed=signed)
+    return word.to_bytes(2, 'big', signed=signed)

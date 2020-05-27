@@ -12,11 +12,8 @@ from vent.common.values import ValueName, CONTROL
 
 Controller = get_control_module(sim_mode=False)
 Controller.start()
-ls = []
-tt = []
-t0 = time.time()
 
-for t in np.arange(0, 10,0.05):
+for t in np.arange(0, 30,0.05):
     if t%5==0:  # ask for a heartbeat from thread every 5 seconds
         print(t)
 
@@ -33,8 +30,7 @@ for t in np.arange(0, 10,0.05):
     ##
 
     vals = Controller.get_sensors()
-    ls.append(vals)
-    tt.append(time.time()  - t0)
+    print(vals.PRESSURE)
     time.sleep(0.05)
 
 Controller.stop()

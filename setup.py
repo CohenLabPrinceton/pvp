@@ -31,7 +31,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'numpy',
-        'PySide2',
+        'PySide2==5.11.4.*',
         'pyqtgraph>=0.11.0rc0',
         'pytest-qt',
         'pytest-timeout',

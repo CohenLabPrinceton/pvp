@@ -56,8 +56,8 @@ class Status_Bar(QtWidgets.QWidget):
 
 class Message_Display(QtWidgets.QFrame):
 
-    message_cleared = QtCore.Signal(Alarm)
-    level_changed = QtCore.Signal(AlarmSeverity)
+    message_cleared = QtCore.Signal()
+    level_changed = QtCore.Signal()
 
     def __init__(self):
         super(Message_Display, self).__init__()

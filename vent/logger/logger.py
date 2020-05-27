@@ -22,9 +22,9 @@ class DataSample(pytb.IsDescription):
     Structure for the hdf5-table for data
     """
     timestamp    = pytb.Float64Col()    # current time of the measurement - has to be 64 bit
-    pressure     = pytb.UInt8Col()
-    flow_in      = pytb.UInt8Col()
-    flow_out     = pytb.UInt8Col()
+    pressure     = pytb.Float32Col()
+    flow_in      = pytb.Float32Col()
+    flow_out     = pytb.Float32Col()
     cycle_number = pytb.UInt32Col()     # Max is 2147483647 Breath Cycles (~78 years)
 
 class ControlCommand(pytb.IsDescription):
@@ -59,7 +59,7 @@ class DataLogger:
 
     """
 
-    def __init__(self):
+    def __init__(self, compression_level : int = 9):
 
         # general parameters for logging
         self._MAX_FILE_SIZE = 1e8          # Maximum allowed file size for circular logging
@@ -85,7 +85,7 @@ class DataLogger:
 
         ## For data storage ##
         self.h5file = pytb.open_file(self.file, mode = "a")      # Open logfile
-        self.compression_level = 4 # From 1 to 9, see tables documentation
+        self.compression_level = compression_level # From 1 to 9, see tables documentation
 
     def __del__(self):
         self.close_logfile()
@@ -99,13 +99,21 @@ class DataLogger:
 
         if "/waveforms" not in self.h5file:
             group = self.h5file.create_group("/", 'waveforms', 'Respiration waveforms')
-            self.data_table = self.h5file.create_table(group, 'readout', DataSample, "Breath Cycles", filters = pytb.Filters(complevel=self.compression_level, complib='zlib'))
+            self.data_table = self.h5file.create_table(group, 'readout', DataSample, "Breath Cycles",
+                                                       filters = pytb.Filters(
+                                                           complevel=self.compression_level,
+                                                           complib='zlib'),
+                                                       expectedrows=1000000)
         else:
             self.data_table = self.h5file.root.waveforms.readout
 
         if "/controls" not in self.h5file:
             group = self.h5file.create_group("/", 'controls', 'Control signal history')
-            self.control_table = self.h5file.create_table(group, 'readout', ControlCommand, "Control Commands", filters = pytb.Filters(complevel=self.compression_level, complib='zlib'))
+            self.control_table = self.h5file.create_table(group, 'readout', ControlCommand, "Control Commands",
+                                                          filters = pytb.Filters(
+                                                              complevel=self.compression_level,
+                                                              complib='zlib')
+                                                          )
         else:
             self.control_table = self.h5file.root.controls.readout
             
@@ -115,15 +123,6 @@ class DataLogger:
         """
         self.h5file.close() # Also flushes the remaining buffers
 
-    def __rescale_save(self, raw_value, value, target, scalingconstant):
-        """
-        Rescales values to fit into the ranges specified in DataSample
-        """
-        if DataSample.columns[value].dtype == target.dtype:
-            return np.int8( raw_value * scalingconstant )    # type cast to unsigned int 8, flow between 0 and 1.28 l/sec
-        else:
-            raise ValueError('Dynamic range unclear.')
-
     def store_waveform_data(self, sensor_values: SensorValues, control_values: ControlValues):
         """
         Appends a datapoint to the file.
@@ -132,10 +131,10 @@ class DataLogger:
         self._open_logfile()
         datapoint                 = self.data_table.row
         datapoint['timestamp']    = sensor_values.timestamp
-        datapoint['pressure']     = self.__rescale_save(raw_value = sensor_values.PRESSURE,  value = 'pressure', target=pytb.UInt8Col(), scalingconstant=5)
+        datapoint['pressure'] = sensor_values.PRESSURE
         datapoint['cycle_number'] = sensor_values.breath_count
-        datapoint['flow_in']      = self.__rescale_save(raw_value = control_values.flow_in,  value = 'flow_in',  target=pytb.UInt8Col(), scalingconstant=100)
-        datapoint['flow_out']     = self.__rescale_save(raw_value = control_values.flow_out, value = 'flow_out', target=pytb.UInt8Col(), scalingconstant=100)
+        datapoint['flow_in'] = control_values.flow_in
+        datapoint['flow_out'] = control_values.flow_out
         datapoint.append()
     
     def store_control_command(self, control_setting: ControlSetting):
@@ -158,6 +157,7 @@ class DataLogger:
         To be executed every other second, e.g. at the end of breath cycle.
         """
         self.data_table.flush()
+        self.control_table.flush()
                     
     def check_files(self):
         """
@@ -168,7 +168,7 @@ class DataLogger:
         for filenames in os.listdir(logpath):
             fp = os.path.join(logpath, filenames)
             # skip if it is symbolic link
-            if not os.path.islink(fp):
+            if not os.path.islink(fp) and fp.endswith('.h5'):
                 total_size += os.path.getsize(fp)
 
         #Check file system

@@ -5,18 +5,29 @@ language: python
 # python versions to use during the tests
 python:
   - "3.7"
-before_install:
+
+addons:
+  apt:
+    packages:
+      - x11-utils
+      - libxkbcommon-x11-0
+      - xvfb
+      - herbstluftwm # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
+      - qt5-default
+      - qttools5-dev-tools
+
+services:
+  - xvfb
+  - herbstluftwm
+
+env:
+  - DISPLAY=":99.0" # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
+
+install:
   - pip install -U pip
   - pip install -U pytest
   - pip install -U pytest-cov
   - pip install -U coveralls
-  - sudo apt-get install -y xvfb herbstluftwm # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
-
-install:
-  - "export DISPLAY=:99.0" # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
-  - sleep 3
-  - sudo apt-get install -y qt5-default qttools5-dev-tools #install necessary Qt files
   - pip install -U numpy
   - pip install -U PySide2
   - pip install -U pyqtgraph>=0.11.0rc0
@@ -24,8 +35,6 @@ install:
 
 # command to run tests
 before_script:
-  - "herbstluftwm &"
-  - sleep 1
   - mkdir -p /home/travis/vent/logs # make directories for logs
 script:
   - pytest --cov=vent --cov-report term-missing tests

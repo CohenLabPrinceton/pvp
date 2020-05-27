@@ -42,14 +42,22 @@ class ControlModuleBase:
 
     """
 
-    def __init__(self):
+    def __init__(self, save_logs: bool = True, flush_every: int = 10):
+        """
+
+        Args:
+            save_logs (bool): whether sensor data and controls should be saved with the :class:`.DataLogger`
+            flush_every (int): flush and rotate logs every n breath cycles
+        """
 
         #####################  Algorithm/Program parameters  ##################
         # Hyper-Parameters
+        # TODO: These should probably all (or whichever make sense) should be args to __init__ -jls
         self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec
         self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      # After every 10 main control loop iterations, update COPYs.
         self._RINGBUFFER_SIZE                    = 100     # Maximum number of breath cycles kept in memory
-        self._save_logs                          = True   # Keep logs in a file
+        self._save_logs                          = save_logs   # Keep logs in a file
+        self._FLUSH_EVERY                        = flush_every
 
         #########################  Control management  #########################
 
@@ -152,8 +160,15 @@ class ControlModuleBase:
 
         ############################# Logging ################################
         # Create an instance of the DataLogger class
+        self.dl = None
         if self._save_logs:
-            self.dl = DataLogger()
+            try:
+                self.dl = DataLogger()
+            except OSError as e:
+                # raised if not enough space
+                # TODO: Log this
+                print('couldnt start data logger, not saving logs')
+                self._save_logs = False
 
     def __del__(self):
         if self._save_logs:
@@ -563,7 +578,7 @@ class ControlModuleBase:
             self.__update_alarms()            # Run alarm detection over last cycle's waveform
             self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
 
-            if self._save_logs:               
+            if self._save_logs and self._DATA_BREATH_COUNT % self._FLUSH_EVERY == 0:
                 self.dl.flush_logfile()        # If we kept records, flush the data from the previous breath cycle
                 self.dl.rotation_newfile()     # And Check whether we run out of space for the logger
 
@@ -594,7 +609,12 @@ class ControlModuleBase:
         })
         
         #And the control value instance
-        control_values = ControlValues(control_signal_in = self.__control_signal_in, control_signal_out = self.__control_signal_out, flow_in = self._DATA_Qin, flow_out = self._DATA_Qout)
+        control_values = ControlValues(
+            control_signal_in = self.__control_signal_in,
+            control_signal_out = self.__control_signal_out,
+            flow_in = self._DATA_Qin,
+            flow_out = self._DATA_Qout
+        )
 
         #And save both
         self.dl.store_waveform_data(sensor_values, control_values)
@@ -854,10 +874,17 @@ class Balloon_Simulator:
 
 class ControlModuleSimulator(ControlModuleBase):
     # Implement ControlModuleBase functions
-    def __init__(self):
+    def __init__(self, simulator_dt = None):
+        """
+        Args:
+            simulator_dt (None, float): if None, simulate dt at same rate controller updates.
+                if ``float`` , fix dt updates with this value but still update at _LOOP_UPDATE_TIME
+        """
         ControlModuleBase.__init__(self)
         self.Balloon = Balloon_Simulator(leak=False)          # This is the simulation
         self._sensor_to_COPY()
+
+        self.simulator_dt = simulator_dt
 
     def __SimulatedPropValve(self, x, dt):
         '''
@@ -914,12 +941,16 @@ class ControlModuleSimulator(ControlModuleBase):
             time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
-            dt = now - self._last_update                            # Time sincle last cycle of main-loop
-            if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                         # TODO: RAISE HARDWARE ALARM, no update should take that long
-                print("Restarted cycle.")
-                self._PID_reset()
-                self.Balloon._reset()
-                dt = self._LOOP_UPDATE_TIME
+            if self.simulator_dt:
+                dt = self.simulator_dt
+            else:
+                dt = now - self._last_update                            # Time sincle last cycle of main-loop
+                if dt > self.__SET_BPM / 4:                                                         # TODO: RAISE HARDWARE ALARM, no update should take that long
+                    # TODO: Log this
+                    print("Restarted cycle.")
+                    self._PID_reset()
+                    self.Balloon._reset()
+                    dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
             self._DATA_PRESSURE = self.Balloon.get_pressure()       # Get a pressure measurement from balloon and tell controller             --- SENSOR 1

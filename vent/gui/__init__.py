@@ -21,8 +21,6 @@ def limit_gui(limit=None):
         globals()['LIMIT_GUI_INSTANCE'] = limit
 
 
-
-
 PLOTS = odict({
     ValueName.PRESSURE: SENSOR[ValueName.PRESSURE].to_dict(),
     ValueName.TEMP: SENSOR[ValueName.TEMP].to_dict(),

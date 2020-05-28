@@ -1,7 +1,7 @@
 numpy~=1.18.4
 pigpio~=1.46
 pyqtgraph>=0.11.0rc0
-PySide2~=5.11.4a1
+PySide2==5.11.*
 pytest~=5.4.1
 pytest-qt
 pytest-timeout

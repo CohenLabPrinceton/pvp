@@ -1,30 +1,8 @@
-# import sys
-# import platform
-# if 'pytest' in sys.modules or platform.machine() == 'x86_64':
-#     class pigpio_mock(object):
-#         class pi_mock(object):
-#             def __init__(self, *args, **kwargs):
-#                 pass
 
-#         class error_text_mock(object):
-#             def __init__(self, *args, **kwargs):
-#                 pass
-
-#         def __init__(self, *args, **kwargs):
-#             self.pi = self.pi_mock(*args, **kwargs)
-#             self.error_text = self.error_text_mock(*args, **kwargs)
-
-
-#     pigpio = pigpio_mock()
-#     error_text = pigpio.error_text
-
-# else:
-#     from pigpio import error_text
+import pigpio
 
 from vent.io.devices import IODeviceBase
 from vent.common.fashion import pigpio_command
-
-import pigpio
 
 
 class Pin(IODeviceBase):

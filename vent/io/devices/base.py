@@ -4,13 +4,7 @@ from collections import OrderedDict
 from vent.common.fashion import pigpio_command
 
 import time
-import sys
-import platform
-
 import pigpio
-
-
-
 
 class PigpioConnection(pigpio.pi):
     """ Subclass that extends pigpio.pi to throw an exception if there are issues connecting to the pigpio daemon."""

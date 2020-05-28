@@ -2,12 +2,9 @@
 import argparse
 import sys
 import os
+from vent import prefs
 from vent.gui.main import launch_gui
 from vent.coordinator.coordinator import get_coordinator
-
-VENT_DIR = None
-LOG_DIR = None
-DATA_DIR = None
 
 
 def parse_cmd_args():
@@ -32,20 +29,20 @@ def make_vent_dirs():
         ~/vent/data - for storage of waveform data
     """
 
-    vent_dirs = []
-    # root vent directory
-    vent_dirs.append(os.path.join(os.path.expanduser('~'), 'vent'))
-    globals()['VENT_DIR'] = vent_dirs[-1]
-    # log directory
-    vent_dirs.append(os.path.join(vent_dirs[0], 'logs'))
-    globals()['LOG_DIR'] = vent_dirs[-1]
-    # data directory
-    vent_dirs.append(os.path.join(vent_dirs[0], 'data'))
-    globals()['DATA_DIR'] = vent_dirs[-1]
+    # root, log, and data vent directories
+    vent_dir = os.path.join(os.path.expanduser('~'), 'vent')
+    log_dir = os.path.join(vent_dir, 'logs')
+    data_dir = os.path.join(vent_dir, 'data')
 
-    for vent_dir in vent_dirs:
-        if not os.path.exists(vent_dir):
-            os.mkdir(vent_dir)
+    # create directories if they don't exist already
+    for make_dir in (vent_dir, log_dir, data_dir):
+        if not os.path.exists(make_dir):
+            os.mkdir(make_dir)
+
+    # store them as config values
+    prefs.set_pref('VENT_DIR', vent_dir)
+    prefs.set_pref('LOG_DIR', log_dir)
+    prefs.set_pref('DATA_DIR', data_dir)
 
 
 

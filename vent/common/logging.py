@@ -9,6 +9,8 @@ from logging import handlers
 # some global stack param
 MAX_STACK_DEPTH = 20
 
+from vent import prefs
+
 
 def init_logger(module_name: str,
                 log_level: int = logging.DEBUG,
@@ -44,9 +46,7 @@ def init_logger(module_name: str,
     # handler to log to disk
     # max = 8 file x 16 MB = 128 MB
     if file_handler:
-        log_filename = os.path.join(os.path.expanduser('~'),
-                                    'vent',
-                                    'logs',
+        log_filename = os.path.join(prefs.get_pref('LOG_DIR'),
                                     module_name + '.log')
         fh = logging.handlers.RotatingFileHandler(
             log_filename,

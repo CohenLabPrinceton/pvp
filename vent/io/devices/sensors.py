@@ -393,3 +393,119 @@ class SimSensor(Sensor):
     def _raw_read(self) -> float:
         """ Initializes randomly, otherwise does a random walk-ish thing."""
         return self.low + random.random() * self.high
+
+
+class AsyncAnalogSensor(Sensor):
+    _DEFAULT_offset_voltage = 0
+    _DEFAULT_output_span = 5
+    _DEFAULT_CALIBRATION = {
+        'offset_voltage': _DEFAULT_offset_voltage,
+        'output_span': _DEFAULT_output_span,
+        'conversion_factor': 1
+    }
+
+    def __init__(self, adc, **kwargs):
+        """ Links analog sensor on the ADC with configuration options specified. If no options are specified, it assumes
+        the settings currently on the ADC.
+
+        Args:
+            adc (vent.io.devices.AsyncADS1115): The adc object to which the AnalogSensor is attached
+            **kwargs: `field=value` - see vent.io.devices.ADS1115 for additional documentation. Strongly suggested to
+                specify `MUX=adc_pin` here unless you know what you're doing.
+        """
+        super().__init__()
+        self.adc = adc
+        if 'MUX' not in (kwargs.keys()):
+            raise TypeError(
+                'User must specify MUX for AnalogSensor creation'
+            )
+        kwargs = {key: kwargs[key] for key in kwargs.keys() - ('pig',)}
+        self._check_and_set_attr(**kwargs)
+
+    async def aopen(self):
+        if not self.adc.isopen:
+            await self.adc.aopen()
+
+    async def update(self) -> float:
+        """ Make a sensor reading, verify that it makes sense and store the result internally. Returns True if reading
+        was verified and False if something went wrong.
+        """
+        value = await self._read()
+        self._data['timestamp'].append(time.time())
+        self._data['value'].append(value)
+        return self._verify(value)
+
+    async def get(self, average=False) -> float:
+        """ Return the most recent sensor reading, or an average of readings since last get(). Clears internal memory so as not to have stale data."""
+        # FIXME - timeout decorators for everyone
+        if len(self._data['value']) == 0:
+            await self.update()
+        if average:
+            value = np.mean(self._data['value'])
+        else:
+            value = self._data['value'].pop()
+        self._clear()
+        return value
+
+    async def calibrate(self, **kwargs):
+        if kwargs:
+            for fld, val in kwargs.items():
+                if fld in self._DEFAULT_CALIBRATION.keys():
+                    setattr(self, fld, val)
+        else:
+            raise NotImplementedError('Async calibration routine is not yet implemented')
+
+    async def _read(self):
+        return self._convert(await self._raw_read())
+
+    def _convert(self, raw) -> float:
+        return raw
+
+    def _verify(self, value):
+        return True
+
+    async def _raw_read(self):
+        fields = self.adc.USER_CONFIGURABLE_FIELDS
+        kwargs = dict(zip(
+            fields,
+            (getattr(self, field) for field in fields)
+        ))
+        return await self.adc.read_conversion(**kwargs)
+
+    def _fill_attr(self):
+        """ Examines self to see if there are any fields identified as user configurable or calibration that have not
+        been write (i.e. were not passed to __init__ as **kwargs). If a field is missing, grabs the default value either
+        from the ADC or from _DEFAULT_CALIBRATION and sets it as an attribute.
+        """
+        for cfld in self.adc.USER_CONFIGURABLE_FIELDS:
+            if not hasattr(self, cfld):
+                setattr(
+                    self,
+                    cfld,
+                    getattr(self.adc.config, cfld).unpack(self.adc.cfg)
+                )
+        for dcal, value in self._DEFAULT_CALIBRATION.items():
+            if not hasattr(self, dcal):
+                setattr(self, dcal, value)
+
+    def _check_and_set_attr(self, **kwargs):
+        """ Checks to see if arguments passed to __init__ are recognized as user configurable or calibration fields. If
+        so, write the value as an attribute like: self.KEY = VALUE. Keeps track of how many attributes are write in this
+        way; if at the end there unknown arguments leftover, raises a TypeError; otherwise, calls _fill_attr() to fill
+        in fields that were not passed as arguments.
+
+        Args:
+            **kwargs: `field=value` - see vent.io.devices.ADS1115 for additional documentation
+        """
+        allowed = (
+            *self.adc.USER_CONFIGURABLE_FIELDS,
+            *self._DEFAULT_CALIBRATION.keys(),
+        )
+        result = 0
+        for fld, val in kwargs.items():
+            if fld in allowed:
+                setattr(self, fld, val)
+                result += 1
+        if result != len(kwargs):
+            raise TypeError('AnalogSensor was passed unknown field(s)', kwargs.items(), allowed)
+        self._fill_attr()

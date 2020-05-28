@@ -10,8 +10,9 @@ from itertools import count
 import vent.io as io
 
 from vent.common.message import SensorValues, ControlValues, ControlSetting
-from vent.alarm import AlarmSeverity, Alarm
+from vent.common.logging import init_logger
 from vent.common.values import CONTROL, ValueName
+from vent.alarm import AlarmSeverity, Alarm
 from vent.logger.logger import DataLogger
 
 
@@ -49,6 +50,9 @@ class ControlModuleBase:
             save_logs (bool): whether sensor data and controls should be saved with the :class:`.DataLogger`
             flush_every (int): flush and rotate logs every n breath cycles
         """
+
+        self.logger = init_logger(__name__)
+        self.logger.info('controller init')
 
         #####################  Algorithm/Program parameters  ##################
         # Hyper-Parameters
@@ -595,7 +599,7 @@ class ControlModuleBase:
 
         if self._save_logs:
             self.__save_values()
-    
+
     def check_high_pressure_alert(self):
         """
         The only alarm that has to be raised by the controller is High Airway Pressure.
@@ -628,7 +632,7 @@ class ControlModuleBase:
         'loop_counter'                      : self._loop_counter,
         'breath_count'                      : self._DATA_BREATH_COUNT
         })
-        
+
         #And the control value instance
         control_values = ControlValues(
             control_signal_in = self.__control_signal_in,
@@ -688,13 +692,15 @@ class ControlModuleBase:
             print("Main Loop already running.")
 
     def stop(self):
-        if self._save_logs:               # If we kept records, flush the data
-            self.dl.close_logfile()
 
         if self.__thread is not None and self.__thread.is_alive():
             self._running.clear()
         else:
             print("Main Loop is not running.")
+
+        if self._save_logs:               # If we kept records, flush the data
+            self.dl.close_logfile()
+
 
     def is_running(self):
         # TODO: this should be better thread-safe variable

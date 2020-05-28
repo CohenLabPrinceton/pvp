@@ -10,10 +10,9 @@ from itertools import count
 import vent.io as io
 
 from vent.common.message import SensorValues, ControlValues, ControlSetting
-from vent.common.logging import init_logger
+from vent.common.logging import init_logger, DataLogger
 from vent.common.values import CONTROL, ValueName
 from vent.alarm import AlarmSeverity, Alarm
-from vent.logger.logger import DataLogger
 
 
 class ControlModuleBase:

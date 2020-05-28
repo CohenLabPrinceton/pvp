@@ -35,7 +35,8 @@ setup(
         'pyqtgraph>=0.11.0rc0',
         'pytest-qt',
         'pytest-timeout',
-        'pigpio'
+        'pigpio',
+        'tables'
     ],
     dependency_links=depend_links,
     python_requires='==3.7.*'

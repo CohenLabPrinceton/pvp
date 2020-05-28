@@ -86,6 +86,15 @@ class SensorValues:
             raise KeyError(f'No such value as {key}')
 
 
+class ControlValues:
+    """
+    Class to save control values.
+    """
+    def __init__(self, control_signal_in, control_signal_out, flow_in, flow_out):
+        self.control_signal_in = control_signal_in
+        self.control_signal_out = control_signal_out
+        self.flow_in = flow_in
+        self.flow_out = flow_out
 
 
 class ControlSetting:

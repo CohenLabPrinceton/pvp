@@ -9,11 +9,10 @@ from itertools import count
 
 import vent.io as io
 
-from vent.common.message import SensorValues, ControlSetting
-from vent.common.logging import init_logger
+from vent.common.message import SensorValues, ControlValues, ControlSetting
+from vent.common.logging import init_logger, DataLogger
 from vent.common.values import CONTROL, ValueName
 from vent.alarm import AlarmSeverity, Alarm
-
 
 
 class ControlModuleBase:
@@ -43,14 +42,25 @@ class ControlModuleBase:
 
     """
 
-    def __init__(self):
+    def __init__(self, save_logs: bool = True, flush_every: int = 10):
+        """
+
+        Args:
+            save_logs (bool): whether sensor data and controls should be saved with the :class:`.DataLogger`
+            flush_every (int): flush and rotate logs every n breath cycles
+        """
+
         self.logger = init_logger(__name__)
         self.logger.info('controller init')
+
         #####################  Algorithm/Program parameters  ##################
         # Hyper-Parameters
+        # TODO: These should probably all (or whichever make sense) should be args to __init__ -jls
         self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec
         self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      # After every 10 main control loop iterations, update COPYs.
         self._RINGBUFFER_SIZE                    = 100     # Maximum number of breath cycles kept in memory
+        self._save_logs                          = save_logs   # Keep logs in a file
+        self._FLUSH_EVERY                        = flush_every
 
         #########################  Control management  #########################
 
@@ -76,6 +86,9 @@ class ControlModuleBase:
         self.__SET_E_PHASE        = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PLATEAU      = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP         = self.__SET_E_PHASE - self.__SET_PEEP_TIME
+
+        # Alarm management; controller can only react to High airway pressure alarms
+        self.HAPA = None
 
         #########################  Data management  #########################
 
@@ -151,6 +164,21 @@ class ControlModuleBase:
         # self.__thread.start()
         self.__thread = None
 
+        ############################# Logging ################################
+        # Create an instance of the DataLogger class
+        self.dl = None
+        if self._save_logs:
+            try:
+                self.dl = DataLogger()
+            except OSError as e:
+                # raised if not enough space
+                # TODO: Log this
+                print('couldnt start data logger, not saving logs')
+                self._save_logs = False
+
+    def __del__(self):
+        if self._save_logs:
+            self.dl.close_logfile()
 
     def _initialize_set_to_COPY(self):
         self._lock.acquire()
@@ -380,6 +408,9 @@ class ControlModuleBase:
         else:
             raise KeyError("You cannot set the variabe: " + str(control_setting.name))
 
+        if self._save_logs:
+            self.dl.store_control_command(control_setting)
+
         self._lock.release()
 
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
@@ -429,13 +460,12 @@ class ControlModuleBase:
 
         return return_value
 
-
     def __get_PID_error(self, ytarget, yis, dt):
         error_new = ytarget - yis                   # New value of the error
 
         RC = 0.5  # Time constant in seconds
         s = dt / (dt + RC)
-        self._DATA_I = self._DATA_I + s*(error_new - self._DATA_I)     # Integral term on some timescale RC
+        self._DATA_I = self._DATA_I + s*(error_new - self._DATA_I)     # Integral term on some timescale RC  -- TODO: If used, for real system, add integral windup
         self._DATA_D = error_new - self._DATA_P
         self._DATA_P = error_new
 
@@ -544,6 +574,11 @@ class ControlModuleBase:
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
         
+        if self.check_high_pressure_alert():   # HAPA overwrites all other signals
+            self.__SET_PIP = 30                # Default: PIP to 30
+            self.__control_signal_out = np.inf
+            self.__control_signal_in  = 0
+
         if next_cycle:                        # if a new breath cycle has started
             # increment breath_cycle tracker
             self._DATA_BREATH_COUNT = next(self._breath_counter)
@@ -553,8 +588,60 @@ class ControlModuleBase:
             self.__analyze_last_waveform()    # Analyze last waveform
             self.__update_alarms()            # Run alarm detection over last cycle's waveform
             self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
+
+            if self._save_logs and self._DATA_BREATH_COUNT % self._FLUSH_EVERY == 0:
+                self.dl.flush_logfile()        # If we kept records, flush the data from the previous breath cycle
+                self.dl.rotation_newfile()     # And Check whether we run out of space for the logger
+
         else:
             self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
+
+        if self._save_logs:
+            self.__save_values()
+
+    def check_high_pressure_alert(self):
+        """
+        The only alarm that has to be raised by the controller is High Airway Pressure.
+        """
+        if self._DATA_PRESSURE > 80:                             # TODO: WHAT IS THE LIMIT?
+            if self.HAPA is None:
+                self.HAPA = time.time()
+            if time.time() - self.HAPA > 0.1:  # 100 ms active to avoid being triggered by coughs
+                return True
+        else:
+            self.HAPA = None
+        return False
+
+    def __save_values(self):
+        """
+            Small helper function to store key parameters in the main PID control loop
+        """
+        # Make the sensor value instance
+        sensor_values =  SensorValues(vals={
+        ValueName.PIP.name                  : self._DATA_PIP,
+        ValueName.PEEP.name                 : self._DATA_PEEP,
+        ValueName.FIO2.name                 : 0,
+        ValueName.TEMP.name                 : 0,
+        ValueName.HUMIDITY.name             : 0,
+        ValueName.PRESSURE.name             : self._DATA_PRESSURE,
+        ValueName.VTE.name                  : self._DATA_VTE,
+        ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+        ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+        'timestamp'                         : time.time(),
+        'loop_counter'                      : self._loop_counter,
+        'breath_count'                      : self._DATA_BREATH_COUNT
+        })
+
+        #And the control value instance
+        control_values = ControlValues(
+            control_signal_in = self.__control_signal_in,
+            control_signal_out = self.__control_signal_out,
+            flow_in = self._DATA_Qin,
+            flow_out = self._DATA_Qout
+        )
+
+        #And save both
+        self.dl.store_waveform_data(sensor_values, control_values)
 
     def get_past_waveforms(self):
         # Returns a list of past waveforms.
@@ -604,10 +691,15 @@ class ControlModuleBase:
             print("Main Loop already running.")
 
     def stop(self):
+
         if self.__thread is not None and self.__thread.is_alive():
             self._running.clear()
         else:
             print("Main Loop is not running.")
+
+        if self._save_logs:               # If we kept records, flush the data
+            self.dl.close_logfile()
+
 
     def is_running(self):
         # TODO: this should be better thread-safe variable
@@ -628,7 +720,7 @@ class ControlModuleDevice(ControlModuleBase):
     # Implement ControlModuleBase functions
     def __init__(self):
         ControlModuleBase.__init__(self)
-        self.HAL = io.Hal()
+        self.HAL = io.Hal(config_file='vent/io/config/dinky-devices.ini')
         self._sensor_to_COPY()
         
     def _sensor_to_COPY(self):
@@ -813,10 +905,17 @@ class Balloon_Simulator:
 
 class ControlModuleSimulator(ControlModuleBase):
     # Implement ControlModuleBase functions
-    def __init__(self):
+    def __init__(self, simulator_dt = None):
+        """
+        Args:
+            simulator_dt (None, float): if None, simulate dt at same rate controller updates.
+                if ``float`` , fix dt updates with this value but still update at _LOOP_UPDATE_TIME
+        """
         ControlModuleBase.__init__(self)
         self.Balloon = Balloon_Simulator(leak=False)          # This is the simulation
         self._sensor_to_COPY()
+
+        self.simulator_dt = simulator_dt
 
     def __SimulatedPropValve(self, x, dt):
         '''
@@ -873,12 +972,16 @@ class ControlModuleSimulator(ControlModuleBase):
             time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
-            dt = now - self._last_update                            # Time sincle last cycle of main-loop
-            if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                         # TODO: RAISE HARDWARE ALARM, no update should take that long
-                print("Restarted cycle.")
-                self._PID_reset()
-                self.Balloon._reset()
-                dt = self._LOOP_UPDATE_TIME
+            if self.simulator_dt:
+                dt = self.simulator_dt
+            else:
+                dt = now - self._last_update                            # Time sincle last cycle of main-loop
+                if dt > 0.5:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
+                    # TODO: Log this
+                    print("Restarted cycle.")
+                    self._PID_reset()
+                    self.Balloon._reset()
+                    dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
             self._DATA_PRESSURE = self.Balloon.get_pressure()       # Get a pressure measurement from balloon and tell controller             --- SENSOR 1

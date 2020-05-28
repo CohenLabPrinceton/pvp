@@ -139,15 +139,14 @@ class DataLogger:
         date_string = today.strftime("%Y-%m-%d-%H-%M")
 
         # Make the log folder
-        if not os.path.exists('vent/logfiles'):
-            os.makedirs('vent/logfiles')
-        self.file = "vent/logfiles/" + date_string + "_controller_log.0.h5"
+        self.log_dir = prefs.get_pref('DATA_DIR')
+        self.file = os.path.join(self.log_dir, date_string + "_controller_log.0.h5")
 
         # Make sure that the file doesn't exist yet, if it does, append another number
         # In rarely happens, but for Travis-tests, this is needed.
         c=0
         while os.path.exists(self.file):
-            self.file = "vent/logfiles/" + date_string + '-' + str(c) + "_controller_log.0.h5"
+            self.file = os.path.join(self.log_dir, date_string + '-' + str(c) + "_controller_log.0.h5")
             c = c + 1
 
         self.storage_used = self.check_files()  # Make sure there is space. Sum of all logfiles in bytes
@@ -233,23 +232,22 @@ class DataLogger:
         make sure that the file's are not getting too large.
         """
         total_size = 0
-        logpath = 'vent/logfiles'
-        for filenames in os.listdir(logpath):
-            fp = os.path.join(logpath, filenames)
+        for filenames in os.listdir(self.log_dir):
+            fp = os.path.join(self.log_dir, filenames)
             # skip if it is symbolic link
-            if not os.path.islink(fp) and fp.endswith('.h5'):
+            if (not os.path.islink(fp)) and fp.endswith('.h5'):
                 total_size += os.path.getsize(fp)
 
         #Check file system
         total_space_hd, used, free = shutil.disk_usage('/')
         max_size = np.min([total_space_hd*0.2, 1e10])      # Limit to whatever is smaller, 20% of the file system or 10 GB
 
-        if len(os.listdir(logpath)) > 1000:
-            raise OSError('Too many logfiles in /vent/logfiles/ (>1000 files). There are ' + str(len(os.listdir(logpath))) + ' files. Delete some.')
+        if len(os.listdir(self.log_dir)) > 1000:
+            raise OSError(f'Too many logfiles in {self.log_dir} (>1000 files). There are ' + str(len(os.listdir(self.log_dir))) + ' files. Delete some.')
             # TODO: log a warning
             # TODO: Turn off save data flag
         elif total_size>max_size:     #
-            raise OSError('Logfiles in /vent/logfiles/ are too large. Max allowed is ' + '{0:.2f}'.format(max_size*1e-9) + 'GB, used is ' + '{0:.2f}'.format(total_size*1e-9) +  'GB. Free disk space.')
+            raise OSError(f'Logfiles in {self.log_dir} are too large. Max allowed is ' + '{0:.2f}'.format(max_size*1e-9) + 'GB, used is ' + '{0:.2f}'.format(total_size*1e-9) +  'GB. Free disk space.')
         else:
             return total_size  # size in bytes
 
@@ -265,8 +263,6 @@ class DataLogger:
                 new_filename = parts[0] + '.' + str(file_idx + 1) + '.' + parts[1]
                 if os.path.exists(old_filename):                        # On only if logfile already exists
                     os.rename(old_filename, new_filename)
-            print("Making new .0.log")
-            print(self.file)
 
             self.h5file.close()                                         # Generate new file with right file structure
             self.h5file = pytb.open_file(self.file, mode = "w")

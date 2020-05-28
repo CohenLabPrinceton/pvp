@@ -12,7 +12,7 @@ Directories to ensure are created and added to prefs.
 """
 _DIRECTORIES['VENT_DIR'] = os.path.join(os.path.expanduser('~'), 'vent')
 _DIRECTORIES['LOG_DIR'] = os.path.join(_DIRECTORIES['VENT_DIR'], 'logs')
-_DIRECTORIES['DATA_DIR'] = os.path.join(_DIRECTORIES['DATA_DIR'], 'logs')
+_DIRECTORIES['DATA_DIR'] = os.path.join(_DIRECTORIES['VENT_DIR'], 'logs')
 
 def set_pref(key: str, val):
     globals()['_CONFIG'][key] = val

@@ -1,7 +1,8 @@
-from vent.io.devices import IODeviceBase
-from vent.common.fashion import pigpio_command
 
 import pigpio
+
+from vent.io.devices import IODeviceBase
+from vent.common.fashion import pigpio_command
 
 
 class Pin(IODeviceBase):

@@ -1,9 +1,11 @@
+import logging
 import pickle
 import socket
 import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
 
 import vent.controller.control_module
+from vent.common.logging import init_logger
 
 default_addr = 'localhost'
 default_port = 9533
@@ -14,6 +16,9 @@ remote_controller = None
 
 
 def get_sensors():
+    # left as example of how to get loggers within these callbacks
+    #logger = logging.getLogger(__name__)
+    #logger.info('remote runnnnnnn')
     res = remote_controller.get_sensors()
     return pickle.dumps(res)
 
@@ -40,6 +45,8 @@ def get_control(control_setting_name):
 
 
 def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port):
+    logger = init_logger(__name__)
+    logger.info('controller process init')
     global remote_controller
     if addr != default_addr:
         raise NotImplementedError

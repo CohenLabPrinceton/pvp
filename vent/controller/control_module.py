@@ -10,8 +10,10 @@ from itertools import count
 import vent.io as io
 
 from vent.common.message import SensorValues, ControlSetting
-from vent.alarm import AlarmSeverity, Alarm
+from vent.common.logging import init_logger
 from vent.common.values import CONTROL, ValueName
+from vent.alarm import AlarmSeverity, Alarm
+
 
 
 class ControlModuleBase:
@@ -42,7 +44,8 @@ class ControlModuleBase:
     """
 
     def __init__(self):
-
+        self.logger = init_logger(__name__)
+        self.logger.info('controller init')
         #####################  Algorithm/Program parameters  ##################
         # Hyper-Parameters
         self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec

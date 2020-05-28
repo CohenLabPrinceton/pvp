@@ -3,9 +3,8 @@
 from collections import OrderedDict
 from vent.common.fashion import pigpio_command
 
-import pigpio
 import time
-
+import pigpio
 
 class PigpioConnection(pigpio.pi):
     """ Subclass that extends pigpio.pi to throw an exception if there are issues connecting to the pigpio daemon."""
@@ -509,7 +508,7 @@ class ADS1015(ADS1115):
     """
 
     _DEFAULT_ADDRESS = 0x48
-    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 3300} 
+    _DEFAULT_VALUES = {'MUX': 0, 'PGA': 4.096, 'MODE': 'SINGLE', 'DR': 3300}
 
     """ Address Pointer Register (write-only) """
     _POINTER_FIELDS = ('P',)

@@ -1,17 +1,121 @@
 """ Module for interacting with physical and/or simulated devices installed on the ventilator.
 
 """
-
+from abc import abstractmethod
 from importlib import import_module
 from ast import literal_eval
+import socket
 from .devices.sensors import Sensor
 from .devices.base import PigpioConnection
+from ._asynchal import *
 
 import vent.io.devices.valves as valves
 import configparser
+import multiprocessing
+import time
 
 
-class Hal:
+class HalBase:
+    def __init__(self, config_file):
+        self._setpoint_in = 0.0  # setpoint for inspiratory side
+        self._setpoint_ex = 0.0  # setpoint for expiratory side
+        self._adc = object
+        self._inlet_valve = object
+        self._control_valve = object
+        self._expiratory_valve = object
+        self._pressure_sensor = object
+        self._aux_pressure_sensor = object
+        self._flow_sensor_in = object
+        self._flow_sensor_ex = object
+        self.config = configparser.RawConfigParser()
+        self.config.optionxform = lambda option: option
+        self.config.read(config_file)
+        self._config = {}
+        self.__parse_config()
+
+    @property
+    @abstractmethod
+    def pressure(self) -> float:
+        """ Returns the pressure from the primary pressure sensor."""
+
+    @property
+    @abstractmethod
+    def aux_pressure(self) -> float:
+        """ Returns the pressure from the auxiliary pressure sensor, if so equipped."""
+
+    @property
+    @abstractmethod
+    def flow_in(self) -> float:
+        """ The measured flow rate inspiratory side."""
+
+    @property
+    @abstractmethod
+    def flow_ex(self) -> float:
+        """ The measured flow rate expiratory side."""
+
+    @property
+    @abstractmethod
+    def setpoint_in(self) -> float:
+        """ The currently requested flow for the inspiratory proportional control valve as a proportion of maximum."""
+
+    @property
+    @abstractmethod
+    def setpoint_ex(self) -> float:
+        """ The currently requested flow on the expiratory side as a proportion of the maximum."""
+
+    @abstractmethod
+    def __init_attr(self):
+        """ Initializes attributes from self._config"""
+
+    def __parse_config(self):
+        for section in self.config.sections():
+            sdict = dict(self.config[section])
+            class_ = getattr(import_module('.' + sdict['module'], 'vent.io'), sdict['type'])
+            opts = {key: sdict[key] for key in sdict.keys() - ('module', 'type',)}
+            for key in opts.keys():
+                if key == 'adc':
+                    opts[key] = self._adc
+                else:
+                    opts[key] = literal_eval(opts[key])
+            print("  [ {device_name:^19} ]  opts: {device_options}".format(
+                device_name=section,
+                device_options=opts
+            ))  # debug
+            self._config['_' + section] = {'class_': class_, 'opts': opts}
+
+class AsyncHal(HalBase):
+    def __init__(self, config_file='vent/io/config/async-devices.ini', port=12377):
+        super().__init__(config_file=config_file)
+        self.socket = None
+        self.port = port
+        self.connected = False
+        self.async_process = self.async_process = multiprocessing.Process(
+            target=enter_async_loop,
+            kwargs={'port': port},
+            daemon=True
+        )
+
+    def __enter__(self):
+        self.async_process.start()
+        while not self.connected:
+            try:
+                self.socket = socket.create_connection(("127.0.0.1", self.port))
+                self.connected = True
+            except ConnectionRefusedError:
+                time.sleep(0.005)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        try:
+            self.socket()
+        except:
+            self.async_process.terminate()
+        finally:
+            self.async_process.join()
+            self.async_process.close()
+
+
+class Hal(HalBase):
     """ Hardware Abstraction Layer for ventilator hardware.
     Defines a common API for interacting with the sensors & actuators on the ventilator. The types of devices installed
     on the ventilator (real or simulated) are specified in a configuration file.
@@ -56,34 +160,9 @@ class Hal:
             config_file (str): Path to the configuration file containing the definitions of specific components on the
                 ventilator machine. (e.g., config_file = "vent/io/config/devices.ini")
         """
-        self._setpoint_in = 0.0  # setpoint for inspiratory side
-        self._setpoint_ex = 0.0  # setpoint for expiratory side
-        self._adc = object
-        self._inlet_valve = object
-        self._control_valve = object
-        self._expiratory_valve = object
-        self._pressure_sensor = object
-        self._aux_pressure_sensor = object
-        self._flow_sensor_in = object
-        self._flow_sensor_ex = object
         self._pig = PigpioConnection(show_errors=False)
-        self.config = configparser.RawConfigParser()
-        self.config.optionxform = lambda option: option
-        self.config.read(config_file)
-        for section in self.config.sections():
-            sdict = dict(self.config[section])
-            class_ = getattr(import_module('.' + sdict['module'], 'vent.io'), sdict['type'])
-            opts = {key: sdict[key] for key in sdict.keys() - ('module', 'type',)}
-            for key in opts.keys():
-                if key == 'adc':
-                    opts[key] = self._adc
-                else:
-                    opts[key] = literal_eval(opts[key])
-            print("  [ {device_name:^19} ]  opts: {device_options}".format(
-                device_name=section,
-                device_options=opts
-            ))  # debug
-            setattr(self, '_' + section, class_(pig=self._pig, **opts))
+        super().__init__(config_file=config_file)
+        self.__init_attr()
 
     # TODO: Need exception handling whenever inlet valve is opened
 
@@ -166,3 +245,8 @@ class Hal:
             else:
                 self._expiratory_valve.setpoint = value
         self._setpoint_ex = value
+
+    def __init_attr(self):
+        """ Pigpio-specific attribute initialization. """
+        for section, sdict in self._config.items():
+            setattr(self, section, sdict['class_'](pig=self._pig, **sdict['opts']))

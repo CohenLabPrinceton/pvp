@@ -34,6 +34,9 @@ def patch_pigpio_base(monkeypatch):
         def setsockopt(self, *args, **kwargs):
             pass
 
+        def settimeout(self, *args, **kwargs):
+            pass
+
     class MockSockLock:
         """ Bare-bones mock of pigpio._socklock"""
 

@@ -1,1 +1,1 @@
-from .hal import Hal
+from .hal import Hal, AsyncHal

@@ -16,29 +16,30 @@ from vent.alarm import AlarmSeverity, Alarm
 
 
 class ControlModuleBase:
-    """This is an abstract class for controlling simulation and hardware.
+    """Abstract controller class for simulation/hardware.
 
-    1. All internal variables fall in three classes, denoted by the beginning of the variable:
+    1. General notes:
+    All internal variables fall in three classes, denoted by the beginning of the variable:
         - "COPY_varname": These are copies (see 1.) that are regularly sync'ed with internal variables.
         - "__varname":    These are variables only used in the ControlModuleBase-Class
         - "_varname":     These are variables used in derived classes.
 
-    2. Internal variables should only to be accessed though the set_ and get_ functions.
+    2. Set and get values.
+    Internal variables should only to be accessed though the set_ and get_ functions.
         These functions act on COPIES of internal variables ("__" and "_"), that are sync'd every few
         iterations. How often this is done is adjusted by the variable
         self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE. To avoid multiple threads manipulating the same 
         variables at the same time, every manipulation of "COPY_" is surrounded by a thread lock.
 
     Public Methods:
-        get_sensors():                     Returns a copy of the current sensor values.
-        get_alarms():                      Returns a List of all alarms, active and logged
-        get_active_alarms():               Returns a Dictionary of all currently active alarms.
-        get_logged_alarms():               Returns a List of logged alarms, up to maximum lengh of self._RINGBUFFER_SIZE
-        get_control(ControlSetting):       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
-        get_past_waveforms():              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self._RINGBUFFER_SIZE, AND clears this archive.
-        get_target_waveform():             Returns a step-wise linear target waveform, as defined by the current settings.
-        start():                           Starts the main-loop of the controller
-        stop():                            Stops the main-loop of the controller
+        - get_sensors():                     Returns a copy of the current sensor values.
+        - get_alarms():                      Returns a List of all alarms, active and logged
+        - get_control(ControlSetting):       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
+        - get_past_waveforms():              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self. _RINGBUFFER_SIZE, AND clears this archive.
+        - get_target_waveform():             Returns a step-wise linear target waveform, as defined by the current settings.
+        - start():                           Starts the main-loop of the controller
+        - stop():                            Stops the main-loop of the controller
+        - set_control():                     Set the control
 
     """
 
@@ -82,13 +83,20 @@ class ControlModuleBase:
         self.__SET_I_PHASE   = CONTROL[ValueName.INSPIRATION_TIME_SEC].default    # Target duration of inspiratory phase
 
         # Derived internal control variables - fully defined by numbers above
-        self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
+        try:
+            self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
+        except:
+            # TODO: raise alert
+            self.__SET_CYCLE_DURATION = 20
         self.__SET_E_PHASE        = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PLATEAU      = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP         = self.__SET_E_PHASE - self.__SET_PEEP_TIME
 
-        # Alarm management; controller can only react to High airway pressure alarms
+        #########################  Alarm management  #########################
+
+        # Alarm management; controller can only react to High airway pressure alarm, and report Hardware problems
         self.HAPA = None
+        self.TECHA = None
 
         #########################  Data management  #########################
 
@@ -118,37 +126,11 @@ class ControlModuleBase:
         self._DATA_Qin      = 0           # Measurement of the airflow in
         self._DATA_Qout     = 0           # Measurement of the airflow out
         self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
+        self.__DATA_old     = None
         self._last_update   = time.time()
-
-
-        #########################  Alarm management  #########################
-        self.__active_alarms = {}     # Dictionary of active alarms
-        self.__logged_alarms = deque(maxlen = self._RINGBUFFER_SIZE)     # List of all resolved alarms
-
-        # Variable limits to raise alarms, initialized as small deviation of what the controller initializes
-        self.__PIP_min          = CONTROL[ValueName.PIP].safe_range[0]
-        self.__PIP_max          = CONTROL[ValueName.PIP].safe_range[1]
-        self.__PIP_lastset      = time.time()
-        self.__PIP_time_min     = CONTROL[ValueName.PIP_TIME].safe_range[0]
-        self.__PIP_time_max     = CONTROL[ValueName.PIP_TIME].safe_range[1]
-        self.__PIP_time_lastset = time.time()
-        self.__PEEP_min         = CONTROL[ValueName.PEEP].safe_range[0]
-        self.__PEEP_max         = CONTROL[ValueName.PEEP].safe_range[1]
-        self.__PEEP_lastset     = time.time()
-        self.__PEEP_time_min    = CONTROL[ValueName.PEEP_TIME].safe_range[0]
-        self.__PEEP_time_max    = CONTROL[ValueName.PEEP_TIME].safe_range[1]
-        self.__PEEP_time_lastset = time.time()
-        self.__bpm_min          = CONTROL[ValueName.BREATHS_PER_MINUTE].safe_range[0]
-        self.__bpm_max          = CONTROL[ValueName.BREATHS_PER_MINUTE].safe_range[1]
-        self.__bpm_lastset      = time.time()
-        self.__I_phase_min      = CONTROL[ValueName.INSPIRATION_TIME_SEC].safe_range[0]
-        self.__I_phase_max      = CONTROL[ValueName.INSPIRATION_TIME_SEC].safe_range[1]
-        self.__I_phase_lastset  = time.time()
 
         ############### Initialize COPY variables for threads  ##############
         # COPY variables that later updated on a regular basis
-        self.COPY_active_alarms = {}
-        self.COPY_logged_alarms = list(self.__logged_alarms)
         self.COPY_sensor_values = None # empty SensorValues can no longer be instantiated -jls
 
         ###########################  Threading init  #########################
@@ -157,7 +139,6 @@ class ControlModuleBase:
         self._running = threading.Event()
         self._running.clear()
         self._lock = threading.Lock()
-        self._alarm_to_COPY()  #These require the lock
         self._initialize_set_to_COPY()
 
         # self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
@@ -176,6 +157,10 @@ class ControlModuleBase:
                 print('couldnt start data logger, not saving logs')
                 self._save_logs = False
 
+        ####################### Internal health checks ###########################
+        self._time_last_contact = time.time()
+        self._critical_time     = 0.2           #If Controller has not received set/get within the last 200 ms, it gets nervous.      
+
     def __del__(self):
         if self._save_logs:
             self.dl.close_logfile()
@@ -189,34 +174,6 @@ class ControlModuleBase:
         self.COPY_SET_PEEP_TIME = self.__SET_PEEP_TIME
         self.COPY_SET_BPM       = self.__SET_BPM
         self.COPY_SET_I_PHASE   = self.__SET_I_PHASE
-        self._lock.release()
-
-    def _alarm_to_COPY(self):
-        self._lock.acquire()
-        # Update the alarms
-        self.COPY_active_alarms = self.__active_alarms.copy()
-        self.COPY_logged_alarms = list(self.__logged_alarms)
-
-        # The alarm thresholds
-        self.COPY_PIP_min = self.__PIP_min
-        self.COPY_PIP_max = self.__PIP_max
-        self.COPY_PIP_lastset = self.__PIP_lastset
-        self.COPY_PIP_time_min = self.__PIP_time_min 
-        self.COPY_PIP_time_max = self.__PIP_time_max
-        self.COPY_PIP_time_lastset = self.__PIP_time_lastset
-        self.COPY_PEEP_min = self.__PEEP_min
-        self.COPY_PEEP_max = self.__PEEP_max
-        self.COPY_PEEP_lastset = self.__PEEP_lastset
-        self.COPY_PEEP_time_min = self.__PEEP_time_min
-        self.COPY_PEEP_time_max = self.__PEEP_time_max
-        self.COPY_PEEP_time_lastset = self.__PEEP_time_lastset
-        self.COPY_bpm_min = self.__bpm_min 
-        self.COPY_bpm_max = self.__bpm_max
-        self.COPY_bpm_lastset = self.__bpm_lastset
-        self.COPY_I_phase_min = self.__I_phase_min
-        self.COPY_I_phase_max = self.__I_phase_max
-        self.COPY_I_phase_lastset = self.__I_phase_lastset
-
         self._lock.release()
 
     def _sensor_to_COPY(self):
@@ -239,57 +196,17 @@ class ControlModuleBase:
         self.__SET_I_PHASE   = self.COPY_SET_I_PHASE
 
         #Update derived values
-        self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
+        try:
+            self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
+            #TODO: raise alert
+        except:
+            self.__SET_CYCLE_DURATION = 20
+
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PLATEAU = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
 
-        #Update new confidence intervals
-        self.__PIP_min          = self.COPY_PIP_min
-        self.__PIP_max          = self.COPY_PIP_max 
-        self.__PIP_lastset      = self.COPY_PIP_lastset  
-        self.__PIP_time_min     = self.COPY_PIP_time_min  
-        self.__PIP_time_max     = self.COPY_PIP_time_max  
-        self.__PIP_time_lastset = self.COPY_PIP_time_lastset  
-        self.__PEEP_min         = self.COPY_PEEP_min 
-        self.__PEEP_max         = self.COPY_PEEP_max  
-        self.__PEEP_lastset     = self.COPY_PEEP_lastset
-        self.__PEEP_time_min    = self.COPY_PEEP_time_min
-        self.__PEEP_time_max    = self.COPY_PEEP_time_max
-        self.__PEEP_time_lastset = self.COPY_PEEP_time_lastset
-        self.__bpm_min          = self.COPY_bpm_min 
-        self.__bpm_max          = self.COPY_bpm_max  
-        self.__bpm_lastset      = self.COPY_bpm_lastset  
-        self.__I_phase_min      = self.COPY_I_phase_min  
-        self.__I_phase_max      = self.COPY_I_phase_max 
-        self.__I_phase_lastset  = self.COPY_I_phase_lastset  
-
         self._lock.release()
-
-    def __test_critical_levels(self, min, max, value, name):
-        '''
-        This tests whether a variable is within bounds.
-        If it is, and an alarm existed, then the "alarm_end_time" is set.
-        If it is NOT, a new alarm is generated and appendede to the alarm-list.
-        Input:
-            min:           minimum value  (e.g. 2)
-            max:           maximum value  (e.g. 5)
-            value:         test value   (e.g. 3)
-            name:          parameter type (e.g. "PIP", "PEEP" etc.)
-        '''
-        pass
-        # if (value < min) or (value > max):  # If the variable is not within limits
-        #     if name not in self.__active_alarms.keys():  # And and alarm for that variable doesn't exist yet -> RAISE ALARM.
-        #         new_alarm = Alarm(alarm_name=name, active=True, severity=AlarmSeverity.HIGH, value=value,
-        #                           start_time=time.time(), alarm_end_time=None)
-        #         self.__active_alarms[name] = new_alarm
-        # else:  # Else: if the variable is within bounds,
-        #     if name in self.__active_alarms.keys():  # And an alarm exists -> inactivate it.
-        #         old_alarm = self.__active_alarms[name]
-        #         old_alarm.alarm_end_time = time.time()
-        #         old_alarm.active = False
-        #         self.__logged_alarms.append(old_alarm)
-        #         del self.__active_alarms[name]
 
     def __analyze_last_waveform(self):
         ''' This goes through the last waveform, and updates VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
@@ -319,16 +236,10 @@ class ControlModuleBase:
                 self._DATA_I_PHASE = np.nan
 
             # and measure the breaths per minute
-            self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform
-
-    def __update_alarms(self):
-        ''' This goes through the values obtained from the last waveform, and updates alarms.'''
-        if len(self.__cycle_waveform_archive) > 1 : # Only if there was a previous cycle
-            self.__test_critical_levels(min=self.__PIP_min, max=self.__PIP_max, value=self._DATA_PIP, name=ValueName.PIP)
-            self.__test_critical_levels(min=self.__PIP_time_min, max=self.__PIP_time_max, value=self._DATA_PIP_TIME, name=ValueName.PIP_TIME)
-            self.__test_critical_levels(min=self.__PEEP_min, max=self.__PEEP_max, value=self._DATA_PEEP, name=ValueName.PEEP)
-            self.__test_critical_levels(min=self.__bpm_min, max=self.__bpm_max, value=self._DATA_BPM, name=ValueName.BREATHS_PER_MINUTE)
-            self.__test_critical_levels(min=self.__I_phase_min, max=self.__I_phase_max, value=self._DATA_I_PHASE, name=ValueName.INSPIRATION_TIME_SEC)
+            try:
+                self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform, exception if this was 0.
+            except:
+                self._DATA_BPM = np.nan
 
     def get_sensors(self) -> SensorValues:
         # Make sure to return a copy of the instance
@@ -338,129 +249,83 @@ class ControlModuleBase:
         # each time and it copies each individual value as it's created
         cp = copy.copy(self.COPY_sensor_values)
         self._lock.release()
+        self._time_last_contact = time.time()
         return cp
 
-    # def get_alarms(self) -> List[Alarm]:
-    #     # Returns all alarms as a list
-    #     self._lock.acquire()
-    #     new_alarm_list = self.COPY_logged_alarms.copy()
-    #     for alarm_key in self.COPY_active_alarms.keys():
-    #         new_alarm_list.append(self.COPY_active_alarms[alarm_key])
-    #     self._lock.release()
-    #     return new_alarm_list
-
-    def get_active_alarms(self):
-        # Returns only the active alarms
-        self._lock.acquire()
-        active_alarms = self.COPY_active_alarms.copy() # Make sure to return a copy
-        self._lock.release()
-        return active_alarms
-
-    def get_logged_alarms(self) -> List[Alarm]:
-        # Returns only the inactive alarms
-        self._lock.acquire()
-        logged_alarms = self.COPY_logged_alarms.copy()
-        self._lock.release()
-        return logged_alarms
-
-
+    def get_alarms(self):
+        if True: # technical alert
+            print("error")
+        else:
+            return None
 
     def set_control(self, control_setting: ControlSetting):
         ''' Updates the entry of COPY contained in the control settings'''
-        self._lock.acquire()
 
-        if control_setting.name == ValueName.PIP:
-            self.COPY_SET_PIP = control_setting.value
-            self.COPY_PIP_min = control_setting.min_value
-            self.COPY_PIP_max = control_setting.max_value
-            self.COPY_PIP_lastset = control_setting.timestamp
+        try:  #Make sure the controls are valid  
+            v_is_valid  = control_setting.value > 0
+            n_is_valid = np.sum([k == control_setting.name for k, v in CONTROL.items()]) == 1
+            controls_ok = v_is_valid and n_is_valid
+        except:
+            controls_ok = False
 
-        elif control_setting.name == ValueName.PIP_TIME:
-            self.COPY_SET_PIP_TIME = control_setting.value
-            self.COPY_PIP_time_min = control_setting.min_value
-            self.COPY_PIP_time_max = control_setting.max_value
-            self.COPY_PIP_time_lastset = control_setting.timestamp
+        if controls_ok:
+            self._lock.acquire()
+            if control_setting.name == ValueName.PIP:
+                self.COPY_SET_PIP = control_setting.value
+            elif control_setting.name == ValueName.PIP_TIME:
+                self.COPY_SET_PIP_TIME = control_setting.value
+            elif control_setting.name == ValueName.PEEP:
+                self.COPY_SET_PEEP = control_setting.value
+            elif control_setting.name == ValueName.BREATHS_PER_MINUTE:
+                self.COPY_SET_BPM = control_setting.value
+            elif control_setting.name == ValueName.INSPIRATION_TIME_SEC:
+                self.COPY_SET_I_PHASE = control_setting.value
+            elif control_setting.name == ValueName.PEEP_TIME:
+                self.COPY_SET_PEEP_TIME = control_setting.value
+            if self._save_logs:
+                self.dl.store_control_command(control_setting)
+            self._lock.release()
 
-        elif control_setting.name == ValueName.PEEP:
-            self.COPY_SET_PEEP = control_setting.value
-            self.COPY_PEEP_min = control_setting.min_value
-            self.COPY_PEEP_max = control_setting.max_value
-            self.COPY_PEEP_lastset = control_setting.timestamp
+        self._time_last_contact = time.time()
 
-        elif control_setting.name == ValueName.BREATHS_PER_MINUTE:
-            self.COPY_SET_BPM = control_setting.value
-            self.COPY_bpm_min = control_setting.min_value
-            self.COPY_bpm_max = control_setting.max_value
-            self.COPY_bpm_lastset = control_setting.timestamp
-
-        elif control_setting.name == ValueName.INSPIRATION_TIME_SEC:
-            self.COPY_SET_I_PHASE = control_setting.value
-            self.COPY_I_phase_min = control_setting.min_value
-            self.COPY_I_phase_max = control_setting.max_value
-            self.COPY_I_phase_lastset = control_setting.timestamp
-
-        elif control_setting.name == ValueName.PEEP_TIME:
-            self.COPY_SET_PEEP_TIME = control_setting.value
-            self.COPY_PEEP_min = control_setting.min_value
-            self.COPY_PEEP_max = control_setting.max_value
-            self.COPY_PEEP_lastset = control_setting.timestamp
-
-        else:
-            raise KeyError("You cannot set the variabe: " + str(control_setting.name))
-
-        if self._save_logs:
-            self.dl.store_control_command(control_setting)
-
-        self._lock.release()
 
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         ''' Gets values of the COPY of the control settings. '''
         
-        self._lock.acquire()
-        if control_setting_name == ValueName.PIP:
-            return_value = ControlSetting(control_setting_name,
-                                  self.COPY_SET_PIP,
-                                  self.COPY_PIP_min,
-                                  self.COPY_PIP_max,
-                                  self.COPY_PIP_lastset)
-        elif control_setting_name == ValueName.PIP_TIME:
-            return_value = ControlSetting(control_setting_name,
-                                  self.COPY_SET_PIP_TIME,
-                                  self.COPY_PIP_time_min,
-                                  self.COPY_PIP_time_max,
-                                  self.COPY_PIP_time_lastset, )
-        elif control_setting_name == ValueName.PEEP:
-            return_value = ControlSetting(control_setting_name,
-                                  self.COPY_SET_PEEP,
-                                  self.COPY_PEEP_min,
-                                  self.COPY_PEEP_max,
-                                  self.COPY_PEEP_lastset)
-        elif control_setting_name == ValueName.BREATHS_PER_MINUTE:
-            return_value = ControlSetting(control_setting_name,
-                                  self.COPY_SET_BPM,
-                                  self.COPY_bpm_min,
-                                  self.COPY_bpm_max,
-                                  self.COPY_bpm_lastset)
-        elif control_setting_name == ValueName.INSPIRATION_TIME_SEC:
-            return_value = ControlSetting(control_setting_name,
-                                  self.COPY_SET_I_PHASE,
-                                  self.COPY_I_phase_min,
-                                  self.COPY_I_phase_max,
-                                  self.COPY_I_phase_lastset)
-        elif control_setting_name == ValueName.PEEP_TIME:
-            return_value = ControlSetting(control_setting_name,
-                                          self.COPY_SET_PEEP_TIME,
-                                          self.COPY_PEEP_time_min,
-                                          self.COPY_PEEP_time_max,
-                                          self.COPY_PEEP_time_lastset)
+        try:
+            n_is_valid = np.sum([k == control_setting_name for k, v in CONTROL.items()]) == 1
+        except:
+            n_is_valid = False
+
+        if n_is_valid:
+            self._lock.acquire()
+            if control_setting_name == ValueName.PIP:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP)
+            elif control_setting_name == ValueName.PIP_TIME:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP_TIME)
+            elif control_setting_name == ValueName.PEEP:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP)
+            elif control_setting_name == ValueName.BREATHS_PER_MINUTE:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_BPM)
+            elif control_setting_name == ValueName.INSPIRATION_TIME_SEC:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_I_PHASE)
+            elif control_setting_name == ValueName.PEEP_TIME:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP_TIME)
+            self._lock.release()
         else:
-            raise KeyError("You cannot set the variabe: " + str(control_setting_name))
+            return_value = None
 
-        self._lock.release()
-
+        self._time_last_contact = time.time()
         return return_value
 
     def __get_PID_error(self, ytarget, yis, dt):
+        """
+        Calculates the three terms for PID control. Also takes a timestep "dt" on which the integral-term is smoothed.
+        Args:
+            ytarget: target value
+            yis:     current values
+            dt:      timestep
+        """
         error_new = ytarget - yis                   # New value of the error
 
         RC = 0.5  # Time constant in seconds
@@ -470,37 +335,104 @@ class ControlModuleBase:
         self._DATA_P = error_new
 
     def __calculate_control_signal_in(self):
+        """
+        Calculated the PID control signal with the error terms and the three gain parameters.
+        """
         self.__control_signal_in  = 0            # Some setting for the maximum flow.
         self.__control_signal_in +=  self.__KP*self._DATA_P
         self.__control_signal_in +=  self.__KI*self._DATA_I
         self.__control_signal_in +=  self.__KD*self._DATA_D
 
     def _get_control_signal_in(self):
-        ''' This is the PID controlled signal on the inspiratory side '''
+        ''' This is the controlled signal on the inspiratory side '''
         return self.__control_signal_in
 
     def _get_control_signal_out(self):
         ''' This is the control signal (open/close) on the expiratory side '''
         return self.__control_signal_out
 
-    def _PID_reset(self):
-        ''' resets the PID cycle to zero'''
+    def _control_reset(self):
+        ''' Resets the internal controller cycle to zero, i.e. this breath cycle re-starts.'''
         self.__cycle_start = time.time()
 
-    def _PID_update(self, dt):
+    def __test_for_alarms(self):
+        """
+        Implements tests that are to be executed in the main control loop:
+            - Test for HAPA
+            - Test for Technical Alert, making sure sensor values are plausible
+            - Test for Technical Alert, make sure continuous in contact
+        """
+        limit_hapa = 80                 # TODO: WHAT IS THE LIMIT?
+        limit_max_flows = 10            # If flows above that, hardware cannot be correct.
+        limit_max_pressure = 100        # If pressure above that, hardware cannot be correct.
+
+
+        #### First: Check for High Airway Pressure (HAPA)
+        if self._DATA_PRESSURE > limit_hapa:                            
+            if self.HAPA is None:
+                self.HAPA = time.time()
+            if time.time() - self.HAPA > 0.1:       # 100 ms active to avoid being triggered by coughs
+                self.__SET_PIP = 30                 # Default: PIP to 30
+                self.__control_signal_out = np.inf
+                self.__control_signal_in  = 0
+        else:
+            self.HAPA = None
+
+        #### Second: Check for Technical Alerts via data plausibility:
+        #  ->  Measurements change over time, and are in a plausible range
+        if self.__DATA_old is None:
+            self.__DATA_old = [self._DATA_Qin, self._DATA_Qout, self._DATA_PRESSURE]
+            inputs_dont_change = False 
+        else:
+            inputs_dont_change = self._DATA_Qin is self.__DATA_old[0] or self._DATA_Qout is self.__DATA_old[1] or self._DATA_PRESSURE is self.__DATA_old[2]
+            self.__DATA_old = [self._DATA_Qin, self._DATA_Qout, self._DATA_PRESSURE]
+        data_implausible = (self._DATA_Qin < 0 or self._DATA_Qin > limit_max_flows) or (self._DATA_Qout < 0 or self._DATA_Qout > limit_max_flows) or (self._DATA_PRESSURE < 0 or self._DATA_PRESSURE > limit_max_pressure)
+        if inputs_dont_change or data_implausible:
+            if self.TECHA == None:
+                self.TECHA = time.time()
+
+        #### Third: Make sure that updates are coming in in a regular basis
+        #
+        last_contact = self._time_last_contact - time.time()
+        if last_contact > self._critical_time:
+            self.TECHA = time.time()  # Technical alert, but continue running hoping for the best
+
+    def _control_update(self, dt):
+        """
+        This selects between PID and state control. If other controllers are to be implemented, add here.
+        """
+        if self._pid_control_flag:
+            self._PID_update(dt)
+        else:
+            self._STATECONTROL_update(dt)
+
+    def __start_new_breathcycle(self):
+        """
+        This has to be executed when the next breath cycles starts
+        """
+        self._DATA_BREATH_COUNT = next(self._breath_counter)
+        if len(self.__cycle_waveform) > 1:
+            self.__cycle_waveform_archive.append( self.__cycle_waveform )
+        self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])
+        self.__analyze_last_waveform()    # Analyze last waveform
+        self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
+
+        if self._save_logs and self._DATA_BREATH_COUNT % self._FLUSH_EVERY == 0:
+            self.dl.flush_logfile()        # If we kept records, flush the data from the previous breath cycle
+            self.dl.rotation_newfile()     # And Check whether we run out of space for the logger
+
+    def _STATECONTROL_update(self, dt):
         ''' 
-        This instantiates the control algorithms.
+        This instantiates the state control algorithms.
         During the breathing cycle, it goes through the four states:
            1) Rise to PIP
            2) Sustain PIP pressure
            3) Quick fall to PEEP
            4) Sustaint PEEP pressure
         Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
-        A record of pressure/volume waveforms is kept in self.__cycle_waveform_archive
-
-            dt: Time since last update in seconds 
-
+        A record of pressure/volume waveforms is kept and saved
         '''
+
         now = time.time()
         cycle_phase = now - self.__cycle_start
         next_cycle = False
@@ -508,109 +440,112 @@ class ControlModuleBase:
         self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
 
         if cycle_phase < self.__SET_PIP_TIME:
-
-            if self._pid_control_flag:
-                target_pressure = cycle_phase*(self.__SET_PIP - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
-                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
-                self.__calculate_control_signal_in()
-                self.__control_signal_out = 0   # close out valve
-                if self._DATA_PRESSURE > self.__SET_PIP:
-                    self.__control_signal_in = 0
-            else:
-                self.__control_signal_in = np.inf                                                        # STATE CONTROL: to PIP, air in as fast as possible
-                self.__control_signal_out = 0
-                if self._DATA_PRESSURE > self.__SET_PIP:
-                    self.__control_signal_in = 0
+            self.__control_signal_in = np.inf                                                        # STATE CONTROL: to PIP, air in as fast as possible
+            self.__control_signal_out = 0
+            if self._DATA_PRESSURE > self.__SET_PIP:
+                self.__control_signal_in = 0
 
         elif cycle_phase < self.__SET_I_PHASE:                                                           # then, we control PIP
-            if self._pid_control_flag:
-                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt)
-                self.__calculate_control_signal_in()
-                if self._DATA_PRESSURE > self.__SET_PIP+0.5:                                              
-                    self.__control_signal_out = 1                                                        # if exceeded, we open the exhaust valve
-                else:
-                    self.__control_signal_out = 0                                                        # close out valve
-            else:
-                self.__control_signal_in = 0                                                             # STATE CONTROL: keep PIP plateau, let air in if below
-                self.__control_signal_out = 0
-                if self._DATA_PRESSURE < self.__SET_PIP:
-                    self.__control_signal_in = np.inf
-                if self._DATA_PRESSURE > self.__SET_PIP:
-                    self.__control_signal_out = 1
+            self.__control_signal_in = 0                                                             # STATE CONTROL: keep PIP plateau, let air in if below
+            self.__control_signal_out = 0
+            if self._DATA_PRESSURE < self.__SET_PIP:
+                self.__control_signal_in = np.inf
+            if self._DATA_PRESSURE > self.__SET_PIP:
+                self.__control_signal_out = 1
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
-            if self._pid_control_flag:
-                target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
-                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
-                self.__calculate_control_signal_in()
-                self.__control_signal_out =  1
-                if self._DATA_PRESSURE < self.__SET_PEEP - 1:
-                    self.__control_signal_out = 0
-                    self.__control_signal_in = 0
-            else:
-                self.__control_signal_in = 0
-                self.__control_signal_out = 1
-                if self._DATA_PRESSURE < self.__SET_PEEP:
-                    self.__control_signal_out = 0
-        elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
-            if self._pid_control_flag:
-                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
-                self.__calculate_control_signal_in()
-                if self._DATA_PRESSURE > self.__SET_PEEP + 1:
-                    self.__control_signal_out = 1
-                else:
-                    self.__control_signal_out = 0
-            else:                                                                                         # STATE CONTROL: keeping PEEP, let air in if below
-                self.__control_signal_in = 0
+            self.__control_signal_in = 0
+            self.__control_signal_out = 1
+            if self._DATA_PRESSURE < self.__SET_PEEP:
                 self.__control_signal_out = 0
-                if self._DATA_PRESSURE < self.__SET_PEEP:
-                    self.__control_signal_in = np.inf
-                if self._DATA_PRESSURE > self.__SET_PEEP:
-                    self.__control_signal_out = 1
+
+        elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
+            self.__control_signal_in = 0                                        # STATE CONTROL: keeping PEEP, let air in if below
+            self.__control_signal_out = 0
+            if self._DATA_PRESSURE < self.__SET_PEEP:
+                self.__control_signal_in = np.inf
+            if self._DATA_PRESSURE > self.__SET_PEEP:
+                self.__control_signal_out = 1
 
         else:
             self.__cycle_start = time.time()  # New cycle starts
             self.__DATA_VOLUME = 0            # ... start at zero volume in the lung
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
-        
-        if self.check_high_pressure_alert():   # HAPA overwrites all other signals
-            self.__SET_PIP = 30                # Default: PIP to 30
-            self.__control_signal_out = np.inf
-            self.__control_signal_in  = 0
 
+
+        self.__test_for_alarms()
         if next_cycle:                        # if a new breath cycle has started
-            # increment breath_cycle tracker
-            self._DATA_BREATH_COUNT = next(self._breath_counter)
-            if len(self.__cycle_waveform) > 1:
-                self.__cycle_waveform_archive.append( self.__cycle_waveform )
-            self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])
-            self.__analyze_last_waveform()    # Analyze last waveform
-            self.__update_alarms()            # Run alarm detection over last cycle's waveform
-            self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
-
-            if self._save_logs and self._DATA_BREATH_COUNT % self._FLUSH_EVERY == 0:
-                self.dl.flush_logfile()        # If we kept records, flush the data from the previous breath cycle
-                self.dl.rotation_newfile()     # And Check whether we run out of space for the logger
-
+            self.__start_new_breathcycle()
         else:
             self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
-
         if self._save_logs:
             self.__save_values()
 
-    def check_high_pressure_alert(self):
-        """
-        The only alarm that has to be raised by the controller is High Airway Pressure.
-        """
-        if self._DATA_PRESSURE > 80:                             # TODO: WHAT IS THE LIMIT?
-            if self.HAPA is None:
-                self.HAPA = time.time()
-            if time.time() - self.HAPA > 0.1:  # 100 ms active to avoid being triggered by coughs
-                return True
+    def _PID_update(self, dt):
+        ''' 
+        This instantiates the PID control algorithms.
+        During the breathing cycle, it goes through the four states:
+           1) Rise to PIP, while controlling dP/dt
+           2) Sustain PIP pressure
+           3) Quick fall to PEEP while controlling dP/dt
+           4) Sustaint PEEP pressure
+        Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
+        A record of pressure/volume waveforms is kept and saved
+        '''
+
+        now = time.time()
+        cycle_phase = now - self.__cycle_start
+        next_cycle = False
+
+        self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
+
+        if cycle_phase < self.__SET_PIP_TIME:
+            target_pressure = cycle_phase*(self.__SET_PIP - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
+            self.__calculate_control_signal_in()
+            self.__control_signal_out = 0   # close out valve
+            if self._DATA_PRESSURE > self.__SET_PIP:
+                self.__control_signal_in = 0
+
+        elif cycle_phase < self.__SET_I_PHASE:                                                           # then, we control PIP
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt)
+            self.__calculate_control_signal_in()
+            if self._DATA_PRESSURE > self.__SET_PIP+0.5:                                              
+                self.__control_signal_out = 1                                                        # if exceeded, we open the exhaust valve
+            else:
+                self.__control_signal_out = 0                                                        # close out valve
+
+        elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
+            target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
+            self.__calculate_control_signal_in()
+            self.__control_signal_out =  1
+            if self._DATA_PRESSURE < self.__SET_PEEP - 1:
+                self.__control_signal_out = 0
+                self.__control_signal_in = 0
+
+        elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
+            self.__calculate_control_signal_in()
+            if self._DATA_PRESSURE > self.__SET_PEEP + 1:
+                self.__control_signal_out = 1
+            else:
+                self.__control_signal_out = 0
+
         else:
-            self.HAPA = None
-        return False
+            self.__cycle_start = time.time()  # New cycle starts
+            self.__DATA_VOLUME = 0            # ... start at zero volume in the lung
+            self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
+            next_cycle = True
+
+        self.__test_for_alarms()
+        if next_cycle:                        # if a new breath cycle has started
+            self.__start_new_breathcycle()
+        else:
+            self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
+        if self._save_logs:
+            self.__save_values()
 
     def __save_values(self):
         """
@@ -655,19 +590,22 @@ class ControlModuleBase:
         self.__cycle_waveform_archive = deque(maxlen = self._RINGBUFFER_SIZE)
         self.__cycle_waveform_archive.append(archive[-1])
         self._lock.release()
+        self._time_last_contact = time.time()
         return archive
 
     def get_target_waveform(self):
-        # Returns the target waveform, drawn as a sketch of a stepwise linear function
-        # Format is time-points, pressure values - to be connected with straight lines
-        #         ______
-        #        /      \                         <- Sketch waveform of single breath cycle
-        #       /        \
-        #      /          \____________
-        #
-        #     ^  ^     ^  ^           ^
-        #     A  B     C  D           E           <- Critical time points
+        """
+        Returns the target waveform, drawn as a sketch of a stepwise linear function
+        Format is time-points, pressure values - to be connected with straight lines
+                ______
+               /      \                         <- Sketch waveform of single breath cycle
+              /        \
+             /          \____________
+        
+             ^  ^     ^  ^           ^
+             A  B     C  D           E           <- Critical time points
 
+        """
         self._lock.acquire()
         wv = (
         (0, self.__SET_PEEP),                                            # A: start of the waveform
@@ -676,6 +614,7 @@ class ControlModuleBase:
         (self.__SET_PEEP_TIME + self.__SET_I_PHASE, self.__SET_PEEP),    # D: reaching PEEP within PEEP TIME
         (self.__SET_CYCLE_DURATION, self.__SET_PEEP))                    # E: Cycle ends
         self._lock.release()
+        self._time_last_contact = time.time()
         return wv
 
     def _start_mainloop(self):
@@ -683,6 +622,7 @@ class ControlModuleBase:
         pass   
 
     def start(self):
+        self._time_last_contact = time.time()
         if self.__thread is None or not self.__thread.is_alive():  # If the previous thread has been stopped, make a new one.
             self._running.set()
             self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
@@ -691,7 +631,7 @@ class ControlModuleBase:
             print("Main Loop already running.")
 
     def stop(self):
-
+        self._time_last_contact = time.time()
         if self.__thread is not None and self.__thread.is_alive():
             self._running.clear()
         else:
@@ -700,27 +640,68 @@ class ControlModuleBase:
         if self._save_logs:               # If we kept records, flush the data
             self.dl.close_logfile()
 
+    def interrupt(self):
+        """
+        If a controller seems stuck, this makes a new thread, and starts the main loop.
+        No parameters should have changed.
+        """
+        self._running = threading.Event()           # New thread
+        self._running.clear()
+        self._lock = threading.Lock()
+        self._running.set()
+        self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
+        try:
+            self.__thread.start()
+        except:
+            pass
+            #TODO RAISE ALERT FOR UI
 
     def is_running(self):
+        self._time_last_contact = time.time()
         # TODO: this should be better thread-safe variable
         return self._running.is_set()
+
+    def get_heartbeat(self):
+        """
+        Returns a heart-beat of the controller, i.e. the internal loop counter
+        """
+        self._time_last_contact = time.time()
+        return self._loop_counter
 
     def do_pid_control(self):
         if self._pid_control_flag:
             print("Already running PID control.")
         self._pid_control_flag = True
+        self._time_last_contact = time.time()
 
     def do_state_control(self):
         if not self._pid_control_flag:
             print("Already running State control.")
         self._pid_control_flag = False
+        self._time_last_contact = time.time()
+
+    def _control_update(self, dt):
+        """
+        This selects between PID and state control. If other controllers are to be implemented, add here.
+        """
+        if self._pid_control_flag:
+            self._PID_update(dt)
+        else:
+            self._STATECONTROL_update(dt)
 
 
 class ControlModuleDevice(ControlModuleBase):
+    """
+    Controlling Hardware.
+    """
     # Implement ControlModuleBase functions
     def __init__(self):
-        ControlModuleBase.__init__(self)
-        self.HAL = io.Hal(config_file='vent/io/config/dinky-devices.ini')
+        """
+        Args:
+            config_file (string): Path to device config file, e.g. 'vent/io/config/dinky-devices.ini'
+        """
+        ControlModuleBase.__init__(self, config_file)
+        self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
         
     def _sensor_to_COPY(self):
@@ -756,12 +737,12 @@ class ControlModuleDevice(ControlModuleBase):
 
             if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
                 print("Restarted cycle.")
-                self._PID_reset()
+                self._control_reset()
                 dt = self._LOOP_UPDATE_TIME
 
             self._DATA_PRESSURE = self.HAL.pressure                 # Get a pressure measurement from HAL
 
-            self._PID_update(dt = dt)                               # Update the PID Controller
+            self._control_update(dt = dt)                               # Update the PID Controller
 
             valve_open_in = self._get_control_signal_in()           # Inspiratory side: get control signal for PropValve
             self.HAL.setpoint_in = max(min(100, valve_open_in), 0)
@@ -780,7 +761,6 @@ class ControlModuleDevice(ControlModuleBase):
 
             if update_copies == 0:
                 self._controls_from_COPY()     # Update controls from possibly updated values as a chunk
-                self._alarm_to_COPY()          # Copy current alarms and settings to COPY
                 self._sensor_to_COPY()         # Copy sensor values to COPY
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
@@ -788,15 +768,18 @@ class ControlModuleDevice(ControlModuleBase):
 
         # # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
-        self._alarm_to_COPY()  # Copy current alarms and settings to COPY
         self._sensor_to_COPY()  # Copy sensor values to COPY
 
 
 
 class Balloon_Simulator:
     '''
-    This is a imple physics simulator for inflating a balloon. 
+    Physics simulator for inflating balloon.
+
     For math, see https://en.wikipedia.org/wiki/Two-balloon_experiment
+
+    Args:
+        leak: Boolean. True: leaky ballon with 5 sec time constant, False: not leaky.
     '''
 
     def __init__(self, leak):
@@ -904,6 +887,9 @@ class Balloon_Simulator:
         self.current_volume = self.min_volume
 
 class ControlModuleSimulator(ControlModuleBase):
+    """
+    Controlling Simulation.
+    """
     # Implement ControlModuleBase functions
     def __init__(self, simulator_dt = None):
         """
@@ -979,14 +965,14 @@ class ControlModuleSimulator(ControlModuleBase):
                 if dt > 0.5:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
                     # TODO: Log this
                     print("Restarted cycle.")
-                    self._PID_reset()
+                    self._control_reset()
                     self.Balloon._reset()
                     dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
             self._DATA_PRESSURE = self.Balloon.get_pressure()       # Get a pressure measurement from balloon and tell controller             --- SENSOR 1
 
-            self._PID_update(dt = dt)                               # Update the PID Controller
+            self._control_update(dt = dt)                               # Update the PID Controller
 
             x = self._get_control_signal_in()                       # Inspiratory side: get control signal for PropValve
             Qin = self.__SimulatedPropValve(x, dt = dt)             # And calculate the produced flow Qin
@@ -1003,7 +989,6 @@ class ControlModuleSimulator(ControlModuleBase):
 
             if update_copies == 0:
                 self._controls_from_COPY()     # Update controls from possibly updated values as a chunk
-                self._alarm_to_COPY()          # Copy current alarms and settings to COPY
                 self._sensor_to_COPY()         # Copy sensor values to COPY
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
@@ -1011,13 +996,18 @@ class ControlModuleSimulator(ControlModuleBase):
 
         # # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
-        self._alarm_to_COPY()  # Copy current alarms and settings to COPY
         self._sensor_to_COPY()  # Copy sensor values to COPY
 
 
 
 
 def get_control_module(sim_mode=False):
+    """
+    Generates control module.
+    Args:
+        sim_mode (bool): if ``true``: returns simulation, else returns hardware
+    """
+
     if sim_mode == True:
         return ControlModuleSimulator()
     else:

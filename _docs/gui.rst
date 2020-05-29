@@ -106,6 +106,7 @@ ______________
 * choice between pressure/volume over time and combined P/V plot
 * display flow in SLM (liters per minute)
 * deque for alarm manager logged alarms
+* need confirmation for start button
 
 
 

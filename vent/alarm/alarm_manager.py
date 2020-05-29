@@ -12,8 +12,6 @@ from vent.alarm import condition
 
 import typing
 
-ALARM_MANAGER_INSTANCE = None
-
 class Alarm_Manager(object):
     """
     Attributes:

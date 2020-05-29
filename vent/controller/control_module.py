@@ -624,6 +624,8 @@ class ControlModuleBase:
         ValueName.TEMP.name                 : 0,
         ValueName.HUMIDITY.name             : 0,
         ValueName.PRESSURE.name             : self._DATA_PRESSURE,
+        ValueName.VOLUME                    : self.__DATA_VOLUME,
+        ValueName.FLOW                      : self._DATA_Qin-self._DATA_Qout,
         ValueName.VTE.name                  : self._DATA_VTE,
         ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
         ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,

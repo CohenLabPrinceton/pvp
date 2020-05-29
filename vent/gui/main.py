@@ -107,9 +107,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         """
         self.logger = init_logger(__name__)
-        self.logger.info('gui init')
 
         if get_gui_instance() is not None and gui.limit_gui():
+            self.logger.exception('GUI attempted to be instantiated but instance of gui already running!')
             raise Exception('Instance of gui already running!') # pragma: no cover
         else:
             set_gui_instance(self)
@@ -122,16 +122,13 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # connect alarm manager signals to slots
         self.alarm_manager.add_callback(self.handle_alarm)
         self.alarm_manager.add_dependency_callback(self.limits_updated)
+        self.logger.debug('Alarm Manager instantiated')
 
         self.monitor = {} # type: typing.Dict[ValueName: widgets.Monitor]
         self.plots = {} # type: typing.Dict[ValueName: widgets.Plot]
         self.controls = {} # type: typing.Dict[ValueName.name: widgets.Control]
 
         self.coordinator = coordinator
-        try:
-            self.control_module = self.coordinator.control_module
-        except AttributeError:
-            self.control_module = None
 
         # start QTimer to update values
         self.timer = QtCore.QTimer()
@@ -154,45 +151,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.init_ui()
         self.start_time = time.time()
 
-        #self.update_gui()
-        self._testing = False
-        if self._testing:
-            self.test_alarms()
-        else:
-            self.update_gui()
+        self.update_gui()
 
-    def test_alarms(self):
-
-        self.running = True
-        # throw low alarm
-        sensors = SensorValues(
-            vals = {
-                ValueName.PIP                  : values.VALUES[ValueName.PIP].default,
-                ValueName.PEEP                 : values.VALUES[ValueName.PEEP].default,
-                ValueName.FIO2                 : 80,
-                ValueName.PRESSURE             : values.VALUES[ValueName.PIP].default,
-                ValueName.VTE                  : values.VALUES[ValueName.VTE]['safe_range'][0]-0.1,
-                ValueName.BREATHS_PER_MINUTE   : 20,
-                ValueName.INSPIRATION_TIME_SEC : 2,
-                ValueName.VOLUME               : 1,
-                ValueName.FLOW                 : 1,
-                ValueName.TEMP                 : 30,
-                ValueName.HUMIDITY:            80,
-                'timestamp'                    : time.time(),
-                'loop_counter'                 : 1,
-                'breath_count'                 : 1
-            }
-        )
-        self.update_gui(sensors)
-
-        # throw high before medium, test position
-        sensors[ValueName.PRESSURE] = values.VALUES[ValueName.PIP]['safe_range'][1]+1
-        self.update_gui(sensors)
-        time.sleep(0.1)
-
-        sensors[ValueName.PEEP] = values.VALUES[ValueName.PEEP]['safe_range'][0]-0.1
-        self.update_gui(sensors)
-
+        self.logger.info('GUI Initialized Successfully')
 
     @property
     def update_period(self):
@@ -244,6 +205,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                                         #max_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][1],
                                         timestamp = time.time())
         self.set_control(control_object)
+        self.logger.info(f'Control value set: {value_name}, {new_value}')
 
     def set_control(self, control_object: ControlSetting):
         # FIXME: replace set_value with this kinda thing
@@ -304,8 +266,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.status_bar.heartbeat.beatheart(vals.timestamp)
         #
         finally:
-            if not self._testing:
-                self.timer.start()
+            self.timer.start()
 
     # def update_value(self, value_name, new_value):
     #     """

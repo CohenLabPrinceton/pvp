@@ -137,7 +137,8 @@ def save_prefs(prefs_fn: str = None):
 
     with globals()['_LOCK']:
         with open(prefs_fn, 'w') as prefs_f:
-            json.dump(globals()['_PREFS']._getvalue(), prefs_f)
+            json.dump(globals()['_PREFS']._getvalue(), prefs_f,
+                      indent=4, separators=(',', ': '))
 
     globals()['_LOGGER'].info(f'Saved prefs to {prefs_fn}')
 

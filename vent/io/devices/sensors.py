@@ -1,11 +1,11 @@
 from vent.io.devices import I2CDevice, be16_to_native
 from abc import ABC, abstractmethod
-import random
 from collections import deque
+from weakref import WeakKeyDictionary
 
 import time
 import numpy as np
-
+import random
 
 class Sensor(ABC):
     """ Abstract base Class describing generalized sensors. Defines a mechanism for limited internal storage of recent
@@ -143,6 +143,7 @@ class AnalogSensor(Sensor):
         """
         super().__init__()
         self.adc = adc
+        self._kwargs = {}
         if 'MUX' not in (kwargs.keys()):
             raise TypeError(
                 'User must specify MUX for AnalogSensor creation'
@@ -214,6 +215,8 @@ class AnalogSensor(Sensor):
     def _raw_read(self) -> float:
         """ Builds kwargs from configured fields to pass along to adc, then calls adc.read_conversion(), which returns
         a raw voltage.
+        # TODO -> optimization opportunity here. pre-calculate kwargs, but then you have to recalculate each time one
+        # TODO of the dynamically set attributes is set
         """
         fields = self.adc.USER_CONFIGURABLE_FIELDS
         kwargs = dict(zip(
@@ -436,7 +439,8 @@ class AsyncAnalogSensor(Sensor):
         return self._verify(value)
 
     async def get(self, average=False) -> float:
-        """ Return the most recent sensor reading, or an average of readings since last get(). Clears internal memory so as not to have stale data."""
+        """ Return the most recent sensor reading,or an average of readings since last get().
+        Clears internal memory so as not to have stale data."""
         # FIXME - timeout decorators for everyone
         if len(self._data['value']) == 0:
             await self.update()

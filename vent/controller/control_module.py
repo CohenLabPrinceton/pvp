@@ -42,7 +42,7 @@ class ControlModuleBase:
 
     """
 
-    def __init__(self, save_logs: bool = True, flush_every: int = 10):
+    def __init__(self, save_logs: bool = False, flush_every: int = 10):
         """
 
         Args:
@@ -621,8 +621,6 @@ class ControlModuleBase:
         ValueName.PIP.name                  : self._DATA_PIP,
         ValueName.PEEP.name                 : self._DATA_PEEP,
         ValueName.FIO2.name                 : 0,
-        ValueName.TEMP.name                 : 0,
-        ValueName.HUMIDITY.name             : 0,
         ValueName.PRESSURE.name             : self._DATA_PRESSURE,
         ValueName.VTE.name                  : self._DATA_VTE,
         ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
@@ -730,8 +728,6 @@ class ControlModuleDevice(ControlModuleBase):
             ValueName.PIP.name                  : self._DATA_PIP,
             ValueName.PEEP.name                 : self._DATA_PEEP,
             ValueName.FIO2.name                 : 70,
-            ValueName.TEMP.name                 : -1,
-            ValueName.HUMIDITY.name             : -1,
             ValueName.PRESSURE.name             : self.HAL.pressure,
             ValueName.VTE.name                  : self._DATA_VTE,
             ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
@@ -950,8 +946,6 @@ class ControlModuleSimulator(ControlModuleBase):
             ValueName.PIP.name                  : self._DATA_PIP,
             ValueName.PEEP.name                 : self._DATA_PEEP,
             ValueName.FIO2.name                 : self.Balloon.fio2,
-            ValueName.TEMP.name                 : self.Balloon.temperature,
-            ValueName.HUMIDITY.name             : self.Balloon.humidity,
             ValueName.PRESSURE.name             : self.Balloon.current_pressure,
             ValueName.VTE.name                  : self._DATA_VTE,
             ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
@@ -1017,8 +1011,8 @@ class ControlModuleSimulator(ControlModuleBase):
 
 
 
-def get_control_module(sim_mode=False):
+def get_control_module(sim_mode=False, simulator_dt = None):
     if sim_mode == True:
-        return ControlModuleSimulator()
+        return ControlModuleSimulator(simulator_dt=simulator_dt)
     else:
         return ControlModuleDevice()

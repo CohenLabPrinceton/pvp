@@ -21,7 +21,7 @@ if ret == 0:
 
 
 setup(
-    name="ventilator",
+    name="pvp",
     author="vent team",
     author_email="vent@vents.com",
     description="some description of how we made a ventilator",
@@ -38,5 +38,6 @@ setup(
         'pigpio',
         'tables'
     ],
-    dependency_links=depend_links
+    dependency_links=depend_links,
+    python_requires='==3.7.*'
 )

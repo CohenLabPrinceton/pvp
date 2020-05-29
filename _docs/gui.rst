@@ -96,13 +96,16 @@ Jonny Questions
 
 * Which alarm sounds to use?
 * Final final final breakdown on values and ranges plzzz
-
+* RR always has to be present, can only auto calculate InspT, I:E
+* make alarm dismissals all latch and snooze.
 
 jonny todo
 ______________
 
 * use loop_counter to check on controller advancement
-* implement single values list with properties 'controllable' vs not.
+* choice between pressure/volume over time and combined P/V plot
+* display flow in SLM (liters per minute)
+* deque for alarm manager logged alarms
 
 
 

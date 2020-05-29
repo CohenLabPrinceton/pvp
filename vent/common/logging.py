@@ -21,14 +21,21 @@ from vent.common.message import SensorValues, ControlValues, ControlSetting
 # some global stack param
 MAX_STACK_DEPTH = 20
 
-from vent import prefs
+from vent.common import prefs
+
+_LOGGERS = []
+"""
+list of strings, which loggers have been created already.
+"""
 
 
 def init_logger(module_name: str,
                 log_level: int = logging.DEBUG,
                 file_handler: bool = True) -> logging.Logger:
     """
-    Initialize a logger for logging events
+    Initialize a logger for logging events.
+
+    If a logger has already been initialized, return that.
 
     Args:
         module_name (str): module name used to generate filename and name logger
@@ -39,7 +46,12 @@ def init_logger(module_name: str,
     Returns:
         :class:`logging.Logger` : Logger 4 u 2 use
     """
+
     logger = logging.getLogger(module_name)
+
+    # if the logger has already been created, return the same instance
+    if module_name in globals()['_LOGGERS']:
+        return logger
 
     # set log level
     assert log_level in (logging.DEBUG,
@@ -63,13 +75,32 @@ def init_logger(module_name: str,
         fh = logging.handlers.RotatingFileHandler(
             log_filename,
             mode = 'a',
-            maxBytes=16 * 2 ** 20,
-            backupCount=7
+            maxBytes=round(prefs.get_pref('LOGGING_MAX_BYTES')/(len(globals()['_LOGGERS'])+1)/prefs.get_pref('LOGGING_MAX_FILES')),
+            backupCount=prefs.get_pref('LOGGING_MAX_FILES')
         )
         fh.setFormatter(formatter)
         logger.addHandler(fh)
 
+    globals()['_LOGGERS'].append(module_name)
+
+    # update the maxBytes of each logger so the same total maxBytes is kept
+    update_logger_sizes()
+
     return logger
+
+def update_logger_sizes():
+    """
+    Adjust each logger's ``maxBytes`` attribute so that the total across all loggers is ``prefs.LOGGING_MAX_BYTES``
+    """
+    new_max_bytes = round(prefs.get_pref('LOGGING_MAX_BYTES')/len(globals()['_LOGGERS'])/prefs.get_pref('LOGGING_MAX_FILES'))
+
+    for logger_name in globals()['_LOGGERS']:
+        logger = logging.getLogger(logger_name)
+        for handler in logger.handlers:
+            if isinstance(handler, logging.handlers.RotatingFileHandler):
+                handler.maxBytes = new_max_bytes
+
+
 
 
 def log_exception(e, tb):

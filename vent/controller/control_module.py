@@ -42,7 +42,7 @@ class ControlModuleBase:
 
     """
 
-    def __init__(self, save_logs: bool = True, flush_every: int = 10):
+    def __init__(self, save_logs: bool = False, flush_every: int = 10):
         """
 
         Args:
@@ -621,8 +621,6 @@ class ControlModuleBase:
         ValueName.PIP.name                  : self._DATA_PIP,
         ValueName.PEEP.name                 : self._DATA_PEEP,
         ValueName.FIO2.name                 : 0,
-        ValueName.TEMP.name                 : 0,
-        ValueName.HUMIDITY.name             : 0,
         ValueName.PRESSURE.name             : self._DATA_PRESSURE,
         ValueName.VOLUME                    : self.__DATA_VOLUME,
         ValueName.FLOW                      : self._DATA_Qin-self._DATA_Qout,
@@ -733,8 +731,6 @@ class ControlModuleDevice(ControlModuleBase):
                 ValueName.PIP                  : self._DATA_PIP,
                 ValueName.PEEP                 : self._DATA_PEEP,
                 ValueName.FIO2                 : 70,
-                ValueName.TEMP                 : -1,
-                ValueName.HUMIDITY             : -1,
                 ValueName.PRESSURE             : self.HAL.pressure,
                 ValueName.VTE                  : self._DATA_VTE,
                 ValueName.BREATHS_PER_MINUTE   : self._DATA_BPM,
@@ -956,8 +952,6 @@ class ControlModuleSimulator(ControlModuleBase):
             ValueName.PIP                       : self._DATA_PIP,
             ValueName.PEEP                      : self._DATA_PEEP,
             ValueName.FIO2                      : self.Balloon.fio2,
-            ValueName.TEMP                      : self.Balloon.temperature,
-            ValueName.HUMIDITY                  : self.Balloon.humidity,
             ValueName.PRESSURE                  : self.Balloon.current_pressure,
             ValueName.VTE                       : self._DATA_VTE,
             ValueName.VOLUME                    : self.Balloon.current_volume,
@@ -969,7 +963,6 @@ class ControlModuleSimulator(ControlModuleBase):
             'breath_count'                      : self._DATA_BREATH_COUNT
         })
         self._lock.release()
-
 
     def _start_mainloop(self):
         # start running, this should be run as a thread! 
@@ -1026,8 +1019,8 @@ class ControlModuleSimulator(ControlModuleBase):
 
 
 
-def get_control_module(sim_mode=False):
+def get_control_module(sim_mode=False, simulator_dt = None):
     if sim_mode == True:
-        return ControlModuleSimulator()
+        return ControlModuleSimulator(simulator_dt=simulator_dt)
     else:
         return ControlModuleDevice()

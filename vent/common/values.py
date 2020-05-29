@@ -13,32 +13,10 @@ class ValueName(Enum):
     IE_RATIO = auto()
     #Settings that are read out, but can not be controlled by software
     FIO2 = auto()
-    TEMP = auto()
-    HUMIDITY = auto()
     VTE = auto()
     VOLUME = auto()
     PRESSURE = auto()
     FLOW = auto()
-
-controllable_values = {
-    ValueName.PIP,
-    ValueName.PIP_TIME,
-    ValueName.PEEP,
-    ValueName.BREATHS_PER_MINUTE,
-    ValueName.INSPIRATION_TIME_SEC,
-    ValueName.IE_RATIO
-}
-
-non_controllable_values = {
-    # TODO: is PEEP_TIME controllable? control_module doesn't allow set_control on it
-    ValueName.PEEP_TIME,
-    ValueName.FIO2,
-    ValueName.TEMP,
-    ValueName.HUMIDITY,
-    ValueName.VTE,
-    ValueName.PRESSURE,
-}
-
 
 class Value(object):
 
@@ -323,28 +301,6 @@ VALUES = odict({
         'sensor': True,
         'display': True
     }),
-    ValueName.TEMP: Value(**{
-        'name': 'Temp',
-        'units': '\N{DEGREE SIGN}C',
-        'abs_range': (35, 40),
-        'safe_range': (36, 39),
-        'decimals': 1,
-        'control': False,
-        'sensor': True,
-        'display': False
-    }),
-    ValueName.HUMIDITY: Value(**{
-        'name': 'Humidity',
-        'units': '%',
-        'abs_range': (0, 100),
-        'safe_range': (70, 100),
-        'decimals': 1,
-        'control': False,
-        'sensor': True,
-        'display': False
-    }),
-
-
 })
 
 SENSOR = odict({

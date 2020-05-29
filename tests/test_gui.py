@@ -107,22 +107,13 @@ def spawn_gui(qtbot, request):
 
 
 
-def test_gui_launch(qtbot):
-    assert qt_api.QApplication.instance() is not None
+def test_gui_launch(qtbot, spawn_gui):
 
-    app = qt_api.QApplication.instance()
-    app.setStyle('Fusion')
-    app.setStyleSheet(styles.DARK_THEME)
-    app = styles.set_dark_palette(app)
-
-    coordinator = get_coordinator(sim_mode=True, single_process=True)
-    vent_gui = gui.Vent_Gui(coordinator)
-    #app, vent_gui = launch_gui(coordinator)
-    qtbot.addWidget(vent_gui)
+    app, vent_gui = spawn_gui
     vent_gui.status_bar.start_button.click()
 
     # wait for a second to let the simulation spin up and start spitting values
-    qtbot.wait(5000)
+    qtbot.wait(2000)
 
     assert vent_gui.isVisible()
 

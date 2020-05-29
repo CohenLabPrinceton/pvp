@@ -5,28 +5,52 @@ language: python
 # python versions to use during the tests
 python:
   - "3.7"
-before_install:
+
+addons:
+  apt:
+    packages:
+      - x11-utils
+      - libxkbcommon-x11-0
+      - xvfb
+      - herbstluftwm # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
+      - qt5-default
+      - qttools5-dev-tools
+
+services:
+  - xvfb
+
+env:
+  - DISPLAY=":99.0" QT_DEBUG_PLUGINS=1  # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
+
+install:
   - pip install -U pip
   - pip install -U pytest
   - pip install -U pytest-cov
   - pip install -U coveralls
-  - sudo apt-get install -y xvfb herbstluftwm # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
-
-install:
-  - "export DISPLAY=:99.0" # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
-  - sleep 3
-  - sudo apt-get install -y qt5-default qttools5-dev-tools #install necessary Qt files
-  - pip install -U PySide2
+  - pip install -U numpy~=1.18.4
+  - pip install -U PySide2==5.11.*
   - pip install -U pyqtgraph>=0.11.0rc0
   - pip install -e .
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
+  - sleep 3
 
 # command to run tests
 before_script:
   - "herbstluftwm &"
   - sleep 1
   - mkdir -p /home/travis/vent/logs # make directories for logs
+
 script:
   - pytest --cov=vent --cov-report term-missing tests
+
 after_success:
   - coveralls
+
+deploy:
+  provider: pypi
+  username: __token__
+  password:
+    secure: RC760UAZ0PQa/lD+lva+QiJGRxMR9kbvxfU94yHc35RLp+Fe37i3aK5cl1PwGxyMGKb9R9ZEPOZElyGpJVw3X84HqoPoFC0CMqKbU+nn0pGwTqpIZdLVcNln5bENiM4tFzoGHhpbdMpkaHCrVJR4fNtueaCmVzBPY/OwrqadeHa3Zco+AFVw6EeGbZs4xRn+8V+kxGb1upHpDuU3D0OrZbMYIjVjDdAi6U19Yt09uOHHPYBtUSFxYfBrip83MPSgGie3fSL6zFb/AAikFvB23z2/f0UbhFPRXn6l1iSuEBLz5xU9LXun5pw3/uc0JtbkLv+rd/zNCSCY913nSX0DFCJjyj7hwAAtOP3hJMZs9MVThy5eePWTlNmrSems04xhQLU7BCbF2FxYeTJZn76Zfh72sJy3oG7lHuDyfkQT5CFIhwCn9X6mWMZLQeoIMQ7NzIq/IOhafYf5yMvXbjGuAV5RtvQHVskE2VWc/G4fss/TB2woKSn5h8XRjvBN6ZoxctPqgSG/eN9LNqmlrLF8E4f6WOHZlzRUnZl1Dcz1NYW1l23oI8mXcvRkTBiAmu9BJ+BRLQCGcRVg6fDyqNq7y81xXmE7r7rqDdoY4fEeikF6kOWNJsaFJVSz6hujVFXqFE5K/o1Lqpzml0JJVZ7qZZE6acE87qlw0AiILlihWvU=
+  on:
+    tags: true
+  distributions: "sdist bdist_wheel"

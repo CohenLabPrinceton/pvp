@@ -7,3 +7,4 @@ sphinx-automodapi
 sphinxcontrib-napoleon
 recommonmark
 autodocsumm
+tables

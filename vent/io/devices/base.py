@@ -294,7 +294,7 @@ class I2CDevice(IODeviceBase):
                         according the `value`
                 """
                 if value not in self._values.keys():
-                    raise ValueError("ValueField must be one of: {}".format(self._values.keys()))
+                    raise ValueError("Got {}, but ValueField must be one of: {}".format(value, self._values.keys()))
                 return (cfg & ~(self._mask << self._offset)) | (self._values[value] << self._offset)
 
 

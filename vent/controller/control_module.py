@@ -12,6 +12,8 @@ import vent.io as io
 from vent.common.message import SensorValues, ControlValues, ControlSetting
 from vent.common.logging import init_logger, DataLogger
 from vent.common.values import CONTROL, ValueName
+from vent.common.utils import timeout
+
 from vent.alarm import AlarmSeverity, Alarm
 
 
@@ -166,15 +168,14 @@ class ControlModuleBase:
             self.dl.close_logfile()
 
     def _initialize_set_to_COPY(self):
-        self._lock.acquire()
+        with self._lock:
         # Copy of the SET variables for threading.
-        self.COPY_SET_PIP       = self.__SET_PIP 
-        self.COPY_SET_PIP_TIME  = self.__SET_PIP_TIME
-        self.COPY_SET_PEEP      = self.__SET_PEEP
-        self.COPY_SET_PEEP_TIME = self.__SET_PEEP_TIME
-        self.COPY_SET_BPM       = self.__SET_BPM
-        self.COPY_SET_I_PHASE   = self.__SET_I_PHASE
-        self._lock.release()
+            self.COPY_SET_PIP       = self.__SET_PIP 
+            self.COPY_SET_PIP_TIME  = self.__SET_PIP_TIME
+            self.COPY_SET_PEEP      = self.__SET_PEEP
+            self.COPY_SET_PEEP_TIME = self.__SET_PEEP_TIME
+            self.COPY_SET_BPM       = self.__SET_BPM
+            self.COPY_SET_I_PHASE   = self.__SET_I_PHASE
 
     def _sensor_to_COPY(self):
         # These variables have to come from the hardware
@@ -185,15 +186,14 @@ class ControlModuleBase:
 
     def _controls_from_COPY(self):
         # Update SET variables
-        self._lock.acquire()
-
-        #Update values
-        self.__SET_PIP       = self.COPY_SET_PIP
-        self.__SET_PIP_TIME  = self.COPY_SET_PIP_TIME
-        self.__SET_PEEP      = self.COPY_SET_PEEP
-        self.__SET_PEEP_TIME = self.COPY_SET_PEEP_TIME
-        self.__SET_BPM       = self.COPY_SET_BPM
-        self.__SET_I_PHASE   = self.COPY_SET_I_PHASE
+        with self._lock:
+            #Update values
+            self.__SET_PIP       = self.COPY_SET_PIP
+            self.__SET_PIP_TIME  = self.COPY_SET_PIP_TIME
+            self.__SET_PEEP      = self.COPY_SET_PEEP
+            self.__SET_PEEP_TIME = self.COPY_SET_PEEP_TIME
+            self.__SET_BPM       = self.COPY_SET_BPM
+            self.__SET_I_PHASE   = self.COPY_SET_I_PHASE
 
         #Update derived values
         try:
@@ -205,8 +205,6 @@ class ControlModuleBase:
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PLATEAU = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
-
-        self._lock.release()
 
     def __analyze_last_waveform(self):
         ''' This goes through the last waveform, and updates VTE, PEEP, PIP, PIP_TIME, I_PHASE, FIRST_PEEP and BPM.'''
@@ -243,12 +241,8 @@ class ControlModuleBase:
 
     def get_sensors(self) -> SensorValues:
         # Make sure to return a copy of the instance
-        self._lock.acquire()
-        #cp = copy.deepcopy( self.COPY_sensor_values )
-        # don't need to deepcopy because a new SensorValues object is created
-        # each time and it copies each individual value as it's created
-        cp = copy.copy(self.COPY_sensor_values)
-        self._lock.release()
+        with self._lock:
+            cp = copy.copy(self.COPY_sensor_values)
         self._time_last_contact = time.time()
         return cp
 
@@ -269,22 +263,21 @@ class ControlModuleBase:
             controls_ok = False
 
         if controls_ok:
-            self._lock.acquire()
-            if control_setting.name == ValueName.PIP:
-                self.COPY_SET_PIP = control_setting.value
-            elif control_setting.name == ValueName.PIP_TIME:
-                self.COPY_SET_PIP_TIME = control_setting.value
-            elif control_setting.name == ValueName.PEEP:
-                self.COPY_SET_PEEP = control_setting.value
-            elif control_setting.name == ValueName.BREATHS_PER_MINUTE:
-                self.COPY_SET_BPM = control_setting.value
-            elif control_setting.name == ValueName.INSPIRATION_TIME_SEC:
-                self.COPY_SET_I_PHASE = control_setting.value
-            elif control_setting.name == ValueName.PEEP_TIME:
-                self.COPY_SET_PEEP_TIME = control_setting.value
-            if self._save_logs:
-                self.dl.store_control_command(control_setting)
-            self._lock.release()
+            with self._lock:
+                if control_setting.name == ValueName.PIP:
+                    self.COPY_SET_PIP = control_setting.value
+                elif control_setting.name == ValueName.PIP_TIME:
+                    self.COPY_SET_PIP_TIME = control_setting.value
+                elif control_setting.name == ValueName.PEEP:
+                    self.COPY_SET_PEEP = control_setting.value
+                elif control_setting.name == ValueName.BREATHS_PER_MINUTE:
+                    self.COPY_SET_BPM = control_setting.value
+                elif control_setting.name == ValueName.INSPIRATION_TIME_SEC:
+                    self.COPY_SET_I_PHASE = control_setting.value
+                elif control_setting.name == ValueName.PEEP_TIME:
+                    self.COPY_SET_PEEP_TIME = control_setting.value
+                if self._save_logs:
+                    self.dl.store_control_command(control_setting)
 
         self._time_last_contact = time.time()
 
@@ -298,20 +291,19 @@ class ControlModuleBase:
             n_is_valid = False
 
         if n_is_valid:
-            self._lock.acquire()
-            if control_setting_name == ValueName.PIP:
-                return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP)
-            elif control_setting_name == ValueName.PIP_TIME:
-                return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP_TIME)
-            elif control_setting_name == ValueName.PEEP:
-                return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP)
-            elif control_setting_name == ValueName.BREATHS_PER_MINUTE:
-                return_value = ControlSetting(control_setting_name, self.COPY_SET_BPM)
-            elif control_setting_name == ValueName.INSPIRATION_TIME_SEC:
-                return_value = ControlSetting(control_setting_name, self.COPY_SET_I_PHASE)
-            elif control_setting_name == ValueName.PEEP_TIME:
-                return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP_TIME)
-            self._lock.release()
+            with self._lock:
+                if control_setting_name == ValueName.PIP:
+                    return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP)
+                elif control_setting_name == ValueName.PIP_TIME:
+                    return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP_TIME)
+                elif control_setting_name == ValueName.PEEP:
+                    return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP)
+                elif control_setting_name == ValueName.BREATHS_PER_MINUTE:
+                    return_value = ControlSetting(control_setting_name, self.COPY_SET_BPM)
+                elif control_setting_name == ValueName.INSPIRATION_TIME_SEC:
+                    return_value = ControlSetting(control_setting_name, self.COPY_SET_I_PHASE)
+                elif control_setting_name == ValueName.PEEP_TIME:
+                    return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP_TIME)
         else:
             return_value = None
 
@@ -585,11 +577,10 @@ class ControlModuleBase:
         #     Most recent entry is waveform_list[-1]
         # Note:
         #     After calling this function, archive is emptied!
-        self._lock.acquire()
-        archive = list( self.__cycle_waveform_archive ) # Make sure to return a copy as a list
-        self.__cycle_waveform_archive = deque(maxlen = self._RINGBUFFER_SIZE)
-        self.__cycle_waveform_archive.append(archive[-1])
-        self._lock.release()
+        with self._lock:
+            archive = list( self.__cycle_waveform_archive ) # Make sure to return a copy as a list
+            self.__cycle_waveform_archive = deque(maxlen = self._RINGBUFFER_SIZE)
+            self.__cycle_waveform_archive.append(archive[-1])
         self._time_last_contact = time.time()
         return archive
 
@@ -606,14 +597,13 @@ class ControlModuleBase:
              A  B     C  D           E           <- Critical time points
 
         """
-        self._lock.acquire()
-        wv = (
-        (0, self.__SET_PEEP),                                            # A: start of the waveform
-        (self.__SET_PIP_TIME, self.__SET_PIP),                           # B: reaching PIP within PIP_TIME
-        (self.__SET_I_PHASE, self.__SET_PIP),                            # C: keeping the plateau during I_Phase
-        (self.__SET_PEEP_TIME + self.__SET_I_PHASE, self.__SET_PEEP),    # D: reaching PEEP within PEEP TIME
-        (self.__SET_CYCLE_DURATION, self.__SET_PEEP))                    # E: Cycle ends
-        self._lock.release()
+        with self._lock:
+            wv = (
+            (0, self.__SET_PEEP),                                            # A: start of the waveform
+            (self.__SET_PIP_TIME, self.__SET_PIP),                           # B: reaching PIP within PIP_TIME
+            (self.__SET_I_PHASE, self.__SET_PIP),                            # C: keeping the plateau during I_Phase
+            (self.__SET_PEEP_TIME + self.__SET_I_PHASE, self.__SET_PEEP),    # D: reaching PEEP within PEEP TIME
+            (self.__SET_CYCLE_DURATION, self.__SET_PEEP))                    # E: Cycle ends
         self._time_last_contact = time.time()
         return wv
 
@@ -703,25 +693,43 @@ class ControlModuleDevice(ControlModuleBase):
         ControlModuleBase.__init__(self, config_file)
         self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
-        
+    
     def _sensor_to_COPY(self):
         # And the sensor measurements
-        self._lock.acquire()
-        self.COPY_sensor_values = SensorValues(vals={
-            ValueName.PIP.name                  : self._DATA_PIP,
-            ValueName.PEEP.name                 : self._DATA_PEEP,
-            ValueName.FIO2.name                 : 70,
-            ValueName.TEMP.name                 : -1,
-            ValueName.HUMIDITY.name             : -1,
-            ValueName.PRESSURE.name             : self.HAL.pressure,
-            ValueName.VTE.name                  : self._DATA_VTE,
-            ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
-            ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
-            'timestamp'                  : time.time(),
-            'loop_counter'             : self._loop_counter,
-            'breath_count': self._DATA_BREATH_COUNT
-        })
-        self._lock.release()
+        self._get_HAL() 
+
+        with self._lock:
+            self.COPY_sensor_values = SensorValues(vals={
+                ValueName.PIP.name                  : self._DATA_PIP,
+                ValueName.PEEP.name                 : self._DATA_PEEP,
+                ValueName.FIO2.name                 : 70,
+                ValueName.TEMP.name                 : -1,
+                ValueName.HUMIDITY.name             : -1,
+                ValueName.PRESSURE.name             : self._DATA_PRESSURE(),
+                ValueName.VTE.name                  : self._DATA_VTE,
+                ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+                ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+                'timestamp'                  : time.time(),
+                'loop_counter'             : self._loop_counter,
+                'breath_count': self._DATA_BREATH_COUNT
+            })
+            
+    @timeout
+    def _set_HAL(self, valve_open_in, valve_open_out):
+        """
+        Set Controls with HAL, decorated with a timeout.
+        """
+        self.HAL.setpoint_in = max(min(100, valve_open_in), 0)
+        self.HAL.setpoint_ex = valve_open_out 
+    
+    @timeout
+    def _get_HAL(self):
+        """
+        Get sensor values from HAL, decorated with timeout
+        """
+        self._DATA_Qout = self.HAL.flow_ex                      # Flow sensor on Expiratory side
+        self._DATA_Qin  = self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
+        self._DATA_PRESSURE = self.HAL.pressure
 
     def _start_mainloop(self):
         # start running, this should be run as a thread! 
@@ -739,24 +747,13 @@ class ControlModuleDevice(ControlModuleBase):
                 print("Restarted cycle.")
                 self._control_reset()
                 dt = self._LOOP_UPDATE_TIME
+            
+            self._get_HAL()                                          # Update pressure and flow measurement
+            self._control_update(dt = dt)                            # With that, calculate controls
+            valve_open_in  = self._get_control_signal_in()           #    -> Inspiratory side: get control signal for PropValve
+            valve_open_out = self._get_control_signal_out()          #    -> Expiratory side: get control signal for Solenoid
+            self._set_HAL(valve_open_in, valve_open_out)             # And set values.
 
-            self._DATA_PRESSURE = self.HAL.pressure                 # Get a pressure measurement from HAL
-
-            self._control_update(dt = dt)                               # Update the PID Controller
-
-            valve_open_in = self._get_control_signal_in()           # Inspiratory side: get control signal for PropValve
-            self.HAL.setpoint_in = max(min(100, valve_open_in), 0)
-
-            self.HAL.setpoint_ex = self._get_control_signal_out()          # Expiratory side: get control signal for Solenoid
-            '''
-            if(self.HAL.setpoint_ex == 0):
-                self.HAL._expiratory_valve.close()
-            else:
-                self.HAL._expiratory_valve.open()
-            '''
-
-            self._DATA_Qout = self.HAL.flow_ex                     # Flow sensor on Expiratory side
-            self._DATA_Qin  = self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
             self._last_update = now
 
             if update_copies == 0:
@@ -931,22 +928,21 @@ class ControlModuleSimulator(ControlModuleBase):
 
     def _sensor_to_COPY(self):
         # And the sensor measurements
-        self._lock.acquire()
-        self.COPY_sensor_values = SensorValues(vals={
-            ValueName.PIP.name                  : self._DATA_PIP,
-            ValueName.PEEP.name                 : self._DATA_PEEP,
-            ValueName.FIO2.name                 : self.Balloon.fio2,
-            ValueName.TEMP.name                 : self.Balloon.temperature,
-            ValueName.HUMIDITY.name             : self.Balloon.humidity,
-            ValueName.PRESSURE.name             : self.Balloon.current_pressure,
-            ValueName.VTE.name                  : self._DATA_VTE,
-            ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
-            ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
-            'timestamp'                  : time.time(),
-            'loop_counter'             : self._loop_counter,
-            'breath_count': self._DATA_BREATH_COUNT
-        })
-        self._lock.release()
+        with self._lock:
+            self.COPY_sensor_values = SensorValues(vals={
+                ValueName.PIP.name                  : self._DATA_PIP,
+                ValueName.PEEP.name                 : self._DATA_PEEP,
+                ValueName.FIO2.name                 : self.Balloon.fio2,
+                ValueName.TEMP.name                 : self.Balloon.temperature,
+                ValueName.HUMIDITY.name             : self.Balloon.humidity,
+                ValueName.PRESSURE.name             : self.Balloon.current_pressure,
+                ValueName.VTE.name                  : self._DATA_VTE,
+                ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+                ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+                'timestamp'                  : time.time(),
+                'loop_counter'             : self._loop_counter,
+                'breath_count': self._DATA_BREATH_COUNT
+            })
 
     def _start_mainloop(self):
         # start running, this should be run as a thread! 

@@ -60,7 +60,7 @@ def mock_get_control_module(sim_mode):
     return ControlModuleMock()
 
 
-@pytest.mark.parametrize("control_setting_name", values.CONTROL.keys())
+@pytest.mark.parametrize("control_setting_name", values.controllable_values)
 @patch('vent.controller.control_module.get_control_module', mock_get_control_module, Mock())
 def test_local_coordinator(control_setting_name):
     coordinator = get_coordinator(single_process=True, sim_mode=True)
@@ -85,7 +85,7 @@ def test_local_coordinator(control_setting_name):
     assert c_read.timestamp == c.timestamp
 
 @pytest.mark.timeout(10)
-@pytest.mark.parametrize("control_setting_name", values.CONTROL.keys())
+@pytest.mark.parametrize("control_setting_name", values.controllable_values)
 @patch('vent.controller.control_module.get_control_module', mock_get_control_module, Mock())
 def test_remote_coordinator(control_setting_name):
     # wait before

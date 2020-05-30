@@ -5,7 +5,7 @@ test objects
 * control
 * monitor
 * plot
-* status_bar
+* control_panel
 
 test types
 * user interaction
@@ -110,7 +110,7 @@ def spawn_gui(qtbot, request):
 def test_gui_launch(qtbot, spawn_gui):
 
     app, vent_gui = spawn_gui
-    vent_gui.status_bar.start_button.click()
+    vent_gui.control_panel.start_button.click()
 
     # wait for a second to let the simulation spin up and start spitting values
     qtbot.wait(2000)
@@ -126,7 +126,7 @@ def test_gui_launch_mp(qtbot):
 
     vent_gui = gui.Vent_Gui(coordinator)
     qtbot.addWidget(vent_gui)
-    vent_gui.status_bar.start_button.click()
+    vent_gui.control_panel.start_button.click()
 
     # wait for a second to let the simulation spin up and start spitting values
     qtbot.wait(5000)

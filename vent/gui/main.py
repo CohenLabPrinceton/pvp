@@ -248,6 +248,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if control_object.name in self.pressure_waveform.PARAMETERIZING_VALUES:
             self.pressure_waveform.update_target(control_object.name, control_object.value)
 
+        self.update_state('control', control_object.name.name, control_object.value)
+
     @QtCore.Slot(bool)
     def set_plot_control(self, plot_control: bool):
         if plot_control != self._plot_control:
@@ -297,7 +299,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     control.update_sensor(getattr(vals, control_key))
 
             # let our  timer know we got some data
-            self.status_bar.heartbeat.beatheart(vals.timestamp)
+            self.control_panel.heartbeat.beatheart(vals.timestamp)
         #
         finally:
             self.timer.start()
@@ -320,14 +322,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
         #       left:   monitor values
         #       center: plotted values
         #       right:  controls
-        self.layout = QtWidgets.QVBoxLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.layout.setContentsMargins(0,0,0,0)
         self.main_widget.setLayout(self.layout)
 
         # layout that includes the display and controls
-        self.main_layout = QtWidgets.QHBoxLayout()
-        self.main_layout.setContentsMargins(0,0,0,0)
-        self.main_layout.setSpacing(0)
+        # self.main_layout = QtWidgets.QHBoxLayout()
+        # self.main_layout.setContentsMargins(0,0,0,0)
+        # self.main_layout.setSpacing(0)
 
 
         # call sub-create functions to make ui sections
@@ -341,7 +343,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.init_ui_controls()
 
         # add main ui area to layout
-        self.layout.addLayout(self.main_layout, self.main_height)
+        # self.layout.addLayout(self.main_layout, self.main_height)
 
         # connect signals and slots
         self.init_ui_signals()
@@ -352,15 +354,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def init_ui_status_bar(self):
         ############
         # Status Bar
-        status_box = QtWidgets.QGroupBox('System Status')
-        status_box.setStyleSheet(styles.STATUS_BOX)
-        status_layout = QtWidgets.QHBoxLayout()
-        self.status_bar = widgets.Status_Bar()
-        status_layout.addWidget(self.status_bar)
-        status_layout.setContentsMargins(0,0,0,0)
-        status_box.setLayout(status_layout)
+        self.control_panel = widgets.Control_Panel()
+        self.alarm_bar = widgets.Alarm_Bar()
 
-        self.layout.addWidget(status_box, self.status_height)
+
+        self.layout.addWidget(self.control_panel, 0,0, 2,1)
+        self.layout.addWidget(self.alarm_bar, 0,1,1,2)
 
     def init_ui_monitor(self):
 
@@ -395,7 +394,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         # self.monitor_layout.addLayout(self.display_layout, self.monitor_width)
 
-        self.main_layout.addWidget(self.monitor_box, self.monitor_width)
+        self.layout.addWidget(self.monitor_box, 2,0,2,1)
 
     def init_ui_plots(self):
         ###########
@@ -426,7 +425,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # self.main_layout.addLayout(self.plot_layout,5)
         # self.monitor_layout.addLayout(self.plot_layout, self.plot_width)
 
-        self.main_layout.addLayout(self.plot_layout, self.plot_width)
+        self.layout.addLayout(self.plot_layout, 1,1,3,1)
         ######################
         # set the default view as 30s
         #self.time_buttons[times[2][0]].click()
@@ -535,7 +534,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_layout.addWidget(self.controls_box_cycle)
         self.controls_layout.addWidget(self.controls_box_ramp)
 
-        self.main_layout.addWidget(self.controls_box, self.control_width)
+        self.layout.addWidget(self.controls_box, 1,2,3,1)
 
     def init_ui_signals(self):
         """
@@ -550,17 +549,17 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 self.plots[value.name].limits_changed.connect(
                     self.monitor[value.name].update_limits)
 
-        self.status_bar.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
+        self.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
 
         # connect controls
         for control in self.controls.values():
             control.value_changed.connect(self.set_value)
 
         # connect start button to coordinator start
-        self.status_bar.start_button.toggled.connect(self.toggle_start)
+        self.control_panel.start_button.toggled.connect(self.toggle_start)
 
         # connect heartbeat indicator to set off before controller starts
-        self.state_changed.connect(self.status_bar.heartbeat.set_state)
+        self.state_changed.connect(self.control_panel.heartbeat.set_state)
 
         # connect waveform plot elements to controls
         self.pressure_waveform.control_changed.connect(self.set_control)
@@ -608,10 +607,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         if alarm.severity > AlarmSeverity.OFF:
 
-            self.status_bar.add_alarm(alarm)
+            self.alarm_bar.add_alarm(alarm)
         else:
-            self.status_bar.clear_alarm(alarm)
-        #self.status_bar.alarm_bar.update_message(alarm)
+            self.alarm_bar.clear_alarm(alarm)
+        #self.control_panel.alarm_bar.update_message(alarm)
         try:
             self.monitor[alarm.alarm_name.name].alarm_state = True
         except:
@@ -676,12 +675,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     def start(self):
         """
-        Click the :meth:`~.gui.widgets.status_bar.Status_Bar.start` button
+        Click the :meth:`~.gui.widgets.control_panel.Status_Bar.start` button
 
         Returns:
 
         """
-        self.status_bar.start_button.click()
+        self.control_panel.start_button.click()
 
     def toggle_start(self, state: bool):
         """
@@ -754,6 +753,19 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         except Exception as e:
             self.logger.warning(f'State could not be saved, state:\n    {self._state}\n\nerror message:\n    {e}')
+
+    def load_state(self, state: typing.Union[str, dict]):
+        """
+
+        Args:
+            state (str, dict): either a pathname to a state file or an already-loaded state dictionary
+
+        """
+
+        if isinstance(state):
+            if not os.path.exists(state):
+                self.logger.exception(f'Attempted to load state from file, but none found: {state}')
+
 
     @property
     def controls_set(self):

@@ -9,9 +9,18 @@ from PySide2 import QtWidgets, QtCore, QtGui
 from vent.gui import styles, mono_font
 from vent.gui import get_gui_instance
 from vent.alarm import AlarmSeverity, Alarm, AlarmType, Alarm_Manager
+#
+# class Control_Panel(QtWidgets.QWidget):
+#     def __init__(self):
+#         super(Control_Panel, self).__init__()
+#
+#         self.init_ui()
+#
+#     def init_ui(self):
 
 
-class Status_Bar(QtWidgets.QWidget):
+
+class Control_Panel(QtWidgets.QGroupBox):
     """
     * Start/stop button
     * Status indicator - a clock that increments with heartbeats,
@@ -22,28 +31,33 @@ class Status_Bar(QtWidgets.QWidget):
     """
 
     def __init__(self):
-        super(Status_Bar, self).__init__()
+        super(Control_Panel, self).__init__('Control Panel')
 
         self.init_ui()
 
     def init_ui(self):
 
-        self.layout = QtWidgets.QHBoxLayout()
+        self.setStyleSheet(styles.STATUS_BOX)
 
 
-        self.alarm_bar = Alarm_Bar()
-        self.layout.addWidget(self.alarm_bar)
+        self.layout = QtWidgets.QVBoxLayout()
+
+
+        # self.alarm_bar = Alarm_Bar()
+        # self.layout.addWidget(self.alarm_bar)
         self.layout.setContentsMargins(5,5,5,5)
-
-        self.heartbeat = HeartBeat()
-        self.heartbeat.start_timer()
-        self.layout.addWidget(self.heartbeat)
 
         self.start_button = QtWidgets.QPushButton('start!!!')
         self.start_button.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                         QtWidgets.QSizePolicy.Expanding)
         self.start_button.setCheckable(True)
         self.layout.addWidget(self.start_button)
+
+        self.heartbeat = HeartBeat()
+        self.heartbeat.start_timer()
+        self.layout.addWidget(self.heartbeat)
+
+
 
 
         self.setLayout(self.layout)
@@ -52,7 +66,6 @@ class Status_Bar(QtWidgets.QWidget):
         size = style.pixelMetric(QtWidgets.QStyle.PM_MessageBoxIconSize, None, self)
 
         # self.setMaximumHeight(size*1.5)
-        self.setMinimumHeight(styles.STATUS_BAR_MINHEIGHT)
         self.setContentsMargins(0,0,0,0)
         #
         # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
@@ -146,6 +159,7 @@ class Alarm_Bar(QtWidgets.QFrame):
         # self.layout.addWidget(self.clear_button,1)
         self.setLayout(self.layout)
         self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Raised)
+        self.setMinimumHeight(styles.STATUS_BAR_MINHEIGHT)
 
     def add_alarm(self, alarm:Alarm):
         """

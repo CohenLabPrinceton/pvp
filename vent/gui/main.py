@@ -248,7 +248,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if control_object.name in self.pressure_waveform.PARAMETERIZING_VALUES:
             self.pressure_waveform.update_target(control_object.name, control_object.value)
 
-        self.update_state('control', control_object.name.name, control_object.value)
+        self.update_state('controls', control_object.name.name, control_object.value)
 
     @QtCore.Slot(bool)
     def set_plot_control(self, plot_control: bool):

@@ -20,9 +20,13 @@ BACKGROUND_COLOR = "#111111"
 BOX_BACKGROUND = "#333333"
 TEXT_COLOR = "#EEEEEE"
 GRAY_TEXT = BOX_BACKGROUND
+
 CONTROL_BACKGROUND = "#EEEEEE"
-CONTROL_SENSOR_BACKGROUND = "#CCCCCC"
+CONTROL_SUBBOX_BACKGROUND = "#DDDDDD"
 CONTROL_TEXT = BACKGROUND_COLOR
+CONTROL_TEXT_SECONDARY = "#333333"
+CONTROL_TEXT_SECONDARY_SIZE = 10
+CONTROL_SENSOR_BACKGROUND = "#CCCCCC"
 CONTROL_SENSOR_BAR_WIDTH = 50
 HANDLE_HEIGHT = 10
 SLIDER_WIDTH = 80
@@ -43,6 +47,9 @@ TICK_SIZE = 12
 
 CARD_TITLE_SIZE = 24
 CARD_TIMESTAMP_SIZE = 12
+
+STATUS_BAR_MINHEIGHT = 100
+MIDLINE_MARGIN = 30
 
 MONITOR_UPDATE_INTERVAL = 0.5
 """
@@ -103,7 +110,18 @@ QSlider::handle:horizontal {{
 #     height=HANDLE_HEIGHT,
 #            slider_color=SLIDER_COLOR)
 
+MONITOR_BOX = f"""
+QGroupBox {{
+    margin-top: {MIDLINE_MARGIN}px;
+}}
 
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  left: 3px;
+  top: -5px;
+}}
+"""
 
 DISPLAY_VALUE =  """
 QLabel {{ 
@@ -148,6 +166,24 @@ QLabel {{
 DISPLAY_WIDGET = """
 border-bottom: 2px solid white;
 """
+
+
+PRESSURE_PLOT_BOX = f"""
+QGroupBox {{
+    background-color: {CONTROL_BACKGROUND};
+    border: 1px solid #000000;
+    border-radius: 4px;
+    margin-top: {MIDLINE_MARGIN}px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  left: 3px;
+  top: 5px;
+}}
+"""
+
 
 CONTROL_LABEL = f"""
 QLabel {{
@@ -195,17 +231,42 @@ QFrame QWidget {{
 
 CONTROL_BOX = f"""
 QGroupBox {{
-    background-color: {TEXT_COLOR};
+    background-color: {CONTROL_BACKGROUND};
     border: 1px solid #000000;
     border-radius: 4px;
-    margin-top: 20px;
+    margin-top: {MIDLINE_MARGIN}px;
 }}
 
 QGroupBox::title {{
   subcontrol-origin: margin;
-  subcontrol-position: top left;
-  left: 3px;
-  top: -5px;
+  subcontrol-position: top right;
+  right: 15px;
+  top: 5px;
+}}
+"""
+
+CONTROL_SUBBOX = f"""
+QGroupBox {{
+    background-color: {CONTROL_SUBBOX_BACKGROUND};
+    border: 1px solid #000000;
+    margin-top: {MIDLINE_MARGIN}px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top right;
+  right: 15px;
+  top: 5px;
+  color: {CONTROL_TEXT};
+}}
+
+QRadioButton {{
+    color: {CONTROL_TEXT_SECONDARY};
+    font-size: {CONTROL_TEXT_SECONDARY_SIZE}
+}}
+
+QLabel {{
+    color: {CONTROL_TEXT_SECONDARY};
 }}
 """
 

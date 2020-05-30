@@ -40,8 +40,8 @@ class Control(QtWidgets.QWidget):
 
     def init_ui(self):
         self.layout = QtWidgets.QGridLayout()
-        # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-        #                           QtWidgets.QSizePolicy.Expanding)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                  QtWidgets.QSizePolicy.Maximum)
 
         # Value, Controller
         #        min,   max

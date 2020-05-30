@@ -52,6 +52,7 @@ class Status_Bar(QtWidgets.QWidget):
         size = style.pixelMetric(QtWidgets.QStyle.PM_MessageBoxIconSize, None, self)
 
         # self.setMaximumHeight(size*1.5)
+        self.setMinimumHeight(styles.STATUS_BAR_MINHEIGHT)
         self.setContentsMargins(0,0,0,0)
         #
         # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
@@ -127,11 +128,6 @@ class Alarm_Bar(QtWidgets.QFrame):
         self.layout.addStretch(10)
         self.layout.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
 
-        # self.message = QtWidgets.QLabel('')
-        # self.message.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
-        # self.message.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-        #                    QtWidgets.QSizePolicy.Expanding)
-
         self.alarm_layout = QtWidgets.QHBoxLayout()
 
         self.icon = QtWidgets.QLabel()
@@ -143,13 +139,6 @@ class Alarm_Bar(QtWidgets.QFrame):
         #self.icon.setPixmap()
         self.icon.setFixedHeight(size)
         self.icon.setFixedWidth(size)
-
-
-        # self.clear_button = QtWidgets.QPushButton('Clear Message')
-        # self.clear_button.setVisible(False)
-        # self.clear_button.clicked.connect(self.clear_message)
-        #clear_icon = QtGui.QIcon.fromTheme('window-close')
-        #self.clear_button.setIcon(clear_icon)
 
         #self.layout.addWidget(self.message, 6)
         self.layout.addLayout(self.alarm_layout, 6)
@@ -191,8 +180,6 @@ class Alarm_Bar(QtWidgets.QFrame):
 
         # update our icon
         self.update_icon()
-
-
 
     def clear_alarm(self, alarm:Alarm=None, alarm_type:AlarmType=None):
         if (alarm is None) and (alarm_id is None):

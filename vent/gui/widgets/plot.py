@@ -44,7 +44,7 @@ class Pressure_Waveform(pg.PlotWidget):
     )
 
     def __init__(self, n_waveforms = 10, **kwargs):
-        super(Pressure_Waveform, self).__init__(background=styles.BACKGROUND_COLOR,
+        super(Pressure_Waveform, self).__init__(background=styles.TEXT_COLOR,
                                                 title="Pressure Control Waveform")
 
         # create a dq of plot items to hold waveforms
@@ -88,10 +88,10 @@ class Pressure_Waveform(pg.PlotWidget):
         self.addItem(self.segment_pip)
         self.addItem(self.segment_peep)
 
-        self.segment_inhale.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
-        self.segment_pip.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
-        self.segment_exhale.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
-        self.segment_peep.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
+        self.segment_inhale.setPen(color=styles.SUBWAY_COLORS['blue'], width=10)
+        self.segment_pip.setPen(color=styles.SUBWAY_COLORS['blue'], width=10)
+        self.segment_exhale.setPen(color=styles.SUBWAY_COLORS['blue'], width=10)
+        self.segment_peep.setPen(color=styles.SUBWAY_COLORS['blue'], width=10)
 
         # draw points
         self.point_pipt = ScatterDrag(value_name=ValueName.PIP_TIME, width=3, symbolBrush=(255, 0, 0), symbolPen='w')
@@ -146,15 +146,22 @@ class Pressure_Waveform(pg.PlotWidget):
             # points
             # these need to be subtracted back inta shape
             #pdb.set_trace()
-            x, y = new_val
-            if value_name == ValueName.PIP_TIME:
-                new_val = x-self._last_target[0,0]
-            elif value_name == ValueName.INSPIRATION_TIME_SEC:
-                new_val = x-self._last_target[1,0]
-            elif value_name == ValueName.PEEP_TIME:
-                new_val = x-self._last_target[2,0]
+            new_val, _ = new_val
+            if value_name == ValueName.PEEP_TIME:
+                new_val = new_val-self._inspt
         else:
             raise ValueError(f"parameter sent from waveform plot not understood: {param}")
+
+        if value_name == ValueName.PIP:
+            self._pip = new_val
+        elif value_name == ValueName.PEEP:
+            self._peep = new_val
+        elif value_name == ValueName.PIP_TIME:
+            self._pipt = new_val
+        elif value_name == ValueName.PEEP_TIME:
+            self._peept = new_val
+        elif value_name == ValueName.INSPIRATION_TIME_SEC:
+            self._inspt = new_val
 
         control = ControlSetting(
             name=value_name,

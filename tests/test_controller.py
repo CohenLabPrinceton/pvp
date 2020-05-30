@@ -85,7 +85,9 @@ def test_control_dynamical(control_type):
     This tests whether the controller is controlling pressure as intended.
     Start controller, set control values, measure whether actually there.
     '''
-    Controller = get_control_module(sim_mode=True)
+    Controller = get_control_module(sim_mode=True, simulator_dt=0.01)
+    Controller._LOOP_UPDATE_TIME = 0
+
 
     if control_type == "PID":
         Controller.do_pid_control()
@@ -119,7 +121,10 @@ def test_control_dynamical(control_type):
     Controller.start()
     time.sleep(0.1)
     vals_start = Controller.get_sensors()
-    time.sleep(20)                                                   # Let this run for half a minute
+    temp_vals = Controller.get_sensors()
+    while temp_vals.breath_count < 5:
+        time.sleep(0.1)
+        temp_vals = Controller.get_sensors()
 
     Controller.stop() # consecutive stops should be ignored
     Controller.stop() 
@@ -131,8 +136,6 @@ def test_control_dynamical(control_type):
     COPY_peep     = Controller.COPY_sensor_values.PEEP
     COPY_pip      = Controller.COPY_sensor_values.PIP
     COPY_fio2     = Controller.COPY_sensor_values.FIO2
-    COPY_temp     = Controller.COPY_sensor_values.TEMP
-    COPY_humidity = Controller.COPY_sensor_values.HUMIDITY
     COPY_pressure = Controller.COPY_sensor_values.PRESSURE
     COPY_vte      = Controller.COPY_sensor_values.VTE
     COPY_bpm      = Controller.COPY_sensor_values.BREATHS_PER_MINUTE
@@ -143,21 +146,12 @@ def test_control_dynamical(control_type):
     assert COPY_peep     == vals_stop.PEEP
     assert COPY_pip      == vals_stop.PIP
     assert COPY_fio2     == vals_stop.FIO2
-    assert COPY_temp     == vals_stop.TEMP
-    assert COPY_humidity == vals_stop.HUMIDITY
     assert COPY_pressure == vals_stop.PRESSURE
     assert COPY_vte      == vals_stop.VTE
     assert COPY_bpm      == vals_stop.BREATHS_PER_MINUTE
     assert COPY_Iinsp    == vals_stop.INSPIRATION_TIME_SEC
     assert COPY_tt       == vals_stop.timestamp
     assert COPY_lc       == vals_stop.loop_counter
-
-    print(v_peep)
-    print(v_pip)
-    print(v_bpm)
-    print(v_iphase)
-    print(Inspiration_CI)
-    print(control_type)
 
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
     assert np.abs(vals_stop.PEEP - v_peep)                     < 2   # PEEP error correct within 2 cmH2O  - as per document
@@ -191,12 +185,13 @@ def test_erratic_dt():
     '''
         This is a function to test whether the controller works with random update times
     '''
-    Controller = get_control_module(sim_mode=True)
+    Controller = get_control_module(sim_mode=True, simulator_dt=0.01)
+    Controller._LOOP_UPDATE_TIME = 0
 
     Controller.start()
     ls = []
     for t in np.arange(0, 30,0.05):
-        Controller._LOOP_UPDATE_TIME = np.random.randint(100)/1000  # updates anywhere between 0ms and 100ms
+        Controller._simulator_dt = np.random.randint(100)/1000  # updates anywhere between 0ms and 100ms
         time.sleep(0.05)
         vals = Controller.get_sensors()
         ls.append(vals)

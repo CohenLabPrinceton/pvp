@@ -45,7 +45,7 @@ class ControlModuleBase:
 
     """
 
-    def __init__(self, save_logs: bool = True, flush_every: int = 10):
+    def __init__(self, save_logs: bool = False, flush_every: int = 10):
         """
 
         Args:
@@ -548,8 +548,6 @@ class ControlModuleBase:
         ValueName.PIP.name                  : self._DATA_PIP,
         ValueName.PEEP.name                 : self._DATA_PEEP,
         ValueName.FIO2.name                 : 0,
-        ValueName.TEMP.name                 : 0,
-        ValueName.HUMIDITY.name             : 0,
         ValueName.PRESSURE.name             : self._DATA_PRESSURE,
         ValueName.VTE.name                  : self._DATA_VTE,
         ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
@@ -696,23 +694,21 @@ class ControlModuleDevice(ControlModuleBase):
     
     def _sensor_to_COPY(self):
         # And the sensor measurements
-        self._get_HAL() 
 
+        self._get_HAL() 
         with self._lock:
-            self.COPY_sensor_values = SensorValues(vals={
-                ValueName.PIP.name                  : self._DATA_PIP,
-                ValueName.PEEP.name                 : self._DATA_PEEP,
-                ValueName.FIO2.name                 : 70,
-                ValueName.TEMP.name                 : -1,
-                ValueName.HUMIDITY.name             : -1,
-                ValueName.PRESSURE.name             : self._DATA_PRESSURE(),
-                ValueName.VTE.name                  : self._DATA_VTE,
-                ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
-                ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
-                'timestamp'                  : time.time(),
-                'loop_counter'             : self._loop_counter,
-                'breath_count': self._DATA_BREATH_COUNT
-            })
+          self.COPY_sensor_values = SensorValues(vals={
+              ValueName.PIP.name                  : self._DATA_PIP,
+              ValueName.PEEP.name                 : self._DATA_PEEP,
+              ValueName.FIO2.name                 : 70,
+              ValueName.PRESSURE.name             : self.HAL.pressure,
+              ValueName.VTE.name                  : self._DATA_VTE,
+              ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+              ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+              'timestamp'                  : time.time(),
+              'loop_counter'             : self._loop_counter,
+              'breath_count': self._DATA_BREATH_COUNT
+          })
             
     @timeout
     def _set_HAL(self, valve_open_in, valve_open_out):
@@ -930,18 +926,16 @@ class ControlModuleSimulator(ControlModuleBase):
         # And the sensor measurements
         with self._lock:
             self.COPY_sensor_values = SensorValues(vals={
-                ValueName.PIP.name                  : self._DATA_PIP,
-                ValueName.PEEP.name                 : self._DATA_PEEP,
-                ValueName.FIO2.name                 : self.Balloon.fio2,
-                ValueName.TEMP.name                 : self.Balloon.temperature,
-                ValueName.HUMIDITY.name             : self.Balloon.humidity,
-                ValueName.PRESSURE.name             : self.Balloon.current_pressure,
-                ValueName.VTE.name                  : self._DATA_VTE,
-                ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
-                ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
-                'timestamp'                  : time.time(),
-                'loop_counter'             : self._loop_counter,
-                'breath_count': self._DATA_BREATH_COUNT
+              ValueName.PIP.name                  : self._DATA_PIP,
+              ValueName.PEEP.name                 : self._DATA_PEEP,
+              ValueName.FIO2.name                 : self.Balloon.fio2,
+              ValueName.PRESSURE.name             : self.Balloon.current_pressure,
+              ValueName.VTE.name                  : self._DATA_VTE,
+              ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+              ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+              'timestamp'                  : time.time(),
+              'loop_counter'             : self._loop_counter,
+              'breath_count': self._DATA_BREATH_COUNT
             })
 
     def _start_mainloop(self):
@@ -997,14 +991,14 @@ class ControlModuleSimulator(ControlModuleBase):
 
 
 
-def get_control_module(sim_mode=False):
+
+def get_control_module(sim_mode=False, simulator_dt = None):
     """
     Generates control module.
     Args:
         sim_mode (bool): if ``true``: returns simulation, else returns hardware
     """
-
     if sim_mode == True:
-        return ControlModuleSimulator()
+        return ControlModuleSimulator(simulator_dt=simulator_dt)
     else:
         return ControlModuleDevice()

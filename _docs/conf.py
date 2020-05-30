@@ -44,7 +44,8 @@ extensions = [
     # 'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon', # parse google style docstrings
     'autodocsumm',
-    'recommonmark'   # support markdown
+    'recommonmark',   # support markdown
+    'sphinx_sass' # support sass/scss
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -117,6 +118,12 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+sass_configs = [
+    {
+    'entry':'sass/theme.sass',
+    'output':'pvp_theme.css'
+    }
+]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

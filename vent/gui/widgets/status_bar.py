@@ -48,8 +48,8 @@ class Control_Panel(QtWidgets.QGroupBox):
         self.layout.setContentsMargins(5,5,5,5)
 
         self.start_button = QtWidgets.QPushButton('start!!!')
-        self.start_button.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
-                                        QtWidgets.QSizePolicy.Expanding)
+        self.start_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                        QtWidgets.QSizePolicy.Maximum)
         self.start_button.setCheckable(True)
         self.layout.addWidget(self.start_button)
 

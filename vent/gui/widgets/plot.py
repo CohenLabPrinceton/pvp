@@ -78,6 +78,8 @@ class Pressure_Waveform(pg.PlotWidget):
 
         # self.getViewBox().setMouseEnabled(False, False)
 
+        self.setStyleSheet(styles.PRESSURE_PLOT_BOX)
+
         # draw lines
         # upward line
         self.segment_inhale = self.plot(width=3, symbolPen='w')

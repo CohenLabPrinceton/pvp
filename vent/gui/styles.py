@@ -171,8 +171,8 @@ border-bottom: 2px solid white;
 PRESSURE_PLOT_BOX = f"""
 QGroupBox {{
     background-color: {CONTROL_BACKGROUND};
-    border: 1px solid #000000;
-    border-radius: 4px;
+    border: 0px solid #000000;
+    border-radius: 5px 0px 0px 5px;
     margin-top: {MIDLINE_MARGIN}px;
 }}
 
@@ -183,6 +183,7 @@ QGroupBox::title {{
   top: 5px;
 }}
 """
+
 
 
 CONTROL_LABEL = f"""
@@ -232,8 +233,10 @@ QFrame QWidget {{
 CONTROL_BOX = f"""
 QGroupBox {{
     background-color: {CONTROL_BACKGROUND};
-    border: 1px solid #000000;
-    border-radius: 4px;
+    border: 0px solid #000000;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
     margin-top: {MIDLINE_MARGIN}px;
 }}
 
@@ -249,7 +252,11 @@ CONTROL_SUBBOX = f"""
 QGroupBox {{
     background-color: {CONTROL_SUBBOX_BACKGROUND};
     border: 1px solid #000000;
-    margin-top: {MIDLINE_MARGIN}px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    margin-left: 5px;
 }}
 
 QGroupBox::title {{

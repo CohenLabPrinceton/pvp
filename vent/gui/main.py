@@ -324,6 +324,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         #       right:  controls
         self.layout = QtWidgets.QGridLayout()
         self.layout.setContentsMargins(0,0,0,0)
+        self.layout.setSpacing(0)
         self.main_widget.setLayout(self.layout)
 
         # layout that includes the display and controls
@@ -479,6 +480,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_cycle_buttons = {}
         self.controls_layout_cycle_buttons = QtWidgets.QHBoxLayout()
         self.controls_layout_cycle_widgets = QtWidgets.QVBoxLayout()
+        self.controls_layout_cycle_buttons.addStretch(10)
         self.controls_cycle_layout.setContentsMargins(0, 0, 0, 0)
         self.controls_layout_cycle_widgets.setContentsMargins(0, 0, 0, 0)
         for control_name in (ValueName.BREATHS_PER_MINUTE, ValueName.INSPIRATION_TIME_SEC, ValueName.IE_RATIO):
@@ -498,7 +500,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 self.controls[control_name.name].setVisible(False)
                 self.controls_cycle_buttons[control_name].setChecked(True)
 
-        self.controls_layout_cycle_buttons.addStretch(10)
         self.controls_layout_cycle_buttons.addWidget(QtWidgets.QLabel("Auto-Calculate"))
 
         self.controls_cycle_button_group.buttonClicked.connect(self.toggle_cycle_widget)
@@ -735,7 +736,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         Returns:
 
         """
-        if state_type not in self._state:
+        if state_type not in self._state.keys():
             self.logger.warning(f'No such state type as {state_type}')
             return
 
@@ -762,10 +763,17 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         """
 
-        if isinstance(state):
+        if isinstance(state, str):
             if not os.path.exists(state):
                 self.logger.exception(f'Attempted to load state from file, but none found: {state}')
 
+            with open(state, 'r') as state_f:
+                state = json.load(state_f)
+
+        self._state = state
+
+        for control_name, control_value in self._state['controls'].items():
+            self.set_value(control_value, control_name)
 
     @property
     def controls_set(self):

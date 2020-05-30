@@ -9,10 +9,12 @@ from itertools import count
 
 import vent.io as io
 
+from vent import prefs
 from vent.common.message import SensorValues, ControlValues, ControlSetting
 from vent.common.logging import init_logger, DataLogger
 from vent.common.values import CONTROL, ValueName
 from vent.alarm import AlarmSeverity, Alarm
+
 
 
 class ControlModuleBase:
@@ -56,8 +58,8 @@ class ControlModuleBase:
         #####################  Algorithm/Program parameters  ##################
         # Hyper-Parameters
         # TODO: These should probably all (or whichever make sense) should be args to __init__ -jls
-        self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec
-        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      # After every 10 main control loop iterations, update COPYs.
+        self._LOOP_UPDATE_TIME                   = prefs.get_pref('CONTROLLER_UPDATE_TIME')    # Run the main control loop every 0.01 sec
+        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = prefs.get_pref('CONTROLLER_UPDATE_LOOPS')      # After every 10 main control loop iterations, update COPYs.
         self._RINGBUFFER_SIZE                    = 100     # Maximum number of breath cycles kept in memory
         self._save_logs                          = save_logs   # Keep logs in a file
         self._FLUSH_EVERY                        = flush_every

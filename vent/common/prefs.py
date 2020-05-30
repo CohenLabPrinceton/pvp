@@ -42,7 +42,9 @@ _DEFAULTS = {
     'PREFS_FN': None,
     'LOGGING_MAX_BYTES': 2 * 2 ** 30, # total
     'LOGGING_MAX_FILES': 5,
-    'GUI_STATE_FN': 'gui_state.json'
+    'GUI_STATE_FN': 'gui_state.json',
+    'CONTROLLER_UPDATE_TIME': 0.01,
+    'CONTROLLER_UPDATE_LOOPS': 2
 }
 """
 Declare all available parameters and set default values. If no default, set as None. 

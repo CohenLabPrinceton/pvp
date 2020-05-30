@@ -88,12 +88,7 @@ class SensorValues:
 
 class ControlValues:
     """
-    Class to save control values, analogous to SensorValues.
-    Key difference: SensorValues come exclusively from the sensors, ControlValues contains controller variables, i.e. control signals and controlled signals (the flows).
-    :param control_signal_in:
-    :param control_signal_out:
-    :param flow_in:
-    :param flow_out:
+    Class to save control values.
     """
     def __init__(self, control_signal_in, control_signal_out, flow_in, flow_out):
         self.control_signal_in = control_signal_in
@@ -103,7 +98,7 @@ class ControlValues:
 
 
 class ControlSetting:
-    def __init__(self, name = None, value = None, min_value = None, max_value = None, timestamp = None):
+    def __init__(self, name, value, min_value, max_value, timestamp):
         """
         TODO: if enum is hard to use, we may just use a predefined set, e.g. {'PIP', 'PEEP', ...}
         :param name: enum belong to ValueName

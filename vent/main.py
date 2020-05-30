@@ -16,13 +16,16 @@ def parse_cmd_args():
     parser.add_argument('--single_process',
                         help='running UI and coordinator within one process (default: False)',
                         action='store_true')
+    parser.add_argument('--default_controls',
+                        help='set default ControlValues on start (default: False).',
+                        action='store_true')
     return parser.parse_args()
 
 
 def main():
     args = parse_cmd_args()
     coordinator = get_coordinator(single_process=args.single_process, sim_mode=args.simulation)
-    app, gui = launch_gui(coordinator)
+    app, gui = launch_gui(coordinator, args.default_controls)
     sys.exit(app.exec_())
 
 

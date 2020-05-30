@@ -18,7 +18,7 @@ class Control(QtWidgets.QWidget):
     value_changed = QtCore.Signal(float)
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, value: Value):
+    def __init__(self, value: Value, set_default: bool = False):
         super(Control, self).__init__()
 
         self.name = value.name
@@ -28,7 +28,10 @@ class Control(QtWidgets.QWidget):
             self.safe_range = (0, 0)
         else:
             self.safe_range = value.safe_range
-        self.value = value.default
+        if set_default:
+            self.value = value.default
+        else:
+            self.value = None
         self.decimals = value.decimals
         self.sensor = None
 
@@ -62,6 +65,17 @@ class Control(QtWidgets.QWidget):
         if n_ints <= 4:
             n_ints = 4
 
+        ###########
+        # if we were not initialized with a default value, set value *visually* to not be displayed
+        if self.value is None:
+            init_value = 0
+            init_low = 0
+            init_high = 0
+        else:
+            init_value = self.value
+            init_low = self.value - self.safe_range[0]
+            init_high = self.safe_range[1] - self.value
+
         ########
         # Sensor box
         self.sensor_frame = QtWidgets.QFrame()
@@ -92,16 +106,16 @@ class Control(QtWidgets.QWidget):
         self.sensor_bar = pg.BarGraphItem(x=np.array([0]), y1=np.array([0]), width=np.array([1]), brush=styles.GRAY_TEXT)
 
         # error bars for limit indicators
-        self.sensor_limits = pg.ErrorBarItem(beam=1, x=np.array([0]), y=np.array([self.value]),
-                                             top=self.safe_range[1]-self.value,
-                                             bottom=self.value-self.safe_range[0],
+        self.sensor_limits = pg.ErrorBarItem(beam=1, x=np.array([0]), y=np.array([init_value]),
+                                             top=init_high,
+                                             bottom=init_low,
                                              pen={
                                                  'color':styles.SUBWAY_COLORS['red'],
                                                  'width':2
                                              })
 
         # the set value
-        self.sensor_set = pg.InfiniteLine(movable=False, angle=0, pos=self.value,
+        self.sensor_set = pg.InfiniteLine(movable=False, angle=0, pos=init_value,
                                           pen={'color':styles.BACKGROUND_COLOR, 'width':5})
 
 
@@ -164,9 +178,6 @@ class Control(QtWidgets.QWidget):
         # layout
         self.layout.addWidget(self.sensor_frame, 0, 0, 2, 1)
         self.layout.addWidget(self.value_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight)
-        #self.layout.addWidget(self.dial, 0, 1, 2, 2, alignment=QtCore.Qt.AlignVCenter)
-        #self.layout.addWidget(self.slider_min, 2, 1, 1, 1)
-        #self.layout.addWidget(self.slider_max, 2, 2, 1, 1)
         self.layout.addWidget(self.name_label, 0, 2, 1, 1, alignment=QtCore.Qt.AlignLeft)
         self.layout.addWidget(self.units_label, 1, 2, 1, 1, alignment=QtCore.Qt.AlignLeft)
         self.layout.addWidget(self.toggle_button, 0, 3, 2, 1, alignment=QtCore.Qt.AlignRight)
@@ -221,7 +232,8 @@ class Control(QtWidgets.QWidget):
         self.slider.doubleValueChanged.connect(self.update_value)
 
 
-        self.update_value(self.value)
+        if self.value:
+            self.update_value(self.value)
 
     @QtCore.Slot(bool)
     def toggle_control(self, state):
@@ -229,12 +241,12 @@ class Control(QtWidgets.QWidget):
             self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
             self.layout.addWidget(self.slider_frame, 3, 0, 1, 3)
             self.slider_frame.setVisible(True)
-            #self.adjustSize()
+            # self.adjustSize()
         else:
             self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
             self.layout.removeWidget(self.slider_frame)
             self.slider_frame.setVisible(False)
-            #self.adjustSize()
+            self.adjustSize()
 
 
     def update_value(self, new_value: float):
@@ -266,6 +278,8 @@ class Control(QtWidgets.QWidget):
         self.sensor_limits.setData(**{'y': np.array([self.value])})
 
     def update_limits(self, control: ControlSetting):
+        if self.value is None:
+            return
 
         #self.update_value(control.value)
         if control.min_value and control.min_value != self.safe_range[0]:
@@ -277,10 +291,6 @@ class Control(QtWidgets.QWidget):
             self.safe_range = (self.safe_range[0], control.max_value)
 
 
-
-
-
-
     def update_sensor(self, new_value):
         if new_value is None:
             return
@@ -288,3 +298,11 @@ class Control(QtWidgets.QWidget):
         self.sensor_label.setText(value_str)
         self.sensor_bar.setOpts(y1=np.array([new_value]))
         # self.sensor_plot.autoRange(padding=.001)
+
+    @property
+    def is_set(self):
+        if self.value is None:
+            return False
+        else:
+            return True
+

@@ -41,7 +41,8 @@ bool: flag to indicate whether prefs have been loaded (and thus :func:`set_pref`
 _DEFAULTS = {
     'PREFS_FN': None,
     'LOGGING_MAX_BYTES': 2 * 2 ** 30, # total
-    'LOGGING_MAX_FILES': 5
+    'LOGGING_MAX_FILES': 5,
+    'GUI_STATE_FN': 'gui_state.json'
 }
 """
 Declare all available parameters and set default values. If no default, set as None. 
@@ -52,6 +53,7 @@ Declare all available parameters and set default values. If no default, set as N
 * ``DATA_DIR``: ~/vent/data - for storage of waveform data
 * ``LOGGING_MAX_BYTES`` : the **total** storage space for all loggers -- each logger gets ``LOGGING_MAX_BYTES/len(loggers)`` space
 * ``LOGGING_MAX_FILES`` : number of files to split each logger's logs across
+* ``GUI_STATE_FN``: Filename of gui control state file, relative to ``VENT_DIR``
 """
 
 def set_pref(key: str, val):

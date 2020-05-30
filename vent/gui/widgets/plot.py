@@ -14,6 +14,7 @@ from vent.gui import mono_font
 from vent.gui import get_gui_instance
 from vent.common.message import SensorValues, ControlSetting
 from vent.common.values import ValueName
+from vent.common.logging import init_logger
 
 PLOT_TIMER = None
 """
@@ -33,6 +34,15 @@ class Pressure_Waveform(pg.PlotWidget):
 
     controlling_plot = QtCore.Signal(bool)
 
+    PARAMETERIZING_VALUES = (
+        ValueName.PIP_TIME,
+        ValueName.PIP,
+        ValueName.PEEP_TIME,
+        ValueName.PEEP,
+        ValueName.INSPIRATION_TIME_SEC,
+        ValueName.BREATHS_PER_MINUTE
+    )
+
     def __init__(self, n_waveforms = 10, **kwargs):
         super(Pressure_Waveform, self).__init__(background=styles.BACKGROUND_COLOR,
                                                 title="Pressure Control Waveform")
@@ -50,8 +60,9 @@ class Pressure_Waveform(pg.PlotWidget):
         self._pip = None
         self._peep = None
         self._pipt = None
-        self._inspt = None
         self._peept = None
+        self._inspt = None
+        self._rr = None
 
         self._last_target = np.array(())
         self._last_cycle = None
@@ -152,42 +163,143 @@ class Pressure_Waveform(pg.PlotWidget):
         self.control_changed.emit(control)
 
 
+    def update_target(self, value_name: ValueName, value):
+        """
+        Update the target waveform with a ValueName: value combination
+
+        Args:
+            value_name (:class:`.ValueName`): one of :data:`.values.CONTROL`
+            value:
+
+        Returns:
+
+        """
+
+        if value_name == ValueName.PIP_TIME:
+            self._pipt = value
+        elif value_name == ValueName.PIP:
+            self._pip = value
+        elif value_name == ValueName.PEEP_TIME:
+            self._peept = value
+        elif value_name == ValueName.PEEP:
+            self._peep = value
+        elif value_name == ValueName.INSPIRATION_TIME_SEC:
+            self._inspt = value
+        elif value_name == ValueName.BREATHS_PER_MINUTE:
+            self._rr = value
+        else:
+            init_logger(__name__).exception(f'Tried to set waveform plot with {value_name}, but no plot element corresponds')
+            return
+
+        self.draw_target()
 
 
-    def update_target(self, target):
+
+    def update_target_array(self, target):
+        """
+        Update the target waveform with an array from the ``controller``
+
+        Args:
+            target:
+
+        Returns:
+
+        """
         # pdb.set_trace()
-        #if not np.array_equal(target, self._last_target):
-        if True:
-        #     view_range = np.min(target[:, 0]), np.max(target[:, 0])
-            view_range = self.getViewBox().state['viewRange'][0]
-            x_range = view_range[1] - view_range[0]
-            pip_bounds = ((target[1, 0]-view_range[0])/ x_range,
-                          (target[2, 0]-view_range[0])/ x_range)
-            peep_bounds = ((target[3,0]-view_range[0]) / x_range,
-                        (target[4,0]-view_range[0]) /x_range)
-
-            self.segment_inhale.setData(target[0:2,0], target[0:2,1])
-            self.segment_pip.setSpan(mn=pip_bounds[0], mx=pip_bounds[1])
-            self.segment_pip.setValue(target[1,1])
-            self.segment_exhale.setData(target[2:4, 0], target[2:4, 1])
-            self.segment_peep.setSpan(peep_bounds[0], peep_bounds[1], )
-            self.segment_peep.setValue(target[3,1])
-
-            # pdb.set_trace()
-
-
-            #pdb.set_trace()
-            self.point_pipt.setData([target[1,0]], [target[1,1]])
-            self.point_inspt.setData([target[2,0]], [target[2,1]])
-            self.point_peept.setData([target[3,0]], [target[3,1]])
-
-
-            # self.target.setData(target[:,0], target[:,1])
+        if not np.array_equal(target, self._last_target):
+            # calculate values from array
+            self._pipt = target[1,0]-target[0,0]
+            self._pip = target[1,1]
+            self._peept = target[3,0]-target[2,0]
+            self._peep = target[3,1]
+            self._inspt = target[2,0]-target[1,0]
+            self._rr = (1/(target[4,0]-target[0,0]))/60
             self._last_target = target
-            xrange_min, xrange_max = np.min(target[:,0]), np.max(target[:,0])
-            # # xrange_size = xrange_max-xrange_min
-            self.setXRange(xrange_min, xrange_max)
-            # self.setYRange()
+            self.draw_target()
+
+    def draw_target(self):
+        #     view_range = np.min(target[:, 0]), np.max(target[:, 0])
+
+
+        # find the x range and set first!!
+        # if no values are populated, set to 0 and 1
+        x_points = [0, 1]
+        if self._pipt:
+            x_points.append(self._pipt)
+            if self._inspt:
+                x_points.append(self._pipt+self._inspt)
+                if self._peept:
+                    x_points.append(self._pipt + self._inspt+self._peept)
+        if self._rr:
+            x_points.append(1/(self._rr/60))
+
+        x_min, x_max = np.min(x_points), np.max(x_points)
+        self.setXRange(x_min, x_max)
+
+        ############
+        # get new view range and use to calc lines
+        view_range = self.getViewBox().state['viewRange'][0]
+        x_range = view_range[1] - view_range[0]
+
+        # try to draw each segment depending on which values are set
+        ### pipt line and pipt point
+        if self._pip and self._pipt and self._peep:
+            self.segment_inhale.setData(
+                np.array([0, self._pipt]),
+                np.array([self._peep, self._pip])
+            )
+            self.point_pipt.setData([self._pipt], [self._pip])
+
+
+        ### pip line and inspt
+        if self._pip and self._pipt and self._inspt:
+            self.segment_pip.setValue(self._pip)
+            # if self._pipt and self._inspt:
+            #
+            pip_bounds = ((self._pipt-view_range[0])/ x_range,
+                          (self._inspt-view_range[0])/ x_range)
+
+            self.segment_pip.setSpan(mn=pip_bounds[0], mx=pip_bounds[1])
+            #
+            self.point_inspt.setData([self._inspt], [self._pip])
+
+
+
+
+        ### exhale slope
+        if self._inspt and self._pip and self._peept and self._peep:
+            self.segment_exhale.setData(
+                np.array([self._inspt,
+                          self._inspt + self._peept]),
+                np.array([self._pip, self._peep])
+            )
+
+            self.point_peept.setData([self._inspt + self._peept],
+                                     [self._peep])
+
+
+
+        ### peep line
+        if self._peep and self._inspt and self._peept and self._rr:
+            self.segment_peep.setValue(self._peep)
+
+            # peep_bounds = (0,1)
+            # if self._pipt and self._inspt and self._peept and self._rr:
+            peep_bounds = ((self._inspt + self._peept-view_range[0])/x_range,
+                           (1/(self._rr/60)-view_range[0])/x_range)
+
+            #
+            # elif self._pipt and self._inspt and self._peept:
+            #     peep_bounds = ((self._pipt + self._inspt + self._peept)/x_range,
+            #                    1)
+            #     x_points.append(self._pipt + self._inspt + self._peept)
+            # elif self._rr:
+            #     peep_bounds = (0, 1/(self._rr/60)/x_range)
+            #     x_points.append(1/(self._rr/60))
+            #
+            self.segment_peep.setSpan(peep_bounds[0], peep_bounds[1])
+
+
 
     def update_waveform(self, sensors: SensorValues):
         if self._last_cycle is None or sensors.breath_count > self._last_cycle:

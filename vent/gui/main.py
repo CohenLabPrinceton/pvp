@@ -4,10 +4,11 @@ import threading
 import pdb
 import os
 import typing
+import json
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
-
+from vent import prefs
 from vent.alarm import AlarmSeverity, Alarm
 from vent.common import values
 from vent.common.values import ValueName
@@ -74,6 +75,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     def __init__(self,
                  coordinator: typing.Type[coordinator.CoordinatorBase],
+                 set_defaults: bool = False,
                  update_period: float = 0.05):
         """
         The Main GUI window.
@@ -101,6 +103,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         Arguments:
+            coordinator: The :class:`vent.coordinator.coordinator.CoordinatorBase` object!
+            set_defaults (bool): Whether default `Value` s should be set on initialization (default ``False``)
             update_period (float): The global delay between redraws of the GUI (seconds)
             test (bool): Whether the monitored values and plots should be fed sine waves for visual testing.
 
@@ -145,11 +149,19 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.running = False
 
-        # initialize controls to starting values
-        self.init_controls()
+        # keep track of set values!!!
+        self._state = {
+            'controls': {}
+        }
+
+
 
         self.init_ui()
         self.start_time = time.time()
+
+        # initialize controls to starting values
+        if set_defaults:
+            self.init_controls()
 
         self.update_gui()
 
@@ -183,7 +195,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     def set_value(self, new_value, value_name=None):
         """
-        Set a control value with the ``coordinator``
+        Set a control value using a value and its name.
+
+        .. note::
+
+            This method is primarily intended as a means of responding to signals from other widgets,
+            Other cases should use :meth:`.set_control`
 
         Args:
             new_value (float): Som
@@ -194,9 +211,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if value_name is None:
             value_name = self.sender().objectName()
 
-        elif not isinstance(value_name, str):
+        elif isinstance(value_name, ValueName):
             # TODO: More explicitly check for enum
             value_name = value_name.name
+
+
 
 
         control_object = ControlSetting(name=getattr(ValueName, value_name),
@@ -205,9 +224,20 @@ class Vent_Gui(QtWidgets.QMainWindow):
                                         #max_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][1],
                                         timestamp = time.time())
         self.set_control(control_object)
-        self.logger.info(f'Control value set: {value_name}, {new_value}')
+
 
     def set_control(self, control_object: ControlSetting):
+        """
+        Set a control in the alarm manager, coordinator, and gui
+
+        Args:
+            control_object:
+
+        Returns:
+
+        """
+        self.logger.info(f'Setting control value: {control_object.name.name}, {control_object.value}')
+
         # FIXME: replace set_value with this kinda thing
         #self.logger.debug(control_object.__dict__)
         self.alarm_manager.update_dependencies(control_object)
@@ -215,6 +245,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # FIXME: The recursion here is bad. should do a separate value_updated and update_value for outgoing/ingoing updates
         if control_object.name.name in self.controls.keys():
             self.controls[control_object.name.name].update_value(control_object.value)
+
+        if control_object.name in self.pressure_waveform.PARAMETERIZING_VALUES:
+            self.pressure_waveform.update_target(control_object.name, control_object.value)
+
 
     @QtCore.Slot(bool)
     def set_plot_control(self, plot_control: bool):
@@ -230,25 +264,28 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         """
         try:
-            if not vals:
-                vals = self.coordinator.get_sensors()
 
             # update ideal waveform
             # be extra cautious here, don't want to break before being able to check alarms
-            try:
-                self.pressure_waveform.update_target(self.coordinator.get_target_waveform())
-                self.pressure_waveform.update_waveform(vals)
-            except Exception as e:
-                self.logger.exception(f'Couldnt draw ideal waveform, got error {e}')
+
 
             # if not running yet, don't update anything else.
             if not self.running:
                 return
 
+            if not vals:
+                vals = self.coordinator.get_sensors()
+
             # update alarms
             # only after first breath! many values are only defined after first cyce
             if vals.breath_count > 1:
                 self.alarm_manager.update(vals)
+            #
+            try:
+            #     self.pressure_waveform.update_target_array(self.coordinator.get_target_waveform())
+                self.pressure_waveform.update_waveform(vals)
+            except Exception as e:
+                self.logger.exception(f'Couldnt draw ideal waveform, got error {e}')
 
             for plot_key, plot_obj in self.plots.items():
                 if hasattr(vals, plot_key):
@@ -267,18 +304,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         #
         finally:
             self.timer.start()
-
-    # def update_value(self, value_name, new_value):
-    #     """
-    #     Arguments:
-    #         value_name (str): Name of key in :attr:`.Vent_Gui.monitor` and :attr:`.Vent_Gui.plots` to update
-    #         new_value (int, float): New value to display/plot
-    #     """
-    #     # FIXME: delete me?
-    #     if value_name in self.monitor.keys():
-    #         self.monitor[value_name].update_value(new_value)
-    #     if value_name in self.plots.keys():
-    #         self.plots[value_name].update_value(new_value)
 
     def init_ui(self):
         """
@@ -526,15 +551,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 self.plots[value.name].limits_changed.connect(
                     self.monitor[value.name].update_limits)
 
-        # connect monitors to alarm_manager
-        # for monitor in self.monitor.values():
-        #     monitor.alarm.connect(self.alarm_manager.monitor_alarm)
-
-        # connect alarms to alarm manager, and then back to us
-        # self.alarms_updated.connect(self.alarm_manager.update_alarms)
-        # self.alarm_manager.new_alarm.connect(self.handle_alarm)
-        # FIXME: THis should be handled by alarm manager, that's what it's there for!
-        #self.status_bar.alarm_bar.level_changed.connect(self.alarm_state_changed)
         self.status_bar.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
 
         # connect controls
@@ -542,7 +558,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             control.value_changed.connect(self.set_value)
 
         # connect start button to coordinator start
-        self.status_bar.start_button.toggled.connect(self.setState)
+        self.status_bar.start_button.toggled.connect(self.toggle_start)
 
         # connect heartbeat indicator to set off before controller starts
         self.state_changed.connect(self.status_bar.heartbeat.set_state)
@@ -668,7 +684,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
         self.status_bar.start_button.click()
 
-    def setState(self, state: bool):
+    def toggle_start(self, state: bool):
         """
         set running true or not
 
@@ -679,24 +695,87 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         """
         if state:
+            # check if all controls have been set
+            if not self.controls_set:
+                box = widgets.pop_dialog(
+                    'Not all controls have been set',
+                    'Please ensure all controls have been set before starting ventilation',
+                )
+                box.exec_()
+                return
+
+            box = widgets.pop_dialog(
+                'Confirm Ventilation Start',
+                modality = QtCore.Qt.WindowModal,
+                buttons = QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
+                default_button = QtWidgets.QMessageBox.Cancel
+            )
+            ret = box.exec_()
+            if ret != QtWidgets.QMessageBox.Ok:
+                return
+
+
             self.running = True
             for plot in self.plots.values():
                 plot.reset_start_time()
             self.coordinator.start()
         else:
             # TODO: what happens when u stop lol
-            pass
+            return
 
         self.state_changed.emit(state)
 
+    def update_state(self, state_type: str, key:str, val: typing.Union[str,float,int]):
+        """
+        Update the GUI state and save it to disk
 
-def launch_gui(coordinator):
+        Args:
+            state_type (str): What type of state to save, one of ``('controls')``
+            key (str): Which of that type is being saved (eg. if 'control', 'PIP')
+            val (str, float, int): What is that item being set to?
+
+        Returns:
+
+        """
+        if state_type not in self._state:
+            self.logger.warning(f'No such state type as {state_type}')
+            return
+
+        self._state[state_type][key] = val
+        self.save_state()
+
+    def save_state(self):
+        try:
+            # update timestamp
+            self._state['timestamp'] = time.time()
+            state_fn = os.path.join(prefs.get_pref('VENT_DIR'), prefs.get_pref('GUI_STATE_FN'))
+            with open(state_fn, 'w') as state_f:
+                json.dump(self._state, state_f,
+                          indent=4, separators=(',', ': '))
+
+        except Exception as e:
+            self.logger.warning(f'State could not be saved, state:\n    {self._state}\n\nerror message:\n    {e}')
+
+    @property
+    def controls_set(self):
+        """
+        Check if all controls are set
+        """
+        # FIXME: More explicit check than this
+        if sum([c.is_set for c in self.controls.values()]) == len(self.controls)-1:
+            return True
+        else:
+            return False
+
+
+
+def launch_gui(coordinator, set_defaults=False):
 
     # just for testing, should be run from main
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('Fusion')
     app.setStyleSheet(styles.DARK_THEME)
     app = styles.set_dark_palette(app)
-    gui = Vent_Gui(coordinator)
+    gui = Vent_Gui(coordinator, set_defaults)
 
     return app, gui

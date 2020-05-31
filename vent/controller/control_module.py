@@ -353,6 +353,7 @@ class ControlModuleBase:
             - Test for HAPA
             - Test for Technical Alert, making sure sensor values are plausible
             - Test for Technical Alert, make sure continuous in contact
+        Currently: Alarms are time.time() of first occurance.
         """
         limit_hapa = 80                 # TODO: WHAT IS THE LIMIT?
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.

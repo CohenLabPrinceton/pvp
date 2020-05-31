@@ -247,8 +247,16 @@ class ControlModuleBase:
         return cp
 
     def get_alarms(self):
-        if True: # technical alert
-            print("error")
+        """
+        Returns alarms, by time of occurance:
+        """
+        with self._lock:
+            hapa = self.HAPA
+            techa = self.TECHA
+
+        if (hapa is not None) or (techa is not NONE):
+            print("An alarm has happened")
+            #TODO: Link to Alarm manager
         else:
             return None
 

@@ -16,7 +16,7 @@ The People's Ventilator Project
    :maxdepth: 4
    :caption: Hardware:
 
-   Hardware Placeholder <hardware>
+   Hardware Overview <hardware>
 
 
 .. toctree::

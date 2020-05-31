@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>vent.gui &mdash; ventilator 0.0.0 documentation</title>
+  <title>vent.gui &mdash; PVP 0.0.0 documentation</title>
   
 
   
@@ -31,8 +31,9 @@
     
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -44,11 +45,11 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: white" >
           
 
           
-            <a href="../../index.html" class="icon icon-home"> ventilator
+            <a href="../../index.html" class="icon icon-home"> PVP
           
 
           
@@ -82,20 +83,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Hardware:</span></p>
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../hardware.html">Hardware Placeholder</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../alarms.html">alarms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../controller.html">controller module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../controls.html">controls module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../coordinator.html">coordinator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../helper.html">helper</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../main.html">main</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../main_control.html">main_control</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../sensors.html">sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../alarm.html">alarm</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -122,7 +125,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">ventilator</a>
+          <a href="../../index.html">PVP</a>
         
       </nav>
 
@@ -176,317 +179,116 @@
 <span class="c1"># Imports</span>
 
 <span class="c1"># python standard libraries</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">pdb</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="c1"># add to path</span>
-<span class="n">PACKAGE_PARENT</span> <span class="o">=</span> <span class="s1">&#39;../..&#39;</span>
-<span class="n">SCRIPT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
-<span class="c1">#pdb.set_trace()</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">PACKAGE_PARENT</span><span class="p">)))</span>
-
-
-
-<span class="c1"># other required libraries</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="c1"># Using PySide (Qt) to build GUI</span>
-<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
-
-<span class="c1"># import whole module so pyqtgraph recognizes we&#39;re using it</span>
-<span class="c1"># using pyqtgraph for data visualization</span>
-
-<span class="c1"># import styles</span>
-<span class="kn">from</span> <span class="nn">vent.gui</span> <span class="kn">import</span> <span class="n">widgets</span>
-<span class="kn">from</span> <span class="nn">vent.gui</span> <span class="kn">import</span> <span class="n">defaults</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">vent.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span><span class="p">,</span> <span class="n">SENSOR</span>
 <span class="kn">from</span> <span class="nn">vent.gui</span> <span class="kn">import</span> <span class="n">styles</span>
 
+<span class="n">LIMIT_GUI_INSTANCE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">(bool): whether there hsould only be one GUI instance at a time. disabled during testing.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1">##########################</span>
-<span class="c1"># GUI Class</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">(</span><span class="s1">&#39;Fira Code&#39;</span><span class="p">)</span>
-<span class="k">except</span><span class="p">:</span>
-    <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
-    <span class="n">mono_font</span><span class="o">.</span><span class="n">setStyleHint</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Monospace</span><span class="p">)</span>
+<div class="viewcode-block" id="limit_gui"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.limit_gui">[docs]</a><span class="k">def</span> <span class="nf">limit_gui</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;LIMIT_GUI_INSTANCE&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;LIMIT_GUI_INSTANCE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">limit</span></div>
 
 
-<div class="viewcode-block" id="Vent_Gui"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui">[docs]</a><span class="k">class</span> <span class="nc">Vent_Gui</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+<span class="n">PLOTS</span> <span class="o">=</span> <span class="n">odict</span><span class="p">({</span>
+    <span class="n">ValueName</span><span class="o">.</span><span class="n">PRESSURE</span><span class="p">:</span> <span class="n">SENSOR</span><span class="p">[</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PRESSURE</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+<span class="p">})</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Values to plot.</span>
+
+<span class="sd">Should have the same key as some key in :data:`~.defaults.SENSOR`. If it does,</span>
+<span class="sd">it will be mutually connected to the resulting :class:`.gui.widgets.Monitor_Value`</span>
+<span class="sd">such that the set limit range is updated when the horizontal bars on the plot are updated.::</span>
+
+<span class="sd">    {</span>
+<span class="sd">        &#39;name&#39; (str): title of plot,</span>
+<span class="sd">        &#39;abs_range&#39; (tuple): absolute limit of plot range,</span>
+<span class="sd">        &#39;safe_range&#39; (tuple): safe range, will be discolored outside of this range,</span>
+<span class="sd">        &#39;color&#39; (str): hex color of line (like &quot;#FF0000&quot;)</span>
+<span class="sd">    }</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">PLOTS</span><span class="p">[</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PRESSURE</span><span class="p">][</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">]</span>
+
+
+<span class="c1">########################</span>
+
+<span class="n">_GUI_INSTANCE</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="set_gui_instance"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.set_gui_instance">[docs]</a><span class="k">def</span> <span class="nf">set_gui_instance</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Store the current instance of the GUI</span>
 
-<span class="sd">    Controls:</span>
-<span class="sd">        - PIP: peak inhalation pressure (~20 cm H2O)</span>
-<span class="sd">        - T_insp: inspiratory time to PEEP (~0.5 sec)</span>
-<span class="sd">        - I/E: inspiratory to expiratory time ratio</span>
-<span class="sd">        - bpm: breaths per minute (15 bpm -&gt; 1/15 sec cycle time)</span>
-<span class="sd">        - PIP_time: Target time for PIP. While lungs expand, dP/dt should be PIP/PIP_time</span>
-<span class="sd">        - flow_insp: nominal flow rate during inspiration</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        instance (:class:`~.vent.gui.main.Vent_Gui`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_GUI_INSTANCE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span></div>
 
-<span class="sd">    **Set by hardware**</span>
-<span class="sd">        - FiO2: fraction of inspired oxygen, set by blender</span>
-<span class="sd">        - max_flow: manual valve at output of blender</span>
-<span class="sd">        - PEEP: positive end-expiratory pressure, set by manual valve</span>
 
-<span class="sd">    **Derived parameters**</span>
-<span class="sd">        - cycle_time: 1/bpm</span>
-<span class="sd">        - t_insp: inspiratory time, controlled by cycle_time and I/E</span>
-<span class="sd">        - t_exp: expiratory time, controlled by cycle_time and I/E</span>
+<div class="viewcode-block" id="get_gui_instance"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.get_gui_instance">[docs]</a><span class="k">def</span> <span class="nf">get_gui_instance</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retreive the currently running instance of the GUI</span>
 
-<span class="sd">    **Monitored variables**</span>
-<span class="sd">        - O2</span>
-<span class="sd">        - Temperature</span>
-<span class="sd">        - Humidity</span>
-<span class="sd">        - (VTE) End-Tidal volume: the volume of air entering the lung, derived from flow through t_exp</span>
-<span class="sd">        - PIP: peak inspiratory pressure, set by user in software</span>
-<span class="sd">        - Mean plateau pressure: derived from pressure sensor during inspiration cycle hold (no flow)</span>
-<span class="sd">        - PEEP: positive end-expiratory pressure, set by manual valve</span>
-<span class="sd">        - fTotal (total respiratory frequency) - breaths delivered by vent &amp; patients natural breaths</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`~.vent.gui.main.Vent_Gui`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_GUI_INSTANCE&#39;</span><span class="p">]</span></div>
 
-<span class="sd">    **Alarms**</span>
-<span class="sd">        - Oxygen out of range</span>
-<span class="sd">        - High pressure (tube/airway occlusion)</span>
-<span class="sd">        - Low-pressure (disconnect)</span>
-<span class="sd">        - Temperature out of range</span>
-<span class="sd">        - Low voltage alarm (if using battery power)</span>
-<span class="sd">        - Tidal volume (expiratory) out of range</span>
+<span class="c1">###########</span>
+<span class="c1"># Load a monospace font for displaying numbers</span>
+<span class="c1"># Want to load an explicit font because computing the hint to find the default mono font is expensive</span>
 
-<span class="sd">    Graphs:</span>
-<span class="sd">        - Flow</span>
-<span class="sd">        - Pressure</span>
+<span class="n">_MONO_FONT</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="viewcode-block" id="mono_font"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.mono_font">[docs]</a><span class="k">def</span> <span class="nf">mono_font</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    module function to return a :class:`PySide2.QtGui.QFont` to use as the mono font.</span>
+
+<span class="sd">    use this instead of just making because :class:`PySide2.QtGui.QFontDatabase` can&#39;t be instantiated before the</span>
+<span class="sd">    :class:`PySide2.QtWidgets.QApplication` is instantiated, so we load the font after the app</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_MONO_FONT&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">load_mono_font</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_MONO_FONT&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="load_mono_font"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.load_mono_font">[docs]</a><span class="k">def</span> <span class="nf">load_mono_font</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load the monospaced font and set the module-global :data:`_MONO_FONT` object.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Must be called after :class:`PySide2.QtWidgets.QApplication` is instantiated!</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># first try to load fira code for monospace font</span>
+        <span class="n">external_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;external&#39;</span><span class="p">)</span>
+        <span class="n">font_db</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFontDatabase</span><span class="p">()</span>
+        <span class="n">font_db</span><span class="o">.</span><span class="n">addApplicationFont</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">external_dir</span><span class="p">,</span> <span class="s1">&#39;FiraCode-Regular.otf&#39;</span><span class="p">))</span>
+        <span class="n">font_db</span><span class="o">.</span><span class="n">addApplicationFont</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">external_dir</span><span class="p">,</span> <span class="s1">&#39;FiraCode-Bold.otf&#39;</span><span class="p">))</span>
+        <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">(</span><span class="s1">&#39;Fira Code&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>   <span class="c1"># pragma: no cover</span>
+        <span class="c1"># if that fails, try to load liberation mono</span>
+        <span class="c1"># TODO: Log this</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">(</span><span class="s1">&#39;Liberation Mono&#39;</span><span class="p">)</span>
 
-    <span class="n">MONITOR</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">MONITOR</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    see :data:`.gui.defaults.MONITOR`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># otherwise get the system default mono font</span>
+            <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+            <span class="n">mono_font</span><span class="o">.</span><span class="n">setStyleHint</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Monospace</span><span class="p">)</span>
 
-
-    <span class="n">CONTROL</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">CONTROL</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    see :data:`.gui.defaults.CONTROL`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">PLOTS</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">PLOTS</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    see :data:`.gui.defaults.PLOTS`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">display_width</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">plot_width</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">control_width</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">total_width</span> <span class="o">=</span> <span class="n">display_width</span><span class="o">+</span><span class="n">plot_width</span><span class="o">+</span><span class="n">control_width</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    computed from ``display_width+plot_width+control_width``</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">status_height</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">main_height</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">total_height</span> <span class="o">=</span> <span class="n">status_height</span><span class="o">+</span><span class="n">main_height</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    computed from ``status_height+main_height``</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="Vent_Gui.__init__"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_period</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        Attributes:</span>
-<span class="sd">            monitor (dict): Dictionary mapping :data:`.default.MONITOR` keys to :class:`.widgets.Monitor_Value` objects</span>
-<span class="sd">            plots (dict): Dictionary mapping :data:`.default.PLOT` keys to :class:`.widgets.Plot` objects</span>
-<span class="sd">            controls (dict): Dictionary mapping :data:`.default.CONTROL` keys to :class:`.widgets.Control` objects</span>
-<span class="sd">            start_time (float): Start time as returned by :func:`time.time`</span>
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_MONO_FONT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mono_font</span></div>
 
 
-<span class="sd">        Arguments:</span>
-<span class="sd">            update_period (float): The global delay between redraws of the GUI (seconds)</span>
-<span class="sd">            test (bool): Whether the monitored values and plots should be fed sine waves for visual testing.</span>
-
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Vent_Gui</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_period</span> <span class="o">=</span> <span class="n">update_period</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="Vent_Gui.test"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="n">ox</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span><span class="o">+</span><span class="mi">80</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="s1">&#39;oxygen&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">ox</span><span class="p">)</span>
-
-        <span class="n">temp</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mf">2.5</span><span class="p">)</span><span class="o">+</span><span class="mi">22</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
-
-        <span class="n">humid</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">/</span><span class="mi">50</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span><span class="o">+</span><span class="mi">50</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="s1">&#39;humidity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">humid</span><span class="p">)</span>
-
-        <span class="n">press</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">25</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="s1">&#39;vte&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">press</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">press</span><span class="p">))</span>
-        <span class="c1"># for num, widget in enumerate(self.monitor.values()):</span>
-        <span class="c1">#     yval = (np.sin(time.time()+num) + 1) * 50</span>
-        <span class="c1">#     widget.update_value(yval)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;flow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">50</span><span class="p">))</span>
-
-
-        <span class="c1"># if (time.time()-self.start_time) &lt; 60:</span>
-        <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Vent_Gui.update_value"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Arguments:</span>
-<span class="sd">            value_name (str): Name of key in :attr:`.Vent_Gui.monitor` and :attr:`.Vent_Gui.plots` to update</span>
-<span class="sd">            new_value (int, float): New value to display/plot</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Vent_Gui.init_ui"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create the UI components for the ventilator screen</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># basic initialization</span>
-
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
-        <span class="c1">#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span><span class="p">)</span>
-
-        <span class="c1"># layout</span>
-        <span class="c1">#   - two rows (status, main)</span>
-        <span class="c1">#   - three columns</span>
-        <span class="c1">#       left:   monitor values</span>
-        <span class="c1">#       center: plotted values</span>
-        <span class="c1">#       right:  controls</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
-
-        <span class="c1"># layout that includes the display and controls</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-
-        <span class="c1">##########</span>
-        <span class="c1"># Status Bar</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Status_Bar</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status_height</span><span class="p">)</span>
-
-        <span class="c1">#########</span>
-        <span class="c1"># display values</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
-
-        <span class="k">for</span> <span class="n">display_key</span><span class="p">,</span> <span class="n">display_params</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MONITOR</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">display_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Monitor_Value</span><span class="p">(</span><span class="n">update_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_period</span><span class="p">,</span> <span class="o">**</span><span class="n">display_params</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">display_key</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">QHLine</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_width</span><span class="p">)</span>
-
-        <span class="c1">###########</span>
-        <span class="c1"># plots</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
-
-        <span class="c1"># button to set plot history</span>
-        <span class="n">button_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Plot History&quot;</span><span class="p">)</span>
-        <span class="c1">#button_group = QtWidgets.QButtonGroup()</span>
-        <span class="c1">#button_group.exclusive()</span>
-        <span class="n">times</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;5s&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
-                 <span class="p">(</span><span class="s2">&quot;10s&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-                 <span class="p">(</span><span class="s2">&quot;30s&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
-                 <span class="p">(</span><span class="s2">&quot;1m&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span>
-                 <span class="p">(</span><span class="s2">&quot;5m&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="o">*</span><span class="mi">5</span><span class="p">),</span>
-                 <span class="p">(</span><span class="s2">&quot;15m&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="o">*</span><span class="mi">15</span><span class="p">),</span>
-                 <span class="p">(</span><span class="s2">&quot;60m&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">button_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
-        <span class="n">button_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
-
-        <span class="k">for</span> <span class="n">a_time</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QRadioButton</span><span class="p">(</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="c1">#self.time_buttons[a_time[0]].setCheckable(True)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">a_time</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_plot_duration</span><span class="p">)</span>
-            <span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
-            <span class="c1">#button_group.addButton(self.time_buttons[a_time[0]])</span>
-
-        <span class="n">button_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">button_layout</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">button_box</span><span class="p">)</span>
-
-
-        <span class="k">for</span> <span class="n">plot_key</span><span class="p">,</span> <span class="n">plot_params</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLOTS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="o">**</span><span class="n">plot_params</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_key</span><span class="p">])</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
-
-
-        <span class="c1"># connect displays to plots</span>
-        <span class="c1"># FIXME: Link in gui.defaults</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="s1">&#39;vte&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_safe_limits</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="s1">&#39;vte&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_limits</span><span class="p">)</span>
-
-
-        <span class="c1">####################</span>
-        <span class="c1"># Controls</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">control_name</span><span class="p">,</span> <span class="n">control_params</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONTROL</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">control_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Control</span><span class="p">(</span><span class="o">**</span><span class="n">control_params</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">control_name</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">QHLine</span><span class="p">())</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_height</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Vent_Gui.set_plot_duration"><a class="viewcode-back" href="../../vent.gui.html#vent.gui.Vent_Gui.set_plot_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_plot_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dur</span><span class="p">):</span>
-        <span class="n">dur</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">()</span><span class="o">.</span><span class="n">objectName</span><span class="p">())</span>
-
-        <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">plot</span><span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">dur</span><span class="p">)</span></div></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Launch the Ventilator GUI&quot;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="s1">&#39;--test&#39;</span><span class="p">,</span>
-                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Run in test mode? (y=1/n=0, default=0)&quot;</span><span class="p">,</span>
-                        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
-                        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-
-
-    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
-
-    <span class="n">gui_test</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">):</span>
-        <span class="n">gui_test</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="c1"># just for testing, should be run from main</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">GLOBAL</span><span class="p">)</span>
-    <span class="n">gui</span> <span class="o">=</span> <span class="n">Vent_Gui</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">gui_test</span><span class="p">)</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+<span class="kn">from</span> <span class="nn">vent.gui.main</span> <span class="kn">import</span> <span class="n">Vent_Gui</span><span class="p">,</span> <span class="n">launch_gui</span><span class="p">,</span> <span class="n">get_gui_instance</span>
 </pre></div>
 
            </div>
@@ -524,6 +326,18 @@
 
   
   
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
     
    
 

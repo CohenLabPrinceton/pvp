@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>A lightweight, semantic grid framework &mdash; ventilator 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/_static/pvp_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+      <li>A lightweight, semantic grid framework</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/_src/sass/bourbon-neat/README.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <p><a class="reference external" href="http://neat.bourbon.io"><img alt="Neat" src="http://images.thoughtbot.com/bourbon/neat-logo.svg" /></a></p>
+<div class="section" id="a-lightweight-semantic-grid-framework">
+<h1>A lightweight, semantic grid framework<a class="headerlink" href="#a-lightweight-semantic-grid-framework" title="Permalink to this headline">¶</a></h1>
+<p><strong>Note: This branch is an archive of Neat v1. The current release is v2 on
+<code class="docutils literal notranslate"><span class="pre">master</span></code>.</strong></p>
+<p>Neat is a fluid grid framework with the aim of being easy enough to use out of the box and flexible enough to customize down the road.</p>
+<ul class="simple">
+<li><p><strong><a class="reference external" href="http://neat.bourbon.io">Demo</a></strong></p></li>
+<li><p><strong><a class="reference external" href="http://thoughtbot.github.io/neat-docs/latest">Documentation</a></strong></p></li>
+<li><p><strong><a class="reference external" href="https://github.com/thoughtbot/neat/releases">Changelog</a></strong></p></li>
+<li><p><strong><a class="reference external" href="https://github.com/thoughtbot/neat/issues">Issues &amp; Bugs</a></strong></p></li>
+</ul>
+<p>Follow the <a class="reference external" href="https://twitter.com/bourbonsass">&#64;bourbonsass</a> Twitter account
+for updates.</p>
+</div>
+<div class="section" id="requirements">
+<h1>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/sass/sass">Sass</a> 3.3+</p></li>
+<li><p>:warning: If you need <strong>Sass 3.2 support</strong>, you should <a class="reference external" href="#installing-older-versions-of-neat">use Neat 1.5.1</a></p></li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>For command line help, visit our wiki page on Neat’s <a class="reference external" href="https://github.com/thoughtbot/neat/wiki/Command-Line-Interface">command line interface</a>.</p>
+<ol class="simple">
+<li><p>Install the Neat gem using the <a class="reference external" href="https://rubygems.org">RubyGems</a> package manager:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gem install neat
+</pre></div>
+</div>
+<p>Alternatively, you can install Neat with <a class="reference external" href="http://bower.io">Bower</a>.</p>
+<ol class="simple">
+<li><p>Install or update Neat’s dependencies:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gem install sass <span class="c1"># or gem update sass</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Install the Neat library into the current directory:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>neat install
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Import Neat in your stylesheet:</p></li>
+</ol>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="k">@import</span> <span class="s2">&quot;neat/neat&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>It’s not recommended to add or modify the Neat files so that you can update them easily.</p>
+</div>
+<div class="section" id="installation-for-ruby-on-rails">
+<h1>Installation for Ruby on Rails<a class="headerlink" href="#installation-for-ruby-on-rails" title="Permalink to this headline">¶</a></h1>
+<ol class="simple">
+<li><p>Add Neat to your Gemfile:</p></li>
+</ol>
+<div class="highlight-ruby notranslate"><div class="highlight"><pre><span></span><span class="n">gem</span> <span class="s1">&#39;neat&#39;</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Then run:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bundle install
+</pre></div>
+</div>
+<p>If you see the error <code class="docutils literal notranslate"><span class="pre">Bundler</span> <span class="pre">could</span> <span class="pre">not</span> <span class="pre">find</span> <span class="pre">compatible</span> <span class="pre">versions</span> <span class="pre">for</span> <span class="pre">gem</span> <span class="pre">&quot;sass&quot;</span></code>, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bundle update sass
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Import Neat in your <code class="docutils literal notranslate"><span class="pre">application.scss</span></code>:</p></li>
+</ol>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="k">@import</span> <span class="s2">&quot;neat&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>It should be noted that <code class="docutils literal notranslate"><span class="pre">&#64;import</span></code> rules are not compatible with Sprockets directives. You need to use one or the other.</p>
+</div>
+<div class="section" id="installing-with-npm-and-using-a-node-based-asset-pipeline">
+<h1>Installing with npm and using a Node-based asset pipeline<a class="headerlink" href="#installing-with-npm-and-using-a-node-based-asset-pipeline" title="Permalink to this headline">¶</a></h1>
+<ol class="simple">
+<li><p>Add Neat as a dependency:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm install --save bourbon-neat
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>If you’re using <a class="reference external" href="http://eyeglass.rocks">Eyeglass</a>, skip to Step 3. Otherwise, you’ll need to add Neat to your node-sass <code class="docutils literal notranslate"><span class="pre">includePaths</span></code> option. <code class="docutils literal notranslate"><span class="pre">require(&quot;bourbon-neat&quot;).includePaths</span></code> is an array of directories that you should pass to node-sass. How you do this depends on how node-sass is integrated into your project.</p></li>
+<li><p>Import Neat into your Sass files:</p></li>
+</ol>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="k">@import</span> <span class="s2">&quot;neat&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-older-versions-of-neat">
+<h1>Installing older versions of Neat<a class="headerlink" href="#installing-older-versions-of-neat" title="Permalink to this headline">¶</a></h1>
+<ol class="simple">
+<li><p>Uninstall any Neat gem versions you already have:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gem uninstall neat
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Reinstall the Neat gem, using the <code class="docutils literal notranslate"><span class="pre">-v</span></code> flag to specify the version you need:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gem install neat -v <span class="m">1</span>.7.0
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Follow the <a class="reference external" href="#installation">instructions above</a> to install Neat into your project.</p></li>
+</ol>
+</div>
+<div class="section" id="using-neat">
+<h1>Using Neat<a class="headerlink" href="#using-neat" title="Permalink to this headline">¶</a></h1>
+<p>First off, if you are planning to override the default grid settings (12 columns), it is recommended to create a <code class="docutils literal notranslate"><span class="pre">_grid-settings.scss</span></code> file for that purpose. Make sure to import it right <em>before</em> importing Neat:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="k">@import</span> <span class="s2">&quot;grid-settings&quot;</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s2">&quot;neat/neat&quot;</span><span class="p">;</span> <span class="c1">// or &quot;neat&quot; when in Rails</span>
+</pre></div>
+</div>
+<p>In your newly created  <code class="docutils literal notranslate"><span class="pre">_grid-settings.scss</span></code>, import <code class="docutils literal notranslate"><span class="pre">neat-helpers</span></code> if you are planning to use <code class="docutils literal notranslate"><span class="pre">new-breakpoint()</span></code>, then define your new variables:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="k">@import</span> <span class="s2">&quot;neat/neat-helpers&quot;</span><span class="p">;</span> <span class="c1">// or &quot;neat-helpers&quot; when in Rails</span>
+
+<span class="c1">// Change the grid settings</span>
+<span class="nv">$column</span><span class="o">:</span> <span class="mi">90</span><span class="kt">px</span><span class="p">;</span>
+<span class="nv">$gutter</span><span class="o">:</span> <span class="mi">30</span><span class="kt">px</span><span class="p">;</span>
+<span class="nv">$grid-columns</span><span class="o">:</span> <span class="mi">10</span><span class="p">;</span>
+<span class="nv">$max-width</span><span class="o">:</span> <span class="mi">1200</span><span class="kt">px</span><span class="p">;</span>
+
+<span class="c1">// Define your breakpoints</span>
+<span class="nv">$tablet</span><span class="o">:</span> <span class="nf">new-breakpoint</span><span class="p">(</span><span class="no">max-width</span> <span class="mi">768</span><span class="kt">px</span> <span class="mi">8</span><span class="p">);</span>
+<span class="nv">$mobile</span><span class="o">:</span> <span class="nf">new-breakpoint</span><span class="p">(</span><span class="no">max-width</span> <span class="mi">480</span><span class="kt">px</span> <span class="mi">4</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="http://thoughtbot.github.io/neat-docs/latest/#variable">docs</a> for a full list of settings.</p>
+<p>Next, include the <code class="docutils literal notranslate"><span class="pre">outer-container</span></code> mixin in the topmost container (to which the <code class="docutils literal notranslate"><span class="pre">max-width</span></code> setting will be applied):</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="nt">div</span><span class="nc">.container</span> <span class="p">{</span>
+  <span class="k">@include</span><span class="nd"> outer-container</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then use <code class="docutils literal notranslate"><span class="pre">span-columns</span></code> on any element to specify the number of columns it should span:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="nt">div</span><span class="nc">.element</span> <span class="p">{</span>
+  <span class="k">@include</span><span class="nd"> span-columns</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the element’s parent isn’t the top-most container, you need to add the number of columns of the parent element to keep the right proportions:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="nt">div</span><span class="nc">.container</span> <span class="p">{</span>
+  <span class="k">@include</span><span class="nd"> outer-container</span><span class="p">;</span>
+
+  <span class="nt">div</span><span class="nc">.parent-element</span> <span class="p">{</span>
+    <span class="k">@include</span><span class="nd"> span-columns</span><span class="p">(</span><span class="mi">8</span><span class="p">);</span>
+
+    <span class="nt">div</span><span class="nc">.element</span> <span class="p">{</span>
+      <span class="k">@include</span><span class="nd"> span-columns</span><span class="p">(</span><span class="mi">6</span> <span class="n">of</span> <span class="mi">8</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To make your layout responsive, use the <code class="docutils literal notranslate"><span class="pre">media()</span></code> mixin to modify both the grid and the layout:</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span>.my-class {
+  @include media($mobile) { // As defined in _grid-settings.scss
+    @include span-columns(2);
+  }
+}
+
+// Compiled CSS
+@media screen and (max-width: 480px) {
+  .my-class {
+    display: block;
+    float: left;
+    margin-right: 7.42297%;
+    width: 46.28851%; // 2 columns of the total 4 in this media context
+  }
+  .my-class:last-child {
+    margin-right: 0;
+  }
+}
+</pre></div>
+</div>
+<p>By setting <code class="docutils literal notranslate"><span class="pre">$visual-grid</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> in a file that is imported before
+<code class="docutils literal notranslate"><span class="pre">neat-helpers</span></code> (or prior to <code class="docutils literal notranslate"><span class="pre">neat</span></code> itself if you are using the default
+breakpoints), you can display the base grid in the background (default) or as an
+overlay. You can even change the color and opacity of the grid-lines by
+overriding the default settings as detailed in the section below.</p>
+<p>The visual grid reflects the changes applied to the grid via the <code class="docutils literal notranslate"><span class="pre">new-breakpoint()</span></code> mixin, as long as the media contexts are defined <em>before</em> importing Neat.</p>
+</div>
+<div class="section" id="faq">
+<h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="how-do-i-use-omega-in-a-mobile-first-workflow">
+<h2>How do I use <code class="docutils literal notranslate"><span class="pre">omega()</span></code> in a mobile-first workflow?<a class="headerlink" href="#how-do-i-use-omega-in-a-mobile-first-workflow" title="Permalink to this headline">¶</a></h2>
+<p>Using <code class="docutils literal notranslate"><span class="pre">omega()</span></code> with an <code class="docutils literal notranslate"><span class="pre">nth-child</span></code> pseudo selector in a mobile-first workflow will cause the style to be applied to wider-viewport media queries as well. That is the cascading nature of CSS.</p>
+<p>One solution would be to provide an <code class="docutils literal notranslate"><span class="pre">omega-reset()</span></code> mixin that negates the effect of <code class="docutils literal notranslate"><span class="pre">omega()</span></code> on that specific <code class="docutils literal notranslate"><span class="pre">nth-child</span></code> pseudo selector. While this is often the most suggested solution, it is also a lazy hack that outputs ugly code and can quickly get out of hand in complex layouts. As a general rule, having to <em>undo</em> CSS styles is a sign of poor stylesheet architecture (more about <a class="reference external" href="http://csswizardry.com/2012/11/code-smells-in-css/">CSS code smells</a>).</p>
+<p>The other, more elegant, solution is to use mutually exclusive media queries, also referred to as <a class="reference external" href="http://simurai.com/blog/2012/08/29/media-query-splitting">media-query
+splitting</a>. This would guarantee that <code class="docutils literal notranslate"><span class="pre">omega()</span></code> styles are only applied where desired.</p>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="nv">$first-breakpoint-value</span><span class="o">:</span> <span class="mi">400</span><span class="kt">px</span><span class="p">;</span>
+<span class="nv">$second-breakpoint-value</span><span class="o">:</span> <span class="mi">700</span><span class="kt">px</span><span class="p">;</span>
+<span class="nv">$medium-viewport</span><span class="o">:</span> <span class="nf">new-breakpoint</span><span class="p">(</span><span class="no">min-width</span> <span class="nv">$first-breakpoint-value</span> <span class="no">max-width</span> <span class="nv">$second-breakpoint-value</span><span class="p">);</span>
+<span class="nv">$large-viewport</span><span class="o">:</span> <span class="nf">new-breakpoint</span><span class="p">(</span><span class="no">min-width</span> <span class="nv">$second-breakpoint-value</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+
+<span class="nc">.element</span> <span class="p">{</span>
+  <span class="k">@include</span><span class="nd"> media</span><span class="p">(</span><span class="nv">$medium-viewport</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">@include</span><span class="nd"> span-columns</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+    <span class="k">@include</span><span class="nd"> omega</span><span class="p">(</span><span class="mi">2</span><span class="kt">n</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">@include</span><span class="nd"> media</span><span class="p">(</span><span class="nv">$large-viewport</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">@include</span><span class="nd"> span-columns</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+    <span class="k">@include</span><span class="nd"> omega</span><span class="p">(</span><span class="mi">3</span><span class="kt">n</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If, for some reason, you still think that <code class="docutils literal notranslate"><span class="pre">omega-reset</span></code> is the only way you want to go, check out Josh Fry’s <a class="reference external" href="http://joshfry.me/blog/2013/05/13/omega-reset-for-bourbon-neat">omega-reset</a>.</p>
+</div>
+<div class="section" id="why-are-the-elements-not-properly-aligned-with-the-visual-grid">
+<h2>Why are the elements not properly aligned with the visual grid?<a class="headerlink" href="#why-are-the-elements-not-properly-aligned-with-the-visual-grid" title="Permalink to this headline">¶</a></h2>
+<p>The visual grid is built using CSS gradients whose stops might contain decimal values depending on the default settings of your grid. In order to render the gradient, browsers round the pixel values since they can’t deal with pixel fractions.</p>
+<p>As a result the visual grid might be few pixels off in some browsers. The result is also inconsistent across browsers. For best results, preview your website on Firefox as it renders closest to the expected outcome.</p>
+<p>At this point, writing an internal rounding mechanism is not high priority.</p>
+</div>
+<div class="section" id="framework-x-has-this-feature-that-neat-seems-to-be-missing-can-you-add-it">
+<h2>Framework X has this feature that Neat seems to be missing. Can you add it?<a class="headerlink" href="#framework-x-has-this-feature-that-neat-seems-to-be-missing-can-you-add-it" title="Permalink to this headline">¶</a></h2>
+<p>Unless you <a class="reference external" href="https://github.com/thoughtbot/neat/compare/">open a pull request</a>, the answer is most likely going to be no. Neat is lightweight and simple compared to other grid frameworks, and strives to remain so. We have plans for adding new features in future versions of the framework, but these will be most likely to support new ways of working with layouts on the Web, not patches to existing ones.</p>
+</div>
+</div>
+<div class="section" id="browser-support">
+<h1>Browser support<a class="headerlink" href="#browser-support" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Chrome 10+</p></li>
+<li><p>Firefox 29+</p></li>
+<li><p>Internet Explorer 9+ (visual grid is IE 10 only)</p></li>
+<li><p>Internet Explorer 8 with <a class="reference external" href="http://selectivizr.com">selectivizr</a> (no <code class="docutils literal notranslate"><span class="pre">media()</span></code> support)</p></li>
+<li><p>Opera 9.5+</p></li>
+<li><p>Safari 5.1+</p></li>
+</ul>
+</div>
+<div class="section" id="the-bourbon-family">
+<h1>The Bourbon family<a class="headerlink" href="#the-bourbon-family" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/thoughtbot/bourbon">Bourbon</a>: A simple and lightweight mixin library for Sass</p></li>
+<li><p><a class="reference external" href="https://github.com/thoughtbot/neat">Neat</a>: A lightweight semantic grid framework for Sass and Bourbon</p></li>
+<li><p><a class="reference external" href="https://github.com/thoughtbot/bitters">Bitters</a>: Scaffold styles, variables and structure for Bourbon projects</p></li>
+<li><p><a class="reference external" href="https://github.com/thoughtbot/refills">Refills</a>: Prepackaged patterns and components built with Bourbon, Neat and Bitters</p></li>
+</ul>
+</div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>Copyright © 2012–2015 <a class="reference external" href="http://thoughtbot.com">thoughtbot, inc</a>. Neat is free software, and may be redistributed under the terms specified in the <a class="reference internal" href="LICENSE.html"><span class="doc">license</span></a>.</p>
+</div>
+<div class="section" id="about-thoughtbot">
+<h1>About thoughtbot<a class="headerlink" href="#about-thoughtbot" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://thoughtbot.com/hire-us?utm_source=github"><img src="http://presskit.thoughtbot.com/images/signature.svg" width="250" alt="thoughtbot logo"></a></p>
+<p>Neat is maintained and funded by thoughtbot, inc.
+The names and logos for thoughtbot are trademarks of thoughtbot, inc.</p>
+<p>We love open source software!
+See <a class="reference external" href="https://thoughtbot.com/community?utm_source=github">our other projects</a>
+or <a class="reference external" href="https://thoughtbot.com/hire-us?utm_source=github">hire us</a> to design, develop, and grow your product.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

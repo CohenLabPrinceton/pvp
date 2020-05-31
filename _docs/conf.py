@@ -121,7 +121,7 @@ html_theme = 'sphinx_rtd_theme'
 sass_configs = [
     {
     'entry':'_src/sass/theme.sass',
-    'output':'pvp_theme.css'
+    'output':'_static/pvp_theme.css'
     }
 ]
 html_style="pvp_theme.css"

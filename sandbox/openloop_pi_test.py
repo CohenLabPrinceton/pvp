@@ -1,6 +1,3 @@
-
-
-
 import time
 import vent.io as io
 import numpy as np
@@ -61,11 +58,17 @@ except KeyboardInterrupt:
     #make sure valves are closed
     hal.setpoint_in = 0
     hal.setpoint_ex = 1
-    # x_data = np.arange(0, len(p_store), 1)
+    # 
     np.save("data", p_store)
-    
+
 finally:
     hal._inlet_valve.close()
     hal._control_valve.close()
 
 
+# import pylab as pl
+# import numpy as np
+# np.load("data.npy")
+# tt = p_store[:,0] - np.min(p_store[:,0])
+# pl.plot(tt, p_store(:,2), "label = pressure")
+# xlabel("time [s]")

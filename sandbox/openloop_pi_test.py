@@ -59,7 +59,7 @@ except KeyboardInterrupt:
 
     #make sure valves are closed
     hal.setpoint_in = 0
-    hal.setpoint_ex = 1
+    hal.setpoint_ex = 0
     # 
     np.save("data", p_store)
 

@@ -45,7 +45,7 @@ class ControlModuleBase:
 
     """
 
-    def __init__(self, save_logs: bool = False, flush_every: int = 10):
+    def __init__(self, pid_control: bool = True, save_logs: bool = False, flush_every: int = 10):
         """
 
         Args:
@@ -70,7 +70,7 @@ class ControlModuleBase:
         # This is what the machine has controll over:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
-        self._pid_control_flag    = True           # Default is: use PID control
+        self._pid_control_flag    = pid_control    # Default is: use PID control
         self.__KP                 = 80             # The weights for the the PID terms
         self.__KI                 = 0
         self.__KD                 = 0
@@ -1010,4 +1010,4 @@ def get_control_module(sim_mode=False, simulator_dt = None):
     if sim_mode == True:
         return ControlModuleSimulator(simulator_dt=simulator_dt)
     else:
-        return ControlModuleDevice()
+        return ControlModuleDevice(pid_control = False, save_logs = True, flush_every = 10)

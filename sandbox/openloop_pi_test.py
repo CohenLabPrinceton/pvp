@@ -67,16 +67,11 @@ except KeyboardInterrupt:
     hal.setpoint_in = 0
     hal.setpoint_ex = 0
     # 
-    np.save("data", p_store)
+    np.save("data_openloop", p_store)
 
-finally:
     hal._inlet_valve.close()
     hal._control_valve.close()
-
-
-# import pylab as pl
-# import numpy as np
-# np.load("data.npy")
-# tt = p_store[:,0] - np.min(p_store[:,0])
-# pl.plot(tt, p_store(:,2), "label = pressure")
-# xlabel("time [s]")
+    if (hal.setpoint_in is not 0) or (hal.setpoint_ex is not 0):
+        print("Cannot close vents:")
+        print("Ex: " + str(hal.setpoint_ex ))
+        print("In: " + str(hal.setpoint_in ))

@@ -18,13 +18,13 @@ command = ControlSetting(name=ValueName.PEEP, value=30)
 Controller.set_control(command)
 command = ControlSetting(name=ValueName.PIP, value=48)
 Controller.set_control(command)
-command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=15)
+command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17)
 Controller.set_control(command)
 command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 0.8)
 Controller.set_control(command)
 ##
 
-for t in np.arange(0, 60,0.05):
+for t in np.arange(0, 60, 0.05):
     if t%5==0:  # ask for a heartbeat from thread every 5 seconds
         print(t)
 

@@ -43,7 +43,7 @@ def cycle(idx, store_len):
     # Close valve and wait 3 seconds for "exhale"
     hal.setpoint_in = 0
     hal.setpoint_ex = 1
-    for t in range(np.round(waittime/dt)):
+    for t in range(np.int(waittime/dt)):
         p_store[idx,:] = np.array([time.time(), p, setin, setex, qin, qout])
         time.sleep(dt)  
         idx += 1

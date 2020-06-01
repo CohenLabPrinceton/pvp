@@ -20,7 +20,8 @@ def cycle(idx, store_len):
     # Ramp up to PIP over inhale time
     for i in range(n_ramp_steps+1):
         # Get "valve openness" setpoint
-        setpnt = int(80 / n_ramp_steps * i)
+        # setpnt = int(120 / n_ramp_steps * i)
+        setpnt = int(80 + 20*i/n_ramp_steps)
         print(np.round(setpnt, 2))
         
         # Set duty cycle via response curve in hardware abstraction layer ("hal")

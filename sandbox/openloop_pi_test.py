@@ -44,6 +44,12 @@ def cycle(idx, store_len):
     hal.setpoint_in = 0
     hal.setpoint_ex = 1
     for t in range(np.int(waittime/dt)):
+        p = hal.pressure
+        qin = hal.flow_in
+        qout = hal.flow_ex
+        setin = hal.setpoint_in
+        setex = hal.setpoint_ex
+
         p_store[idx,:] = np.array([time.time(), p, setin, setex, qin, qout])
         time.sleep(dt)  
         idx += 1

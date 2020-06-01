@@ -8,7 +8,9 @@ hal = io.Hal(config_file='vent/io/config/devices.ini')
 n_ramp_steps = 50
 
 # Initialize arrays to store pressure log
-store_len = 200
+store_len = 1000
+dt        = 0.1
+waittime  =  5    # seconds  
 p_store = np.zeros((store_len,6))
 idx = 0
 
@@ -36,14 +38,14 @@ def cycle(idx, store_len):
             p_store[idx,:] = np.array([time.time(), p, setin, setex, qin, qout])
             idx += 1
         # Stay at this duty cycle for 0.1 seconds 
-        time.sleep(0.1)
+        time.sleep(dt)
     
     # Close valve and wait 3 seconds for "exhale"
     hal.setpoint_in = 0
     hal.setpoint_ex = 1
-    for t in range(50):
+    for t in range(np.round(waittime/dt)):
         p_store[idx,:] = np.array([time.time(), p, setin, setex, qin, qout])
-        time.sleep(0.1)  
+        time.sleep(dt)  
         idx += 1
 
     return idx       

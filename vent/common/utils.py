@@ -1,8 +1,12 @@
 import signal
 import time
 from contextlib import contextmanager
+from vent.common.logging import init_logger
+from vent import prefs
 
 class TimeoutException(Exception): pass
+
+_TIMEOUT = prefs.get_pref('TIMEOUT')
 
 @contextmanager
 def time_limit(seconds):
@@ -27,8 +31,12 @@ def timeout(func):
     """
     def wrapper(*args, **kwargs):
         try:
-            with time_limit(0.05):
-                func(*args, **kwargs)
+            with time_limit(globals()['_TIMEOUT']):
+                ret = func(*args, **kwargs)
+                return ret
         except TimeoutException as e:
-            print("Timed out!")
+            log_str = f'Method call timed out - Method: {func}'
+            logger = init_logger('timeouts')
+            logger.exception(log_str)
+            raise e
     return wrapper

@@ -41,7 +41,8 @@ bool: flag to indicate whether prefs have been loaded (and thus :func:`set_pref`
 _DEFAULTS = {
     'PREFS_FN': None,
     'LOGGING_MAX_BYTES': 2 * 2 ** 30, # total
-    'LOGGING_MAX_FILES': 5
+    'LOGGING_MAX_FILES': 5,
+    'TIMEOUT': 0.05
 }
 """
 Declare all available parameters and set default values. If no default, set as None. 

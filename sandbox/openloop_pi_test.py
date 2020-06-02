@@ -40,10 +40,11 @@ def cycle(idx, store_len):
         # Stay at this duty cycle for 0.1 seconds 
         time.sleep(dt)
     
-    # Close valve and wait 3 seconds for "exhale"
-    hal.setpoint_in = 0
-    hal.setpoint_ex = 1
+    # Close valve and open expiratory valve
     for t in range(np.int(waittime/dt)):
+        hal.setpoint_in = 0
+        hal.setpoint_ex = 1
+
         p = hal.pressure
         qin = hal.flow_in
         qout = hal.flow_ex

@@ -687,7 +687,7 @@ class ControlModuleBase:
             self._STATECONTROL_update(dt)
 
 
-class ControlModuleDevice(ControlModuleBase):
+class ControlModuleDevice(ControlModuleBase): 
     """
     Controlling Hardware.
     """
@@ -697,7 +697,7 @@ class ControlModuleDevice(ControlModuleBase):
         Args:
             config_file (string): Path to device config file, e.g. 'vent/io/config/dinky-devices.ini'
         """
-        ControlModuleBase.__init__(self, config_file)
+        ControlModuleBase.__init__(self, pid_control = False, save_logs = True, flush_every = 10, config_file = None)
         self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
     
@@ -1008,6 +1008,6 @@ def get_control_module(sim_mode=False, simulator_dt = None):
         sim_mode (bool): if ``true``: returns simulation, else returns hardware
     """
     if sim_mode == True:
-        return ControlModuleSimulator(simulator_dt=simulator_dt)
+        return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
-        return ControlModuleDevice(pid_control = False, save_logs = True, flush_every = 10)
+        return ControlModuleDevice(pid_control = False, save_logs = True, flush_every = 10, config_file = 'vent/io/config/dinky-devices.ini')

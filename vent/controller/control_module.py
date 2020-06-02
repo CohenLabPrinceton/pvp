@@ -463,10 +463,6 @@ class ControlModuleBase:
         elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
             self.__control_signal_in = 0                                        # STATE CONTROL: keeping PEEP, let air in if below
             self.__control_signal_out = 0
-            # if self._DATA_PRESSURE < self.__SET_PEEP:   #Doesn't work well, jumps around like crazy.
-            #     self.__control_signal_in = np.inf  
-            # if self._DATA_PRESSURE > self.__SET_PEEP:
-            #     self.__control_signal_out = 1
 
         else:
             self.__cycle_start = time.time()  # New cycle starts

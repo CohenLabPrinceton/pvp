@@ -40,6 +40,8 @@ def do_stuff():
 
         time.sleep(0.05)
 
+    Controller.HAL.setpoint_in = 0
+    Controller.HAL.setpoint_in = 0
     Controller.stop()
 
 

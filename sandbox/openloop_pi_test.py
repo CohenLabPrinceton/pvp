@@ -21,7 +21,6 @@ def cycle(idx, store_len):
     for i in range(n_ramp_steps+1):
         # Get "valve openness" setpoint
         setpnt = int(20 / n_ramp_steps * i)
-        print(np.round(setpnt, 2))
         
         # Set duty cycle via response curve in hardware abstraction layer ("hal")
         hal.setpoint_in = max(min(100, setpnt), 0)
@@ -33,6 +32,8 @@ def cycle(idx, store_len):
         qout = hal.flow_ex
         setin = hal.setpoint_in
         setex = hal.setpoint_ex
+
+        print([np.round(setpnt, 2), p])
 
         if idx < store_len:
             p_store[idx,:] = np.array([time.time(), p, setin, setex, qin, qout])

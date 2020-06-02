@@ -16,22 +16,23 @@ def do_stuff():
     
     Controller.start()
 
-    ## Do things
-    command = ControlSetting(name=ValueName.PEEP, value=5)
-    Controller.set_control(command)
-    command = ControlSetting(name=ValueName.PIP, value=25)
-    Controller.set_control(command)
-    command = ControlSetting(name=ValueName.PIP_TIME, value=0.5)
-    Controller.set_control(command)
-    command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=15)
-    Controller.set_control(command)
-    command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 1.5)
-    Controller.set_control(command)
-    ##
 
-    for t in np.arange(0, 60, 0.05):
+    for t in np.arange(0, 30, 0.05):
         if t%5==0:  # ask for a heartbeat from thread every 5 seconds
             print(t)
+
+        ## Do things
+        command = ControlSetting(name=ValueName.PEEP, value=5)
+        Controller.set_control(command)
+        command = ControlSetting(name=ValueName.PIP, value=25)
+        Controller.set_control(command)
+        command = ControlSetting(name=ValueName.PIP_TIME, value=0.5)
+        Controller.set_control(command)
+        command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=15)
+        Controller.set_control(command)
+        command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 1.5)
+        Controller.set_control(command)
+        ##
 
         setin = Controller.HAL.setpoint_in
         setex = Controller.HAL.setpoint_ex

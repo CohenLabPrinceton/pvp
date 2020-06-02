@@ -17,15 +17,15 @@ def do_stuff():
     Controller.start()
 
     ## Do things
-    command = ControlSetting(name=ValueName.PEEP, value=20)
+    command = ControlSetting(name=ValueName.PEEP, value=5)
     Controller.set_control(command)
-    command = ControlSetting(name=ValueName.PIP, value=50)
+    command = ControlSetting(name=ValueName.PIP, value=25)
     Controller.set_control(command)
     command = ControlSetting(name=ValueName.PIP_TIME, value=0.5)
     Controller.set_control(command)
-    command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17)
+    command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=20)
     Controller.set_control(command)
-    command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 0.8)
+    command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 1)
     Controller.set_control(command)
     ##
 

@@ -51,9 +51,13 @@ try:
 except KeyboardInterrupt:
     print("Ctl C pressed - ending program")
 
-    #make sure valves are closed
+    #make sure valves are closed - a few safety extra commands
     Controller.HAL.setpoint_in = 0
-    Controller.HAL.setpoint_ex = 0
+    time.sleep(0.05)
+    Controller.HAL.setpoint_in = 0
+    time.sleep(0.05)
+    Controller.HAL.setpoint_in = 0
+    Controller.stop()
 
     Controller.HAL._inlet_valve.close()
     Controller.HAL._control_valve.close()

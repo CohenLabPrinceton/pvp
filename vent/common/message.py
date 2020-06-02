@@ -1,6 +1,9 @@
+import time
+
 from vent.common import values
 from copy import copy
 from collections import OrderedDict as odict
+from vent.common.loggers import init_logger
 
 class SensorValues:
 
@@ -103,7 +106,7 @@ class ControlValues:
 
 
 class ControlSetting:
-    def __init__(self, name = None, value = None, min_value = None, max_value = None, timestamp = None):
+    def __init__(self, name, value = None, min_value = None, max_value = None, timestamp = None):
         """
         TODO: if enum is hard to use, we may just use a predefined set, e.g. {'PIP', 'PEEP', ...}
         :param name: enum belong to ValueName
@@ -112,10 +115,31 @@ class ControlSetting:
         :param max_value:
         :param timestamp:
         """
-        self.name = name
+        if isinstance(name, str):
+            try:
+                name = values.CONTROL.__members__[name]
+            except KeyError as e:
+                logger = init_logger(__name__)
+                logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
+                raise e
+        elif isinstance(name, values.ValueName):
+            assert name in values.CONTROL.keys()
+
+        self.name = name # type: values.ValueName
+
+        if (value is None) and (min_value is None) and (max_value is None):
+            logger = init_logger(__name__)
+            ex_string = 'at least one of value, min_value, or max_value must be set in a ControlSetting'
+            logger.exception(ex_string)
+            raise ValueError(ex_string)
+
         self.value = value
         self.min_value = min_value
         self.max_value = max_value
+
+        if timestamp is None:
+            timestamp = time.time()
+
         self.timestamp = timestamp
 
 

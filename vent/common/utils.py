@@ -1,7 +1,7 @@
 import signal
 import time
 from contextlib import contextmanager
-from vent.common.logging import init_logger
+from vent.common.loggers import init_logger
 from vent import prefs
 
 class TimeoutException(Exception): pass

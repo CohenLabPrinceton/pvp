@@ -8,6 +8,8 @@ from vent.alarm import AlarmSeverity, Alarm
 from vent.common.values import ValueName
 from vent.coordinator.coordinator import get_coordinator
 from vent.controller.control_module import get_control_module
+from vent import prefs
+prefs.init()
 
 ######################################################################
 #########################   TEST 1  ##################################

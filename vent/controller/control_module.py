@@ -692,12 +692,12 @@ class ControlModuleDevice(ControlModuleBase):
     Controlling Hardware.
     """
     # Implement ControlModuleBase functions
-    def __init__(self):
+    def __init__(self, , pid_control = False, save_logs = True, flush_every = 10, config_file = None):
         """
         Args:
             config_file (string): Path to device config file, e.g. 'vent/io/config/dinky-devices.ini'
         """
-        ControlModuleBase.__init__(self, pid_control = False, save_logs = True, flush_every = 10, config_file = None)
+        ControlModuleBase.__init__(self, pid_control, save_logs, flush_every, config_file)
         self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
     

@@ -1010,4 +1010,4 @@ def get_control_module(sim_mode=False, simulator_dt = None):
     if sim_mode == True:
         return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
-        return ControlModuleDevice(pid_control = False, save_logs = True, flush_every = 10, config_file = 'vent/io/config/dinky-devices.ini')
+        return ControlModuleDevice(pid_control = False, save_logs = True, flush_every = 10, config_file = 'vent/io/config/devices.ini')

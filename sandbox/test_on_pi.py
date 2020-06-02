@@ -21,6 +21,8 @@ def do_stuff():
     Controller.set_control(command)
     command = ControlSetting(name=ValueName.PIP, value=50)
     Controller.set_control(command)
+    command = ControlSetting(name=ValueName.PIP_TIME, value=1)
+    Controller.set_control(command)
     command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17)
     Controller.set_control(command)
     command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 0.8)

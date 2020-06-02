@@ -31,8 +31,11 @@ def do_stuff():
         if t%5==0:  # ask for a heartbeat from thread every 5 seconds
             print(t)
 
-        vals = Controller.get_sensors()
-        print(vals.PRESSURE)
+        setin = Controller.HAL.setpoint_in
+        setex = Controller.HAL.setpoint_ex
+        pp    = Controller.HAL.pressure
+        print([pp, setin, setex])
+
         time.sleep(0.05)
 
     Controller.stop()

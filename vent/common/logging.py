@@ -121,9 +121,9 @@ class DataSample(pytb.IsDescription):
     Structure for the hdf5-table for data
     """
     timestamp    = pytb.Float64Col()    # current time of the measurement - has to be 64 bit
-    pressure     = pytb.Float32Col()
-    flow_in      = pytb.Float32Col()
-    flow_out     = pytb.Float32Col()
+    pressure     = pytb.Float64Col()
+    flow_in      = pytb.Float64Col()
+    flow_out     = pytb.Float64Col()
     cycle_number = pytb.UInt32Col()     # Max is 2147483647 Breath Cycles (~78 years)
 
 

@@ -15,7 +15,8 @@ Controller = get_control_module(sim_mode=False)
 def do_stuff():
     
     Controller.start()
-
+    p_store = np.zeros((1000,2))
+    idx = 0
 
     for t in np.arange(0, 30, 0.05):
         if t%5==0:  # ask for a heartbeat from thread every 5 seconds
@@ -30,7 +31,7 @@ def do_stuff():
         Controller.set_control(command)
         command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=15)
         Controller.set_control(command)
-        command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 1.5)
+        command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 1.3)
         Controller.set_control(command)
         ##
 
@@ -39,12 +40,16 @@ def do_stuff():
         pp    = Controller.HAL.pressure
         print([pp, setin, setex])
 
+        p_store[idx,:] = np.array([time.time(), pp])
+        idx += 1
+
         time.sleep(0.05)
 
     Controller.HAL.setpoint_in = 0
     Controller.HAL.setpoint_in = 0
     Controller.stop()
 
+    np.save("data_openloop", p_store)
 
 try:
     do_stuff()

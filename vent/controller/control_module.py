@@ -363,7 +363,7 @@ class ControlModuleBase:
             - Test for Technical Alert, make sure continuous in contact
         Currently: Alarms are time.time() of first occurance.
         """
-        limit_hapa = 80                 # TODO: WHAT IS THE LIMIT?
+        limit_hapa = 45                 # TODO: WHAT IS THE LIMIT?
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.
         limit_max_pressure = 100        # If pressure above that, hardware cannot be correct.
 
@@ -374,8 +374,12 @@ class ControlModuleBase:
                 self.HAPA = time.time()
             if time.time() - self.HAPA > 0.1:       # 100 ms active to avoid being triggered by coughs
                 self.__SET_PIP = 30                 # Default: PIP to 30
-                self.__control_signal_out = np.inf
-                self.__control_signal_in  = 0
+                for i in range(5)                   # Make sure to send this command for 100ms -> release pressure immediately
+                    self.__control_signal_out = np.inf
+                    self.__control_signal_in  = 0
+                    time.sleep(0.02)
+                print("HAPA has been triggered")
+                self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
         else:
             self.HAPA = None
 
@@ -441,7 +445,7 @@ class ControlModuleBase:
         self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
 
         if cycle_phase < self.__SET_PIP_TIME:
-            self.__control_signal_in = 100                                                        # STATE CONTROL: to PIP, air in as fast as possible
+            self.__control_signal_in = np.inf                                                        # STATE CONTROL: to PIP, air in as fast as possible
             self.__control_signal_out = 0
             if self._DATA_PRESSURE > self.__SET_PIP:
                 self.__control_signal_in = 0
@@ -450,7 +454,7 @@ class ControlModuleBase:
             self.__control_signal_in = 0                                                             # STATE CONTROL: keep PIP plateau, let air in if below
             self.__control_signal_out = 0
             if self._DATA_PRESSURE < self.__SET_PIP:
-                self.__control_signal_in = 100
+                self.__control_signal_in = np.inf
             if self._DATA_PRESSURE > self.__SET_PIP:
                 self.__control_signal_out = 1
 
@@ -710,7 +714,7 @@ class ControlModuleDevice(ControlModuleBase):
               ValueName.PIP.name                  : self._DATA_PIP,
               ValueName.PEEP.name                 : self._DATA_PEEP,
               ValueName.FIO2.name                 : 70,
-              ValueName.PRESSURE.name             : self.HAL.pressure,
+              ValueName.PRESSURE.name             : self._DATA_PRESSURE,
               ValueName.VTE.name                  : self._DATA_VTE,
               ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
               ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
@@ -719,15 +723,15 @@ class ControlModuleDevice(ControlModuleBase):
               'breath_count': self._DATA_BREATH_COUNT
           })
             
-    # @timeout
+    @timeout
     def _set_HAL(self, valve_open_in, valve_open_out):
         """
         Set Controls with HAL, decorated with a timeout.
         """
-        self.HAL.setpoint_in = max(min(100, valve_open_in), 0)
+        self.HAL.setpoint_in = max(min(100, int(valve_open_in), 0)) s
         self.HAL.setpoint_ex = valve_open_out 
     
-    # @timeout
+    @timeout
     def _get_HAL(self):
         """
         Get sensor values from HAL, decorated with timeout
@@ -742,7 +746,7 @@ class ControlModuleDevice(ControlModuleBase):
 
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
-        while self._running:
+        while self._running.is_set():
             time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
@@ -771,7 +775,7 @@ class ControlModuleDevice(ControlModuleBase):
         # # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
         self._sensor_to_COPY()  # Copy sensor values to COPY
-
+        self._set_HAL(valve_open_in = 0, valve_open_out = 1)  # Defined state to make sure that it does not pop up.
 
 
 class Balloon_Simulator:
@@ -1010,4 +1014,4 @@ def get_control_module(sim_mode=False, simulator_dt = None):
     if sim_mode == True:
         return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
-        return ControlModuleDevice(pid_control = False, save_logs = True, flush_every = 10, config_file = 'vent/io/config/devices.ini')
+        return ControlModuleDevice(pid_control = False, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')

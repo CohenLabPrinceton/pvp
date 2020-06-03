@@ -415,10 +415,10 @@ class ControlModuleBase:
 
         if inputs_dont_change:
             if self.sensor_stuck_since == None:
-                self.sensor_stuck_since = time.time()
+                self.sensor_stuck_since = time.time()                # If inputs are stuck, remember the time.
                 time_elapsed = 0
             else:
-                time_elapsed = time.time - self.sensor_stuck_since
+                time_elapsed = time.time - self.sensor_stuck_since   # If happened again, how long?
 
             if time_elapsed > limit_max_stuck_sensor and not any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
                     self.TECHA.append(Alarm(
@@ -426,7 +426,7 @@ class ControlModuleBase:
                         AlarmSeverity.TECHNICAL,
                     ))
         else:
-            self.sensor_stuck_since = None
+            self.sensor_stuck_since = None                           # If ok, reset sensor_stuck
 
 
         data_implausible = (self._DATA_Qin < 0 or self._DATA_Qin > limit_max_flows) or \

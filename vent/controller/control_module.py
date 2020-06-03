@@ -71,7 +71,7 @@ class ControlModuleBase:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
         self._pid_control_flag    = pid_control    # Default is: use PID control
-        self.__KP                 = 10             # The weights for the the PID terms
+        self.__KP                 = 1             # The weights for the the PID terms
         self.__KI                 = 0
         self.__KD                 = 0
 
@@ -363,7 +363,7 @@ class ControlModuleBase:
             - Test for Technical Alert, make sure continuous in contact
         Currently: Alarms are time.time() of first occurance.
         """
-        limit_hapa = 25                 # TODO: WHAT IS THE LIMIT?
+        limit_hapa = 35                 # TODO: WHAT IS THE LIMIT?
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.
         limit_max_pressure = 40        # If pressure above that, hardware cannot be correct.
 

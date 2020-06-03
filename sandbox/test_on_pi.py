@@ -38,11 +38,11 @@ def do_stuff():
         ##
 
         ## These are the sensor values
+        pp    = Controller.HAL.pressure
         setin = Controller.HAL.setpoint_in
         setex = Controller.HAL.setpoint_ex        
         flowin = Controller.HAL.flow_in
         flowex = Controller.HAL.flow_ex
-        pp    = Controller.HAL.pressure
 
         ## And this what the controller sees
         Controller._get_HAL()

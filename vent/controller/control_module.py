@@ -579,7 +579,7 @@ class ControlModuleBase:
         )
 
         #And save both
-        print("CTRL" + str(self._DATA_PRESSURE))
+        print("CTRL: " + str(self._DATA_PRESSURE))
 
         self.dl.store_waveform_data(sensor_values, control_values)
 

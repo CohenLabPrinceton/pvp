@@ -363,9 +363,9 @@ class ControlModuleBase:
             - Test for Technical Alert, make sure continuous in contact
         Currently: Alarms are time.time() of first occurance.
         """
-        limit_hapa = 45                 # TODO: WHAT IS THE LIMIT?
+        limit_hapa = 25                 # TODO: WHAT IS THE LIMIT?
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.
-        limit_max_pressure = 100        # If pressure above that, hardware cannot be correct.
+        limit_max_pressure = 40        # If pressure above that, hardware cannot be correct.
 
 
         #### First: Check for High Airway Pressure (HAPA)

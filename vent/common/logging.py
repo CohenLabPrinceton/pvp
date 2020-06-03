@@ -227,7 +227,6 @@ class DataLogger:
         Appends a datapoint to the file.
         NOTE: Not flushed yet.
         """
-        print("DL: " + str(sensor_values.PRESSURE))
         self._open_logfile()
         datapoint                 = self.data_table.row
         datapoint['timestamp']    = sensor_values.timestamp

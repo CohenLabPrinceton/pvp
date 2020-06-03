@@ -728,8 +728,7 @@ class ControlModuleDevice(ControlModuleBase):
         """
         Set Controls with HAL, decorated with a timeout.
         """
-        print([valve_open_in, valve_open_out])
-        self.HAL.setpoint_in = max(min(100, valve_open_in, 0))
+        self.HAL.setpoint_in = max(min(100, int(valve_open_in)), 0)
         self.HAL.setpoint_ex = valve_open_out 
     
     # @timeout

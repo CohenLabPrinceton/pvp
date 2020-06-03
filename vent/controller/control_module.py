@@ -736,8 +736,8 @@ class ControlModuleDevice(ControlModuleBase):
         """
         Get sensor values from HAL, decorated with timeout
         """
-        self._DATA_Qout = self.HAL.flow_ex                      # Flow sensor on Expiratory side
-        self._DATA_Qin  = self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
+        self._DATA_Qout = 0 #self.HAL.flow_ex                      # Flow sensor on Expiratory side
+        self._DATA_Qin  = 0 #self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
         self._DATA_PRESSURE = self.HAL.pressure
 
     def _start_mainloop(self):

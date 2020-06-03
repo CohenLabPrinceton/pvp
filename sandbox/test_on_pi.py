@@ -41,8 +41,8 @@ def do_stuff():
         pp    = Controller.HAL.pressure
         setin = Controller.HAL.setpoint_in
         setex = Controller.HAL.setpoint_ex        
-        flowin = Controller.HAL.flow_in
-        flowex = Controller.HAL.flow_ex
+        # flowin = Controller.HAL.flow_in
+        # flowex = Controller.HAL.flow_ex
 
         ## And this what the controller sees
         Controller._get_HAL()

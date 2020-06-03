@@ -453,10 +453,10 @@ class ControlModuleBase:
         elif cycle_phase < self.__SET_I_PHASE:                                                           # then, we control PIP
             self.__control_signal_in = 0                                                             # STATE CONTROL: keep PIP plateau, let air in if below
             self.__control_signal_out = 0
-            if self._DATA_PRESSURE < self.__SET_PIP:
-                self.__control_signal_in = 100
-            if self._DATA_PRESSURE > self.__SET_PIP:
-                self.__control_signal_out = 1
+            # if self._DATA_PRESSURE < self.__SET_PIP:
+            #     self.__control_signal_in = 10
+            # if self._DATA_PRESSURE > self.__SET_PIP:
+            #     self.__control_signal_out = 1
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
             self.__control_signal_in = 0

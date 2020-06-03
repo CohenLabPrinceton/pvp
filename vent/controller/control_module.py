@@ -418,7 +418,7 @@ class ControlModuleBase:
                 self.sensor_stuck_since = time.time()                # If inputs are stuck, remember the time.
                 time_elapsed = 0
             else:
-                time_elapsed = time.time - self.sensor_stuck_since   # If happened again, how long?
+                time_elapsed = time.time() - self.sensor_stuck_since   # If happened again, how long?
 
             if time_elapsed > limit_max_stuck_sensor and not any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
                     self.TECHA.append(Alarm(

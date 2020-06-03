@@ -723,7 +723,7 @@ class ControlModuleDevice(ControlModuleBase):
               'breath_count': self._DATA_BREATH_COUNT
           })
             
-    @timeout
+    # @timeout
     def _set_HAL(self, valve_open_in, valve_open_out):
         """
         Set Controls with HAL, decorated with a timeout.
@@ -731,7 +731,7 @@ class ControlModuleDevice(ControlModuleBase):
         self.HAL.setpoint_in = max(min(100, int(valve_open_in), 0))
         self.HAL.setpoint_ex = valve_open_out 
     
-    @timeout
+    # @timeout
     def _get_HAL(self):
         """
         Get sensor values from HAL, decorated with timeout

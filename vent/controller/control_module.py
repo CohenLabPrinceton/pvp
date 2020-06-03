@@ -374,7 +374,7 @@ class ControlModuleBase:
                 self.HAPA = time.time()
             if time.time() - self.HAPA > 0.1:       # 100 ms active to avoid being triggered by coughs
                 self.__SET_PIP = 30                 # Default: PIP to 30
-                for i in range(5)                   # Make sure to send this command for 100ms -> release pressure immediately
+                for i in range(5):                   # Make sure to send this command for 100ms -> release pressure immediately
                     self.__control_signal_out = np.inf
                     self.__control_signal_in  = 0
                     time.sleep(0.02)

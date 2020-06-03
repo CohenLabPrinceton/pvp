@@ -27,13 +27,13 @@ def do_stuff():
         ## Do things
         command = ControlSetting(name=ValueName.PEEP, value=4)
         Controller.set_control(command)
-        command = ControlSetting(name=ValueName.PIP, value=9)
+        command = ControlSetting(name=ValueName.PIP, value=20)
         Controller.set_control(command)
-        command = ControlSetting(name=ValueName.PIP_TIME, value=0.5)
+        command = ControlSetting(name=ValueName.PIP_TIME, value=0.4)
         Controller.set_control(command)
         command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=15)
         Controller.set_control(command)
-        command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 1.3)
+        command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value = 1.0)
         Controller.set_control(command)
         ##
 

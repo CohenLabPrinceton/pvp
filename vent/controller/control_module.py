@@ -419,8 +419,8 @@ class ControlModuleBase:
                 time_elapsed = 0
             else:
                 time_elapsed = time.time - self.sensor_stuck_since
-                
-            if time_elapsed > limit_max_stuck_sensor and self.sennot any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
+
+            if time_elapsed > limit_max_stuck_sensor and not any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
                     self.TECHA.append(Alarm(
                         AlarmType.SENSORS_STUCK,
                         AlarmSeverity.TECHNICAL,

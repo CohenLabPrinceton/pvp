@@ -104,6 +104,7 @@ class ControlModuleBase:
         self.TECHA = [] # type: typing.List[Alarm]
         self.limit_hapa = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0][1].limit # TODO: Jonny write method to get limits from alarm manager
         self.cough_duration = prefs.get_pref('COUGH_DURATION')
+        self.sensor_stuck_since = None
 
         #########################  Data management  #########################
 
@@ -385,7 +386,7 @@ class ControlModuleBase:
         #limit_hapa =
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.
         limit_max_pressure = 100        # If pressure above that, hardware cannot be correct.
-
+        limit_max_stuck_sensor = 0.2    # 200 ms, jonny, wherever you want this number to live 
 
         #### First: Check for High Airway Pressure (HAPA)
         if self._DATA_PRESSURE > self.limit_hapa:
@@ -413,11 +414,19 @@ class ControlModuleBase:
             self.__DATA_old = [self._DATA_Qin, self._DATA_Qout, self._DATA_PRESSURE]
 
         if inputs_dont_change:
-            if not any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
-                self.TECHA.append(Alarm(
-                    AlarmType.SENSORS_STUCK,
-                    AlarmSeverity.TECHNICAL,
-                ))
+            if self.sensor_stuck_since == None:
+                self.sensor_stuck_since = time.time()
+                time_elapsed = 0
+            else:
+                time_elapsed = time.time - self.sensor_stuck_since
+                
+            if time_elapsed > limit_max_stuck_sensor and self.sennot any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
+                    self.TECHA.append(Alarm(
+                        AlarmType.SENSORS_STUCK,
+                        AlarmSeverity.TECHNICAL,
+                    ))
+        else:
+            self.sensor_stuck_since = None
 
 
         data_implausible = (self._DATA_Qin < 0 or self._DATA_Qin > limit_max_flows) or \

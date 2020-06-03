@@ -375,7 +375,7 @@ class ControlModuleBase:
             if time.time() - self.HAPA > 0.1:       # 100 ms active to avoid being triggered by coughs
                 self.__SET_PIP = 30                 # Default: PIP to 30
                 for i in range(5):                   # Make sure to send this command for 100ms -> release pressure immediately
-                    self.__control_signal_out = np.inf
+                    self.__control_signal_out = 1
                     self.__control_signal_in  = 0
                     time.sleep(0.02)
                 print("HAPA has been triggered")
@@ -445,7 +445,7 @@ class ControlModuleBase:
         self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
 
         if cycle_phase < self.__SET_PIP_TIME:
-            self.__control_signal_in = np.inf                                                        # STATE CONTROL: to PIP, air in as fast as possible
+            self.__control_signal_in = 100                                                       # STATE CONTROL: to PIP, air in as fast as possible
             self.__control_signal_out = 0
             if self._DATA_PRESSURE > self.__SET_PIP:
                 self.__control_signal_in = 0
@@ -454,7 +454,7 @@ class ControlModuleBase:
             self.__control_signal_in = 0                                                             # STATE CONTROL: keep PIP plateau, let air in if below
             self.__control_signal_out = 0
             if self._DATA_PRESSURE < self.__SET_PIP:
-                self.__control_signal_in = np.inf
+                self.__control_signal_in = 100
             if self._DATA_PRESSURE > self.__SET_PIP:
                 self.__control_signal_out = 1
 

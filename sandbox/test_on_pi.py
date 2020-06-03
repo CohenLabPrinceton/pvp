@@ -25,7 +25,7 @@ def do_stuff():
             print(t)
 
         ## Do things
-        command = ControlSetting(name=ValueName.PEEP, value=4)
+        command = ControlSetting(name=ValueName.PEEP, value=10)
         Controller.set_control(command)
         command = ControlSetting(name=ValueName.PIP, value=20)
         Controller.set_control(command)

@@ -15,6 +15,8 @@ Controller = get_control_module(sim_mode=False)
 def do_stuff():
     
     Controller.start()
+    Controller.start()
+
     p_store = np.zeros((1000,2))
     idx = 0
 
@@ -49,7 +51,7 @@ def do_stuff():
     Controller.HAL.setpoint_in = 0
     Controller.stop()
 
-    np.save("data_openloop", p_store)
+    np.save("data_closedloop", p_store)
 
 try:
     do_stuff()

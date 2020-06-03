@@ -71,7 +71,7 @@ class ControlModuleBase:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
         self._pid_control_flag    = pid_control    # Default is: use PID control
-        self.__KP                 = 20             # The weights for the the PID terms
+        self.__KP                 = 10             # The weights for the the PID terms
         self.__KI                 = 0
         self.__KD                 = 0
 

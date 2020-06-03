@@ -67,7 +67,7 @@ except KeyboardInterrupt:
 
     Controller.HAL._inlet_valve.close()
     Controller.HAL._control_valve.close()
-    if (Controller.HAL.setpoint_in is not 0) or (Controller.HAL.setpoint_ex is not 0):
-        print("Cannot close vents:")
+    if Controller.HAL.setpoint_in is not 0:
+        print("Cannot close vent-in:")
         print("Ex: " + str(Controller.HAL.setpoint_ex ))
         print("In: " + str(Controller.HAL.setpoint_in ))

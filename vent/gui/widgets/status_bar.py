@@ -2,6 +2,7 @@ import logging
 import time
 import datetime
 import typing
+import os
 
 import numpy as np
 from PySide2 import QtWidgets, QtCore, QtGui
@@ -37,7 +38,7 @@ class Control_Panel(QtWidgets.QGroupBox):
 
     def init_ui(self):
 
-        self.setStyleSheet(styles.STATUS_BOX)
+        self.setStyleSheet(styles.CONTROL_PANEL)
 
 
         self.layout = QtWidgets.QVBoxLayout()
@@ -47,11 +48,17 @@ class Control_Panel(QtWidgets.QGroupBox):
         # self.layout.addWidget(self.alarm_bar)
         self.layout.setContentsMargins(5,5,5,5)
 
-        self.start_button = QtWidgets.QPushButton('start!!!')
-        self.start_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                        QtWidgets.QSizePolicy.Maximum)
-        self.start_button.setCheckable(True)
-        self.layout.addWidget(self.start_button)
+        self.button_layout = QtWidgets.QHBoxLayout(
+        )
+        self.button_layout.setContentsMargins(0,0,0,0)
+
+        self.start_button = Start_Button()
+        self.button_layout.addWidget(self.start_button,3)
+
+        self.lock_button = Lock_Button()
+        self.button_layout.addWidget(self.lock_button, 1)
+
+        self.layout.addLayout(self.button_layout)
 
         self.heartbeat = HeartBeat()
         self.heartbeat.start_timer()
@@ -66,6 +73,7 @@ class Control_Panel(QtWidgets.QGroupBox):
         size = style.pixelMetric(QtWidgets.QStyle.PM_MessageBoxIconSize, None, self)
 
         # self.setMaximumHeight(size*1.5)
+        #self.setMaximumWidth(styles.LEFT_COLUMN_MAX_WIDTH)
         self.setContentsMargins(0,0,0,0)
         #
         # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
@@ -86,6 +94,105 @@ class Control_Panel(QtWidgets.QGroupBox):
         """
         self.alarm_bar.clear_alarm(alarm, alarm_type)
 
+class Start_Button(QtWidgets.QToolButton):
+    states = ['OFF', 'ON', 'ALARM']
+    def __init__(self, *args, **kwargs):
+        super(Start_Button, self).__init__(*args, **kwargs)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                           QtWidgets.QSizePolicy.Expanding)
+        self.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.setCheckable(True)
+
+        self.pixmaps = {}
+        self.load_pixmaps()
+
+
+        self.setIconSize(QtCore.QSize(styles.START_BUTTON_HEIGHT,
+                                      styles.START_BUTTON_HEIGHT))
+        self.setFixedHeight(styles.BUTTON_MAX_HEIGHT)
+
+        self.set_state('OFF')
+
+    def load_pixmaps(self):
+        gui_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        power_dir = os.path.join(gui_dir, 'images', 'power')
+
+        self.pixmaps['OFF'] = QtGui.QPixmap(os.path.join(power_dir, 'start_button_off.png'))
+        self.pixmaps['ON'] =  QtGui.QPixmap(os.path.join(power_dir, 'start_button_on.png'))
+        self.pixmaps['ALARM'] =  QtGui.QPixmap(os.path.join(power_dir, 'start_button_alarm.png'))
+
+
+    def set_state(self, state):
+        """
+        Should only be called by other objects (as there are checks to whether it's ok to start/stop that we shouldn't be aware of)
+
+        Args:
+            state (str): ``('OFF', 'ON', 'ALARM')``
+        """
+        self.blockSignals(True)
+        if state == "OFF":
+            self.setIcon(self.pixmaps['OFF'])
+            self.setText('START')
+            self.setStyleSheet(styles.START_BUTTON_OFF)
+            self.setChecked(False)
+        elif state == 'ON':
+            self.setIcon(self.pixmaps['ON'])
+            self.setText('STOP')
+            self.setStyleSheet(styles.START_BUTTON_ON)
+            self.setChecked(True)
+        elif state == 'ALARM':
+            self.setIcon(self.pixmaps['ALARM'])
+            self.setStyleSheet(styles.START_BUTTON_ALARM)
+        self.blockSignals(False)
+
+class Lock_Button(QtWidgets.QToolButton):
+
+    states = ['DISABLED', 'UNLOCKED', 'LOCKED']
+    def __init__(self, *args, **kwargs):
+        super(Lock_Button, self).__init__(*args, **kwargs)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                           QtWidgets.QSizePolicy.Expanding)
+        self.setCheckable(True)
+        self.setChecked(True)
+
+        self.pixmaps = {}
+        self.load_pixmaps()
+
+
+        self.setIconSize(QtCore.QSize(styles.START_BUTTON_HEIGHT,
+                                      styles.START_BUTTON_HEIGHT))
+        self.setFixedHeight(styles.BUTTON_MAX_HEIGHT)
+        self.set_state('DISABLED')
+
+    def load_pixmaps(self):
+        gui_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        lock_dir = os.path.join(gui_dir, 'images', 'lock')
+
+        self.pixmaps['DISABLED'] = QtGui.QPixmap(os.path.join(lock_dir, 'disabled.png'))
+        self.pixmaps['UNLOCKED'] = QtGui.QPixmap(os.path.join(lock_dir, 'unlocked.png'))
+        self.pixmaps['LOCKED'] = QtGui.QPixmap(os.path.join(lock_dir, 'locked.png'))
+
+    def set_state(self, state):
+        """
+        Should only be called by other objects (as there are checks to whether it's ok to start/stop that we shouldn't be aware of)
+
+        Args:
+            state (str): ``('OFF', 'ON', 'ALARM')``
+        """
+        self.blockSignals(True)
+        if state == "DISABLED":
+            self.setIcon(self.pixmaps['DISABLED'])
+            #self.setStyleSheet(styles.START_BUTTON_OFF)
+            self.setChecked(True)
+        elif state == 'UNLOCKED':
+            self.setIcon(self.pixmaps['UNLOCKED'])
+            #self.setStyleSheet(styles.START_BUTTON_ON)
+            self.setChecked(False)
+        elif state == 'LOCKED':
+            self.setIcon(self.pixmaps['LOCKED'])
+            #self.setStyleSheet(styles.START_BUTTON_ALARM)
+            self.setChecked(True)
+        self.blockSignals(False)
 
 
 class Alarm_Bar(QtWidgets.QFrame):
@@ -159,7 +266,7 @@ class Alarm_Bar(QtWidgets.QFrame):
         # self.layout.addWidget(self.clear_button,1)
         self.setLayout(self.layout)
         self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Raised)
-        self.setMinimumHeight(styles.STATUS_BAR_MINHEIGHT)
+        self.setFixedHeight(styles.ALARM_BAR_HEIGHT)
 
     def add_alarm(self, alarm:Alarm):
         """

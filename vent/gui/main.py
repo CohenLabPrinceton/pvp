@@ -60,7 +60,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     monitor_width = 2
     plot_width = 4
-    control_width = 2
+    control_width = 3
     total_width = monitor_width + plot_width + control_width
     """
     computed from ``monitor_width+plot_width+control_width``
@@ -351,6 +351,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.showMaximized()
         self.setFixedSize(self.width(), self.height())
+        self.layout.setColumnStretch(0, self.monitor_width)
+        self.layout.setColumnStretch(1, self.plot_width)
+        self.layout.setColumnStretch(2, self.control_width)
 
     def init_ui_status_bar(self):
         ############
@@ -370,6 +373,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.monitor_box = QtWidgets.QGroupBox("Sensor Monitor")
         self.monitor_box.setContentsMargins(0,0,0,0)
         self.monitor_box.setStyleSheet(styles.MONITOR_BOX)
+        #self.monitor_box.setMaximumWidth(styles.LEFT_COLUMN_MAX_WIDTH)
         #self.monitor_layout = QtWidgets.QHBoxLayout()
         #self.monitor_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -419,9 +423,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         # the plot widgets themselves
+        self.plot_box = QtWidgets.QGroupBox('Monitored Waveforms')
+        self.plot_box.setStyleSheet(styles.PLOT_BOX)
+        self.plot_box.setContentsMargins(0,0,0,0)
+        self.plot_box_layout = QtWidgets.QVBoxLayout()
         for plot_key, plot_params in self.PLOTS.items():
             self.plots[plot_key.name] = widgets.Plot(**plot_params)
-            self.plot_layout.addWidget(self.plots[plot_key.name], 1)
+            self.plot_box_layout.addWidget(self.plots[plot_key.name], 1)
+        self.plot_box.setLayout(self.plot_box_layout)
+        self.plot_layout.addWidget(self.plot_box, len(self.plots))
 
         # self.main_layout.addLayout(self.plot_layout,5)
         # self.monitor_layout.addLayout(self.plot_layout, self.plot_width)
@@ -558,6 +568,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         # connect start button to coordinator start
         self.control_panel.start_button.toggled.connect(self.toggle_start)
+
+        # connect lock button
+        self.control_panel.lock_button.toggled.connect(self.toggle_lock)
 
         # connect heartbeat indicator to set off before controller starts
         self.state_changed.connect(self.control_panel.heartbeat.set_state)
@@ -701,6 +714,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     'Please ensure all controls have been set before starting ventilation',
                 )
                 box.exec_()
+                self.control_panel.start_button.set_state('OFF')
                 return
 
             box = widgets.pop_dialog(
@@ -711,6 +725,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             )
             ret = box.exec_()
             if ret != QtWidgets.QMessageBox.Ok:
+                self.control_panel.start_button.set_state('OFF')
                 return
 
 
@@ -718,11 +733,31 @@ class Vent_Gui(QtWidgets.QMainWindow):
             for plot in self.plots.values():
                 plot.reset_start_time()
             self.coordinator.start()
+            self.control_panel.start_button.set_state('ON')
+            self.control_panel.lock_button.set_state('LOCKED')
         else:
             # TODO: what happens when u stop lol
-            return
+            box = widgets.pop_dialog(
+                'No such thing as stopping yet!',
+                'NotImplementedError.exe',
+            )
+            box.exec_()
+            self.control_panel.start_button.set_state('ON')
 
         self.state_changed.emit(state)
+
+    def toggle_lock(self, state):
+        if not self.running:
+            self.control_panel.lock_button.set_state('DISABLED')
+            self.logger.debug('Lock state changed to disabled')
+        else:
+            if state:
+                self.control_panel.lock_button.set_state('LOCKED')
+                self.logger.debug('Lock state changed to locked')
+                # FIXME: Implement locking
+            else:
+                self.control_panel.lock_button.set_state('UNLOCKED')
+                self.logger.debug('Lock state changed to unlocked')
 
     def update_state(self, state_type: str, key:str, val: typing.Union[str,float,int]):
         """

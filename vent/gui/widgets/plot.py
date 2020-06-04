@@ -47,6 +47,11 @@ class Pressure_Waveform(pg.PlotWidget):
         super(Pressure_Waveform, self).__init__(background=styles.TEXT_COLOR,
                                                 title="Pressure Control Waveform")
 
+        self.getPlotItem().titleLabel.item.setHtml(
+            f"<span style='{styles.PRESSURE_PLOT_TITLE_STYLE}'>Pressure Control Waveform</span>"
+        )
+        self.getPlotItem().titleLabel.setAttr('justify', 'left')
+
         # create a dq of plot items to hold waveforms
         self.n_waveforms = n_waveforms
         self.waveforms = deque(maxlen=self.n_waveforms)
@@ -456,13 +461,22 @@ class Plot(pg.PlotWidget):
     def __init__(self, name, buffer_size = 4092, plot_duration = 5, abs_range = None, safe_range = None, color=None, units='', **kwargs):
         #super(Plot, self).__init__(axisItems={'bottom':TimeAxis(orientation='bottom')})
         # construct title html string
-        titlestr = "<h1 style=\"{title_style}\">{title_text} ({units})</h1>".format(title_style=styles.TITLE_STYLE,
-                                                                      title_text=name,
-                                                                        units =units)
+        titlestr = "{title_text} ({units})".format(
+                                                   title_text=name,
+                                                   units =units)
 
 
-        super(Plot, self).__init__(background=styles.BACKGROUND_COLOR,
+        super(Plot, self).__init__(background=styles.BOX_BACKGROUND,
                                    title=titlestr)
+
+        self.getPlotItem().titleLabel.item.setHtml(
+            f"<span style='{styles.PLOT_TITLE_STYLE}'>{titlestr}</span>"
+        )
+        self.getPlotItem().titleLabel.setAttr('justify', 'left')
+
+        # pdb.set_trace()
+
+        # self.setViewportMargins(0,0,styles.BOX_MARGINS,0)
         self.timestamps = deque(maxlen=buffer_size)
         self.history = deque(maxlen=buffer_size)
         # TODO: Make @property to update buffer_size, preserving history

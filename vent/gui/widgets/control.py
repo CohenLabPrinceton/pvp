@@ -34,6 +34,8 @@ class Control(QtWidgets.QWidget):
             self.value = None
         self.decimals = value.decimals
         self.sensor = None
+        self.sensor_value = None
+        self.yrange = ()
 
         self.init_ui()
 
@@ -98,7 +100,7 @@ class Control(QtWidgets.QWidget):
         self.sensor_plot.getPlotItem().hideAxis('bottom')
         self.sensor_plot.getPlotItem().hideAxis('left')
         self.sensor_plot.setRange(xRange=(-0.5, 0.5))
-        self.sensor_plot.enableAutoRange(y=True)
+        #self.sensor_plot.enableAutoRange(y=True)
         #self.sensor_plot.autoRange(padding=.001)
         # self.sensor_plot.enableAutoRange()
 
@@ -276,6 +278,7 @@ class Control(QtWidgets.QWidget):
         self.slider.setValue(self.value)
         self.sensor_set.setValue(self.value)
         self.sensor_limits.setData(**{'y': np.array([self.value])})
+        self.update_yrange()
 
     def update_limits(self, control: ControlSetting):
         if self.value is None:
@@ -290,14 +293,38 @@ class Control(QtWidgets.QWidget):
             self.sensor_limits.setData(**{'top': control.max_value-self.value})
             self.safe_range = (self.safe_range[0], control.max_value)
 
+        self.update_yrange()
+
 
     def update_sensor(self, new_value):
         if new_value is None:
             return
+        self.sensor_value = new_value
         value_str = str(np.round(new_value, self.decimals))
         self.sensor_label.setText(value_str)
         self.sensor_bar.setOpts(y1=np.array([new_value]))
         # self.sensor_plot.autoRange(padding=.001)
+        self.update_yrange()
+
+    def update_yrange(self):
+        """
+        set y range to include max and min and value
+
+        Returns:
+
+        """
+        if self.sensor_value is None:
+            new_yrange = self.safe_range
+        else:
+            y_min = np.min([self.sensor_value, self.safe_range[0]])
+            y_max = np.max([self.sensor_value, self.safe_range[1]])
+            new_yrange = (y_min, y_max)
+
+        if self.yrange != new_yrange:
+            self.sensor_plot.setYRange(*new_yrange)
+            self.yrange = new_yrange
+
+
 
     @property
     def is_set(self):

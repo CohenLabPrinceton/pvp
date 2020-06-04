@@ -19,6 +19,9 @@ SUBWAY_COLORS = {
 BACKGROUND_COLOR = "#111111"
 BOX_BACKGROUND = "#333333"
 TEXT_COLOR = "#EEEEEE"
+BORDER_COLOR = "palette(midlight)"
+BOX_BORDERS = f"2px solid {BORDER_COLOR};"
+BOX_MARGINS = 4
 GRAY_TEXT = BOX_BACKGROUND
 
 CONTROL_BACKGROUND = "#EEEEEE"
@@ -48,8 +51,12 @@ TICK_SIZE = 12
 CARD_TITLE_SIZE = 24
 CARD_TIMESTAMP_SIZE = 12
 
-STATUS_BAR_MINHEIGHT = 100
+ALARM_BAR_HEIGHT = 100
 MIDLINE_MARGIN = 30
+START_BUTTON_HEIGHT=80
+BUTTON_MAX_HEIGHT = 100
+
+LEFT_COLUMN_MAX_WIDTH = 400
 
 MONITOR_UPDATE_INTERVAL = 0.5
 """
@@ -90,36 +97,19 @@ QSlider::handle:horizontal {{
 
 """
 
-
-# RANGE_SLIDER = """
-# QSlider {{
-#     font-size: 12px;
-# }}
-# QSlider::groove:vertical {{
-# border: 1px solid #FFFFFF;
-# width: {slider_width}px;
-# }}
-# QSlider::handle:vertical {{
-# height: {height}px;
-# width: 20px;
-# margin: 0px -20px 0px px;
-# background-color: {slider_color};
-# }}
-#
-# """.format(slider_width=INDICATOR_WIDTH,
-#     height=HANDLE_HEIGHT,
-#            slider_color=SLIDER_COLOR)
-
 MONITOR_BOX = f"""
 QGroupBox {{
     margin-top: {MIDLINE_MARGIN}px;
+    border-top-right-radius: 5px;
+    
 }}
 
 QGroupBox::title {{
   subcontrol-origin: margin;
   subcontrol-position: top left;
+  color: {TEXT_COLOR};
   left: 3px;
-  top: -5px;
+  top: 5px;
 }}
 """
 
@@ -172,18 +162,52 @@ PRESSURE_PLOT_BOX = f"""
 QGroupBox {{
     background-color: {CONTROL_BACKGROUND};
     border: 0px solid #000000;
-    border-radius: 5px 0px 0px 5px;
+    border-left: {BOX_BORDERS};
+    border-top: {BOX_BORDERS};
+    border-bottom: {BOX_BORDERS};
+    margin-left: {BOX_MARGINS}px;
+    margin-bottom: {BOX_MARGINS}px;
+
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
     margin-top: {MIDLINE_MARGIN}px;
 }}
 
 QGroupBox::title {{
   subcontrol-origin: margin;
   subcontrol-position: top left;
+  color: {TEXT_COLOR};
   left: 3px;
   top: 5px;
 }}
 """
 
+PLOT_BOX = f"""
+QGroupBox {{
+    background-color: {BOX_BACKGROUND};
+    border: 0px solid #000000;
+    border-right: 1px solid {BORDER_COLOR};
+    border-top: 1px solid {BORDER_COLOR};
+    border-bottom: 1px solid {BORDER_COLOR};
+    margin-right: {BOX_MARGINS}px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  color: {TEXT_COLOR};
+  left: 3px;
+  top: 3px;
+}}
+"""
+
+MONITOR_PLOT = f"""
+QWidget {{
+    margin-right: {BOX_MARGINS}px;
+}}
+"""
 
 
 CONTROL_LABEL = f"""
@@ -234,6 +258,9 @@ CONTROL_BOX = f"""
 QGroupBox {{
     background-color: {CONTROL_BACKGROUND};
     border: 0px solid #000000;
+    border-top: {BOX_BORDERS};
+    border-right: {BOX_BORDERS};
+    border-bottom: {BOX_BORDERS};
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
@@ -243,7 +270,8 @@ QGroupBox {{
 QGroupBox::title {{
   subcontrol-origin: margin;
   subcontrol-position: top right;
-  right: 15px;
+  color: {TEXT_COLOR};
+  right: 7px;
   top: 5px;
 }}
 """
@@ -262,7 +290,7 @@ QGroupBox {{
 QGroupBox::title {{
   subcontrol-origin: margin;
   subcontrol-position: top right;
-  right: 15px;
+  right: 5px;
   top: 5px;
   color: {CONTROL_TEXT};
 }}
@@ -315,11 +343,17 @@ QRadioButton::indicator:unchecked {{
 }}
 """
 
-TITLE_STYLE = """
-font-size: 32pt;
+PLOT_TITLE_STYLE = """
+font-size: 16pt;
 color: {text_color};
-text-align: left;
+justify: left;
 """.format(text_color=TEXT_COLOR)
+
+PRESSURE_PLOT_TITLE_STYLE = f"""
+font-size: 16pt;
+color: {GRAY_TEXT};
+justify: left;
+"""
 
 
 
@@ -452,9 +486,43 @@ QLabel {{
 }}
 """
 
-STATUS_BOX = f"""
-QWidget {{
+CONTROL_PANEL = f"""
+QGroupBox {{
     background-color: {BACKGROUND_COLOR};
+    border-radius: 5px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  color: {TEXT_COLOR};
+  left: 3px;
+  top: 2px;
+}}
+"""
+
+START_BUTTON_OFF = f"""
+QToolButton {{
+    font-size: 48px;
+    font-style: bold;
+    color: {TEXT_COLOR};
+    text-align: center center;
+}}
+"""
+
+START_BUTTON_ON = f"""
+QToolButton {{
+font-size: 48px;
+    font-style: bold;
+    color: {TEXT_COLOR};
+}}
+"""
+
+START_BUTTON_ALARM = f"""
+QToolButton {{
+font-size: 48px;
+    font-style: bold;
+    color: {SUBWAY_COLORS['red']};
 }}
 """
 

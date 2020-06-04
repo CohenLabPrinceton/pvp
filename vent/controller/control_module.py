@@ -1,4 +1,5 @@
 import time
+import typing
 from typing import List
 import threading
 import numpy as np
@@ -10,11 +11,11 @@ from itertools import count
 import vent.io as io
 
 from vent.common.message import SensorValues, ControlValues, ControlSetting
-from vent.common.logging import init_logger, DataLogger
+from vent.common.loggers import init_logger, DataLogger
 from vent.common.values import CONTROL, ValueName
 from vent.common.utils import timeout
-
-from vent.alarm import AlarmSeverity, Alarm
+from vent.alarm import ALARM_RULES, AlarmType, AlarmSeverity, Alarm
+from vent import prefs
 
 
 class ControlModuleBase:
@@ -59,9 +60,9 @@ class ControlModuleBase:
         #####################  Algorithm/Program parameters  ##################
         # Hyper-Parameters
         # TODO: These should probably all (or whichever make sense) should be args to __init__ -jls
-        self._LOOP_UPDATE_TIME                   = 0.01    # Run the main control loop every 0.01 sec
-        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = 10      # After every 10 main control loop iterations, update COPYs.
-        self._RINGBUFFER_SIZE                    = 100     # Maximum number of breath cycles kept in memory
+        self._LOOP_UPDATE_TIME                   = prefs.get_pref('CONTROLLER_LOOP_UPDATE_TIME')    # Run the main control loop every 0.01 sec
+        self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE = prefs.get_pref('CONTROLLER_LOOPS_UNTIL_UPDATE')      # After every 10 main control loop iterations, update COPYs.
+        self._RINGBUFFER_SIZE                    = prefs.get_pref('CONTROLLER_RINGBUFFER_SIZE')     # Maximum number of breath cycles kept in memory
         self._save_logs                          = save_logs   # Keep logs in a file
         self._FLUSH_EVERY                        = flush_every
 
@@ -87,9 +88,11 @@ class ControlModuleBase:
         # Derived internal control variables - fully defined by numbers above
         try:
             self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
-        except:
+        except Exception as e:
             # TODO: raise alert
+            self.logger.exception(f'Couldnt set cycle duration, setting to 20. __SET_BPM: {self.__SET_BPM}\nGot exception:\n    {e}')
             self.__SET_CYCLE_DURATION = 20
+
         self.__SET_E_PHASE        = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PLATEAU      = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP         = self.__SET_E_PHASE - self.__SET_PEEP_TIME
@@ -98,7 +101,10 @@ class ControlModuleBase:
 
         # Alarm management; controller can only react to High airway pressure alarm, and report Hardware problems
         self.HAPA = None
-        self.TECHA = None
+        self.TECHA = [] # type: typing.List[Alarm]
+        self.limit_hapa = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0][1].limit # TODO: Jonny write method to get limits from alarm manager
+        self.cough_duration = prefs.get_pref('COUGH_DURATION')
+        self.sensor_stuck_since = None
 
         #########################  Data management  #########################
 
@@ -155,13 +161,12 @@ class ControlModuleBase:
                 self.dl = DataLogger()
             except OSError as e:
                 # raised if not enough space
-                # TODO: Log this
-                print('couldnt start data logger, not saving logs')
+                self.logger.exception(f'couldnt start data logger, not saving logs. Got exception\n    {e}')
                 self._save_logs = False
 
         ####################### Internal health checks ###########################
         self._time_last_contact = time.time()
-        self._critical_time     = 0.2           #If Controller has not received set/get within the last 200 ms, it gets nervous.      
+        self._critical_time     = prefs.get_pref('HEARTBEAT_TIMEOUT')           #If Controller has not received set/get within the last 200 ms, it gets nervous.
 
     def __del__(self):
         if self._save_logs:
@@ -237,6 +242,7 @@ class ControlModuleBase:
             try:
                 self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform, exception if this was 0.
             except:
+                self.logger.warning(f'Couldnt calculate BPM, phase was {phase[-1]}. setting as nan')
                 self._DATA_BPM = np.nan
 
     def get_sensors(self) -> SensorValues:
@@ -246,7 +252,7 @@ class ControlModuleBase:
         self._time_last_contact = time.time()
         return cp
 
-    def get_alarms(self):
+    def get_alarms(self) -> typing.Union[None, typing.Tuple[Alarm]]:
         """
         Returns alarms, by time of occurance:
         """
@@ -254,23 +260,26 @@ class ControlModuleBase:
             hapa = self.HAPA
             techa = self.TECHA
 
-        if (hapa is not None) or (techa is not NONE):
-            print("An alarm has happened")
-            #TODO: Link to Alarm manager
+        # return a tuple of alarms if there are any.
+        if (hapa is not None) and (len(techa)>0):
+            ret = (hapa, techa)
+        elif hapa is not None:
+            ret = (hapa,)
+        elif len(techa)>0:
+            ret = (techa,)
         else:
-            return None
+            ret = None
+
+        if ret is not None:
+            self.logger.debug(f'Returning alarms {ret}')
+
+        return ret
 
     def set_control(self, control_setting: ControlSetting):
         ''' Updates the entry of COPY contained in the control settings'''
 
-        try:  #Make sure the controls are valid  
-            v_is_valid  = control_setting.value > 0
-            n_is_valid = np.sum([k == control_setting.name for k, v in CONTROL.items()]) == 1
-            controls_ok = v_is_valid and n_is_valid
-        except:
-            controls_ok = False
 
-        if controls_ok:
+        if control_setting.value is not None:
             with self._lock:
                 if control_setting.name == ValueName.PIP:
                     self.COPY_SET_PIP = control_setting.value
@@ -284,36 +293,45 @@ class ControlModuleBase:
                     self.COPY_SET_I_PHASE = control_setting.value
                 elif control_setting.name == ValueName.PEEP_TIME:
                     self.COPY_SET_PEEP_TIME = control_setting.value
+                else:
+                    self.logger.warning(f'Couldnt set control {control_setting.name}, no corresponding variable in controller')
+                    return
+
                 if self._save_logs:
                     self.dl.store_control_command(control_setting)
+
+        # PIP will pass the HAPA limit in the max_value parameter
+        if control_setting.name == ValueName.PIP:
+            if control_setting.max_value is not None:
+                with self._lock:
+                    self.limit_hapa = control_setting.max_value
+
 
         self._time_last_contact = time.time()
 
 
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         ''' Gets values of the COPY of the control settings. '''
-        
-        try:
-            n_is_valid = np.sum([k == control_setting_name for k, v in CONTROL.items()]) == 1
-        except:
-            n_is_valid = False
 
-        if n_is_valid:
-            with self._lock:
-                if control_setting_name == ValueName.PIP:
-                    return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP)
-                elif control_setting_name == ValueName.PIP_TIME:
-                    return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP_TIME)
-                elif control_setting_name == ValueName.PEEP:
-                    return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP)
-                elif control_setting_name == ValueName.BREATHS_PER_MINUTE:
-                    return_value = ControlSetting(control_setting_name, self.COPY_SET_BPM)
-                elif control_setting_name == ValueName.INSPIRATION_TIME_SEC:
-                    return_value = ControlSetting(control_setting_name, self.COPY_SET_I_PHASE)
-                elif control_setting_name == ValueName.PEEP_TIME:
-                    return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP_TIME)
-        else:
-            return_value = None
+
+
+        with self._lock:
+            if control_setting_name == ValueName.PIP:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP)
+            elif control_setting_name == ValueName.PIP_TIME:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_PIP_TIME)
+            elif control_setting_name == ValueName.PEEP:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP)
+            elif control_setting_name == ValueName.BREATHS_PER_MINUTE:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_BPM)
+            elif control_setting_name == ValueName.INSPIRATION_TIME_SEC:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_I_PHASE)
+            elif control_setting_name == ValueName.PEEP_TIME:
+                return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP_TIME)
+            else:
+                self.logger.warning(
+                    f'Couldnt get control {control_setting_name}, no corresponding variable in controller')
+                return_value = None
 
         self._time_last_contact = time.time()
         return return_value
@@ -363,16 +381,21 @@ class ControlModuleBase:
             - Test for Technical Alert, make sure continuous in contact
         Currently: Alarms are time.time() of first occurance.
         """
-        limit_hapa = 40                 # TODO: WHAT IS THE LIMIT?
+        # for now, assume UI will send updates, we init from the default value
+        # jonny will implement means of getting limits from alarm manager
+        #limit_hapa =
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.
-        limit_max_pressure = 40        # If pressure above that, hardware cannot be correct.
-
+        limit_max_pressure = 100        # If pressure above that, hardware cannot be correct.
+        limit_max_stuck_sensor = 0.2    # 200 ms, jonny, wherever you want this number to live 
 
         #### First: Check for High Airway Pressure (HAPA)
-        if self._DATA_PRESSURE > limit_hapa:                            
+        if self._DATA_PRESSURE > self.limit_hapa:
             if self.HAPA is None:
-                self.HAPA = time.time()
-            if time.time() - self.HAPA > 0.1:       # 100 ms active to avoid being triggered by coughs
+                self.HAPA = Alarm(AlarmType.HIGH_PRESSURE,
+                                  AlarmSeverity.HIGH,
+                                  time.time(),
+                                  value=self._DATA_PRESSURE)
+            if time.time() - self.HAPA.start_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
                 self.__SET_PIP = 30                 # Default: PIP to 30
                 for i in range(5):                   # Make sure to send this command for 100ms -> release pressure immediately
                     self.__control_signal_out = 1
@@ -389,18 +412,49 @@ class ControlModuleBase:
             self.__DATA_old = [self._DATA_Qin, self._DATA_Qout, self._DATA_PRESSURE]
             inputs_dont_change = False 
         else:
-            inputs_dont_change = self._DATA_Qin is self.__DATA_old[0] or self._DATA_Qout is self.__DATA_old[1] or self._DATA_PRESSURE is self.__DATA_old[2]
+            inputs_dont_change = (self._DATA_Qin == self.__DATA_old[0]) or \
+                                 (self._DATA_Qout == self.__DATA_old[1]) or \
+                                 (self._DATA_PRESSURE == self.__DATA_old[2])
             self.__DATA_old = [self._DATA_Qin, self._DATA_Qout, self._DATA_PRESSURE]
-        data_implausible = (self._DATA_Qin < 0 or self._DATA_Qin > limit_max_flows) or (self._DATA_Qout < 0 or self._DATA_Qout > limit_max_flows) or (self._DATA_PRESSURE < 0 or self._DATA_PRESSURE > limit_max_pressure)
-        if inputs_dont_change or data_implausible:
-            if self.TECHA == None:
-                self.TECHA = time.time()
+
+        if inputs_dont_change:
+            if self.sensor_stuck_since == None:
+                self.sensor_stuck_since = time.time()                # If inputs are stuck, remember the time.
+                time_elapsed = 0
+            else:
+                time_elapsed = time.time() - self.sensor_stuck_since   # If happened again, how long?
+
+            if time_elapsed > limit_max_stuck_sensor and not any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
+                    self.TECHA.append(Alarm(
+                        AlarmType.SENSORS_STUCK,
+                        AlarmSeverity.TECHNICAL,
+                    ))
+        else:
+            self.sensor_stuck_since = None                           # If ok, reset sensor_stuck
+
+
+        data_implausible = (self._DATA_Qin < 0 or self._DATA_Qin > limit_max_flows) or \
+                           (self._DATA_Qout < 0 or self._DATA_Qout > limit_max_flows) or \
+                           (self._DATA_PRESSURE < 0 or self._DATA_PRESSURE > limit_max_pressure)
+        if data_implausible:
+            if not any([a.alarm_type == AlarmType.BAD_SENSOR_READINGS for a in self.TECHA]):
+                self.TECHA.append(Alarm(
+                    AlarmType.BAD_SENSOR_READINGS,
+                    AlarmSeverity.TECHNICAL,
+                ))
 
         #### Third: Make sure that updates are coming in in a regular basis
         #
         last_contact = self._time_last_contact - time.time()
         if last_contact > self._critical_time:
-            self.TECHA = time.time()  # Technical alert, but continue running hoping for the best
+            if not any([a.alarm_type == AlarmType.MISSED_HEARTBEAT for a in self.TECHA]):
+                self.TECHA.append(Alarm(
+                    AlarmType.MISSED_HEARTBEAT,
+                    AlarmSeverity.TECHNICAL,
+                    message=f"Controller has not heard from coordinator in {last_contact}"
+                ))
+
+        #self.TECHA = time.time()  # Technical alert, but continue running hoping for the best
 
     def _control_update(self, dt):
         """
@@ -648,10 +702,21 @@ class ControlModuleBase:
         If a controller seems stuck, this makes a new thread, and starts the main loop.
         No parameters should have changed.
         """
+        # try to clear existing threading event first to kill thread.
+        self._running.clear()
+        # try releasing existing lock first in case it was stuck
+        self._lock.release()
+
+        # make new threading objects
         self._running = threading.Event()           # New thread
         self._running.clear()
         self._lock = threading.Lock()
         self._running.set()
+
+        if self.__thread.is_alive():
+            self.logger.exception('tried to kill thread and failed')
+            return
+
         self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
         try:
             self.__thread.start()
@@ -683,14 +748,6 @@ class ControlModuleBase:
         self._pid_control_flag = False
         self._time_last_contact = time.time()
 
-    def _control_update(self, dt):
-        """
-        This selects between PID and state control. If other controllers are to be implemented, add here.
-        """
-        if self._pid_control_flag:
-            self._PID_update(dt)
-        else:
-            self._STATECONTROL_update(dt)
 
 
 class ControlModuleDevice(ControlModuleBase): 

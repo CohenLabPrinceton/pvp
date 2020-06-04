@@ -5,6 +5,7 @@ There are two types of loggers: a standard :class:`logging.Logger` -based loggin
 and a :mod:`tables` - based :class:`.DataLogger` class to store continuously measured sensor values.
 
 """
+import typing
 import shutil
 import traceback
 import os
@@ -16,7 +17,8 @@ from logging import handlers
 import numpy as np
 import tables as pytb
 
-from vent.common.message import SensorValues, ControlValues, ControlSetting
+if typing.TYPE_CHECKING:
+    from vent.common.message import SensorValues, ControlValues, ControlSetting
 
 # some global stack param
 MAX_STACK_DEPTH = 20
@@ -222,7 +224,7 @@ class DataLogger:
         """
         self.h5file.close() # Also flushes the remaining buffers
 
-    def store_waveform_data(self, sensor_values: SensorValues, control_values: ControlValues):
+    def store_waveform_data(self, sensor_values: 'SensorValues', control_values: 'ControlValues'):
         """
         Appends a datapoint to the file.
         NOTE: Not flushed yet.
@@ -236,7 +238,7 @@ class DataLogger:
         datapoint['flow_out'] = control_values.flow_out
         datapoint.append()
 
-    def store_control_command(self, control_setting: ControlSetting):
+    def store_control_command(self, control_setting: 'ControlSetting'):
         """
         Appends a control signal to the hdf5 file.
         NOTE: Also not flushed yet.

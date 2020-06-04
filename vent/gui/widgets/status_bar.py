@@ -202,7 +202,7 @@ class Alarm_Bar(QtWidgets.QFrame):
 
     message_cleared = QtCore.Signal()
     level_changed = QtCore.Signal()
-    alarm_dismissed = QtCore.Signal(AlarmType)
+    alarm_dismissed = QtCore.Signal()
     """
     Wraps :attr:`.Alarm_Card.alarm_dismissed`
     """

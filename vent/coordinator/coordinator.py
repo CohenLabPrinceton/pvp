@@ -8,7 +8,7 @@ from vent.common.message import ControlSetting
 from vent.alarm import Alarm
 from vent.common.message import SensorValues
 from vent.common.values import ValueName
-from vent.common.logging import init_logger
+from vent.common.loggers import init_logger
 from vent.coordinator.process_manager import ProcessManager
 from vent.coordinator.rpc import get_rpc_client
 

@@ -5,7 +5,7 @@ import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
 
 import vent.controller.control_module
-from vent.common.logging import init_logger
+from vent.common.loggers import init_logger
 
 default_addr = 'localhost'
 default_port = 9533

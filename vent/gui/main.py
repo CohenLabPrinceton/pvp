@@ -11,7 +11,7 @@ from vent.alarm import AlarmSeverity, Alarm
 from vent.common import values
 from vent.common.values import ValueName
 from vent.common.message import ControlSetting
-from vent.common.logging import init_logger
+from vent.common.loggers import init_logger
 from vent import gui
 from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS
 from vent.gui.alarm_manager import AlarmManager

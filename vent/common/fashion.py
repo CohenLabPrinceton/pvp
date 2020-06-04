@@ -1,7 +1,7 @@
 """ Decorators for dangerous functions
 
 """
-from vent.common.logging import log_exception
+from vent.common.loggers import log_exception
 import traceback
 import functools
 

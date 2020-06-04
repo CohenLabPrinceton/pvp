@@ -29,7 +29,7 @@ def test_timeout():
             foo(dt)
         t1 = time.time()
         # time should be less than dt bc.. timed out..
-        assert t1-t0 < dt
+        assert t1-t0 < 1.5*dt
 
 def test_timeout_return():
 
@@ -62,7 +62,7 @@ def test_timeout_return():
             ret = foo(num, dt)
         t1 = time.time()
         # time should be less than dt bc.. timed out..
-        assert t1-t0 < dt
+        assert t1-t0 < 1.5*dt
         assert ret is None
 
 

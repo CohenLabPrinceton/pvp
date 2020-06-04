@@ -459,7 +459,7 @@ class ControlModuleBase:
             #     self.__control_signal_out = 1
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
-            self.__control_signal_in = 5
+            self.__control_signal_in = 0
             self.__control_signal_out = 1
             # if self._DATA_PRESSURE < self.__SET_PEEP:
             #     self.__control_signal_out = 0

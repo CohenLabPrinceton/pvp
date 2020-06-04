@@ -27,7 +27,7 @@ def do_stuff():
         ## Do things
         command = ControlSetting(name=ValueName.PEEP, value=10)
         Controller.set_control(command)
-        command = ControlSetting(name=ValueName.PIP, value=35)
+        command = ControlSetting(name=ValueName.PIP, value=25)
         Controller.set_control(command)
         command = ControlSetting(name=ValueName.PIP_TIME, value=0.4)
         Controller.set_control(command)

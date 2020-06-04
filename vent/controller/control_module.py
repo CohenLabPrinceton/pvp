@@ -782,7 +782,7 @@ class ControlModuleDevice(ControlModuleBase):
 
 class Balloon_Simulator:
     '''
-    Physics simulator for inflating balloon.
+    Physics simulator for inflating balloon with a PEEP valve
 
     For math, see https://en.wikipedia.org/wiki/Two-balloon_experiment
 
@@ -790,7 +790,7 @@ class Balloon_Simulator:
         leak: Boolean. True: leaky ballon with 5 sec time constant, False: not leaky.
     '''
 
-    def __init__(self, leak):
+    def __init__(self, leak, peep_valve):
         # Hard parameters for the simulation
         self.max_volume = 6    # Liters  - 6?
         self.min_volume = 1.5  # Liters - baloon starts slightly inflated.
@@ -814,6 +814,7 @@ class Balloon_Simulator:
         self.current_pressure = 0  # in unit  cm-H2O
         self.r_real = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)  # size of the lung
         self.current_volume = self.min_volume                         # in unit  liters
+        self.peep_valve = peep_valve
 
     def get_pressure(self):
         return self.current_pressure
@@ -835,7 +836,10 @@ class Balloon_Simulator:
         Qout_clip = np.max([Qout_clip, 0])
         difference_pressure = self.current_pressure - 0  # Convention: outside is "0"
         conductance = 0.05*Qout_clip                     # This should be in the range of ~1 liter/s for typical max pressure differences
-        self.Qout = difference_pressure * conductance    # Target for flow out
+        if self.current_pressure > self.peep_valve:      # Action of the PEEP valve
+            self.Qout = difference_pressure * conductance    # Target for flow out
+        else:
+            self.Qout = 0
 
     def update(self, dt):  # Performs an update of duration dt [seconds]
 
@@ -899,14 +903,14 @@ class ControlModuleSimulator(ControlModuleBase):
     Controlling Simulation.
     """
     # Implement ControlModuleBase functions
-    def __init__(self, simulator_dt = None):
+    def __init__(self, simulator_dt = None, peep_valve_setting = 5):
         """
         Args:
             simulator_dt (None, float): if None, simulate dt at same rate controller updates.
                 if ``float`` , fix dt updates with this value but still update at _LOOP_UPDATE_TIME
         """
         ControlModuleBase.__init__(self)
-        self.Balloon = Balloon_Simulator(leak=False)          # This is the simulation
+        self.Balloon = Balloon_Simulator(leak=False, peep_valve = peep_valve_setting)          # This is the simulation
         self._sensor_to_COPY()
 
         self.simulator_dt = simulator_dt
@@ -915,15 +919,15 @@ class ControlModuleSimulator(ControlModuleBase):
         '''
         This simulates the action of a proportional valve.
         Flow-current-curve eye-balled from the datasheet of SMC PVQ31-5G-23-01N  
-        https://www.ocpneumatics.com/content/pdfs/PVQ.pdf
         
         x:  Input current [mA]
         dt: Time since last setting in seconds [for the LP filter]
         '''
-        flow_new = 1.0*(np.tanh(0.03*(x - 130)) + 1)
-        if x>160:
+        y = 8*x
+        flow_new = 1.0*(np.tanh(0.03*(y - 130)) + 1)
+        if y>160:
             flow_new = 1.72  #Maximum, ~100 l/min
-        if x<0:
+        if y<0:
             flow_new = 0
         return flow_new
 

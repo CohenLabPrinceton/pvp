@@ -461,16 +461,16 @@ class ControlModuleBase:
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
             self.__control_signal_in = 0
             self.__control_signal_out = 1
-            if self._DATA_PRESSURE < self.__SET_PEEP:
-                self.__control_signal_out = 0
+            # if self._DATA_PRESSURE < self.__SET_PEEP:
+            #     self.__control_signal_out = 0
 
         elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
-            self.__control_signal_in = 0                                        # STATE CONTROL: keeping PEEP, let air in if below
-            self.__control_signal_out = 0
-            # if self._DATA_PRESSURE < self.__SET_PEEP:   #Doesn't work well, jumps around like crazy.
-            #     self.__control_signal_in = np.inf  
-            if self._DATA_PRESSURE > self.__SET_PEEP:
-                self.__control_signal_out = 1
+            self.__control_signal_in = 0                                        # trust the PEEP valve.
+            self.__control_signal_out = 1
+            # if self._DATA_PRESSURE < self.__SET_PEEP:
+            #     self.__control_signal_in = np.inf
+            # if self._DATA_PRESSURE > self.__SET_PEEP:
+            #     self.__control_signal_out = 1
 
         else:
             self.__cycle_start = time.time()  # New cycle starts
@@ -526,17 +526,19 @@ class ControlModuleBase:
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
             self.__calculate_control_signal_in()
             self.__control_signal_out =  1
-            if self._DATA_PRESSURE < self.__SET_PEEP - 1:
-                self.__control_signal_out = 0
-                self.__control_signal_in = 0
+            # if self._DATA_PRESSURE < self.__SET_PEEP - 1:
+            #     self.__control_signal_out = 0
+            #     self.__control_signal_in = 0
 
-        elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
-            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
-            self.__calculate_control_signal_in()
-            if self._DATA_PRESSURE > self.__SET_PEEP + 1:
-                self.__control_signal_out = 1
-            else:
-                self.__control_signal_out = 0
+        elif cycle_phase < self.__SET_CYCLE_DURATION:
+            self.__control_signal_in = 0                                        # Controlled by mechanical peep valve.
+            self.__control_signal_out = 1
+            # self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
+            # self.__calculate_control_signal_in()
+            # if self._DATA_PRESSURE > self.__SET_PEEP + 1:
+            #     self.__control_signal_out = 1
+            # else:
+            #     self.__control_signal_out = 0
 
         else:
             self.__cycle_start = time.time()  # New cycle starts

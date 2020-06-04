@@ -15,6 +15,7 @@ from vent.gui import get_gui_instance
 from vent.common.message import SensorValues, ControlSetting
 from vent.common.values import ValueName
 from vent.common.logging import init_logger
+from vent.alarm import AlarmSeverity
 
 PLOT_TIMER = None
 """
@@ -63,11 +64,16 @@ class Pressure_Waveform(pg.PlotWidget):
 
         # store last values, see param_changed
         self._pip = None
+        self._pip_min = None
+        self._pip_max = None
         self._peep = None
+        self._peep_min = None
+        self._peep_max = None
         self._pipt = None
         self._peept = None
         self._inspt = None
         self._rr = None
+
 
         self._last_target = np.array(())
         self._last_cycle = None
@@ -109,7 +115,18 @@ class Pressure_Waveform(pg.PlotWidget):
         self.addItem(self.point_inspt)
         self.addItem(self.point_peept)
 
+        # draw regions showing error tolerances
+        region_pen_kwargs = {'color':styles.SUBWAY_COLORS['red'],
+                             'width': 3}
+        self.region_pip = pg.LinearRegionItem((0,0), orientation='horizontal', movable=False,
+                                              pen=region_pen_kwargs)
+        self.region_peep = pg.LinearRegionItem((0,0), orientation='horizontal',movable=False,
+                                               pen=region_pen_kwargs)
 
+        self.addItem(self.region_pip)
+        self.addItem(self.region_peep)
+        self.region_pip.setBrush((0,0,0,0.1))
+        self.region_peep.setBrush((0,0,0,0.1))
 
         # connect signals to a general update method
         #self.segment_pip.sigPositionChanged.connect(self.param_changed)
@@ -143,6 +160,14 @@ class Pressure_Waveform(pg.PlotWidget):
 
     @QtCore.Slot(tuple)
     def param_changed(self, param: typing.Tuple[ValueName, typing.Union[tuple, float]]):
+        """
+        Emit parameter that is changed by the plot
+
+        Args:
+            param:
+
+        Returns:
+        """
         # fuck it just going to hardcode
         value_name = param[0]
         new_val = param[1]
@@ -175,35 +200,52 @@ class Pressure_Waveform(pg.PlotWidget):
             value=new_val
         )
         self.control_changed.emit(control)
+        self.draw_target()
 
 
-    def update_target(self, value_name: ValueName, value):
+    def update_target(self, control_setting: ControlSetting):
         """
-        Update the target waveform with a ValueName: value combination
+        Receive an update the target waveform as a :class:`.ControlSetting`
 
         Args:
-            value_name (:class:`.ValueName`): one of :data:`.values.CONTROL`
-            value:
+            control_setting (:class:`.ControlSetting`): one of :attr:`.PARAMETERIZING_VALUES`
 
         Returns:
 
         """
 
-        if value_name == ValueName.PIP_TIME:
-            self._pipt = value
-        elif value_name == ValueName.PIP:
-            self._pip = value
-        elif value_name == ValueName.PEEP_TIME:
-            self._peept = value
+        value_name = control_setting.name
+        value = control_setting.value
+
+        # if value is none, may be setting limits.
+        if value_name == ValueName.PIP:
+            if control_setting.min_value and control_setting.range_severity == AlarmSeverity.LOW:
+                self._pip_min = control_setting.min_value
+            if control_setting.max_value:
+                self._pip_max = control_setting.max_value
         elif value_name == ValueName.PEEP:
-            self._peep = value
-        elif value_name == ValueName.INSPIRATION_TIME_SEC:
-            self._inspt = value
-        elif value_name == ValueName.BREATHS_PER_MINUTE:
-            self._rr = value
-        else:
-            init_logger(__name__).exception(f'Tried to set waveform plot with {value_name}, but no plot element corresponds')
-            return
+            if control_setting.min_value:
+                self._peep_min = control_setting.min_value
+            if control_setting.max_value:
+                self._peep_max = control_setting.max_value
+
+        if control_setting.value is not None:
+
+            if value_name == ValueName.PIP_TIME:
+                self._pipt = value
+            elif value_name == ValueName.PIP:
+                self._pip = value
+            elif value_name == ValueName.PEEP_TIME:
+                self._peept = value
+            elif value_name == ValueName.PEEP:
+                self._peep = value
+            elif value_name == ValueName.INSPIRATION_TIME_SEC:
+                self._inspt = value
+            elif value_name == ValueName.BREATHS_PER_MINUTE:
+                self._rr = value
+            else:
+                init_logger(__name__).exception(f'Tried to set waveform plot with {value_name}, but no plot element corresponds')
+                return
 
         self.draw_target()
 
@@ -274,10 +316,13 @@ class Pressure_Waveform(pg.PlotWidget):
                           (self._inspt-view_range[0])/ x_range)
 
             self.segment_pip.setSpan(mn=pip_bounds[0], mx=pip_bounds[1])
+
+            self.region_pip.setSpan(mn=pip_bounds[0], mx=pip_bounds[1])
             #
             self.point_inspt.setData([self._inspt], [self._pip])
 
-
+        if self._pip_min and self._pip_max:
+            self.region_pip.setRegion((self._pip_min, self._pip_max))
 
 
         ### exhale slope
@@ -312,6 +357,10 @@ class Pressure_Waveform(pg.PlotWidget):
             #     x_points.append(1/(self._rr/60))
             #
             self.segment_peep.setSpan(peep_bounds[0], peep_bounds[1])
+            self.region_peep.setSpan(*peep_bounds)
+
+        if self._peep_min and self._peep_max:
+            self.region_peep.setRegion((self._peep_min, self._peep_max))
 
 
 
@@ -458,7 +507,25 @@ class Plot(pg.PlotWidget):
 
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, name, buffer_size = 4092, plot_duration = 5, abs_range = None, safe_range = None, color=None, units='', **kwargs):
+    def __init__(self, name, buffer_size = 4092,
+                 plot_duration = 5,
+                 abs_range = None,
+                 range_limits: tuple = None,
+                 color=None,
+                 units='',
+                 **kwargs):
+        """
+
+        Args:
+            name:
+            buffer_size:
+            plot_duration:
+            abs_range:
+            range_limits (tuple): tuple of (ValueName)s for which to make pairs of min and max range lines
+            color:
+            units:
+            **kwargs:
+        """
         #super(Plot, self).__init__(axisItems={'bottom':TimeAxis(orientation='bottom')})
         # construct title html string
         titlestr = "{title_text} ({units})".format(
@@ -496,15 +563,17 @@ class Plot(pg.PlotWidget):
 
         #self.enableAutoRange(y=True)
 
-        self.safe_range = None
-        if safe_range:
-            self.safe_range = safe_range
-            self.min_safe = pg.InfiniteLine(movable=True, angle=0, pos=self.safe_range[0])
-            self.max_safe = pg.InfiniteLine(movable=True, angle=0, pos=self.safe_range[1])
-            self.min_safe.sigPositionChanged.connect(self._safe_limits_changed)
-            self.max_safe.sigPositionChanged.connect(self._safe_limits_changed)
-            self.addItem(self.min_safe)
-            self.addItem(self.max_safe)
+        self._range_limits = {}
+        if range_limits:
+            for value in range_limits:
+                self._range_limits[value] = (
+                    pg.InfiniteLine(movable=False, angle=0, pos=0),
+                    pg.InfiniteLine(movable=False, angle=0, pos=0)
+                )
+                # self.min_safe.sigPositionChanged.connect(self._safe_limits_changed)
+                # self.max_safe.sigPositionChanged.connect(self._safe_limits_changed)
+                self.addItem(self._range_limits[value][0])
+                self.addItem(self._range_limits[value][1])
 
 
         self.setXRange(0, plot_duration)
@@ -575,13 +644,18 @@ class Plot(pg.PlotWidget):
         self.limits_changed.emit((self.min_safe.value(),
                                        self.max_safe.value()))
 
-    @QtCore.Slot(tuple)
-    def set_safe_limits(self, limits):
-        if self.safe_range is None:
+    # @QtCore.Slot(tuple)
+    def set_safe_limits(self, limits: ControlSetting):
+        if self._range_limits is None:
             return
 
-        self.max_safe.setPos(limits[1])
-        self.min_safe.setPos(limits[0])
+        if limits.name in self._range_limits.keys():
+
+            if limits.min_value:
+                self._range_limits[limits.name][0].setPos(limits.min_value)
+            if limits.max_value:
+                self._range_limits[limits.name][1].setPos(limits.max_value)
+
 
     def reset_start_time(self):
         self._start_time = time.time()

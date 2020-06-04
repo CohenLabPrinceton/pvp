@@ -225,7 +225,7 @@ VALUES = odict({
         'safe_range': (1, 1.3),
         'decimals': 2,
         'default':0.5,
-        'control': False,
+        'control': True,
         'sensor': False,
         'display': False
     }),

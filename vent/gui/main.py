@@ -147,6 +147,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self._plot_control = False
 
+        self._autocalc_cycle = ValueName.INSPIRATION_TIME_SEC # which of the cycle control to autocalculate
+
         self.running = False
 
         # keep track of set values!!!
@@ -189,7 +191,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
 
         for control_name, control_params in self.CONTROL.items():
-            if control_name == ValueName.IE_RATIO:
+            if control_name == self._autocalc_cycle:
                 continue
             self.set_value(control_params.default, control_name)
 
@@ -216,14 +218,123 @@ class Vent_Gui(QtWidgets.QMainWindow):
             value_name = value_name.name
 
 
+        # if we're not autocalculating the IE ratio, just send the control through
+        # otherwise we have to compute something from the IE ratio.
+        if value_name in (ValueName.BREATHS_PER_MINUTE.name,
+                          ValueName.IE_RATIO.name,
+                          ValueName.INSPIRATION_TIME_SEC.name):
+            self._set_cycle_control(value_name, new_value)
+
+        else:
 
 
-        control_object = ControlSetting(name=getattr(ValueName, value_name),
-                                        value=new_value,
-                                        #min_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][0],
-                                        #max_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][1],
-                                        timestamp = time.time())
-        self.set_control(control_object)
+
+            control_object = ControlSetting(name=getattr(ValueName, value_name),
+                                            value=new_value,
+                                            #min_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][0],
+                                            #max_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][1],
+                                            timestamp = time.time())
+            self.set_control(control_object)
+
+    def _set_cycle_control(self, value_name: str, new_value: float):
+        """
+        Compute the computed breath cycle control.
+
+        We only actually have BPM and INSPt as controls, so if we're using I:E ratio we have to compute one or the other.
+
+        Computes the value and calls :meth:`.set_control` with the appropriate values
+
+        # ie = inspt/expt
+        # inspt = ie*expt
+        # expt = inspt/ie
+        #
+        # cycle_time = inspt + expt
+        # cycle_time = inspt + inspt/ie
+        # cycle_time = inspt*(1+1/ie)
+        #inspt = cycle_time/(1+1/ie)
+        # cycle_time - expt
+        """
+        bpm = None
+        inspt = None
+        ie = None
+
+        if self._autocalc_cycle == ValueName.INSPIRATION_TIME_SEC:
+            if value_name == ValueName.IE_RATIO.name:
+                ie = new_value
+                # try to get BPM:
+                try:
+                    bpm = self._state['controls'][ValueName.BREATHS_PER_MINUTE.name]
+                    cycle_time = 1/(bpm/60)
+                    inspt = cycle_time/(1+1/new_value)
+
+                except KeyError:
+                    self.logger.debug('Tried to set breath cycle controls with autocalc INSPt, but dont have BPM yet.')
+                    # do nothing -- we've alredy stashed IE ratio above, will set both once we have bpm
+
+            elif value_name == ValueName.BREATHS_PER_MINUTE.name:
+                bpm = new_value
+                # try to get ie
+                try:
+                    ie = self._state['controls'][ValueName.IE_RATIO.name]
+                    cycle_time = 1/(new_value/60)
+                    inspt = cycle_time / (1 + 1 / ie)
+                except KeyError:
+                    self.logger.debug('Tried to set breath cycle controls with autocalc INSPt, but dont have IE ratio yet. Setting BPM alone')
+
+        elif self._autocalc_cycle == ValueName.BREATHS_PER_MINUTE:
+            if value_name == ValueName.IE_RATIO.name:
+                ie = new_value
+                try:
+                    inspt = self._state['controls'][ValueName.INSPIRATION_TIME_SEC.name]
+                    expt = inspt/new_value
+                    cycle_time = inspt + expt # in Hz
+                    bpm = (1/cycle_time)*60
+                except KeyError:
+                    self.logger.debug(
+                        'Tried to set breath cycle controls with autocalc BPM, but dont have INSPt yet.')
+
+            elif value_name == ValueName.INSPIRATION_TIME_SEC.name:
+                inspt = new_value
+                try:
+                    ie = self._state['controls'][ValueName.IE_RATIO.name]
+                    expt = new_value / ie
+                    cycle_time = new_value + expt  # in Hz
+                    bpm = (1 / cycle_time) * 60
+                except KeyError:
+                    self.logger.debug(
+                        'Tried to set breath cycle controls with autocalc BPM, but dont have I:E yet. Setting INSPt alone')
+
+        elif self._autocalc_cycle == ValueName.IE_RATIO:
+            # don't need ta do anything, just calculate, stash, and set
+            try:
+                if value_name == ValueName.BREATHS_PER_MINUTE.name:
+                    bpm = new_value
+                    inspt = self._state['controls'][ValueName.INSPIRATION_TIME_SEC.name]
+                elif value_name == ValueName.INSPIRATION_TIME_SEC.name:
+                    inspt = new_value
+                    bpm = self._state['controls'][ValueName.BREATHS_PER_MINUTE.name]
+
+                cycle_time = 1 / (bpm / 60)
+                expt = cycle_time - inspt
+                ie = inspt/expt
+
+            except KeyError:
+                self.logger.debug(
+                    f'Tried to set breath cycle controls with autocalc IE Ratio, but dont have BPM and INSPt. Setting {value_name} without calculating IE')
+
+
+        #set whatever values we have
+        for _value_name, _set_value in zip(
+                (ValueName.INSPIRATION_TIME_SEC, ValueName.BREATHS_PER_MINUTE, ValueName.IE_RATIO),
+                (inspt, bpm, ie)):
+            if _set_value is not None:
+                if _value_name.name in self._state['controls'].keys() and _set_value == self._state['controls'][_value_name.name]:
+                    continue
+                else:
+                    self.set_control(ControlSetting(
+                        name=_value_name,
+                        value=_set_value
+                    ))
 
     def set_control(self, control_object: ControlSetting):
         """
@@ -240,13 +351,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # FIXME: replace set_value with this kinda thing
         #self.logger.debug(control_object.__dict__)
         self.alarm_manager.update_dependencies(control_object)
-        self.coordinator.set_control(control_object)
+        if control_object.name != ValueName.IE_RATIO:
+            self.coordinator.set_control(control_object)
         # FIXME: The recursion here is bad. should do a separate value_updated and update_value for outgoing/ingoing updates
         if control_object.name.name in self.controls.keys():
             self.controls[control_object.name.name].update_value(control_object.value)
 
         if control_object.name in self.pressure_waveform.PARAMETERIZING_VALUES:
-            self.pressure_waveform.update_target(control_object.name, control_object.value)
+            self.pressure_waveform.update_target(control_object)
 
         self.update_state('controls', control_object.name.name, control_object.value)
 
@@ -440,6 +552,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         ######################
         # set the default view as 30s
         #self.time_buttons[times[2][0]].click()
+        self.set_plot_duration(60)
 
     def init_ui_controls(self):
         # FIXME: Jonny this is shameful comment your work
@@ -503,7 +616,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.controls_layout_cycle_buttons.addWidget(self.controls_cycle_buttons[control_name])
             self.controls_cycle_button_group.addButton(self.controls_cycle_buttons[control_name])
             #self.controls_layout_cycle_buttons.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
-            if control_name != ValueName.INSPIRATION_TIME_SEC:
+            if control_name != self._autocalc_cycle:
                 self.controls_layout_cycle_widgets.addWidget(self.controls[control_name.name])
                 self.controls_layout_cycle_widgets.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
             else:
@@ -553,12 +666,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
 
         # hook up monitors and plots
-        for value in ValueName:
-            if value.name in self.plots.keys():
-                self.monitor[value.name].limits_changed.connect(
-                    self.plots[value.name].set_safe_limits)
-                self.plots[value.name].limits_changed.connect(
-                    self.monitor[value.name].update_limits)
+        # for value in ValueName:
+        #     if value.name in self.plots.keys():
+        #         self.monitor[value.name].limits_changed.connect(
+        #             self.plots[value.name].set_safe_limits)
+        #         self.plots[value.name].limits_changed.connect(
+        #             self.monitor[value.name].update_limits)
 
         self.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
 
@@ -584,6 +697,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # get name of button
         value_name = button.objectName()
         #pdb.set_trace()
+        self._autocalc_cycle = ValueName.__members__[value_name]
 
         # clear everything
         while self.controls_layout_cycle_widgets.count():
@@ -637,6 +751,13 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def limits_updated(self, control:ControlSetting):
         if control.name.name in self.controls.keys():
             self.controls[control.name.name].update_limits(control)
+        if control.name in (ValueName.PIP, ValueName.PEEP):
+            self.pressure_waveform.update_target(control)
+            # PIP sets high/low limits on pressure plot
+            if ValueName.PRESSURE.name in self.plots.keys():
+                self.plots[ValueName.PRESSURE.name].set_safe_limits(control)
+
+
 
     @QtCore.Slot(Alarm)
     def handle_cleared_alarm(self, alarm):
@@ -660,8 +781,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def alarm_state_changed(self, state):
         self.alarm_state = state
 
-    def set_plot_duration(self, dur):
-        dur = int(self.sender().objectName())
+    def set_plot_duration(self, dur=None):
+        if dur is None:
+            dur = int(self.sender().objectName())
 
         for plot in self.plots.values():
             plot.set_duration(dur)
@@ -730,6 +852,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
             self.running = True
+            self.control_panel.runtime.start_timer()
             for plot in self.plots.values():
                 plot.reset_start_time()
             self.coordinator.start()
@@ -743,6 +866,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             )
             box.exec_()
             self.control_panel.start_button.set_state('ON')
+            return
 
         self.state_changed.emit(state)
 
@@ -814,9 +938,22 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def controls_set(self):
         """
         Check if all controls are set
+
+        .. note::
+
+            Note that even when RR or INSPt are autocalculated, they are still set in their control objects, so
+            this check is the same regardless of what is set to autocalculate
         """
-        # FIXME: More explicit check than this
-        if sum([c.is_set for c in self.controls.values()]) == len(self.controls)-1:
+        controls2set = [
+            ValueName.PIP,
+            ValueName.PEEP,
+            ValueName.PIP_TIME,
+            ValueName.PEEP_TIME,
+            ValueName.BREATHS_PER_MINUTE,
+            ValueName.INSPIRATION_TIME_SEC
+        ]
+
+        if all([self.controls[c.name].is_set for c in controls2set]):
             return True
         else:
             return False

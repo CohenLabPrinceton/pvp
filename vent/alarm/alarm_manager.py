@@ -75,10 +75,10 @@ class Alarm_Manager(object):
         for severity, condition in alarm_rule.conditions:
 
             if isinstance(condition.depends, dict):
-                self.register_dependency(condition, condition.depends)
+                self.register_dependency(condition, condition.depends, severity)
             elif isinstance(condition.depends, list) or isinstance(condition.depends, tuple):
                 for depend in condition.depends:
-                    self.register_dependency(condition, depend)
+                    self.register_dependency(condition, depend, severity)
 
         self.logger.info(f'Registered rule:\n{pformat(alarm_rule.__dict__)}')
 
@@ -290,17 +290,20 @@ class Alarm_Manager(object):
         # TODO: Emit evidence of this new alarm
 
     def register_dependency(self, condition: Condition,
-                            dependency: dict):
+                            dependency: dict,
+                            severity: AlarmSeverity):
         """
         Add dependency in a Condition object to be updated when values are changed
 
         Args:
             condition:
             dependency (dict): either a (ValueName, attribute_name) or optionally also + transformation callable
+            severity (:class:`.AlarmSeverity`): severity of dependency
         """
 
         # invert the structure of the dependency so it's keyed by the ValueName being updated
         dependency['condition'] = condition
+        dependency['severity'] = severity
         value_name = dependency.pop('value_name')
         if value_name not in self.dependencies.keys():
             self.dependencies[value_name] = [dependency]
@@ -347,6 +350,8 @@ class Alarm_Manager(object):
                         control_kwargs['min_value'] = new_value
                     elif depend['condition'].mode == 'max':
                         control_kwargs['max_value'] = new_value
+
+                    control_kwargs['range_severity'] = depend['severity']
 
                     control_out = ControlSetting(**control_kwargs)
                     for cb in self.depends_callbacks:

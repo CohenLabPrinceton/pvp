@@ -58,6 +58,12 @@ ALARM_RULES = odict({
                     value_name=ValueName.PIP,
                     limit=VALUES[ValueName.PIP]['safe_range'][0]- \
                           VALUES[ValueName.PIP]['safe_range'][0]*0.15,
+                    depends={
+                        'value_name': ValueName.PIP,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x: x - (x * 0.15)
+                    },
                     mode='min'
                 ) + \
                 condition.CycleAlarmSeverityCondition(
@@ -157,7 +163,13 @@ ALARM_RULES = odict({
                 condition.ValueCondition(
                     value_name=ValueName.PEEP,
                     limit=VALUES[ValueName.PEEP]['safe_range'][0],
-                    mode='min'
+                    mode='min',
+                    depends= {
+                        'value_name': ValueName.PEEP,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x : x-(x*0.15)
+                    }
                 )
             ),
         )
@@ -172,7 +184,13 @@ ALARM_RULES = odict({
                 condition.ValueCondition(
                     value_name=ValueName.PEEP,
                     limit=VALUES[ValueName.PEEP]['safe_range'][1],
-                    mode='max'
+                    mode='max',
+                    depends={
+                        'value_name': ValueName.PEEP,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x: x + (x * 0.15)
+                    }
                 )
             ),
         )

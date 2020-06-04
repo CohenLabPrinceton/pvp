@@ -455,7 +455,7 @@ ALARM_CARD_STYLES = {
 
 HEARTBEAT_NORMAL = f"""
 QRadioButton::indicator {{
-    background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 {SUBWAY_COLORS['blue']});
+    background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 {SUBWAY_COLORS['green']});
     border-radius: 5px;
 }}
 

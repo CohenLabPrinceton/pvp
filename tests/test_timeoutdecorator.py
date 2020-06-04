@@ -20,7 +20,7 @@ def test_timeout():
         t0 = time.time()
         foo(dt)
         t1 = time.time()
-        assert t1-t0 < dt*1.5
+        assert t1-t0 < dt*2
         assert t1-t0 < timeout_dur
         
     for dt in (np.random.rand(5)*timeout_dur)+timeout_dur:        # Should be timeout, no longer than 60ms.

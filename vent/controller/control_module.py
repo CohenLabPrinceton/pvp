@@ -363,7 +363,7 @@ class ControlModuleBase:
             - Test for Technical Alert, make sure continuous in contact
         Currently: Alarms are time.time() of first occurance.
         """
-        limit_hapa = 25                 # TODO: WHAT IS THE LIMIT?
+        limit_hapa = 40                 # TODO: WHAT IS THE LIMIT?
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.
         limit_max_pressure = 40        # If pressure above that, hardware cannot be correct.
 
@@ -1016,4 +1016,4 @@ def get_control_module(sim_mode=False, simulator_dt = None):
     if sim_mode == True:
         return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
-        return ControlModuleDevice(pid_control = True, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')
+        return ControlModuleDevice(pid_control = False, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')

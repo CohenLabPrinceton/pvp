@@ -576,10 +576,16 @@ class ControlModuleBase:
                 self.__control_signal_out = 0                                                        # close out valve
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
-            target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
-            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
-            self.__calculate_control_signal_in()
-            self.__control_signal_out =  1
+
+            self.__control_signal_in = 0 
+            self.__control_signal_out = 1
+            if self._DATA_PRESSURE < self.__SET_PEEP:
+                self.__control_signal_in = 5
+
+            # target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
+            # self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
+            # self.__calculate_control_signal_in()
+            # self.__control_signal_out =  1
             # if self._DATA_PRESSURE < self.__SET_PEEP - 1:
             #     self.__control_signal_out = 0
             #     self.__control_signal_in = 0
@@ -587,6 +593,7 @@ class ControlModuleBase:
         elif cycle_phase < self.__SET_CYCLE_DURATION:
             self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
             self.__control_signal_out = 1
+            
             # self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
             # self.__calculate_control_signal_in()
             # if self._DATA_PRESSURE > self.__SET_PEEP + 1:

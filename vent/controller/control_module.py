@@ -806,11 +806,13 @@ class ControlModuleDevice(ControlModuleBase):
         """
         Get sensor values from HAL, decorated with timeout
         """
-        self._DATA_Qout = 0                         # current hardware does not support that.
-        self._DATA_Qin  = self.HAL.flow_ex          # "flow_ex" is the low out of the system. VTE is derived from the integral of this quantity.
-        time.sleep(0.01)
-        self._DATA_PRESSURE = self.HAL.pressure
-        time.sleep(0.01)
+        with self._running.is_set():
+            self._DATA_PRESSURE = self.HAL.pressure
+            time.sleep(0.01)
+            self._DATA_Qout = 0                         # current hardware does not support that.
+            self._DATA_Qin  = self.HAL.flow_ex          # "flow_ex" is the low out of the system. VTE is derived from the integral of this quantity.
+            time.sleep(0.01)
+
 
     def _start_mainloop(self):
         # start running, this should be run as a thread! 

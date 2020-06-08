@@ -46,7 +46,7 @@ class ControlModuleBase:
 
     """
 
-    def __init__(self, save_logs: bool = False, flush_every: int = 10):
+    def __init__(self, pid_control: bool = True, save_logs: bool = False, flush_every: int = 10):
         """
 
         Args:
@@ -71,8 +71,8 @@ class ControlModuleBase:
         # This is what the machine has controll over:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
-        self._pid_control_flag    = True           # Default is: use PID control
-        self.__KP                 = 80             # The weights for the the PID terms
+        self._pid_control_flag    = pid_control    # Default is: use PID control
+        self.__KP                 = 5             # The weights for the the PID terms
         self.__KI                 = 0
         self.__KD                 = 0
 
@@ -357,7 +357,7 @@ class ControlModuleBase:
         Calculated the PID control signal with the error terms and the three gain parameters.
         """
         self.__control_signal_in  = 0            # Some setting for the maximum flow.
-        self.__control_signal_in +=  self.__KP*self._DATA_P
+        self.__control_signal_in +=  (self.__SET_PIP/25)*self.__KP*self._DATA_P     # Small hack, with higher PIP to reach, controller should react faster
         self.__control_signal_in +=  self.__KI*self._DATA_I
         self.__control_signal_in +=  self.__KD*self._DATA_D
 
@@ -397,8 +397,12 @@ class ControlModuleBase:
                                   value=self._DATA_PRESSURE)
             if time.time() - self.HAPA.start_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
                 self.__SET_PIP = 30                 # Default: PIP to 30
-                self.__control_signal_out = np.inf
-                self.__control_signal_in  = 0
+                for i in range(5):                   # Make sure to send this command for 100ms -> release pressure immediately
+                    self.__control_signal_out = 1
+                    self.__control_signal_in  = 0
+                    time.sleep(0.02)
+                print("HAPA has been triggered")
+                self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
         else:
             self.HAPA = None
 
@@ -495,7 +499,7 @@ class ControlModuleBase:
         self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
 
         if cycle_phase < self.__SET_PIP_TIME:
-            self.__control_signal_in = np.inf                                                        # STATE CONTROL: to PIP, air in as fast as possible
+            self.__control_signal_in = 100                                                       # STATE CONTROL: to PIP, air in as fast as possible
             self.__control_signal_out = 0
             if self._DATA_PRESSURE > self.__SET_PIP:
                 self.__control_signal_in = 0
@@ -504,23 +508,23 @@ class ControlModuleBase:
             self.__control_signal_in = 0                                                             # STATE CONTROL: keep PIP plateau, let air in if below
             self.__control_signal_out = 0
             if self._DATA_PRESSURE < self.__SET_PIP:
-                self.__control_signal_in = np.inf
-            if self._DATA_PRESSURE > self.__SET_PIP:
-                self.__control_signal_out = 1
+                self.__control_signal_in = 100
+            # if self._DATA_PRESSURE > self.__SET_PIP:
+            #     self.__control_signal_out = 1
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
             self.__control_signal_in = 0
             self.__control_signal_out = 1
-            if self._DATA_PRESSURE < self.__SET_PEEP:
-                self.__control_signal_out = 0
+            # if self._DATA_PRESSURE < self.__SET_PEEP:
+            #     self.__control_signal_out = 0
 
         elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
-            self.__control_signal_in = 0                                        # STATE CONTROL: keeping PEEP, let air in if below
-            self.__control_signal_out = 0
-            if self._DATA_PRESSURE < self.__SET_PEEP:
-                self.__control_signal_in = np.inf
-            if self._DATA_PRESSURE > self.__SET_PEEP:
-                self.__control_signal_out = 1
+            self.__control_signal_in = 5                                      # trust the PEEP valve; gentle flow in
+            self.__control_signal_out = 1
+            # if self._DATA_PRESSURE < self.__SET_PEEP:
+            #     self.__control_signal_in = np.inf
+            # if self._DATA_PRESSURE > self.__SET_PEEP:
+            #     self.__control_signal_out = 1
 
         else:
             self.__cycle_start = time.time()  # New cycle starts
@@ -548,6 +552,7 @@ class ControlModuleBase:
         Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
         A record of pressure/volume waveforms is kept and saved
         '''
+        PEEP_VALVE_SET = True
 
         now = time.time()
         cycle_phase = now - self.__cycle_start
@@ -572,21 +577,33 @@ class ControlModuleBase:
                 self.__control_signal_out = 0                                                        # close out valve
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
-            target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
-            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
-            self.__calculate_control_signal_in()
-            self.__control_signal_out =  1
-            if self._DATA_PRESSURE < self.__SET_PEEP - 1:
-                self.__control_signal_out = 0
-                self.__control_signal_in = 0
 
-        elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
-            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
-            self.__calculate_control_signal_in()
-            if self._DATA_PRESSURE > self.__SET_PEEP + 1:
+            if PEEP_VALVE_SET:
+                self.__control_signal_in = 0 
+                self.__control_signal_out = 1
+                if self._DATA_PRESSURE < self.__SET_PEEP:
+                    self.__control_signal_in = 5
+            else:
+                target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
+                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
+                self.__calculate_control_signal_in()
+                self.__control_signal_out =  1
+                if self._DATA_PRESSURE < self.__SET_PEEP:
+                    self.__control_signal_out = 0
+                    self.__control_signal_in = 5
+
+        elif cycle_phase < self.__SET_CYCLE_DURATION:
+
+            if PEEP_VALVE_SET:
+                self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
                 self.__control_signal_out = 1
             else:
-                self.__control_signal_out = 0
+                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
+                self.__calculate_control_signal_in()
+                if self._DATA_PRESSURE > self.__SET_PEEP + 0.5:
+                    self.__control_signal_out = 1
+                else:
+                    self.__control_signal_out = 0
 
         else:
             self.__cycle_start = time.time()  # New cycle starts
@@ -744,17 +761,17 @@ class ControlModuleBase:
 
 
 
-class ControlModuleDevice(ControlModuleBase):
+class ControlModuleDevice(ControlModuleBase): 
     """
     Controlling Hardware.
     """
     # Implement ControlModuleBase functions
-    def __init__(self):
+    def __init__(self, pid_control = False, save_logs = True, flush_every = 10, config_file = None):
         """
         Args:
             config_file (string): Path to device config file, e.g. 'vent/io/config/dinky-devices.ini'
         """
-        ControlModuleBase.__init__(self, config_file)
+        ControlModuleBase.__init__(self, pid_control, save_logs, flush_every)
         self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
     
@@ -767,7 +784,7 @@ class ControlModuleDevice(ControlModuleBase):
               ValueName.PIP.name                  : self._DATA_PIP,
               ValueName.PEEP.name                 : self._DATA_PEEP,
               ValueName.FIO2.name                 : 70,
-              ValueName.PRESSURE.name             : self.HAL.pressure,
+              ValueName.PRESSURE.name             : self._DATA_PRESSURE,
               ValueName.VTE.name                  : self._DATA_VTE,
               ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
               ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
@@ -776,21 +793,21 @@ class ControlModuleDevice(ControlModuleBase):
               'breath_count': self._DATA_BREATH_COUNT
           })
             
-    @timeout
+    # @timeout
     def _set_HAL(self, valve_open_in, valve_open_out):
         """
         Set Controls with HAL, decorated with a timeout.
         """
-        self.HAL.setpoint_in = max(min(100, valve_open_in), 0)
+        self.HAL.setpoint_in = max(min(100, int(valve_open_in)), 0)
         self.HAL.setpoint_ex = valve_open_out 
     
-    @timeout
+    # @timeout
     def _get_HAL(self):
         """
         Get sensor values from HAL, decorated with timeout
         """
-        self._DATA_Qout = self.HAL.flow_ex                      # Flow sensor on Expiratory side
-        self._DATA_Qin  = self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
+        self._DATA_Qout = 0 #self.HAL.flow_ex                      # Flow sensor on Expiratory side   NOTE: THIS DOESNT WORK RN!
+        self._DATA_Qin  = 0# self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
         self._DATA_PRESSURE = self.HAL.pressure
 
     def _start_mainloop(self):
@@ -799,7 +816,7 @@ class ControlModuleDevice(ControlModuleBase):
 
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
-        while self._running:
+        while self._running.is_set():
             time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
@@ -828,12 +845,12 @@ class ControlModuleDevice(ControlModuleBase):
         # # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
         self._sensor_to_COPY()  # Copy sensor values to COPY
-
+        self._set_HAL(valve_open_in = 0, valve_open_out = 1)  # Defined state to make sure that it does not pop up.
 
 
 class Balloon_Simulator:
     '''
-    Physics simulator for inflating balloon.
+    Physics simulator for inflating balloon with a PEEP valve
 
     For math, see https://en.wikipedia.org/wiki/Two-balloon_experiment
 
@@ -841,7 +858,7 @@ class Balloon_Simulator:
         leak: Boolean. True: leaky ballon with 5 sec time constant, False: not leaky.
     '''
 
-    def __init__(self, leak):
+    def __init__(self, leak, peep_valve):
         # Hard parameters for the simulation
         self.max_volume = 6    # Liters  - 6?
         self.min_volume = 1.5  # Liters - baloon starts slightly inflated.
@@ -865,6 +882,7 @@ class Balloon_Simulator:
         self.current_pressure = 0  # in unit  cm-H2O
         self.r_real = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)  # size of the lung
         self.current_volume = self.min_volume                         # in unit  liters
+        self.peep_valve = peep_valve
 
     def get_pressure(self):
         return self.current_pressure
@@ -886,7 +904,10 @@ class Balloon_Simulator:
         Qout_clip = np.max([Qout_clip, 0])
         difference_pressure = self.current_pressure - 0  # Convention: outside is "0"
         conductance = 0.05*Qout_clip                     # This should be in the range of ~1 liter/s for typical max pressure differences
-        self.Qout = difference_pressure * conductance    # Target for flow out
+        if self.current_pressure > self.peep_valve:      # Action of the PEEP valve
+            self.Qout = difference_pressure * conductance    # Target for flow out
+        else:
+            self.Qout = 0
 
     def update(self, dt):  # Performs an update of duration dt [seconds]
 
@@ -950,14 +971,14 @@ class ControlModuleSimulator(ControlModuleBase):
     Controlling Simulation.
     """
     # Implement ControlModuleBase functions
-    def __init__(self, simulator_dt = None):
+    def __init__(self, simulator_dt = None, peep_valve_setting = 5):
         """
         Args:
             simulator_dt (None, float): if None, simulate dt at same rate controller updates.
                 if ``float`` , fix dt updates with this value but still update at _LOOP_UPDATE_TIME
         """
         ControlModuleBase.__init__(self)
-        self.Balloon = Balloon_Simulator(leak=False)          # This is the simulation
+        self.Balloon = Balloon_Simulator(leak=False, peep_valve = peep_valve_setting)          # This is the simulation
         self._sensor_to_COPY()
 
         self.simulator_dt = simulator_dt
@@ -966,15 +987,15 @@ class ControlModuleSimulator(ControlModuleBase):
         '''
         This simulates the action of a proportional valve.
         Flow-current-curve eye-balled from the datasheet of SMC PVQ31-5G-23-01N  
-        https://www.ocpneumatics.com/content/pdfs/PVQ.pdf
         
         x:  Input current [mA]
         dt: Time since last setting in seconds [for the LP filter]
         '''
-        flow_new = 1.0*(np.tanh(0.03*(x - 130)) + 1)
-        if x>160:
+        y = 8*x
+        flow_new = 1.0*(np.tanh(0.03*(y - 130)) + 1)
+        if y>160:
             flow_new = 1.72  #Maximum, ~100 l/min
-        if x<0:
+        if y<0:
             flow_new = 0
         return flow_new
 
@@ -1065,6 +1086,6 @@ def get_control_module(sim_mode=False, simulator_dt = None):
         sim_mode (bool): if ``true``: returns simulation, else returns hardware
     """
     if sim_mode == True:
-        return ControlModuleSimulator(simulator_dt=simulator_dt)
+        return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
-        return ControlModuleDevice()
+        return ControlModuleDevice(pid_control = True, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')

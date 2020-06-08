@@ -88,7 +88,7 @@ def test_control_dynamical(control_type):
     Start controller, set control values, measure whether actually there.
     '''
     Controller = get_control_module(sim_mode=True, simulator_dt=0.01)
-    Controller._LOOP_UPDATE_TIME = 0
+    Controller._LOOP_UPDATE_TIME = 0.01
 
 
     if control_type == "PID":
@@ -102,7 +102,7 @@ def test_control_dynamical(control_type):
 
     vals_start = Controller.get_sensors()
 
-    v_peep = random.randint(5, 10)
+    v_peep = 5
     command = ControlSetting(name=ValueName.PEEP, value=v_peep)
     Controller.set_control(command)
 

@@ -357,7 +357,7 @@ class ControlModuleBase:
         Calculated the PID control signal with the error terms and the three gain parameters.
         """
         self.__control_signal_in  = 0            # Some setting for the maximum flow.
-        self.__control_signal_in +=  self.__KP*self._DATA_P
+        self.__control_signal_in +=  (self.__SET_PIP/25)*self.__KP*self._DATA_P  
         self.__control_signal_in +=  self.__KI*self._DATA_I
         self.__control_signal_in +=  self.__KD*self._DATA_D
 

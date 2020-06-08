@@ -591,15 +591,15 @@ class ControlModuleBase:
             #     self.__control_signal_in = 0
 
         elif cycle_phase < self.__SET_CYCLE_DURATION:
-            self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
-            self.__control_signal_out = 1
-            
-            # self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
-            # self.__calculate_control_signal_in()
-            # if self._DATA_PRESSURE > self.__SET_PEEP + 1:
-            #     self.__control_signal_out = 1
-            # else:
-            #     self.__control_signal_out = 0
+            # self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
+            # self.__control_signal_out = 1
+
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
+            self.__calculate_control_signal_in()
+            if self._DATA_PRESSURE > self.__SET_PEEP + 0.5:
+                self.__control_signal_out = 1
+            else:
+                self.__control_signal_out = 0
 
         else:
             self.__cycle_start = time.time()  # New cycle starts

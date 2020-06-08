@@ -357,7 +357,7 @@ class ControlModuleBase:
         Calculated the PID control signal with the error terms and the three gain parameters.
         """
         self.__control_signal_in  = 0            # Some setting for the maximum flow.
-        self.__control_signal_in +=  (self.__SET_PIP/25)*self.__KP*self._DATA_P  
+        self.__control_signal_in +=  (self.__SET_PIP/25)*self.__KP*self._DATA_P     # Small hack, with higher PIP to reach, controller should react faster
         self.__control_signal_in +=  self.__KI*self._DATA_I
         self.__control_signal_in +=  self.__KD*self._DATA_D
 
@@ -806,8 +806,8 @@ class ControlModuleDevice(ControlModuleBase):
         """
         Get sensor values from HAL, decorated with timeout
         """
-        self._DATA_Qout = 0 #self.HAL.flow_ex                      # Flow sensor on Expiratory side
-        self._DATA_Qin  = 0 #self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
+        self._DATA_Qout = self.HAL.flow_ex                      # Flow sensor on Expiratory side
+        self._DATA_Qin  = self.HAL.flow_in                      # Flow sensor on inspiratory side. NOTE: used to calculate VTE
         self._DATA_PRESSURE = self.HAL.pressure
 
     def _start_mainloop(self):

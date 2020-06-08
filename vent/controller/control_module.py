@@ -553,7 +553,7 @@ class ControlModuleBase:
         A record of pressure/volume waveforms is kept and saved
         '''
         PEEP_VALVE_SET = True
-        
+
         now = time.time()
         cycle_phase = now - self.__cycle_start
         next_cycle = False
@@ -582,7 +582,7 @@ class ControlModuleBase:
                 self.__control_signal_in = 0 
                 self.__control_signal_out = 1
                 if self._DATA_PRESSURE < self.__SET_PEEP:
-                self.__control_signal_in = 5
+                    self.__control_signal_in = 5
             else:
                 target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)

@@ -6,7 +6,7 @@ from vent.gui.main import launch_gui
 from vent.coordinator.coordinator import get_coordinator
 
 def main():
-    coordinator = get_coordinator(single_process=False, sim_mode=True)
+    coordinator = get_coordinator(single_process=False, sim_mode=False)
     app, gui = launch_gui(coordinator)
     sys.exit(app.exec_())
 

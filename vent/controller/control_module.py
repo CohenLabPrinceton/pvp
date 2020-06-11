@@ -818,7 +818,7 @@ class ControlModuleDevice(ControlModuleBase):
             self._DATA_Qin = pq
         elif np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
             self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
-            if time.time() - self._cycle_start > self.__SET_I_PHASE:        # During expiration...
+            if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:        # During expiration...
                 self.__flow_list.append(pq)
                 self._DATA_Qout = np.percentile(self.__flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
             else:

@@ -808,13 +808,16 @@ class ControlModuleDevice(ControlModuleBase):
         Get sensor values from HAL, decorated with timeout
         """
         pp = self.HAL.pressure
-        if np.abs( (pp  - self._DATA_PRESSURE)/self._DATA_PRESSURE ) < 0.05: # This is a glitch, ignore it.
+        if self._DATA_PRESSURE == 0:
+            self._DATA_PRESSURE = pp
+        elif np.abs( (pp  - self._DATA_PRESSURE)/self._DATA_PRESSURE ) < 0.05: # This is a glitch, ignore it.
             self._DATA_PRESSURE = pp
 
         pq = self.HAL.flow_ex
-        if np.abs( (pq  - self._DATA_Qin)/self._DATA_Qin ) < 0.05:           # This is a glitch, ignore it.
+        if self._DATA_PRESSURE == 0:
+            self._DATA_Qin = pq
+        elif np.abs( (pq  - self._DATA_Qin)/self._DATA_Qin ) < 0.05:           # This is a glitch, ignore it.
             self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
-
             if time.time() - self.__cycle_start > self.__SET_I_PHASE:        # During expiration...
                 self.__flow_list.append(pq)
                 self._DATA_Qout = np.percentile(self.__flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.

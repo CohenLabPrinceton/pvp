@@ -810,7 +810,7 @@ class ControlModuleDevice(ControlModuleBase):
         pp = self.HAL.pressure
         if self._DATA_PRESSURE == 0:
             self._DATA_PRESSURE = pp
-        elif np.abs( (pp  - self._DATA_PRESSURE)/self._DATA_PRESSURE ) < 0.5: # This is a glitch, ignore it.
+        elif np.abs( pp  - self._DATA_PRESSURE ) < 4: # This is a glitch, ignore it.
             self._DATA_PRESSURE = pp
 
         pq = self.HAL.flow_ex

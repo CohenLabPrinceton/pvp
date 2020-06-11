@@ -806,9 +806,21 @@ class ControlModuleDevice(ControlModuleBase):
         """
         Get sensor values from HAL, decorated with timeout
         """
-        self._DATA_PRESSURE = self.HAL.pressure
+        pp = self.HAL.pressure
+        if np.abs( (pp  - self._DATA_PRESSURE)/self._DATA_PRESSURE ) < 0.05  #this is a glitch, ignore it.
+            self._DATA_PRESSURE = pp
+
+        pq = self.HAL.flow_ex
+        if np.abs( (pq  - self._DATA_Qin)/self._DATA_Qin ) < 0.05  #this is a glitch, ignore it.
+            self._DATA_Qin = pq   # "flow_ex" is the low out of the system. VTE is derived from the integral of this quantity.
+
         self._DATA_Qout = 0                         # current hardware does not support that.
-        self._DATA_Qin  = self.HAL.flow_ex          # "flow_ex" is the low out of the system. VTE is derived from the integral of this quantity.
+
+        # if o2counter > 10                           # Oxygen is read at slower rate
+        #     self._DATA_O2 = self.HAL.O2
+        #     self.o2counter = 0
+        # else:
+        #     self.o2counter += self.o2ountr
 
 
     def _start_mainloop(self):

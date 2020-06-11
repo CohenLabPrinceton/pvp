@@ -124,7 +124,7 @@ class ControlModuleBase:
         self._breath_counter = count() # threadsafe counter
 
         # Parameters to keep track of breath-cycle
-        self.__cycle_start = time.time()
+        self._cycle_start = time.time()
         self.__cycle_waveform = np.array([[0, 0, 0]])                            # To build up the current cycle's waveform
         self.__cycle_waveform_archive = deque(maxlen = self._RINGBUFFER_SIZE)          # An archive of past waveforms.
 
@@ -371,7 +371,7 @@ class ControlModuleBase:
 
     def _control_reset(self):
         ''' Resets the internal controller cycle to zero, i.e. this breath cycle re-starts.'''
-        self.__cycle_start = time.time()
+        self._cycle_start = time.time()
 
     def __test_for_alarms(self):
         """
@@ -493,7 +493,7 @@ class ControlModuleBase:
         '''
 
         now = time.time()
-        cycle_phase = now - self.__cycle_start
+        cycle_phase = now - self._cycle_start
         next_cycle = False
 
         self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
@@ -527,7 +527,7 @@ class ControlModuleBase:
             #     self.__control_signal_out = 1
 
         else:
-            self.__cycle_start = time.time()  # New cycle starts
+            self._cycle_start = time.time()  # New cycle starts
             self.__DATA_VOLUME = 0            # ... start at zero volume in the lung
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
@@ -555,7 +555,7 @@ class ControlModuleBase:
         PEEP_VALVE_SET = True
 
         now = time.time()
-        cycle_phase = now - self.__cycle_start
+        cycle_phase = now - self._cycle_start
         next_cycle = False
 
         self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
@@ -606,7 +606,7 @@ class ControlModuleBase:
                     self.__control_signal_out = 0
 
         else:
-            self.__cycle_start = time.time()  # New cycle starts
+            self._cycle_start = time.time()  # New cycle starts
             self.__DATA_VOLUME = 0            # ... start at zero volume in the lung
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
@@ -818,7 +818,7 @@ class ControlModuleDevice(ControlModuleBase):
             self._DATA_Qin = pq
         elif np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
             self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
-            if time.time() - self.__cycle_start > self.__SET_I_PHASE:        # During expiration...
+            if time.time() - self._cycle_start > self.__SET_I_PHASE:        # During expiration...
                 self.__flow_list.append(pq)
                 self._DATA_Qout = np.percentile(self.__flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
             else:

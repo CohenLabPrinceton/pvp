@@ -807,22 +807,23 @@ class ControlModuleDevice(ControlModuleBase):
         """
         Get sensor values from HAL, decorated with timeout
         """
-        pp = self.HAL.pressure
-        if self._DATA_PRESSURE == 0:
-            self._DATA_PRESSURE = pp
-        elif np.abs( pp  - self._DATA_PRESSURE ) < 4: # This is a glitch; pressure cannot jump that quickly; ignore it.
-            self._DATA_PRESSURE = pp
+        self._DATA_PRESSURE = self.HAL.pressure
+        # pp = self.HAL.pressure
+        # if self._DATA_PRESSURE == 0:
+        #     self._DATA_PRESSURE = pp
+        # elif np.abs( pp  - self._DATA_PRESSURE ) < 4: # This is a glitch; pressure cannot jump that quickly; ignore it.
+        #     self._DATA_PRESSURE = pp
 
-        pq = self.HAL.flow_ex
-        if self._DATA_PRESSURE == 0:
-            self._DATA_Qin = pq
-        elif np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
-            self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
-            if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:        # During expiration...
-                self.__flow_list.append(pq)
-                self._DATA_Qout = np.percentile(self.__flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
-            else:
-                self._DATA_Qout = 0
+        # pq = self.HAL.flow_ex
+        # if self._DATA_PRESSURE == 0:
+        #     self._DATA_Qin = pq
+        # elif np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
+        #     self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
+        #     if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:        # During expiration...
+        #         self.__flow_list.append(pq)
+        #         self._DATA_Qout = np.percentile(self.__flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
+        #     else:
+        #         self._DATA_Qout = 0
 
         # if o2counter > 10                           # Oxygen is read at slower rate
         #     self._DATA_O2 = self.HAL.O2

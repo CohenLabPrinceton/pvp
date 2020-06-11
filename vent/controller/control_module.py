@@ -774,7 +774,8 @@ class ControlModuleDevice(ControlModuleBase):
         ControlModuleBase.__init__(self, pid_control, save_logs, flush_every)
         self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
-    
+        self.__flow_list = deque(maxlen = 500)          # An archive of past flows, to calculate background flow out
+
     def _sensor_to_COPY(self):
         # And the sensor measurements
 
@@ -807,14 +808,18 @@ class ControlModuleDevice(ControlModuleBase):
         Get sensor values from HAL, decorated with timeout
         """
         pp = self.HAL.pressure
-        if np.abs( (pp  - self._DATA_PRESSURE)/self._DATA_PRESSURE ) < 0.05  #this is a glitch, ignore it.
+        if np.abs( (pp  - self._DATA_PRESSURE)/self._DATA_PRESSURE ) < 0.05: # This is a glitch, ignore it.
             self._DATA_PRESSURE = pp
 
         pq = self.HAL.flow_ex
-        if np.abs( (pq  - self._DATA_Qin)/self._DATA_Qin ) < 0.05  #this is a glitch, ignore it.
-            self._DATA_Qin = pq   # "flow_ex" is the low out of the system. VTE is derived from the integral of this quantity.
+        if np.abs( (pq  - self._DATA_Qin)/self._DATA_Qin ) < 0.05:           # This is a glitch, ignore it.
+            self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
 
-        self._DATA_Qout = 0                         # current hardware does not support that.
+            if time.time() - self.__cycle_start > self.__SET_I_PHASE:        # During expiration...
+                self.__flow_list.append(pq)
+                self._DATA_Qout = np.percentile(self.__flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
+            else:
+                self._DATA_Qout = 0
 
         # if o2counter > 10                           # Oxygen is read at slower rate
         #     self._DATA_O2 = self.HAL.O2

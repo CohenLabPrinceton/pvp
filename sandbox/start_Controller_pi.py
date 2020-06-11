@@ -48,7 +48,9 @@ def do_stuff():
         Controller._get_HAL()
         ppc   = Controller._DATA_PRESSURE
 
-        print([pp, ppc, setin, setex])
+        pv = Controller.HAL.flow_ex
+
+        print([pv, pp, ppc, setin, setex])
 
         p_store[idx,:] = np.array([time.time(), pp])
         idx += 1

@@ -131,6 +131,7 @@ class ControlModuleBase:
         # These are measurements that change from timepoint to timepoint
         self._DATA_PRESSURE = 0
         self._DATA_VOLUME   = 0
+        self._DATA_OXYGEN   = 0
         self._DATA_Qin      = 0           # Measurement of the airflow in
         self._DATA_Qout     = 0           # Measurement of the airflow out
         self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
@@ -789,7 +790,7 @@ class ControlModuleDevice(ControlModuleBase):
           self.COPY_sensor_values = SensorValues(vals={
               ValueName.PIP.name                  : self._DATA_PIP,
               ValueName.PEEP.name                 : self._DATA_PEEP,
-              ValueName.FIO2.name                 : 70,
+              ValueName.FIO2.name                 : self._DATA_OXYGEN,
               ValueName.PRESSURE.name             : self._DATA_PRESSURE,
               ValueName.VTE.name                  : self._DATA_VTE,
               ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
@@ -816,6 +817,7 @@ class ControlModuleDevice(ControlModuleBase):
         self._DATA_PRESSURE = self.HAL.pressure
         self._DATA_Qout = 0
         self._DATA_Qin = 0
+        self._DATA_OXYGEN = self.HAL.oxygen
 
         # pp = self.HAL.pressure
         # if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is a glitch; pressure cannot jump that quickly; ignore it.

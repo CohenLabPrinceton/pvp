@@ -777,6 +777,10 @@ class ControlModuleDevice(ControlModuleBase):
         self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
 
+    def __del__(self):
+        ControlModuleBase.__del__(self)
+        self.set_valves_standby()
+
     def _sensor_to_COPY(self):
         # And the sensor measurements
 
@@ -791,9 +795,9 @@ class ControlModuleDevice(ControlModuleBase):
               ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
               ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
               ValueName.FLOWOUT                   : self._DATA_Qin,
-              'timestamp'                  : time.time(),
-              'loop_counter'             : self._loop_counter,
-              'breath_count': self._DATA_BREATH_COUNT
+              'timestamp'                         : time.time(),
+              'loop_counter'                      : self._loop_counter,
+              'breath_count'                      : self._DATA_BREATH_COUNT
           })
             
     # @timeout
@@ -810,13 +814,13 @@ class ControlModuleDevice(ControlModuleBase):
         Get sensor values from HAL, decorated with timeout
         """
         self._DATA_PRESSURE = self.HAL.pressure
-        pp = self.HAL.pressure
-        if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is a glitch; pressure cannot jump that quickly; ignore it.
-            self._DATA_PRESSURE = pp
+        # pp = self.HAL.pressure
+        # if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is a glitch; pressure cannot jump that quickly; ignore it.
+        #     self._DATA_PRESSURE = pp
 
         # pq = self.HAL.flow_ex
         # if np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
-        #     self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
+            # self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
         #     if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:        # During expiration...
         #         self._flow_list.append(pq)
         #         self._DATA_Qout = np.percentile(self._flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
@@ -829,6 +833,9 @@ class ControlModuleDevice(ControlModuleBase):
         # else:
         #     self.o2counter += self.o2ountr
 
+    def set_valves_standby(self):
+        print("Valve settings back to stand-by.")
+        self._set_HAL(valve_open_in = 0, valve_open_out = 1)  # Defined state to make sure that it does not pop up.
 
     def _start_mainloop(self):
         # start running, this should be run as a thread! 
@@ -865,7 +872,7 @@ class ControlModuleDevice(ControlModuleBase):
         # # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
         self._sensor_to_COPY()  # Copy sensor values to COPY
-        self._set_HAL(valve_open_in = 0, valve_open_out = 1)  # Defined state to make sure that it does not pop up.
+        self.set_valves_standby()
 
 
 class Balloon_Simulator:
@@ -1002,6 +1009,13 @@ class ControlModuleSimulator(ControlModuleBase):
         self._sensor_to_COPY()
 
         self.simulator_dt = simulator_dt
+
+    def __del__(self):
+        ControlModuleBase.__del__(self)
+        self.set_valves_standby()
+
+    def set_valves_standby(self):
+        print("Nothing done. I'm a simulation.")
 
     def __SimulatedPropValve(self, x, dt):
         '''

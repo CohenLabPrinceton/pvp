@@ -15,6 +15,7 @@ class ValueName(Enum):
     FIO2 = auto()
     VTE = auto()
     PRESSURE = auto()
+    FLOWOUT = auto()
 
 class Value(object):
 
@@ -247,6 +248,15 @@ VALUES = odict({
         'default': 17,            # FIXME
         'decimals': 1,
         'control': True,
+        'sensor': True
+    }),
+    ValueName.FLOWOUT: Value(**{
+        'name': 'Flow OUT',
+        'units': 'l/s',
+        'abs_range': (0, 2),
+        'safe_range': (0, 2),
+        'decimals': 2,
+        'control': False,
         'sensor': True
     }),
 })

@@ -130,12 +130,13 @@ class ControlModuleBase:
 
         # These are measurements that change from timepoint to timepoint
         self._DATA_PRESSURE = 0
-        self.__DATA_VOLUME  = 0
+        self._DATA_VOLUME   = 0
         self._DATA_Qin      = 0           # Measurement of the airflow in
         self._DATA_Qout     = 0           # Measurement of the airflow out
         self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
         self.__DATA_old     = None
         self._last_update   = time.time()
+        self._flow_list = deque(maxlen = 500)          # An archive of past flows, to calculate background flow out
 
         ############### Initialize COPY variables for threads  ##############
         # COPY variables that later updated on a regular basis
@@ -472,7 +473,7 @@ class ControlModuleBase:
         self._DATA_BREATH_COUNT = next(self._breath_counter)
         if len(self.__cycle_waveform) > 1:
             self.__cycle_waveform_archive.append( self.__cycle_waveform )
-        self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self.__DATA_VOLUME]])
+        self.__cycle_waveform = np.array([[0, self._DATA_PRESSURE, self._DATA_VOLUME]])
         self.__analyze_last_waveform()    # Analyze last waveform
         self._sensor_to_COPY()            # Get the fit values from the last waveform directly into sensor values
 
@@ -496,7 +497,7 @@ class ControlModuleBase:
         cycle_phase = now - self._cycle_start
         next_cycle = False
 
-        self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
+        self._DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
 
         if cycle_phase < self.__SET_PIP_TIME:
             self.__control_signal_in = 100                                                       # STATE CONTROL: to PIP, air in as fast as possible
@@ -528,7 +529,7 @@ class ControlModuleBase:
 
         else:
             self._cycle_start = time.time()  # New cycle starts
-            self.__DATA_VOLUME = 0            # ... start at zero volume in the lung
+            self._DATA_VOLUME = 0            # ... start at zero volume in the lung
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
 
@@ -537,7 +538,7 @@ class ControlModuleBase:
         if next_cycle:                        # if a new breath cycle has started
             self.__start_new_breathcycle()
         else:
-            self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
+            self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self._DATA_VOLUME]], axis=0)
         if self._save_logs:
             self.__save_values()
 
@@ -558,7 +559,7 @@ class ControlModuleBase:
         cycle_phase = now - self._cycle_start
         next_cycle = False
 
-        self.__DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
+        self._DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
 
         if cycle_phase < self.__SET_PIP_TIME:
             target_pressure = cycle_phase*(self.__SET_PIP - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
@@ -607,7 +608,7 @@ class ControlModuleBase:
 
         else:
             self._cycle_start = time.time()  # New cycle starts
-            self.__DATA_VOLUME = 0            # ... start at zero volume in the lung
+            self._DATA_VOLUME = 0            # ... start at zero volume in the lung
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
 
@@ -615,7 +616,7 @@ class ControlModuleBase:
         if next_cycle:                        # if a new breath cycle has started
             self.__start_new_breathcycle()
         else:
-            self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self.__DATA_VOLUME]], axis=0)
+            self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self._DATA_VOLUME]], axis=0)
         if self._save_logs:
             self.__save_values()
 
@@ -632,6 +633,7 @@ class ControlModuleBase:
         ValueName.VTE.name                  : self._DATA_VTE,
         ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
         ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+        ValueName.FLOWOUT                   : self._DATA_Qin,
         'timestamp'                         : time.time(),
         'loop_counter'                      : self._loop_counter,
         'breath_count'                      : self._DATA_BREATH_COUNT
@@ -774,7 +776,6 @@ class ControlModuleDevice(ControlModuleBase):
         ControlModuleBase.__init__(self, pid_control, save_logs, flush_every)
         self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
-        self.__flow_list = deque(maxlen = 500)          # An archive of past flows, to calculate background flow out
 
     def _sensor_to_COPY(self):
         # And the sensor measurements
@@ -789,6 +790,7 @@ class ControlModuleDevice(ControlModuleBase):
               ValueName.VTE.name                  : self._DATA_VTE,
               ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
               ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+              ValueName.FLOWOUT                   : self._DATA_Qin,
               'timestamp'                  : time.time(),
               'loop_counter'             : self._loop_counter,
               'breath_count': self._DATA_BREATH_COUNT
@@ -808,20 +810,16 @@ class ControlModuleDevice(ControlModuleBase):
         Get sensor values from HAL, decorated with timeout
         """
         self._DATA_PRESSURE = self.HAL.pressure
-        # pp = self.HAL.pressure
-        # if self._DATA_PRESSURE == 0:
-        #     self._DATA_PRESSURE = pp
-        # elif np.abs( pp  - self._DATA_PRESSURE ) < 4: # This is a glitch; pressure cannot jump that quickly; ignore it.
-        #     self._DATA_PRESSURE = pp
+        pp = self.HAL.pressure
+        if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is a glitch; pressure cannot jump that quickly; ignore it.
+            self._DATA_PRESSURE = pp
 
         # pq = self.HAL.flow_ex
-        # if self._DATA_PRESSURE == 0:
-        #     self._DATA_Qin = pq
-        # elif np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
+        # if np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
         #     self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
         #     if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:        # During expiration...
-        #         self.__flow_list.append(pq)
-        #         self._DATA_Qout = np.percentile(self.__flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
+        #         self._flow_list.append(pq)
+        #         self._DATA_Qout = np.percentile(self._flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
         #     else:
         #         self._DATA_Qout = 0
 
@@ -1042,6 +1040,7 @@ class ControlModuleSimulator(ControlModuleBase):
               ValueName.VTE.name                  : self._DATA_VTE,
               ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
               ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+              ValueName.FLOWOUT                   : self._DATA_Qin,
               'timestamp'                  : time.time(),
               'loop_counter'             : self._loop_counter,
               'breath_count': self._DATA_BREATH_COUNT
@@ -1082,8 +1081,17 @@ class ControlModuleSimulator(ControlModuleBase):
             self.Balloon.set_flow_in(Qin, dt = dt)                  # Set the flow rates for the Balloon simulator
             self.Balloon.set_flow_out(Qout, dt = dt)
 
-            self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
-            self._DATA_Qin  = self.Balloon.Qin                      # Tell controller the expiratory flow rate, _DATA_Qin                     --- SENSOR 3
+            # self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
+            # self._DATA_Qin  = self.Balloon.Qin                      # Tell controller the expiratory flow rate, _DATA_Qin                     --- SENSOR 3
+            pq = self.Balloon.Qout
+            if np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
+                self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
+                if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:        # During expiration...
+                    self._flow_list.append(pq)
+                    self._DATA_Qout = np.percentile(self._flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
+                else:
+                    self._DATA_Qout = 0
+
             self._last_update = now
 
             if update_copies == 0:

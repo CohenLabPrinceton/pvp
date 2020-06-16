@@ -55,9 +55,17 @@ def do_stuff():
 
         time.sleep(0.05)
 
-    Controller.HAL.setpoint_in = 0
-    Controller.HAL.setpoint_in = 0
+
     Controller.stop()
+
+    Controller.HAL.setpoint_in = 0
+    time.sleep(0.05)
+    Controller.HAL.setpoint_in = 0
+    time.sleep(0.05)
+    Controller.HAL.setpoint_ex = 1
+    time.sleep(0.05)
+    Controller.HAL.setpoint_ex = 1
+
 
     np.save("data_closedloop", p_store)
 

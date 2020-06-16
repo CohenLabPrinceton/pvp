@@ -572,10 +572,10 @@ class ControlModuleBase:
         elif cycle_phase < self.__SET_I_PHASE:                                                           # then, we control PIP
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt)
             self.__calculate_control_signal_in()
-            if self._DATA_PRESSURE > self.__SET_PIP+2:                                              
-                self.__control_signal_out = 1                                                        # if exceeded, we open the exhaust valve
-            else:
-                self.__control_signal_out = 0                                                        # close out valve
+            # if self._DATA_PRESSURE > self.__SET_PIP+2:                                              
+            #     self.__control_signal_out = 1                                                        # if exceeded, we open the exhaust valve
+            # else:
+            #     self.__control_signal_out = 0                                                        # close out valve
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
 

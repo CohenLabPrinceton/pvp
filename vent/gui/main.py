@@ -57,8 +57,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
     computed from ``monitor_width+plot_width+control_width``
     """
 
-    status_height = 1
-    main_height = 5
+    status_height = 0.1
+    main_height = 2
     total_height = status_height+main_height
     """
     computed from ``status_height+main_height``

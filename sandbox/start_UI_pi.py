@@ -8,7 +8,7 @@ from vent.coordinator.coordinator import get_coordinator
 import vent.io as io
 import time
 
-sim_mode = True
+sim_mode = False
 def main():
 
     try:
@@ -24,7 +24,7 @@ def main():
             HAL = io.Hal( config_file = 'vent/io/config/devices.ini')
             for i in range(10):
                 HAL.setpoint_in = 0
-                HAL.setpoint_ex = valve_open_out 
+                HAL.setpoint_ex = 1 
                 time.sleep(0.01)
 
         print("...done")

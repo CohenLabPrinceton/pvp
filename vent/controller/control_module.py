@@ -814,6 +814,9 @@ class ControlModuleDevice(ControlModuleBase):
         Get sensor values from HAL, decorated with timeout
         """
         self._DATA_PRESSURE = self.HAL.pressure
+        self._DATA_Qout = 0
+        self._DATA_Qin = 0
+
         # pp = self.HAL.pressure
         # if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is a glitch; pressure cannot jump that quickly; ignore it.
         #     self._DATA_PRESSURE = pp

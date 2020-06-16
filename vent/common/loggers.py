@@ -222,6 +222,7 @@ class DataLogger:
         """
         Flushes & closes the open hdf file.
         """
+        print("Saving in..." + self.file)
         self.h5file.close() # Also flushes the remaining buffers
 
     def store_waveform_data(self, sensor_values: 'SensorValues', control_values: 'ControlValues'):

@@ -8,7 +8,7 @@ from vent.coordinator.coordinator import get_coordinator
 import vent.io as io
 import time
 
-sim_mode = False
+sim_mode = True
 def main():
 
     try:

@@ -72,7 +72,7 @@ class ControlModuleBase:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
         self._pid_control_flag    = pid_control    # Default is: use PID control
-        self.__KP                 = 3             # The weights for the the PID terms
+        self.__KP                 = 2             # The weights for the the PID terms
         self.__KI                 = 0
         self.__KD                 = 0
 
@@ -572,7 +572,7 @@ class ControlModuleBase:
         elif cycle_phase < self.__SET_I_PHASE:                                                           # then, we control PIP
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt)
             self.__calculate_control_signal_in()
-            if self._DATA_PRESSURE > self.__SET_PIP+0.5:                                              
+            if self._DATA_PRESSURE > self.__SET_PIP+2:                                              
                 self.__control_signal_out = 1                                                        # if exceeded, we open the exhaust valve
             else:
                 self.__control_signal_out = 0                                                        # close out valve

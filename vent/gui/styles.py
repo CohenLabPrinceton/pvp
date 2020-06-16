@@ -185,7 +185,7 @@ QLabel {{
 }}"""
 
 TITLE_STYLE = """
-font-size: 12pt;
+font-size: 32pt;
 color: {text_color};
 text-align: left;
 """.format(text_color=TEXT_COLOR)

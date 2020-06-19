@@ -820,8 +820,8 @@ class ControlModuleDevice(ControlModuleBase):
         
         else:
             pp = self.HAL.pressure
-            if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is not a glitch, save it
-                self._DATA_PRESSURE = pp
+            # if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is not a glitch, save it
+            self._DATA_PRESSURE = pp
 
             pq = self.HAL.flow_ex
             if np.abs( pq  - self._DATA_Qout ) < 5:     # This is not a glitch, use it.

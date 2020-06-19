@@ -124,8 +124,10 @@ class DataSample(pytb.IsDescription):
     """
     timestamp    = pytb.Float64Col()    # current time of the measurement - has to be 64 bit
     pressure     = pytb.Float64Col()
-    flow_in      = pytb.Float64Col()
     flow_out     = pytb.Float64Col()
+    control_in   = pytb.Float64Col()
+    control_out  = pytb.Float64Col()
+    oxygen       = pytb.Float64Col()
     cycle_number = pytb.UInt32Col()     # Max is 2147483647 Breath Cycles (~78 years)
 
 
@@ -146,9 +148,9 @@ class DataLogger:
     Creates a hdf5 file with this general structure:
         / root
         |--- waveforms (group)
-        |    |--- time | pressure_data | volume | Cycle No.    --- TODO: WHAT TO SAVE?
+        |    |--- time | pressure_data | flow_out | control_signal_in | control_signal_out | FiO2 | Cycle No.
         |
-        |--- controls (group)                                  --- TODO: WHAT TO SAVE? DO THIS HERE?
+        |--- controls (group)                                  --- TODO: WHAT TO SAVE?
         |    |--- (time, controllsignal)
         |
 
@@ -157,7 +159,6 @@ class DataLogger:
         store_waveform_data(SensorValues):    Takes data from SensorValues, but DOES NOT FLUSH
         store_controls():                     Store controls in the same file? TODO: Discuss
         flush_logfile():                      Flush the data into the file
-        check_size():                         Make sure that the files don't grow too big TODO: Implement
 
     """
 
@@ -233,10 +234,12 @@ class DataLogger:
         self._open_logfile()
         datapoint                 = self.data_table.row
         datapoint['timestamp']    = sensor_values.timestamp
-        datapoint['pressure'] = sensor_values.PRESSURE
+        datapoint['pressure']     = sensor_values.PRESSURE
+        datapoint['flow_out']     = sensor_values.FLOWOUT
+        datapoint['control_in']   = control_values.control_signal_in
+        datapoint['control_out']  = control_values.control_signal_out
+        datapoint['oxygen']       = sensor_values.FIO2
         datapoint['cycle_number'] = sensor_values.breath_count
-        datapoint['flow_in'] = control_values.flow_in
-        datapoint['flow_out'] = control_values.flow_out
         datapoint.append()
 
     def store_control_command(self, control_setting: 'ControlSetting'):

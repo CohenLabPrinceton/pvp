@@ -132,7 +132,6 @@ class ControlModuleBase:
         self._DATA_PRESSURE = 0
         self._DATA_VOLUME   = 0
         self._DATA_OXYGEN   = 0
-        self._DATA_Qin      = 0           # Measurement of the airflow in
         self._DATA_Qout     = 0           # Measurement of the airflow out
         self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
         self.__DATA_old     = None
@@ -411,13 +410,13 @@ class ControlModuleBase:
         #### Second: Check for Technical Alerts via data plausibility:
         #  ->  Measurements change over time, and are in a plausible range
         if self.__DATA_old is None:
-            self.__DATA_old = [self._DATA_Qin, self._DATA_Qout, self._DATA_PRESSURE]
+            self.__DATA_old = [self._DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
             inputs_dont_change = False 
         else:
-            inputs_dont_change = (self._DATA_Qin == self.__DATA_old[0]) or \
+            inputs_dont_change = (self._DATA_OXYGEN == self.__DATA_old[0]) or \
                                  (self._DATA_Qout == self.__DATA_old[1]) or \
                                  (self._DATA_PRESSURE == self.__DATA_old[2])
-            self.__DATA_old = [self._DATA_Qin, self._DATA_Qout, self._DATA_PRESSURE]
+            self.__DATA_old = [self._DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
 
         if inputs_dont_change:
             if self.sensor_stuck_since == None:
@@ -435,7 +434,7 @@ class ControlModuleBase:
             self.sensor_stuck_since = None                           # If ok, reset sensor_stuck
 
 
-        data_implausible = (self._DATA_Qin < 0 or self._DATA_Qin > limit_max_flows) or \
+        data_implausible = (self._DATA_OXYGEN < 0 or self._DATA_OXYGEN > 100) or \
                            (self._DATA_Qout < 0 or self._DATA_Qout > limit_max_flows) or \
                            (self._DATA_PRESSURE < 0 or self._DATA_PRESSURE > limit_max_pressure)
         if data_implausible:
@@ -498,7 +497,7 @@ class ControlModuleBase:
         cycle_phase = now - self._cycle_start
         next_cycle = False
 
-        self._DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
+        self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from the measurements of the flow out
 
         if cycle_phase < self.__SET_PIP_TIME:
             self.__control_signal_in = 100                                                       # STATE CONTROL: to PIP, air in as fast as possible
@@ -560,7 +559,7 @@ class ControlModuleBase:
         cycle_phase = now - self._cycle_start
         next_cycle = False
 
-        self._DATA_VOLUME += dt * ( self._DATA_Qin - self._DATA_Qout )  # Integrate what has happened within the last few seconds from the measurements of Qin and Qout
+        self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
 
         if cycle_phase < self.__SET_PIP_TIME:
             target_pressure = cycle_phase*(self.__SET_PIP - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
@@ -634,7 +633,7 @@ class ControlModuleBase:
         ValueName.VTE.name                  : self._DATA_VTE,
         ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
         ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
-        ValueName.FLOWOUT                   : self._DATA_Qin,
+        ValueName.FLOWOUT.name              : self._DATA_Qout,
         'timestamp'                         : time.time(),
         'loop_counter'                      : self._loop_counter,
         'breath_count'                      : self._DATA_BREATH_COUNT
@@ -644,8 +643,6 @@ class ControlModuleBase:
         control_values = ControlValues(
             control_signal_in = self.__control_signal_in,
             control_signal_out = self.__control_signal_out,
-            flow_in = self._DATA_Qin,
-            flow_out = self._DATA_Qout
         )
 
         #And save both
@@ -795,7 +792,7 @@ class ControlModuleDevice(ControlModuleBase):
               ValueName.VTE.name                  : self._DATA_VTE,
               ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
               ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
-              ValueName.FLOWOUT                   : self._DATA_Qin,
+              ValueName.FLOWOUT.name              : self._DATA_Qout,
               'timestamp'                         : time.time(),
               'loop_counter'                      : self._loop_counter,
               'breath_count'                      : self._DATA_BREATH_COUNT
@@ -812,31 +809,35 @@ class ControlModuleDevice(ControlModuleBase):
     # @timeout
     def _get_HAL(self):
         """
-        Get sensor values from HAL, decorated with timeout
+        Get sensor values from HAL, decorated with timeout.
         """
-        self._DATA_PRESSURE = self.HAL.pressure
-        self._DATA_Qout = 0
-        self._DATA_Qin = 0
-        self._DATA_OXYGEN = self.HAL.oxygen
+        glitchcatcher = True
 
-        # pp = self.HAL.pressure
-        # if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is a glitch; pressure cannot jump that quickly; ignore it.
-        #     self._DATA_PRESSURE = pp
+        if not glitchcatcher:
+            self._DATA_PRESSURE = self.HAL.pressure
+            self._DATA_Qout     = self.HAL.flow_ex
+            self._DATA_OXYGEN   = self.HAL.oxygen
+        
+        else:
+            pp = self.HAL.pressure
+            if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is not a glitch, save it
+                self._DATA_PRESSURE = pp
 
-        # pq = self.HAL.flow_ex
-        # if np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
-            # self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
-        #     if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:        # During expiration...
-        #         self._flow_list.append(pq)
-        #         self._DATA_Qout = np.percentile(self._flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
-        #     else:
-        #         self._DATA_Qout = 0
+            pq = self.HAL.flow_ex
+            if np.abs( pq  - self._DATA_Qout ) < 5:     # This is not a glitch, use it.
+                 # ... estimate the baseline flow during expiration with a rankfilter (baseline of air that bypasses patient)
+                 # This has to be subtracted from flow_ex to integrate VTE
+                if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:
+                    self._flow_list.append(pq)
+                    Qbaseline = np.percentile(self._flow_list, 5 )       
+                else:
+                    Qbaseline = 0
+                self._DATA_Qout = pq - Qbaseline
 
-        # if o2counter > 10                           # Oxygen is read at slower rate
-        #     self._DATA_O2 = self.HAL.O2
-        #     self.o2counter = 0
-        # else:
-        #     self.o2counter += self.o2ountr
+            po = self.HAL.oxygen
+            if np.abs(po - self._DATA_OXYGEN ) < 5:     # This is not a glitch, use it.
+                self._DATA_OXYGEN = po
+
 
     def set_valves_standby(self):
         print("Valve settings back to stand-by.")
@@ -1059,7 +1060,7 @@ class ControlModuleSimulator(ControlModuleBase):
               ValueName.VTE.name                  : self._DATA_VTE,
               ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
               ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
-              ValueName.FLOWOUT                   : self._DATA_Qin,
+              ValueName.FLOWOUT.name              : self._DATA_Qout,
               'timestamp'                  : time.time(),
               'loop_counter'             : self._loop_counter,
               'breath_count': self._DATA_BREATH_COUNT
@@ -1100,17 +1101,7 @@ class ControlModuleSimulator(ControlModuleBase):
             self.Balloon.set_flow_in(Qin, dt = dt)                  # Set the flow rates for the Balloon simulator
             self.Balloon.set_flow_out(Qout, dt = dt)
 
-            # self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
-            # self._DATA_Qin  = self.Balloon.Qin                      # Tell controller the expiratory flow rate, _DATA_Qin                     --- SENSOR 3
-            pq = self.Balloon.Qout
-            if np.abs( pq  - self._DATA_Qin ) < 5:           # This is a glitch, ignore it.
-                self._DATA_Qin = pq                                              # "flow_ex" is the low out of the system
-                if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:        # During expiration...
-                    self._flow_list.append(pq)
-                    self._DATA_Qout = np.percentile(self._flow_list, 5 )        # ... estimate the baseline flow out with a rankfilter.
-                else:
-                    self._DATA_Qout = 0
-
+            self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
             self._last_update = now
 
             if update_copies == 0:

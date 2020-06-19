@@ -95,14 +95,10 @@ class ControlValues:
     Key difference: SensorValues come exclusively from the sensors, ControlValues contains controller variables, i.e. control signals and controlled signals (the flows).
     :param control_signal_in:
     :param control_signal_out:
-    :param flow_in:
-    :param flow_out:
     """
-    def __init__(self, control_signal_in, control_signal_out, flow_in, flow_out):
+    def __init__(self, control_signal_in, control_signal_out):
         self.control_signal_in = control_signal_in
         self.control_signal_out = control_signal_out
-        self.flow_in = flow_in
-        self.flow_out = flow_out
 
 
 class ControlSetting:

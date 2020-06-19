@@ -582,8 +582,7 @@ class ControlModuleBase:
             if PEEP_VALVE_SET:
                 self.__control_signal_in = 0 
                 self.__control_signal_out = 1
-                if self._DATA_PRESSURE < self.__SET_PEEP:
-                    self.__control_signal_in = 5
+
             else:
                 target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
@@ -591,7 +590,7 @@ class ControlModuleBase:
                 self.__control_signal_out =  1
                 if self._DATA_PRESSURE < self.__SET_PEEP:
                     self.__control_signal_out = 0
-                    self.__control_signal_in = 5
+                    self.__control_signal_in = 5* (1 - np.exp( 2*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
 
         elif cycle_phase < self.__SET_CYCLE_DURATION:
 

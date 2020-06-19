@@ -72,7 +72,7 @@ class ControlModuleBase:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
         self._pid_control_flag    = pid_control    # Default is: use PID control
-        self.__KP                 = 4             # The weights for the the PID terms -- was 4
+        self.__KP                 = 4            # The weights for the the PID terms -- was 4
         self.__KI                 = 0
         self.__KD                 = 0
 
@@ -348,7 +348,7 @@ class ControlModuleBase:
         """
         error_new = ytarget - yis                   # New value of the error
 
-        RC = 0.5  # Time constant in seconds
+        RC = 0.3 # Time constant in seconds
         s = dt / (dt + RC)
         self._DATA_I = self._DATA_I + s*(error_new - self._DATA_I)     # Integral term on some timescale RC  -- TODO: If used, for real system, add integral windup
         self._DATA_D = error_new - self._DATA_P
@@ -1079,7 +1079,7 @@ class ControlModuleSimulator(ControlModuleBase):
                 dt = self.simulator_dt
             else:
                 dt = now - self._last_update                            # Time sincle last cycle of main-loop
-                if dt > 0.5:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
+                if dt > 0.2:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
                     # TODO: Log this
                     print("Restarted cycle.")
                     self._control_reset()

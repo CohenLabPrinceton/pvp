@@ -355,7 +355,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.coordinator.set_control(control_object)
         # FIXME: The recursion here is bad. should do a separate value_updated and update_value for outgoing/ingoing updates
         if control_object.name.name in self.controls.keys():
-            self.controls[control_object.name.name].update_value(control_object.value)
+            self.controls[control_object.name.name].update_value(control_object.value, emit=False)
 
         if control_object.name in self.pressure_waveform.PARAMETERIZING_VALUES:
             self.pressure_waveform.update_target(control_object)
@@ -685,6 +685,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # connect lock button
         self.control_panel.lock_button.toggled.connect(self.toggle_lock)
 
+        # pressure units
+        self.control_panel.pressure_units_changed.connect(self.set_pressure_units)
+
         # connect heartbeat indicator to set off before controller starts
         self.state_changed.connect(self.control_panel.heartbeat.set_state)
 
@@ -957,6 +960,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
             return True
         else:
             return False
+
+    def set_pressure_units(self, units):
+        if units not in ('cmH2O', 'hPa'):
+            self.logger.exception(f'Couldnt set pressure units {units}')
+            return
+
+        self.controls[ValueName.PIP.name].set_units(units)
+        self.controls[ValueName.PEEP.name].set_units(units)
+
 
 
 

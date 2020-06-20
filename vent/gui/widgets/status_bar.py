@@ -9,6 +9,7 @@ from PySide2 import QtWidgets, QtCore, QtGui
 
 from vent.gui import styles, mono_font
 from vent.gui import get_gui_instance
+from vent.gui.widgets.components import QHLine
 from vent.alarm import AlarmSeverity, Alarm, AlarmType, Alarm_Manager
 #
 # class Control_Panel(QtWidgets.QWidget):
@@ -30,6 +31,8 @@ class Control_Panel(QtWidgets.QGroupBox):
     * Override to give 100% oxygen and silence all alarms
 
     """
+
+    pressure_units_changed = QtCore.Signal(str)
 
     def __init__(self):
         super(Control_Panel, self).__init__('Control Panel')
@@ -55,7 +58,7 @@ class Control_Panel(QtWidgets.QGroupBox):
         self.button_layout.addWidget(self.lock_button, 1)
 
         self.layout.addLayout(self.button_layout)
-
+        ###################
         # Status indicators
         self.status_layout = QtWidgets.QGridLayout()
 
@@ -77,6 +80,44 @@ class Control_Panel(QtWidgets.QGroupBox):
 
 
         self.layout.addLayout(self.status_layout)
+        self.layout.addWidget(QHLine())
+
+        ############
+        # controls
+        self.control_layout = QtWidgets.QGridLayout()
+
+
+        self.control_layout.addWidget(QtWidgets.QLabel('Pressure Units'),
+                                      0,0,alignment=QtCore.Qt.AlignLeft)
+        self.pressure_buttons = {
+            'cmH2O': QtWidgets.QPushButton('cmH2O'),
+            'hPa': QtWidgets.QPushButton('hPa')
+        }
+
+        # make button group to enforce exclusivity
+        self.pressure_button_group = QtWidgets.QButtonGroup()
+        self.pressure_button_group.setExclusive(True)
+        # and groupbox for layout
+        # self.pressure_button_groupbox = QtWidgets.QGroupBox()
+        pressure_button_layout = QtWidgets.QHBoxLayout()
+
+
+        for button_name, button in self.pressure_buttons.items():
+            button.setCheckable(True)
+            if button_name == 'cmH2O':
+                button.setChecked(True)
+            self.pressure_button_group.addButton(button)
+            button.setStyleSheet(styles.TOGGLE_BUTTON)
+
+        self.pressure_button_group.buttonClicked.connect(self._pressure_units_changed)
+
+        pressure_button_layout.addWidget(self.pressure_buttons['cmH2O'])
+        pressure_button_layout.addWidget(self.pressure_buttons['hPa'])
+
+        self.control_layout.addLayout(pressure_button_layout,
+                                      0,1,alignment=QtCore.Qt.AlignRight)
+
+        self.layout.addLayout(self.control_layout)
 
         # stretch for empty space
         self.layout.addStretch(5)
@@ -107,6 +148,10 @@ class Control_Panel(QtWidgets.QGroupBox):
         Wraps :meth:`.Alarm_Bar.clear_alarm`
         """
         self.alarm_bar.clear_alarm(alarm, alarm_type)
+
+    def _pressure_units_changed(self, button):
+        self.pressure_units_changed.emit(button.text())
+
 
 class Start_Button(QtWidgets.QToolButton):
     states = ['OFF', 'ON', 'ALARM']

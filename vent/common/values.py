@@ -176,7 +176,7 @@ class Value(object):
 VALUES = odict({
     ValueName.PIP: Value(**{
         'name': 'PIP', # (Peak Inspiratory Pressure)
-        'units': 'cm H2O',
+        'units': 'cmH2O',
         'abs_range': (0, 70), # FIXME
         'safe_range': (0, 50), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
         'default': 22,           # FIXME
@@ -187,7 +187,7 @@ VALUES = odict({
     }),
     ValueName.PEEP: Value(**{
         'name': 'PEEP', #  (Positive End Expiratory Pressure)
-        'units': 'cm H2O',
+        'units': 'cmH2O',
         'abs_range': (0, 20),  # FIXME
         'safe_range': (0, 16), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
         'default': 5,            # FIXME

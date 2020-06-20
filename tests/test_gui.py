@@ -276,7 +276,11 @@ def test_gui_monitor(qtbot, spawn_gui, test_value):
 
 
 
-
+#########################
+# Test control panel
+def test_pressure_unit_conversion():
+    # TODO: this
+    return
 
 
 

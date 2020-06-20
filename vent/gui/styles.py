@@ -526,6 +526,12 @@ font-size: 48px;
 }}
 """
 
+TOGGLE_BUTTON = f"""
+QPushButton:checked {{
+    color: {SUBWAY_COLORS['lime']}
+}}
+"""
+
 DARK_THEME =  f"""
 /*
 adapted from https://github.com/gmarull/qtmodern/blob/master/qtmodern/resources/style.qss
@@ -698,7 +704,7 @@ def set_dark_palette(app):
 
     # base
     darkPalette.setColor(QtGui.QPalette.WindowText, QtGui.QColor(TEXT_COLOR))
-    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
+    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(50, 50, 50))
     darkPalette.setColor(QtGui.QPalette.Light, QtGui.QColor(180, 180, 180))
     darkPalette.setColor(QtGui.QPalette.Midlight, QtGui.QColor(90, 90, 90))
     darkPalette.setColor(QtGui.QPalette.Dark, QtGui.QColor(35, 35, 35))
@@ -727,6 +733,12 @@ def set_dark_palette(app):
                          QtGui.QColor(80, 80, 80))
     darkPalette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText,
                          QtGui.QColor(127, 127, 127))
+
+    # active
+    # darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QPalette.Button,
+    #                      QtGui.QColor(BOX_BACKGROUND))
+    # darkPalette.setColor(QtGui.QPalette.Active, QtGui.QPalette.ButtonText,
+    #                      QtGui.QColor(SUBWAY_COLORS['green']))
 
     app.setPalette(darkPalette)
 

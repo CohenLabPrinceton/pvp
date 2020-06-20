@@ -2,11 +2,13 @@ import numpy as np
 from PySide2 import QtWidgets, QtCore
 import PySide2
 import pyqtgraph as pg
+import pdb
 
 from vent.gui import styles, mono_font
 from vent.gui.widgets.components import EditableLabel, DoubleSlider
 from vent.common.message import ControlSetting
-from vent.common.values import Value
+from vent.common.values import Value, ValueName
+from vent.common import unit_conversion
 
 
 class Control(QtWidgets.QWidget):
@@ -36,6 +38,9 @@ class Control(QtWidgets.QWidget):
         self.sensor = None
         self.sensor_value = None
         self.yrange = ()
+
+        self._convert_in = None
+        self._convert_out = None
 
         self.init_ui()
 
@@ -195,7 +200,7 @@ class Control(QtWidgets.QWidget):
         self.slider_layout = QtWidgets.QHBoxLayout()
 
         self.slider_min = QtWidgets.QLabel()
-        self.slider_min.setText(str(np.round(self.abs_range[0], self.decimals)))
+        self.slider_min.setText(unit_conversion.rounded_string(self.abs_range[0], self.decimals))
         self.slider_min.setAlignment(QtCore.Qt.AlignLeft)
         self.slider_min.setFont(mono_font())
         self.slider_min.setStyleSheet(styles.CONTROL_LABEL)
@@ -205,7 +210,7 @@ class Control(QtWidgets.QWidget):
 
 
         self.slider_max = QtWidgets.QLabel()
-        self.slider_max.setText(str(np.round(self.abs_range[1], self.decimals)))
+        self.slider_max.setText(unit_conversion.rounded_string(self.abs_range[1], self.decimals))
         self.slider_max.setAlignment(QtCore.Qt.AlignRight)
         self.slider_max.setFont(mono_font())
         self.slider_max.setStyleSheet(styles.CONTROL_LABEL)
@@ -251,7 +256,7 @@ class Control(QtWidgets.QWidget):
             self.adjustSize()
 
 
-    def update_value(self, new_value: float):
+    def update_value(self, new_value: float, emit=True):
         """
         Updates the controlled value. Emits :attr:`.value_changed` if value within :attr:`.abs_range` and different than previous :attr:`.value`
 
@@ -259,26 +264,64 @@ class Control(QtWidgets.QWidget):
 
         Args:
             new_value (float):
+            emit (bool): whether to emit the `value_changed` signal (default True) -- in the case that our value is being changed by someone other than us
         """
         if isinstance(new_value, str):
             new_value = float(new_value)
 
+        if self._convert_out:
+            # convert from display value to internal value
+            new_value = self._convert_out(new_value)
+
         if (new_value <= self.abs_range[1]) and (new_value >= self.abs_range[0]) and (new_value != self.value):
             self.value = new_value
 
-            self.value_changed.emit(self.value)
+            if emit:
+                self.value_changed.emit(self.value)
         else:
             # TODO: Log this
             pass
 
-        # still draw regardless in case an invalid value was given
-        value_str = str(np.round(self.value, self.decimals))
-        self.value_label.setText(value_str)
+        self.redraw()
 
-        self.slider.setValue(self.value)
-        self.sensor_set.setValue(self.value)
-        self.sensor_limits.setData(**{'y': np.array([self.value])})
-        self.update_yrange()
+    def redraw(self):
+
+        # still draw regardless in case an invalid value was given
+        if self._convert_in:
+            set_value = self._convert_in(self.value)
+            safe_range = (self._convert_in(self.safe_range[0]), self._convert_in(self.safe_range[1]))
+            abs_range = (self._convert_in(self.abs_range[0]), self._convert_in(self.abs_range[1]))
+        else:
+            set_value = self.value
+            safe_range = self.safe_range
+            abs_range = self.abs_range
+
+
+        #disable signals while we're changing things internally
+        try:
+            self.value_label.blockSignals(True)
+            self.slider.blockSignals(True)
+
+            value_str = unit_conversion.rounded_string(set_value, self.decimals)
+            self.value_label.setText(value_str)
+
+            self.slider.setValue(set_value)
+            self.sensor_set.setValue(set_value)
+            self.sensor_limits.setData(**{'y': np.array([set_value])})
+            self.sensor_limits.setData(**{'bottom': set_value-safe_range[0],
+                                          'top': safe_range[1]-set_value})
+
+            self.slider_min.setText(unit_conversion.rounded_string(abs_range[0], self.decimals))
+            self.slider_max.setText(unit_conversion.rounded_string(abs_range[1], self.decimals))
+            self.slider.setMinimum(abs_range[0])
+            self.slider.setMaximum(abs_range[1])
+            self.slider.setDecimals(self.decimals)
+
+            self.update_yrange()
+
+        finally:
+            self.value_label.blockSignals(False)
+            self.slider.blockSignals(False)
 
     def update_limits(self, control: ControlSetting):
         if self.value is None:
@@ -286,11 +329,17 @@ class Control(QtWidgets.QWidget):
 
         #self.update_value(control.value)
         if control.min_value and control.min_value != self.safe_range[0]:
-            self.sensor_limits.setData(**{'bottom': self.value-control.min_value})
+            if self._convert_in:
+                self.sensor_limits.setData(**{'bottom': self._convert_in(self.value - control.min_value)})
+            else:
+                self.sensor_limits.setData(**{'bottom': self.value-control.min_value})
             self.safe_range = (control.min_value, self.safe_range[1])
 
         if control.max_value and control.max_value != self.safe_range[1]:
-            self.sensor_limits.setData(**{'top': control.max_value-self.value})
+            if self._convert_in:
+                self.sensor_limits.setData(**{'top': self._convert_in(control.max_value - self.value)})
+            else:
+                self.sensor_limits.setData(**{'top': control.max_value-self.value})
             self.safe_range = (self.safe_range[0], control.max_value)
 
         self.update_yrange()
@@ -300,7 +349,9 @@ class Control(QtWidgets.QWidget):
         if new_value is None:
             return
         self.sensor_value = new_value
-        value_str = str(np.round(new_value, self.decimals))
+        if self._convert_in:
+            new_value = self._convert_in(new_value)
+        value_str = unit_conversion.rounded_string(new_value, self.decimals)
         self.sensor_label.setText(value_str)
         self.sensor_bar.setOpts(y1=np.array([new_value]))
         # self.sensor_plot.autoRange(padding=.001)
@@ -320,6 +371,10 @@ class Control(QtWidgets.QWidget):
             y_max = np.max([self.sensor_value, self.safe_range[1]])
             new_yrange = (y_min, y_max)
 
+        if self._convert_in:
+            new_yrange = (self._convert_in(new_yrange[0]),
+                          self._convert_in(new_yrange[1]))
+
         if self.yrange != new_yrange:
             self.sensor_plot.setYRange(*new_yrange)
             self.yrange = new_yrange
@@ -332,4 +387,26 @@ class Control(QtWidgets.QWidget):
             return False
         else:
             return True
+
+    def set_units(self, units):
+        if self.name in (ValueName.PIP.name, ValueName.PEEP.name):
+            if units == 'cmH2O':
+                self.decimals = 1
+                self.units = units
+                self.units_label.setText(units)
+                self._convert_in = None
+                self._convert_out = None
+                self.redraw()
+            elif units == 'hPa':
+                self.decimals = 0
+                self.units = units
+                self.units_label.setText(units)
+                self._convert_in = unit_conversion.cmH2O_to_hPa
+                self._convert_out = unit_conversion.hPa_to_cmH2O
+                self.redraw()
+        else:
+            print(
+                f'error setting units {units}'
+            )
+            return
 

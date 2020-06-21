@@ -12,6 +12,7 @@ import pyqtgraph as pg
 from vent.gui import styles
 from vent.gui import mono_font
 from vent.gui import get_gui_instance
+from vent.common import unit_conversion
 from vent.common.message import SensorValues, ControlSetting
 from vent.common.values import ValueName
 from vent.common.logging import init_logger
@@ -45,8 +46,7 @@ class Pressure_Waveform(pg.PlotWidget):
     )
 
     def __init__(self, n_waveforms = 10, **kwargs):
-        super(Pressure_Waveform, self).__init__(background=styles.TEXT_COLOR,
-                                                title="Pressure Control Waveform")
+        super(Pressure_Waveform, self).__init__(background=styles.TEXT_COLOR)
 
         self.getPlotItem().titleLabel.item.setHtml(
             f"<span style='{styles.PRESSURE_PLOT_TITLE_STYLE}'>Pressure Control Waveform</span>"
@@ -60,7 +60,7 @@ class Pressure_Waveform(pg.PlotWidget):
         for i in range(self.n_waveforms):
             self.waveforms.append(self.plot())
 
-        self.colors = np.linspace(255, 0, self.n_waveforms)
+        self.colors = np.linspace(0, 128, self.n_waveforms)
 
         # store last values, see param_changed
         self._pip = None
@@ -74,6 +74,10 @@ class Pressure_Waveform(pg.PlotWidget):
         self._inspt = None
         self._rr = None
 
+        self._convert_in = None
+        self._convert_out = None
+        self.units = 'cmH2O'
+
 
         self._last_target = np.array(())
         self._last_cycle = None
@@ -81,7 +85,7 @@ class Pressure_Waveform(pg.PlotWidget):
         self._current_timestamps = []
         self._current_values = []
         self.__controlling_plot = False
-        self.enableAutoRange(axis=pg.ViewBox.YAxis)
+        self.enableAutoRange(y=True)
 
         self.init_plot()
 
@@ -172,8 +176,9 @@ class Pressure_Waveform(pg.PlotWidget):
         value_name = param[0]
         new_val = param[1]
         if value_name in (ValueName.PIP, ValueName.PEEP):
-            # these are fine and don't need changing
-            pass
+            # convert back to cmH2O if needed
+            if self._convert_out:
+                new_val = self._convert_out(new_val)
         elif value_name in (ValueName.PIP_TIME, ValueName.INSPIRATION_TIME_SEC, ValueName.PEEP_TIME):
             # points
             # these need to be subtracted back inta shape
@@ -300,47 +305,75 @@ class Pressure_Waveform(pg.PlotWidget):
         # try to draw each segment depending on which values are set
         ### pipt line and pipt point
         if self._pip and self._pipt and self._peep:
-            self.segment_inhale.setData(
-                np.array([0, self._pipt]),
-                np.array([self._peep, self._pip])
-            )
-            self.point_pipt.setData([self._pipt], [self._pip])
+            if self._convert_in:
+                self.segment_inhale.setData(
+                    np.array([0, self._pipt]),
+                    np.array([self._convert_in(self._peep), self._convert_in(self._pip)])
+                )
+                self.point_pipt.setData([self._pipt], [self._convert_in(self._pip)])
+            else:
+                self.segment_inhale.setData(
+                    np.array([0, self._pipt]),
+                    np.array([self._peep, self._pip])
+                )
+                self.point_pipt.setData([self._pipt], [self._pip])
 
 
         ### pip line and inspt
         if self._pip and self._pipt and self._inspt:
-            self.segment_pip.setValue(self._pip)
+            if self._convert_in:
+                self.segment_pip.setValue(self._convert_in(self._pip))
+                self.point_inspt.setData([self._inspt], [self._convert_in(self._pip)])
+            else:
+                self.segment_pip.setValue(self._pip)
+                self.point_inspt.setData([self._inspt], [self._pip])
             # if self._pipt and self._inspt:
             #
             pip_bounds = ((self._pipt-view_range[0])/ x_range,
                           (self._inspt-view_range[0])/ x_range)
 
             self.segment_pip.setSpan(mn=pip_bounds[0], mx=pip_bounds[1])
-
             self.region_pip.setSpan(mn=pip_bounds[0], mx=pip_bounds[1])
             #
-            self.point_inspt.setData([self._inspt], [self._pip])
 
         if self._pip_min and self._pip_max:
-            self.region_pip.setRegion((self._pip_min, self._pip_max))
+            if self._convert_in:
+                self.region_pip.setRegion((self._convert_in(self._pip_min),
+                                           self._convert_in(self._pip_max)))
+            else:
+                self.region_pip.setRegion((self._pip_min, self._pip_max))
 
 
         ### exhale slope
         if self._inspt and self._pip and self._peept and self._peep:
-            self.segment_exhale.setData(
-                np.array([self._inspt,
-                          self._inspt + self._peept]),
-                np.array([self._pip, self._peep])
-            )
+            if self._convert_in:
+                self.segment_exhale.setData(
+                    np.array([self._inspt,
+                              self._inspt + self._peept]),
+                    np.array([self._convert_in(self._pip),
+                              self._convert_in(self._peep)])
+                )
 
-            self.point_peept.setData([self._inspt + self._peept],
-                                     [self._peep])
+                self.point_peept.setData([self._inspt + self._peept],
+                                         [self._convert_in(self._peep)])
+            else:
+                self.segment_exhale.setData(
+                    np.array([self._inspt,
+                              self._inspt + self._peept]),
+                    np.array([self._pip, self._peep])
+                )
+
+                self.point_peept.setData([self._inspt + self._peept],
+                                         [self._peep])
 
 
 
         ### peep line
         if self._peep and self._inspt and self._peept and self._rr:
-            self.segment_peep.setValue(self._peep)
+            if self._convert_in:
+                self.segment_peep.setValue(self._convert_in(self._peep))
+            else:
+                self.segment_peep.setValue(self._peep)
 
             # peep_bounds = (0,1)
             # if self._pipt and self._inspt and self._peept and self._rr:
@@ -360,7 +393,11 @@ class Pressure_Waveform(pg.PlotWidget):
             self.region_peep.setSpan(*peep_bounds)
 
         if self._peep_min and self._peep_max:
-            self.region_peep.setRegion((self._peep_min, self._peep_max))
+            if self._convert_in:
+                self.region_peep.setRegion((self._convert_in(self._peep_min),
+                                            self._convert_in(self._peep_max)))
+            else:
+                self.region_peep.setRegion((self._peep_min, self._peep_max))
 
 
 
@@ -377,9 +414,36 @@ class Pressure_Waveform(pg.PlotWidget):
             self._current_values = []
 
         self._current_values.append(sensors.PRESSURE)
+        if self._convert_in:
+            current_values = self._convert_in(np.array(self._current_values))
+        else:
+            current_values = np.array(self._current_values)
         self._current_timestamps.append(sensors.timestamp - self._last_cycle_timestamp)
         self.waveforms[0].setData(np.array(self._current_timestamps),
-                                  np.array(self._current_values))
+                                  current_values)
+
+    def set_units(self, units):
+
+        try:
+            self.blockSignals(True)
+            if units == 'cmH2O':
+                self.units = units
+                # self.units_label.setText(units)
+                self._convert_in = None
+                self._convert_out = None
+            elif units == 'hPa':
+                self.units = units
+                # self.units_label.setText(units)
+                self._convert_in = unit_conversion.cmH2O_to_hPa
+                self._convert_out = unit_conversion.hPa_to_cmH2O
+
+            for wave in self.waveforms:
+                wave.setData([0], [0])
+
+            self.draw_target()
+        finally:
+            self.blockSignals(False)
+
 
 class NamedLine(pg.InfiniteLine):
     value_changed = QtCore.Signal(tuple)
@@ -533,6 +597,8 @@ class Plot(pg.PlotWidget):
                                                    units =units)
 
 
+
+
         super(Plot, self).__init__(background=styles.BOX_BACKGROUND,
                                    title=titlestr)
 
@@ -540,6 +606,8 @@ class Plot(pg.PlotWidget):
             f"<span style='{styles.PLOT_TITLE_STYLE}'>{titlestr}</span>"
         )
         self.getPlotItem().titleLabel.setAttr('justify', 'left')
+
+        self.name = name
 
         # pdb.set_trace()
 
@@ -550,6 +618,9 @@ class Plot(pg.PlotWidget):
         self.plot_duration = plot_duration
 
         self.units = units
+
+        self._convert_in = None
+        self._convert_out = None
 
 
         self._start_time = time.time()
@@ -621,6 +692,8 @@ class Plot(pg.PlotWidget):
             # subtract start time and take modulus of duration to get wrapped timestamps
             plot_timestamps = np.mod(ts_array[start_ind:end_ind]-self._start_time, self.plot_duration)
             plot_values = np.array([self.history[i] for i in range(start_ind, end_ind)])
+            if self._convert_in:
+                plot_values = self._convert_in(plot_values)
 
             # find the point where the time resets
             try:
@@ -652,15 +725,53 @@ class Plot(pg.PlotWidget):
         if limits.name in self._range_limits.keys():
 
             if limits.min_value:
-                self._range_limits[limits.name][0].setPos(limits.min_value)
+                if self._convert_out:
+                    self._range_limits[limits.name][0].setPos(self._convert_out(limits.min_value))
+                else:
+                    self._range_limits[limits.name][0].setPos(limits.min_value)
             if limits.max_value:
-                self._range_limits[limits.name][1].setPos(limits.max_value)
+                if self._convert_out:
+                    self._range_limits[limits.name][1].setPos(self._convert_out(limits.max_value))
+                else:
+                    self._range_limits[limits.name][1].setPos(limits.max_value)
 
 
     def reset_start_time(self):
         self._start_time = time.time()
         self._last_time = time.time()
         self._last_relative_time = 0
+
+    def set_units(self, units):
+        if self.name in ('Pressure',):
+            if units == 'cmH2O':
+                self.decimals = 1
+                self.units = units
+                self._convert_in = None
+                self._convert_out = None
+
+                for range_pairs in self._range_limits.values():
+                    for a_line in range_pairs:
+                        a_line.setPos(unit_conversion.hPa_to_cmH2O(a_line.getPos()[1]))
+
+            elif units == 'hPa':
+                self.decimals = 0
+                self.units = units
+                self._convert_in = unit_conversion.cmH2O_to_hPa
+                self._convert_out = unit_conversion.hPa_to_cmH2O
+
+                for range_pairs in self._range_limits.values():
+                    for a_line in range_pairs:
+                        a_line.setPos(unit_conversion.cmH2O_to_hPa(a_line.getPos()[1]))
+
+            titlestr = "{title_text} ({units})".format(
+                title_text=self.name,
+                units=self.units)
+            self.getPlotItem().titleLabel.item.setHtml(
+                f"<span style='{styles.PLOT_TITLE_STYLE}'>{titlestr}</span>"
+            )
+
+
+
     #
     # def plot(self, *args, **kargs):
     #     """

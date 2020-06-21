@@ -266,6 +266,7 @@ class Control(QtWidgets.QWidget):
             new_value (float):
             emit (bool): whether to emit the `value_changed` signal (default True) -- in the case that our value is being changed by someone other than us
         """
+        # pdb.set_trace()
         if isinstance(new_value, str):
             new_value = float(new_value)
 
@@ -288,6 +289,7 @@ class Control(QtWidgets.QWidget):
 
         # still draw regardless in case an invalid value was given
         if self._convert_in:
+            # pdb.set_trace()
             set_value = self._convert_in(self.value)
             safe_range = (self._convert_in(self.safe_range[0]), self._convert_in(self.safe_range[1]))
             abs_range = (self._convert_in(self.abs_range[0]), self._convert_in(self.abs_range[1]))
@@ -305,6 +307,8 @@ class Control(QtWidgets.QWidget):
             value_str = unit_conversion.rounded_string(set_value, self.decimals)
             self.value_label.setText(value_str)
 
+            self.slider.setMinimum(abs_range[0])
+            self.slider.setMaximum(abs_range[1])
             self.slider.setValue(set_value)
             self.sensor_set.setValue(set_value)
             self.sensor_limits.setData(**{'y': np.array([set_value])})
@@ -313,11 +317,12 @@ class Control(QtWidgets.QWidget):
 
             self.slider_min.setText(unit_conversion.rounded_string(abs_range[0], self.decimals))
             self.slider_max.setText(unit_conversion.rounded_string(abs_range[1], self.decimals))
-            self.slider.setMinimum(abs_range[0])
-            self.slider.setMaximum(abs_range[1])
+
             self.slider.setDecimals(self.decimals)
 
             self.update_yrange()
+        except Exception as e:
+            print(e)
 
         finally:
             self.value_label.blockSignals(False)
@@ -392,6 +397,7 @@ class Control(QtWidgets.QWidget):
         if self.name in (ValueName.PIP.name, ValueName.PEEP.name):
             if units == 'cmH2O':
                 self.decimals = 1
+                self.slider.setDecimals(self.decimals)
                 self.units = units
                 self.units_label.setText(units)
                 self._convert_in = None
@@ -399,6 +405,7 @@ class Control(QtWidgets.QWidget):
                 self.redraw()
             elif units == 'hPa':
                 self.decimals = 0
+                self.slider.setDecimals(self.decimals)
                 self.units = units
                 self.units_label.setText(units)
                 self._convert_in = unit_conversion.cmH2O_to_hPa

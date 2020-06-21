@@ -10,6 +10,7 @@ def rounded_string(value, decimals=0):
     create a rounded string of a number that doesnt have trailing .0 when decimals = 0
     """
     if decimals == 0:
-        return str(round(value))
+        return str(round(value)).split('.')[0]
+
     else:
         return str(round(value, decimals))

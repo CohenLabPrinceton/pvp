@@ -346,6 +346,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         Returns:
 
         """
+        # pdb.set_trace()
         self.logger.info(f'Setting control value: {control_object.name.name}, {control_object.value}')
 
         # FIXME: replace set_value with this kinda thing
@@ -968,7 +969,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.controls[ValueName.PIP.name].set_units(units)
         self.controls[ValueName.PEEP.name].set_units(units)
-
+        self.pressure_waveform.set_units(units)
+        self.monitor[ValueName.PRESSURE.name].set_units(units)
+        self.plots[ValueName.PRESSURE.name].set_units(units)
 
 
 

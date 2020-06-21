@@ -282,6 +282,9 @@ def test_pressure_unit_conversion():
     # TODO: this
     return
 
+def test_sliders_during_unit_convertion():
+    # TODO: this
+    return
 
 
 

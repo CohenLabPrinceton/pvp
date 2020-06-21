@@ -4,14 +4,15 @@ from PySide2 import QtWidgets, QtCore
 
 from vent.gui import styles, mono_font
 from vent.gui.widgets.components import RangeSlider
-from vent.common import message
+from vent.common import message, unit_conversion
+from vent.common.values import ValueName, Value
 
 
 class Monitor(QtWidgets.QWidget):
     alarm = QtCore.Signal(tuple)
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, value,
+    def __init__(self, value: Value,
                  update_period=styles.MONITOR_UPDATE_INTERVAL,
                  enum_name = None,
                  range_slider = False):
@@ -34,6 +35,9 @@ class Monitor(QtWidgets.QWidget):
         self.has_range_slider = range_slider
 
         self.value = None
+
+        self._convert_in = None
+        self._convert_out = None
 
         # whether we are currently styled as being in an alarm state
         self._alarm = False
@@ -217,7 +221,11 @@ class Monitor(QtWidgets.QWidget):
     def timed_update(self):
         # format value based on decimals
         if self.value:
-            value_str = str(np.round(self.value, self.decimals))
+            if self._convert_in:
+                set_value = self._convert_in(self.value)
+            else:
+                set_value = self.value
+            value_str = unit_conversion.rounded_string(set_value, self.decimals)
             self.value_label.setText(value_str)
 
         QtCore.QTimer.singleShot(round(self.update_period*1000), self.timed_update)
@@ -260,6 +268,27 @@ class Monitor(QtWidgets.QWidget):
             self.alarm_state = True
         else:
             self.alarm_state = False
+
+    def set_units(self, units):
+        if self.name in ('Pressure',):
+            if units == 'cmH2O':
+                self.decimals = 1
+                self.units = units
+                self.units_label.setText(units)
+                self._convert_in = None
+                self._convert_out = None
+            elif units == 'hPa':
+                self.decimals = 0
+                self.units = units
+                self.units_label.setText(units)
+                self._convert_in = unit_conversion.cmH2O_to_hPa
+                self._convert_out = unit_conversion.hPa_to_cmH2O
+        else:
+            print(
+                f'error setting units {units}'
+            )
+            return
+
 
     # def check_alarm(self, value=None):
     #     if value is None:

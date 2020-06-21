@@ -18,7 +18,9 @@ import numpy as np
 import tables as pytb
 
 if typing.TYPE_CHECKING:
-    from vent.common.message import SensorValues, ControlValues, ControlSetting
+    # from vent.common.message import SensorValues, ControlValues, ControlSetting
+    from vent.common.message import SensorValues, ControlValues, DerivedValues, ControlSetting
+
 
 # some global stack param
 MAX_STACK_DEPTH = 20
@@ -120,7 +122,7 @@ def log_exception(e, tb):
 
 class DataSample(pytb.IsDescription):
     """
-    Structure for the hdf5-table for data
+    Structure for the hdf5-table for waveform data; measured once per controller loop.
     """
     timestamp    = pytb.Float64Col()    # current time of the measurement - has to be 64 bit
     pressure     = pytb.Float64Col()
@@ -133,7 +135,7 @@ class DataSample(pytb.IsDescription):
 
 class ControlCommand(pytb.IsDescription):
     """
-    Structure for the hdf5-table to store control commands
+    Structure for the hdf5-table to store control commands. Appended whenever a control command is received.
     """
     name      = pytb.StringCol(16)   # Control setting name
     value     = pytb.Float64Col()    # double (double-precision)
@@ -141,6 +143,19 @@ class ControlCommand(pytb.IsDescription):
     max_value = pytb.Float64Col()    # double (double-precision)
     timestamp = pytb.Float64Col()    # double (double-precision)
 
+class DerivedSample(pytb.IsDescription):
+    """
+    Structure for the hdf5-table to store derived quantities from waveform measurements. Once per breath-cycle.
+    """
+    timestamp        =  pytb.Float64Col()    # Start time of this breath cycle
+    cycle_number     =  pytb.UInt32Col()     # Index of this breath cycle, Max is 2147483647 Breath Cycles (~78 years)
+    I_phase_duration =  pytb.Float64Col()    # estimated duration of inspiratory phase
+    pip_time         =  pytb.Float64Col()    # estimated time when peak inspiratory pressure [PIP] was reached
+    peep_time        =  pytb.Float64Col()    # estimated time when positive end-expiratory pressure [PEEP] was reached
+    pip              =  pytb.Float64Col()    # estimated peak inspiration pressure [PIP]
+    pip_plateau      =  pytb.Float64Col()    # estimated plateau pressure around PIP
+    peep             =  pytb.Float64Col()    # estimated peep pressure
+    vte              =  pytb.Float64Col()    # estimated End-Tidal Volume
 
 class DataLogger:
     """
@@ -150,8 +165,12 @@ class DataLogger:
         |--- waveforms (group)
         |    |--- time | pressure_data | flow_out | control_signal_in | control_signal_out | FiO2 | Cycle No.
         |
-        |--- controls (group)                                  --- TODO: WHAT TO SAVE?
+        |--- controls (group)
         |    |--- (time, controllsignal)
+        |
+        |--- derived_quantities (group)
+        |    |--- (time, Cycle No, I_PHASE_DURATION, PIP_TIME, PEEP_time, PIP, PIP_PLATEAU, PEEP, VTE )
+        |
         |
 
     Public Methods:
@@ -219,6 +238,16 @@ class DataLogger:
         else:
             self.control_table = self.h5file.root.controls.readout
 
+        if "/derived_quantities" not in self.h5file:
+            group = self.h5file.create_group("/", 'derived_quantities', 'Quantities derived from waveform, one per cycle')
+            self.derived_table = self.h5file.create_table(group, 'readout', DerivedSample, "Derived Values",
+                                                          filters = pytb.Filters(
+                                                              complevel=self.compression_level,
+                                                              complib='zlib')
+                                                          )
+        else:
+            self.derived_table = self.h5file.root.derived_quantities.readout
+
     def close_logfile(self):
         """
         Flushes & closes the open hdf file.
@@ -254,6 +283,24 @@ class DataLogger:
         datapoint['min_value']  = control_setting.min_value
         datapoint['max_value']  = control_setting.max_value
         datapoint['timestamp']  = control_setting.timestamp
+        datapoint.append()
+
+    def store_derived_data(self, derived_values: 'DerivedValues'):
+        """
+        Appends derived data to the hdf5 file.
+        NOTE: Also not flushed yet.
+        """
+        self._open_logfile()
+        datapoint                      = self.derived_table.row
+        datapoint['timestamp']         = derived_values.timestamp
+        datapoint['cycle_number']      = derived_values.cycle_number
+        datapoint['I_phase_duration']  = derived_values.I_phase_duration
+        datapoint['pip_time']          = derived_values.pip_time
+        datapoint['peep_time']         = derived_values.peep_time
+        datapoint['pip']               = derived_values.pip
+        datapoint['pip_plateau']       = derived_values.pip_plateau
+        datapoint['peep']              = derived_values.peep
+        datapoint['vte']               = derived_values.vte
         datapoint.append()
 
     def flush_logfile(self):
@@ -324,5 +371,8 @@ class DataLogger:
             table = file.root.controls.readout
             control_data = table.read()
 
-        data_dict = {"waveform_data": waveform_data, "control_data": control_data}
+            table = file.root.derived_quantities.readout
+            derived_data = table.read()
+
+        data_dict = {"waveform_data": waveform_data, "control_data": control_data, "derived_data": derived_data}
         return data_dict

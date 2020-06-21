@@ -10,7 +10,7 @@ from itertools import count
 
 import vent.io as io
 
-from vent.common.message import SensorValues, ControlValues, ControlSetting
+from vent.common.message import SensorValues, ControlValues, ControlSetting, DerivedValues
 from vent.common.loggers import init_logger, DataLogger
 from vent.common.values import CONTROL, ValueName
 from vent.common.utils import timeout
@@ -113,6 +113,7 @@ class ControlModuleBase:
         self._DATA_PIP_PLATEAU = None # Measured pressure of the plateau
         self._DATA_PIP_TIME = None    # Measured time of reaching PIP plateau
         self._DATA_PEEP = None        # Measured valued of PEEP
+        self._DATA_PEEP_TIME = None   # Measured time of reaching PEEP
         self._DATA_I_PHASE = None     # Measured duration of inspiratory phase
         self.__DATA_LAST_PEEP = None  # Last time of PEEP - by definition end of breath cycle
         self._DATA_BPM = None         # Measured breathing rate, by definition 60sec / length_of_breath_cycle
@@ -231,12 +232,14 @@ class ControlModuleBase:
                 self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > mean_pressure], 80 )
                 self._DATA_PIP  = np.percentile(pressure[ pressure > mean_pressure], 95 )             #PIP is defined as the maximum, here 95% to account for outliers
                 self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
+                self._DATA_PEEP_TIME = phase[np.min(np.where(pressure < self._DATA_PEEP))]
                 self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
             else:
                 self._DATA_PEEP = np.nan
                 self._DATA_PIP_PLATEAU  = np.nan
                 self._DATA_PIP  = np.nan
                 self._DATA_PIP_TIME = np.nan
+                self._DATA_PEEP_TIME = np.nan
                 self._DATA_I_PHASE = np.nan
 
             # and measure the breaths per minute
@@ -245,6 +248,22 @@ class ControlModuleBase:
             except:
                 self.logger.warning(f'Couldnt calculate BPM, phase was {phase[-1]}. setting as nan')
                 self._DATA_BPM = np.nan
+
+            if self._save_logs:
+                #And the control value instance
+                derived_values = DerivedValues(
+                    timestamp        = time.time(),
+                    loop_counter     = self._loop_counter,
+                    I_phase_duration = self._DATA_I_PHASE,
+                    pip_time         = self._DATA_PIP_TIME,
+                    peep_time        = self._DATA_PEEP_TIME,
+                    pip              = self._DATA_PIP,
+                    pip_plateau      = self._DATA_PIP_PLATEAU,
+                    peep             = self._DATA_PEEP, 
+                    vte              = self._DATA_VTE
+                )
+                #And save both
+                self.dl.store_derived_data(derived_values)
 
     def get_sensors(self) -> SensorValues:
         # Make sure to return a copy of the instance
@@ -590,7 +609,7 @@ class ControlModuleBase:
                 self.__control_signal_out =  1
                 if self._DATA_PRESSURE < self.__SET_PEEP:
                     self.__control_signal_out = 0
-                    self.__control_signal_in = 5* (1 - np.exp( 2*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
+                    self.__control_signal_in = 5* (1 - np.exp( 0.2*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
 
         elif cycle_phase < self.__SET_CYCLE_DURATION:
 
@@ -1009,7 +1028,7 @@ class ControlModuleSimulator(ControlModuleBase):
             simulator_dt (None, float): if None, simulate dt at same rate controller updates.
                 if ``float`` , fix dt updates with this value but still update at _LOOP_UPDATE_TIME
         """
-        ControlModuleBase.__init__(self)
+        ControlModuleBase.__init__(self, pid_control = True, save_logs = True)
         self.Balloon = Balloon_Simulator(leak=False, peep_valve = peep_valve_setting)          # This is the simulation
         self._sensor_to_COPY()
 

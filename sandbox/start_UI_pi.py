@@ -11,23 +11,27 @@ import time
 sim_mode = True
 def main():
 
-    try:
-        coordinator = get_coordinator(single_process=False, sim_mode=sim_mode)
-        app, gui = launch_gui(coordinator)
-        sys.exit(app.exec_())
+    coordinator = get_coordinator(single_process=False, sim_mode=sim_mode)
+    app, gui = launch_gui(coordinator)
+    sys.exit(app.exec_())
 
-    except:
-        print("...ending program & closing valves")
+    # try:
+    #     coordinator = get_coordinator(single_process=False, sim_mode=sim_mode)
+    #     app, gui = launch_gui(coordinator)
+    #     sys.exit(app.exec_())
+
+    # except:
+    #     print("...ending program & closing valves")
         
-        if not sim_mode:
-            time.sleep(0.01)
-            HAL = io.Hal( config_file = 'vent/io/config/devices.ini')
-            for i in range(10):
-                HAL.setpoint_in = 0
-                HAL.setpoint_ex = 1 
-                time.sleep(0.01)
+    #     if not sim_mode:
+    #         time.sleep(0.01)
+    #         HAL = io.Hal( config_file = 'vent/io/config/devices.ini')
+    #         for i in range(10):
+    #             HAL.setpoint_in = 0
+    #             HAL.setpoint_ex = 1 
+    #             time.sleep(0.01)
 
-        print("...done")
+    #     print("...done")
 
 if __name__ == '__main__':
     main()

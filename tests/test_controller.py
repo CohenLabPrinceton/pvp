@@ -123,7 +123,10 @@ def test_control_dynamical(control_type):
     Controller.start()
     time.sleep(0.1)
     vals_start = Controller.get_sensors()
-    time.sleep(20)                                                   # Let this run for half a minute
+    temp_vals = Controller.get_sensors()
+    while temp_vals.breath_count < 5:
+        time.sleep(0.1)
+        temp_vals = Controller.get_sensors()
 
     Controller.stop() # consecutive stops should be ignored
     Controller.stop() 
@@ -135,8 +138,6 @@ def test_control_dynamical(control_type):
     COPY_peep     = Controller.COPY_sensor_values.PEEP
     COPY_pip      = Controller.COPY_sensor_values.PIP
     COPY_fio2     = Controller.COPY_sensor_values.FIO2
-    COPY_temp     = Controller.COPY_sensor_values.TEMP
-    COPY_humidity = Controller.COPY_sensor_values.HUMIDITY
     COPY_pressure = Controller.COPY_sensor_values.PRESSURE
     COPY_vte      = Controller.COPY_sensor_values.VTE
     COPY_bpm      = Controller.COPY_sensor_values.BREATHS_PER_MINUTE
@@ -147,8 +148,6 @@ def test_control_dynamical(control_type):
     assert COPY_peep     == vals_stop.PEEP
     assert COPY_pip      == vals_stop.PIP
     assert COPY_fio2     == vals_stop.FIO2
-    assert COPY_temp     == vals_stop.TEMP
-    assert COPY_humidity == vals_stop.HUMIDITY
     assert COPY_pressure == vals_stop.PRESSURE
     assert COPY_vte      == vals_stop.VTE
     assert COPY_bpm      == vals_stop.BREATHS_PER_MINUTE
@@ -164,14 +163,9 @@ def test_control_dynamical(control_type):
     print(control_type)
 
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
-    if control_type == "PID":
-        assert np.abs(vals_stop.PEEP - v_peep)                     < 2   # PEEP error correct within 3 cmH2O  - as per document
-        assert np.abs(vals_stop.PIP - v_pip)                       < 2   # PIP  error correct within 3 cmH2O
-        assert np.abs(vals_stop.BREATHS_PER_MINUTE - v_bpm)        < 2   # Breaths per minute correct within 3 bpm
-    else:
-        assert np.abs(vals_stop.PEEP - v_peep)                     < 5   # PEEP error correct within 5 cmH2O. state control is not as precise as PID
-        assert np.abs(vals_stop.PIP - v_pip)                       < 5   # PIP  error correct within 5 cmH2O
-        assert np.abs(vals_stop.BREATHS_PER_MINUTE - v_bpm)        < 5   # Breaths per minute correct within 5 bpm
+    assert np.abs(vals_stop.PEEP - v_peep)                     < 5   # PEEP error correct within 5 cmH2O
+    assert np.abs(vals_stop.PIP - v_pip)                       < 5   # PIP  error correct within 5 cmH2O
+    assert np.abs(vals_stop.BREATHS_PER_MINUTE - v_bpm)        < 5   # Breaths per minute correct within 5 bpm
     assert np.abs(vals_stop.INSPIRATION_TIME_SEC - v_iphase)   < 0.2*vals_stop.INSPIRATION_TIME_SEC # Inspiration time, correct within 20%
 
     hb1 = Controller.get_heartbeat()

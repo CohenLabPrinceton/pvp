@@ -655,9 +655,7 @@ class ControlModuleBase:
         sensor_values =  SensorValues(vals={
         ValueName.PIP.name                  : self._DATA_PIP,
         ValueName.PEEP.name                 : self._DATA_PEEP,
-        ValueName.FIO2.name                 : 0,
-        ValueName.TEMP.name                 : 0,
-        ValueName.HUMIDITY.name             : 0,
+        ValueName.FIO2.name                 : self._DATA_OXYGEN,
         ValueName.PRESSURE.name             : self._DATA_PRESSURE,
         ValueName.VTE.name                  : self._DATA_VTE,
         ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
@@ -1039,7 +1037,7 @@ class ControlModuleSimulator(ControlModuleBase):
             simulator_dt (None, float): if None, simulate dt at same rate controller updates.
                 if ``float`` , fix dt updates with this value but still update at _LOOP_UPDATE_TIME
         """
-        ControlModuleBase.__init__(self, pid_control = True, save_logs = True)
+        ControlModuleBase.__init__(self, pid_control = True, save_logs = False)
         self.Balloon = Balloon_Simulator(leak=False, peep_valve = peep_valve_setting)          # This is the simulation
         self._sensor_to_COPY()
 
@@ -1050,7 +1048,7 @@ class ControlModuleSimulator(ControlModuleBase):
         self.set_valves_standby()
 
     def set_valves_standby(self):
-        print("Nothing done. I'm a simulation.")
+        pass
 
     def __SimulatedPropValve(self, x, dt):
         '''
@@ -1147,7 +1145,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
 
 
-def get_control_module(sim_mode=False):
+def get_control_module(sim_mode=False, simulator_dt = None):
     """
     Generates control module.
     Args:

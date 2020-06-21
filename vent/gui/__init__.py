@@ -41,6 +41,8 @@ such that the set limit range is updated when the horizontal bars on the plot ar
 """
 
 PLOTS[ValueName.PRESSURE]['color'] = styles.SUBWAY_COLORS['orange']
+PLOTS[ValueName.TEMP]['color'] = styles.SUBWAY_COLORS['red']
+PLOTS[ValueName.HUMIDITY]['color'] = styles.SUBWAY_COLORS['blue']
 
 
 ########################

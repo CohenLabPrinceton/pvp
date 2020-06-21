@@ -656,6 +656,8 @@ class ControlModuleBase:
         ValueName.PIP.name                  : self._DATA_PIP,
         ValueName.PEEP.name                 : self._DATA_PEEP,
         ValueName.FIO2.name                 : 0,
+        ValueName.TEMP.name                 : 0,
+        ValueName.HUMIDITY.name             : 0,
         ValueName.PRESSURE.name             : self._DATA_PRESSURE,
         ValueName.VTE.name                  : self._DATA_VTE,
         ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
@@ -808,8 +810,8 @@ class ControlModuleDevice(ControlModuleBase):
 
     def _sensor_to_COPY(self):
         # And the sensor measurements
-
         self._get_HAL() 
+
         with self._lock:
           self.COPY_sensor_values = SensorValues(vals={
               ValueName.PIP.name                  : self._DATA_PIP,
@@ -1145,13 +1147,13 @@ class ControlModuleSimulator(ControlModuleBase):
 
 
 
-
-def get_control_module(sim_mode=False, simulator_dt = None):
+def get_control_module(sim_mode=False):
     """
     Generates control module.
     Args:
         sim_mode (bool): if ``true``: returns simulation, else returns hardware
     """
+
     if sim_mode == True:
         return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:

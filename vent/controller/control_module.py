@@ -75,7 +75,7 @@ class ControlModuleBase:
         self.__KP                 = 0            # The weights for the the PID terms -- was 4
         self.__KI                 = 2
         self.__KD                 = 0
-
+        self.__PID_OFFSET         = 0
 
         # Internal Control variables. "SET" indicates that this is set.
         self.__SET_PIP       = CONTROL[ValueName.PIP].default                     # Target PIP pressure
@@ -361,6 +361,7 @@ class ControlModuleBase:
         self.__control_signal_in +=  self.__KP*self._DATA_P
         self.__control_signal_in +=  self.__KI*self._DATA_I
         self.__control_signal_in +=  self.__KD*self._DATA_D
+        self.__control_signal_in +=  self.__PID_OFFSET
 
     def _get_control_signal_in(self):
         ''' This is the controlled signal on the inspiratory side '''
@@ -500,7 +501,7 @@ class ControlModuleBase:
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from the measurements of the flow out
 
         if cycle_phase < self.__SET_PIP_TIME:
-            self.__control_signal_in = 100                                                       # STATE CONTROL: to PIP, air in as fast as possible
+            self.__control_signal_in = 50                                                       # STATE CONTROL: to PIP, air in as fast as possible
             self.__control_signal_out = 0
             if self._DATA_PRESSURE > self.__SET_PIP:
                 self.__control_signal_in = 0
@@ -509,7 +510,7 @@ class ControlModuleBase:
             self.__control_signal_in = 0                                                             # STATE CONTROL: keep PIP plateau, let air in if below
             self.__control_signal_out = 0
             if self._DATA_PRESSURE < self.__SET_PIP:
-                self.__control_signal_in = 100
+                self.__control_signal_in = 20
             # if self._DATA_PRESSURE > self.__SET_PIP:
             #     self.__control_signal_out = 1
 
@@ -563,19 +564,21 @@ class ControlModuleBase:
 
         if cycle_phase < self.__SET_PIP_TIME:
             target_pressure = cycle_phase*(self.__SET_PIP - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
-            self.__KP = 0
+            self.__KP = .75
             self.__KI = 0
-            self.__KD = 1
+            self.__KD = 3
+            self.__PID_OFFSET = 0
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
             self.__calculate_control_signal_in()
             self.__control_signal_out = 0   # close out valve
-            #if self._DATA_PRESSURE > self.__SET_PIP:
-            #    self.__control_signal_in = 0
+            if self._DATA_PRESSURE > self.__SET_PIP:
+                self.__control_signal_in = 0
 
         elif cycle_phase < self.__SET_I_PHASE:
             self.__KP = 0
-            self.__KI = 2
+            self.__KI = 3.5
             self.__KD = 0
+            self.__PID_OFFSET = 0
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt)
             self.__calculate_control_signal_in()
             # if self._DATA_PRESSURE > self.__SET_PIP+2:                                              
@@ -1133,4 +1136,4 @@ def get_control_module(sim_mode=False, simulator_dt = None):
     if sim_mode == True:
         return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
-        return ControlModuleDevice(pid_control = True, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')
+        return ControlModuleDevice(pid_control = False, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')

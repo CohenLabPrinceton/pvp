@@ -46,7 +46,7 @@ class Pressure_Waveform(pg.PlotWidget):
     )
 
     def __init__(self, n_waveforms = 10, **kwargs):
-        super(Pressure_Waveform, self).__init__(background=styles.TEXT_COLOR)
+        super(Pressure_Waveform, self).__init__(background=styles.CONTROL_BACKGROUND)
 
         self.getPlotItem().titleLabel.item.setHtml(
             f"<span style='{styles.PRESSURE_PLOT_TITLE_STYLE}'>Pressure Control Waveform</span>"

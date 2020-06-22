@@ -6,6 +6,7 @@ import pdb
 
 from vent.gui import styles, mono_font
 from vent.gui.widgets.components import EditableLabel, DoubleSlider
+from vent.gui.widgets.dialog import pop_dialog
 from vent.common.message import ControlSetting
 from vent.common.values import Value, ValueName
 from vent.common import unit_conversion
@@ -15,6 +16,9 @@ class Control(QtWidgets.QWidget):
     """
     Attributes:
         sensor (int, float): Value from the sensor
+        _confirmed_unsafe (bool): the user is prompted to confirm setting values outside of ``safe_range``
+            once the user confirms, the user is not prompted again until value is set back inside the safe range.
+            stores whether the user has confirmed.
     """
 
     value_changed = QtCore.Signal(float)
@@ -30,6 +34,7 @@ class Control(QtWidgets.QWidget):
             self.safe_range = (0, 0)
         else:
             self.safe_range = value.safe_range
+        self.alarm_range = self.safe_range
         if set_default:
             self.value = value.default
         else:
@@ -41,6 +46,9 @@ class Control(QtWidgets.QWidget):
 
         self._convert_in = None
         self._convert_out = None
+
+        self._dialog_open = False
+        self._confirmed_unsafe = False
 
         self.init_ui()
 
@@ -80,8 +88,8 @@ class Control(QtWidgets.QWidget):
             init_high = 0
         else:
             init_value = self.value
-            init_low = self.value - self.safe_range[0]
-            init_high = self.safe_range[1] - self.value
+            init_low = self.value - self.alarm_range[0]
+            init_high = self.alarm_range[1] - self.value
 
         ########
         # Sensor box
@@ -267,9 +275,43 @@ class Control(QtWidgets.QWidget):
         if isinstance(new_value, str):
             new_value = float(new_value)
 
+        # stash unconverted value for use in dialog messages
+        orig_value = new_value
+
         if self._convert_out:
             # convert from display value to internal value
             new_value = self._convert_out(new_value)
+
+        if (new_value > self.safe_range[1]) or (new_value < self.safe_range[0]):
+            if self._dialog_open:
+                # if we're already opening a dialogue, don't try to set value or emit
+                return
+
+            if not self._confirmed_unsafe:
+
+                self._dialog_open = True
+                dialog = pop_dialog(
+                    message = f'Confirm setting potentially unsafe {self.name} value',
+                    sub_message= f'Values of {self.name} below {self.safe_range[0]} and above {self.safe_range[1]} are usually unsafe,\n\n are you sure you want to set {self.name} to {orig_value} {self.units}',
+                    buttons =  QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok,
+                    default_button =  QtWidgets.QMessageBox.Cancel
+                )
+                ret = dialog.exec_()
+                self._dialog_open = False
+                if ret != QtWidgets.QMessageBox.Ok:
+                    # if canceled, set value to current value
+                    new_value = self.value
+                else:
+                    # don't prompt again
+                    self._confirmed_unsafe = True
+
+        else:
+            # reset _confirmed_unsafe if back in range
+            if self._confirmed_unsafe:
+                self._confirmed_unsafe = False
+
+
+
 
         changed = self.update_value(new_value)
         if changed:
@@ -313,11 +355,11 @@ class Control(QtWidgets.QWidget):
         if self._convert_in:
             # pdb.set_trace()
             set_value = self._convert_in(self.value)
-            safe_range = (self._convert_in(self.safe_range[0]), self._convert_in(self.safe_range[1]))
+            alarm_range = (self._convert_in(self.alarm_range[0]), self._convert_in(self.alarm_range[1]))
             abs_range = (self._convert_in(self.abs_range[0]), self._convert_in(self.abs_range[1]))
         else:
             set_value = self.value
-            safe_range = self.safe_range
+            alarm_range = self.alarm_range
             abs_range = self.abs_range
 
 
@@ -334,8 +376,8 @@ class Control(QtWidgets.QWidget):
             self.slider.setValue(set_value)
             self.sensor_set.setValue(set_value)
             self.sensor_limits.setData(**{'y': np.array([set_value])})
-            self.sensor_limits.setData(**{'bottom': set_value-safe_range[0],
-                                          'top': safe_range[1]-set_value})
+            self.sensor_limits.setData(**{'bottom': set_value-alarm_range[0],
+                                          'top': alarm_range[1]-set_value})
 
             self.slider_min.setText(unit_conversion.rounded_string(abs_range[0], self.decimals))
             self.slider_max.setText(unit_conversion.rounded_string(abs_range[1], self.decimals))
@@ -355,19 +397,19 @@ class Control(QtWidgets.QWidget):
             return
 
         #self.update_value(control.value)
-        if control.min_value and control.min_value != self.safe_range[0]:
+        if control.min_value and control.min_value != self.alarm_range[0]:
             if self._convert_in:
                 self.sensor_limits.setData(**{'bottom': self._convert_in(self.value - control.min_value)})
             else:
                 self.sensor_limits.setData(**{'bottom': self.value-control.min_value})
-            self.safe_range = (control.min_value, self.safe_range[1])
+            self.alarm_range = (control.min_value, self.alarm_range[1])
 
-        if control.max_value and control.max_value != self.safe_range[1]:
+        if control.max_value and control.max_value != self.alarm_range[1]:
             if self._convert_in:
                 self.sensor_limits.setData(**{'top': self._convert_in(control.max_value - self.value)})
             else:
                 self.sensor_limits.setData(**{'top': control.max_value-self.value})
-            self.safe_range = (self.safe_range[0], control.max_value)
+            self.alarm_range = (self.alarm_range[0], control.max_value)
 
         self.update_yrange()
 
@@ -392,10 +434,10 @@ class Control(QtWidgets.QWidget):
 
         """
         if self.sensor_value is None:
-            new_yrange = self.safe_range
+            new_yrange = self.alarm_range
         else:
-            y_min = np.min([self.sensor_value, self.safe_range[0]])
-            y_max = np.max([self.sensor_value, self.safe_range[1]])
+            y_min = np.min([self.sensor_value, self.alarm_range[0]])
+            y_max = np.max([self.sensor_value, self.alarm_range[1]])
             new_yrange = (y_min, y_max)
 
         if self._convert_in:

@@ -6,7 +6,7 @@ import pdb
 from vent.alarm import AlarmSeverity, AlarmType
 from vent.alarm.condition import Condition
 from vent.common.message import SensorValues, ControlSetting
-from vent.common.logging import init_logger
+from vent.common.loggers import init_logger
 from vent.alarm.alarm import Alarm
 from vent.alarm.rule import Alarm_Rule
 from vent.alarm import condition

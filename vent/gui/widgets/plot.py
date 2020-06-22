@@ -15,7 +15,7 @@ from vent.gui import get_gui_instance
 from vent.common import unit_conversion
 from vent.common.message import SensorValues, ControlSetting
 from vent.common.values import ValueName
-from vent.common.logging import init_logger
+from vent.common.loggers import init_logger
 from vent.alarm import AlarmSeverity
 
 PLOT_TIMER = None

@@ -2,7 +2,7 @@ import typing
 
 from PySide2 import QtCore, QtGui, QtWidgets
 from vent.gui import get_gui_instance
-from vent.common.logging import init_logger
+from vent.common.loggers import init_logger
 
 def pop_dialog(message: str,
                sub_message: str = None,

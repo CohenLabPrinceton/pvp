@@ -497,7 +497,7 @@ class Alarm_Card(QtWidgets.QFrame):
 
     If allowed by alarm, allows user to dismiss/silence alarm
     """
-    alarm_dismissed = QtCore.Signal(AlarmType)
+    alarm_dismissed = QtCore.Signal()
 
     def __init__(self, alarm: Alarm):
         super(Alarm_Card, self).__init__()

@@ -20,12 +20,16 @@ BACKGROUND_COLOR = "#111111"
 BOX_BACKGROUND = "#333333"
 TEXT_COLOR = "#EEEEEE"
 BORDER_COLOR = "palette(midlight)"
-BOX_BORDERS = f"2px solid {BORDER_COLOR};"
+BOX_BORDERS = f"3px solid {BORDER_COLOR};"
+BOX_BORDERS_LOCKED = f"3px solid {SUBWAY_COLORS['lime']}"
+BOX_BORDERS_UNLOCKED = f"3px solid {SUBWAY_COLORS['red']}"
 BOX_MARGINS = 4
 GRAY_TEXT = BOX_BACKGROUND
 
-CONTROL_BACKGROUND = "#EEEEEE"
-CONTROL_SUBBOX_BACKGROUND = "#DDDDDD"
+CONTROL_BACKGROUND = "#DDDDDD"
+CONTROL_BACKGROUND_LOCKED = "#DDDDDD"
+CONTROL_SUBBOX_BACKGROUND = "#FFFFFF"
+CONTROL_SUBBOX_BACKGROUND_LOCKED = "#DDDDDD"
 CONTROL_TEXT = BACKGROUND_COLOR
 CONTROL_TEXT_SECONDARY = "#333333"
 CONTROL_TEXT_SECONDARY_SIZE = 10
@@ -182,6 +186,54 @@ QGroupBox::title {{
 }}
 """
 
+PRESSURE_PLOT_BOX_LOCKED = f"""
+QGroupBox {{
+    background-color: {CONTROL_BACKGROUND_LOCKED};
+    border: 0px solid #000000;
+    border-left: {BOX_BORDERS_LOCKED};
+    border-top: {BOX_BORDERS_LOCKED};
+    border-bottom: {BOX_BORDERS_LOCKED};
+    margin-left: {BOX_MARGINS}px;
+    margin-bottom: {BOX_MARGINS}px;
+
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-top: {MIDLINE_MARGIN}px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  color: {TEXT_COLOR};
+  left: 3px;
+  top: 5px;
+}}
+"""
+
+PRESSURE_PLOT_BOX_UNLOCKED = f"""
+QGroupBox {{
+    background-color: {CONTROL_BACKGROUND};
+    border: 0px solid #000000;
+    border-left: {BOX_BORDERS_UNLOCKED};
+    border-top: {BOX_BORDERS_UNLOCKED};
+    border-bottom: {BOX_BORDERS_UNLOCKED};
+    margin-left: {BOX_MARGINS}px;
+    margin-bottom: {BOX_MARGINS}px;
+
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-top: {MIDLINE_MARGIN}px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  color: {TEXT_COLOR};
+  left: 3px;
+  top: 5px;
+}}
+"""
+
 PLOT_BOX = f"""
 QGroupBox {{
     background-color: {BOX_BACKGROUND};
@@ -254,6 +306,7 @@ QFrame QWidget {{
 }}
 """
 
+
 CONTROL_BOX = f"""
 QGroupBox {{
     background-color: {CONTROL_BACKGROUND};
@@ -276,10 +329,83 @@ QGroupBox::title {{
 }}
 """
 
+CONTROL_BOX_LOCKED = f"""
+QGroupBox {{
+    background-color: {CONTROL_BACKGROUND_LOCKED};
+    border: 0px solid {SUBWAY_COLORS['lime']};
+    border-top: {BOX_BORDERS_LOCKED};
+    border-right: {BOX_BORDERS_LOCKED};
+    border-bottom: {BOX_BORDERS_LOCKED};
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-top: {MIDLINE_MARGIN}px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top right;
+  color: {TEXT_COLOR};
+  right: 7px;
+  top: 5px;
+}}
+"""
+
+CONTROL_BOX_UNLOCKED = f"""
+QGroupBox {{
+    background-color: {CONTROL_BACKGROUND};
+    border: 0px solid {SUBWAY_COLORS['red']};
+    border-top: {BOX_BORDERS_UNLOCKED};
+    border-right: {BOX_BORDERS_UNLOCKED};
+    border-bottom: {BOX_BORDERS_UNLOCKED};
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-top: {MIDLINE_MARGIN}px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top right;
+  color: {TEXT_COLOR};
+  right: 7px;
+  top: 5px;
+}}
+"""
+
 CONTROL_SUBBOX = f"""
 QGroupBox {{
     background-color: {CONTROL_SUBBOX_BACKGROUND};
-    border: 1px solid #000000;
+    border: 0px solid #000000;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    margin-left: 5px;
+}}
+
+QGroupBox::title {{
+  subcontrol-origin: margin;
+  subcontrol-position: top right;
+  right: 5px;
+  top: 5px;
+  color: {CONTROL_TEXT};
+}}
+
+QRadioButton {{
+    color: {CONTROL_TEXT_SECONDARY};
+    font-size: {CONTROL_TEXT_SECONDARY_SIZE}
+}}
+
+QLabel {{
+    color: {CONTROL_TEXT_SECONDARY};
+}}
+"""
+
+CONTROL_SUBBOX_LOCKED = f"""
+QGroupBox {{
+    background-color: {CONTROL_SUBBOX_BACKGROUND_LOCKED};
+    border: 0px solid #000000;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     border-top-right-radius: 0px;

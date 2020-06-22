@@ -150,6 +150,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self._autocalc_cycle = ValueName.INSPIRATION_TIME_SEC # which of the cycle control to autocalculate
 
         self.running = False
+        self.locked = False
 
         # keep track of set values!!!
         self._state = {
@@ -861,7 +862,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 plot.reset_start_time()
             self.coordinator.start()
             self.control_panel.start_button.set_state('ON')
-            self.control_panel.lock_button.set_state('LOCKED')
+            # self.control_panel.lock_button.set_state('LOCKED')
+            self.toggle_lock(True)
         else:
             # TODO: what happens when u stop lol
             box = widgets.pop_dialog(
@@ -881,10 +883,31 @@ class Vent_Gui(QtWidgets.QMainWindow):
         else:
             if state:
                 self.control_panel.lock_button.set_state('LOCKED')
-                self.logger.debug('Lock state changed to locked')
+                self.controls_box.setStyleSheet(styles.CONTROL_BOX_LOCKED)
+                self.pressure_waveform_box.setStyleSheet(styles.PRESSURE_PLOT_BOX_LOCKED)
+                self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX_LOCKED)
+                self.controls_box_cycle.setStyleSheet(styles.CONTROL_SUBBOX_LOCKED)
+                self.controls_box_ramp.setStyleSheet(styles.CONTROL_SUBBOX_LOCKED)
+
                 # FIXME: Implement locking
+                for control in self.controls.values():
+                    control.set_locked(True)
+                    # control.set
+
+                self.pressure_waveform.set_locked(True)
+
+                self.logger.debug('Lock state changed to locked')
             else:
                 self.control_panel.lock_button.set_state('UNLOCKED')
+                self.controls_box.setStyleSheet(styles.CONTROL_BOX_UNLOCKED)
+                self.pressure_waveform_box.setStyleSheet(styles.PRESSURE_PLOT_BOX_UNLOCKED)
+                self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX)
+                self.controls_box_cycle.setStyleSheet(styles.CONTROL_SUBBOX)
+                self.controls_box_ramp.setStyleSheet(styles.CONTROL_SUBBOX)
+                for control in self.controls.values():
+                    control.set_locked(False)
+
+                self.pressure_waveform.set_locked(False)
                 self.logger.debug('Lock state changed to unlocked')
 
     def update_state(self, state_type: str, key:str, val: typing.Union[str,float,int]):

@@ -56,6 +56,7 @@ def init_logger(module_name: str,
     # set log level
     if not log_level:
         log_level = prefs.get_pref('LOGLEVEL')
+        log_level = getattr(logging, log_level)
 
 
     assert log_level in (logging.DEBUG,

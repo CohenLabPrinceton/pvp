@@ -42,7 +42,7 @@ _DEFAULTS = {
     'PREFS_FN': None,
     'LOGGING_MAX_BYTES': 2 * 2 ** 30, # total
     'LOGGING_MAX_FILES': 5,
-    'LOGLEVEL': logging.WARNING,
+    'LOGLEVEL': 'WARNING',
     'GUI_STATE_FN': 'gui_state.json',
     'CONTROLLER_UPDATE_TIME': 0.01,
     'CONTROLLER_UPDATE_LOOPS': 2

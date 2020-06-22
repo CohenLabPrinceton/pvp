@@ -549,6 +549,9 @@ class EditableLabel(QtWidgets.QWidget):
         self.lineEdit.setFocus(QtCore.Qt.MouseFocusReason)
         self.lineEdit.selectAll()
 
+    def setEditable(self, editable: bool):
+        self.is_editable = editable
+
     def labelUpdatedAction(self):
         """Indicates the widget text has been updated"""
         text_to_update = self.lineEdit.text()

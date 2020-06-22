@@ -50,13 +50,18 @@ class Control(QtWidgets.QWidget):
         self._dialog_open = False
         self._confirmed_unsafe = False
 
+        self._locked = False
+
         self.init_ui()
 
 
     def init_ui(self):
-        self.layout = QtWidgets.QGridLayout()
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                  QtWidgets.QSizePolicy.Maximum)
+        # self.layout = QtWidgets.QGridLayout()
+        self.layout = QtWidgets.QVBoxLayout()
+        self.setLayout(self.layout)
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                           QtWidgets.QSizePolicy.Maximum)
+
 
         # Value, Controller
         #        min,   max
@@ -164,7 +169,7 @@ class Control(QtWidgets.QWidget):
         self.name_label.setStyleSheet(styles.CONTROL_NAME)
         self.name_label.setText(self.name)
         self.name_label.setWordWrap(True)
-        self.name_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom)
+        self.name_label.setAlignment(QtCore.Qt.AlignRight)
         self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                     QtWidgets.QSizePolicy.Expanding)
 
@@ -172,7 +177,7 @@ class Control(QtWidgets.QWidget):
         self.units_label = QtWidgets.QLabel()
         self.units_label.setStyleSheet(styles.CONTROL_UNITS)
         self.units_label.setText(self.units)
-        self.units_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        self.units_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                     QtWidgets.QSizePolicy.Maximum)
 
@@ -191,14 +196,16 @@ class Control(QtWidgets.QWidget):
 
         ###
         # layout
-        self.layout.addWidget(self.sensor_frame, 0, 0, 2, 1)
-        self.layout.addWidget(self.value_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight)
-        self.layout.addWidget(self.name_label, 0, 2, 1, 1, alignment=QtCore.Qt.AlignLeft)
-        self.layout.addWidget(self.units_label, 1, 2, 1, 1, alignment=QtCore.Qt.AlignLeft)
-        self.layout.addWidget(self.toggle_button, 0, 3, 2, 1, alignment=QtCore.Qt.AlignRight)
+        self.label_layout = QtWidgets.QGridLayout()
+        self.label_layout.setContentsMargins(0,0,0,0)
+        self.label_layout.addWidget(self.sensor_frame, 0, 0, 2, 1)
+        self.label_layout.addWidget(self.value_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight)
+        self.label_layout.addWidget(self.name_label, 0, 2, 1, 1, alignment=QtCore.Qt.AlignRight)
+        self.label_layout.addWidget(self.units_label, 1, 2, 1, 1, alignment=QtCore.Qt.AlignRight)
+        self.label_layout.addWidget(self.toggle_button, 0, 3, 2, 1, alignment=QtCore.Qt.AlignRight)
 
-        self.setLayout(self.layout)
-
+        # self.setLayout(self.layout)
+        self.layout.addLayout(self.label_layout)
 
         ################
         # Create initially hidden widgets
@@ -254,7 +261,8 @@ class Control(QtWidgets.QWidget):
     def toggle_control(self, state):
         if state == True:
             self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
-            self.layout.addWidget(self.slider_frame, 3, 0, 1, 3)
+            # self.layout.addWidget(self.slider_frame, 3, 0, 1, 3)
+            self.layout.addWidget(self.slider_frame)
             self.slider_frame.setVisible(True)
             # self.adjustSize()
         else:
@@ -290,9 +298,13 @@ class Control(QtWidgets.QWidget):
             if not self._confirmed_unsafe:
 
                 self._dialog_open = True
+                safe_range = self.safe_range
+                if self._convert_in:
+                    safe_range = (self._convert_in(safe_range[0]), self._convert_in(safe_range[1]))
+
                 dialog = pop_dialog(
                     message = f'Confirm setting potentially unsafe {self.name} value',
-                    sub_message= f'Values of {self.name} below {self.safe_range[0]} and above {self.safe_range[1]} are usually unsafe,\n\n are you sure you want to set {self.name} to {orig_value} {self.units}',
+                    sub_message= f'Values of {self.name} outside of {self.safe_range[0]}-{self.safe_range[1]} {self.units} are usually unsafe.\n\nAre you sure you want to set {self.name} to {orig_value} {self.units}',
                     buttons =  QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok,
                     default_button =  QtWidgets.QMessageBox.Cancel
                 )
@@ -413,7 +425,6 @@ class Control(QtWidgets.QWidget):
 
         self.update_yrange()
 
-
     def update_sensor(self, new_value):
         if new_value is None:
             return
@@ -480,4 +491,17 @@ class Control(QtWidgets.QWidget):
                 f'error setting units {units}'
             )
             return
+
+    def set_locked(self, locked: bool):
+        if locked:
+            self.locked = True
+            self.toggle_control(False)
+            self.toggle_button.setEnabled(False)
+            self.value_label.setEditable(False)
+            # self.setStyleSheet()
+        else:
+            self.locked = False
+            self.toggle_button.setEnabled(True)
+            self.value_label.setEditable(True)
+
 

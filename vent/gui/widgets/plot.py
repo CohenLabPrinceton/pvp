@@ -78,6 +78,8 @@ class Pressure_Waveform(pg.PlotWidget):
         self._convert_out = None
         self.units = 'cmH2O'
 
+        self.locked = False
+
 
         self._last_target = np.array(())
         self._last_cycle = None
@@ -147,6 +149,8 @@ class Pressure_Waveform(pg.PlotWidget):
         self.point_inspt.controlling_plot.connect(self._controlling_plot)
         #self.target = self.plot(width=3, symbolBrush=(255,0,0), symbolPen='w')
         #self.target.setPen(color=styles.SUBWAY_COLORS['yellow'], width=3)
+
+        self.setMouseEnabled(False,False)
 
     @QtCore.Slot(bool)
     def _controlling_plot(self, controlling_plot: bool):
@@ -444,6 +448,26 @@ class Pressure_Waveform(pg.PlotWidget):
         finally:
             self.blockSignals(False)
 
+    def set_locked(self, locked: bool):
+        init_logger(__name__).debug(f'Pressure waveform lock set to {locked}')
+        if locked:
+            self.locked = True
+            self.segment_peep.setMovable(False)
+            self.segment_pip.setMovable(False)
+            self.point_pipt.setMovable(False)
+            self.point_peept.setMovable(False)
+            self.point_inspt.setMovable(False)
+            self.setBackground(styles.CONTROL_BACKGROUND_LOCKED)
+
+        else:
+            self.locked = False
+            self.segment_peep.setMovable(True)
+            self.segment_pip.setMovable(True)
+            self.point_pipt.setMovable(True)
+            self.point_peept.setMovable(True)
+            self.point_inspt.setMovable(True)
+            self.setBackground(styles.CONTROL_BACKGROUND)
+
 
 class NamedLine(pg.InfiniteLine):
     value_changed = QtCore.Signal(tuple)
@@ -477,6 +501,7 @@ class ScatterDrag(pg.ScatterPlotItem):
         self.setSize(10)
         self._name = value_name
         self._pos = pos
+        self._movable = True
 
         self.setAcceptHoverEvents(True)
         self.setData([pos[0]], [pos[1]])
@@ -494,6 +519,10 @@ class ScatterDrag(pg.ScatterPlotItem):
 
         """
         if ev.button() != QtCore.Qt.LeftButton:
+            ev.ignore()
+            return
+
+        if not self._movable:
             ev.ignore()
             return
 
@@ -538,6 +567,9 @@ class ScatterDrag(pg.ScatterPlotItem):
         ev.accept()
 
     def hoverEvent(self, ev):
+        if not self._movable:
+            return
+
         if (not ev.isExit()):
             self.setMouseHover(True)
 
@@ -560,6 +592,14 @@ class ScatterDrag(pg.ScatterPlotItem):
     def setData(self, *args, **kwargs):
         if not self.mouseHovering:
             super(ScatterDrag, self).setData(*args, **kwargs)
+
+    def setMovable(self, movable: bool):
+        if movable:
+            self._movable = True
+            self.setAcceptHoverEvents(True)
+        else:
+            self._movable = False
+            self.setAcceptHoverEvents(False)
 
 
 

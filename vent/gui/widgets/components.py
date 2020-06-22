@@ -1,4 +1,5 @@
 import copy
+import pdb
 
 import numpy as np
 from PySide2 import QtWidgets, QtCore, QtGui
@@ -62,7 +63,7 @@ class DoubleSlider(QtWidgets.QSlider):
         return super(DoubleSlider, self).singleStep()
 
     def setValue(self, value):
-
+        # pdb.set_trace()
         super(DoubleSlider, self).setValue(int(round(value * self._multi)))
 
 

@@ -30,7 +30,7 @@ list of strings, which loggers have been created already.
 
 
 def init_logger(module_name: str,
-                log_level: int = logging.DEBUG,
+                log_level: int = None,
                 file_handler: bool = True) -> logging.Logger:
     """
     Initialize a logger for logging events.
@@ -54,6 +54,10 @@ def init_logger(module_name: str,
         return logger
 
     # set log level
+    if not log_level:
+        log_level = prefs.get_pref('LOGLEVEL')
+
+
     assert log_level in (logging.DEBUG,
                          logging.INFO,
                          logging.WARNING,

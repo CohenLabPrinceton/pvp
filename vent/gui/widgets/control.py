@@ -235,12 +235,12 @@ class Control(QtWidgets.QWidget):
 
         ###
         # set signals
-        self.value_label.textChanged.connect(self.update_value)
-        self.slider.doubleValueChanged.connect(self.update_value)
+        self.value_label.textChanged.connect(self._value_changed)
+        self.slider.doubleValueChanged.connect(self._value_changed)
 
 
         if self.value:
-            self.update_value(self.value)
+            self._value_changed(self.value)
 
     @QtCore.Slot(bool)
     def toggle_control(self, state):
@@ -255,12 +255,9 @@ class Control(QtWidgets.QWidget):
             self.slider_frame.setVisible(False)
             self.adjustSize()
 
-
-    def update_value(self, new_value: float, emit=True):
+    def _value_changed(self, new_value: float):
         """
-        Updates the controlled value. Emits :attr:`.value_changed` if value within :attr:`.abs_range` and different than previous :attr:`.value`
-
-        Also updates the slider and sensor bar in the UI.
+        Control value changed by components
 
         Args:
             new_value (float):
@@ -274,16 +271,41 @@ class Control(QtWidgets.QWidget):
             # convert from display value to internal value
             new_value = self._convert_out(new_value)
 
+        changed = self.update_value(new_value)
+        if changed:
+            self.value_changed.emit(self.value)
+
+
+    def update_value(self, new_value: float):
+        """
+        Updates the controlled value. Emits :attr:`.value_changed` if value within :attr:`.abs_range` and different than previous :attr:`.value`
+
+        Also updates the slider and sensor bar in the UI.
+
+        Args:
+            new_value (float):
+        """
+        # pdb.set_trace()
+        if isinstance(new_value, str):
+            new_value = float(new_value)
+
+        # if self._convert_out:
+        #     # convert from display value to internal value
+        #     new_value = self._convert_out(new_value)
+        # don't convert here, assume the only hPa values would come from the widget itself since it's display only
+
+        changed = False
         if (new_value <= self.abs_range[1]) and (new_value >= self.abs_range[0]) and (new_value != self.value):
             self.value = new_value
+            changed = True
 
-            if emit:
-                self.value_changed.emit(self.value)
+
         else:
             # TODO: Log this
             pass
 
         self.redraw()
+        return changed
 
     def redraw(self):
 

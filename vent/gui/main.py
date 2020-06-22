@@ -356,7 +356,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.coordinator.set_control(control_object)
         # FIXME: The recursion here is bad. should do a separate value_updated and update_value for outgoing/ingoing updates
         if control_object.name.name in self.controls.keys():
-            self.controls[control_object.name.name].update_value(control_object.value, emit=False)
+            self.controls[control_object.name.name].update_value(control_object.value)
 
         if control_object.name in self.pressure_waveform.PARAMETERIZING_VALUES:
             self.pressure_waveform.update_target(control_object)

@@ -50,7 +50,7 @@ class ControlModuleBase:
         """
 
         Args:
-            save_logs (bool): whether sensor data and controls should be saved with the :class:`.DataLogger`
+            save_logs (bool):  whether sensor data and controls should be saved with the :class:`.DataLogger`
             flush_every (int): flush and rotate logs every n breath cycles
         """
 

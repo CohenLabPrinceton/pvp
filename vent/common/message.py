@@ -1,7 +1,9 @@
+import time
+
 from vent.common import values
 from copy import copy
 from collections import OrderedDict as odict
-from time import time
+from vent.common.loggers import init_logger
 
 class SensorValues:
 
@@ -89,7 +91,12 @@ class SensorValues:
 
 class ControlValues:
     """
-    Class to save control values.
+    Class to save control values, analogous to SensorValues.
+    Key difference: SensorValues come exclusively from the sensors, ControlValues contains controller variables, i.e. control signals and controlled signals (the flows).
+    :param control_signal_in:
+    :param control_signal_out:
+    :param flow_in:
+    :param flow_out:
     """
     def __init__(self, control_signal_in, control_signal_out, flow_in, flow_out):
         self.control_signal_in = control_signal_in
@@ -117,16 +124,31 @@ class ControlSetting:
             range_severity (:class:`.AlarmSeverity`): Some control settings have multiple limits for different alarm severities,
                 this attr, when present, specified which is being set.
         """
+        if isinstance(name, str):
+            try:
+                name = values.CONTROL.__members__[name]
+            except KeyError as e:
+                logger = init_logger(__name__)
+                logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
+                raise e
+        elif isinstance(name, values.ValueName):
+            assert name in values.CONTROL.keys()
 
-        # FIXME: check that at least one value is nonzero, check that everything can handle Nones
-        assert isinstance(name, values.ValueName)
+        self.name = name # type: values.ValueName
 
-        self.name = name
+        if (value is None) and (min_value is None) and (max_value is None):
+            logger = init_logger(__name__)
+            ex_string = 'at least one of value, min_value, or max_value must be set in a ControlSetting'
+            logger.exception(ex_string)
+            raise ValueError(ex_string)
+
         self.value = value
         self.min_value = min_value
         self.max_value = max_value
-        if not timestamp:
-            timestamp = time()
+
+        if timestamp is None:
+            timestamp = time.time()
+
         self.timestamp = timestamp
         self.range_severity = range_severity
 

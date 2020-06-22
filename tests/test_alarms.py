@@ -294,6 +294,7 @@ def test_alarm_rule(fake_sensors):
         AlarmSeverity.LOW,
         latch=False
     )
+    Alarm_Manager().register_alarm(low_alarm)
 
     # test that we don't jump to medium
     sensors.PRESSURE = 2.5
@@ -311,6 +312,7 @@ def test_alarm_rule(fake_sensors):
         AlarmSeverity.MEDIUM,
         latch=False
     )
+    Alarm_Manager().register_alarm(med_alarm)
 
     # keep at medium
     sensors.PRESSURE = 3.5

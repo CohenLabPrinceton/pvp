@@ -6,3 +6,5 @@ __pycache__*
 tmp
 *.egg-info
 .coverage
+sandbox/data_1.npy
+*.npy

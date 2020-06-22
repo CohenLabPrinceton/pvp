@@ -11,6 +11,9 @@ class AlarmType(Enum):
     HIGH_O2       = auto()
     OBSTRUCTION   = auto()
     LEAK          = auto()
+    SENSORS_STUCK = auto()
+    BAD_SENSOR_READINGS = auto()
+    MISSED_HEARTBEAT = auto()
 
     @property
     def human_name(self):
@@ -22,6 +25,7 @@ class AlarmSeverity(IntEnum):
     MEDIUM = 2
     LOW = 1
     OFF = 0
+    TECHNICAL = -1
 
 from vent.alarm import condition
 from vent.alarm import AlarmType, AlarmSeverity

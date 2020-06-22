@@ -163,8 +163,7 @@ class Alarm_Manager(object):
                 severity   = severity,
                 start_time = time.time(),
                 latch      = self.rules[alarm_type].latch,
-                persistent = self.rules[alarm_type].persistent,
-                managed = True
+                persistent = self.rules[alarm_type].persistent
             )
 
             for callback in self.callbacks:

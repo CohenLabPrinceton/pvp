@@ -12,8 +12,8 @@ from vent import prefs
 from vent.alarm import AlarmSeverity, Alarm
 from vent.common import values
 from vent.common.values import ValueName
+from vent.common.loggers import init_logger
 from vent.common.message import ControlSetting, SensorValues
-from vent.common.logging import init_logger
 from vent.coordinator import coordinator
 from vent import gui
 from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS
@@ -227,9 +227,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self._set_cycle_control(value_name, new_value)
 
         else:
-
-
-
             control_object = ControlSetting(name=getattr(ValueName, value_name),
                                             value=new_value,
                                             #min_value = self.CONTROL[getattr(ValueName, value_name)]['safe_range'][0],

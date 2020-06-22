@@ -862,8 +862,8 @@ class ControlModuleDevice(ControlModuleBase):
                 self._DATA_Qout = pq - Qbaseline
 
             po = self.HAL.oxygen
-            if np.abs(po - self._DATA_OXYGEN ) < 5:     # This is not a glitch, use it.
-                self._DATA_OXYGEN = po
+            # if np.abs(po - self._DATA_OXYGEN ) < 5:     # This is not a glitch, use it.
+            self._DATA_OXYGEN = po
 
 
     def set_valves_standby(self):

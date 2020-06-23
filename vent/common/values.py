@@ -213,7 +213,7 @@ VALUES = odict({
         'units': 'cm H2O',
         'abs_range': (0, 70), # FIXME
         'safe_range': (0, 50), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
-        'default': 15,           # FIXME
+        'default': 35,           # FIXME
         'decimals': 1,
         'control': True,
         'sensor': True
@@ -223,7 +223,7 @@ VALUES = odict({
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME
         'safe_range': (0.2, 0.5),  # FIXME
-        'default': 0.2,  # FIXME
+        'default': 0.3,  # FIXME
         'decimals': 1,
         'control': True,
         'sensor': False

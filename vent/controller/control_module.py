@@ -628,7 +628,7 @@ class ControlModuleBase:
             if PEEP_VALVE_SET:
                 #self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
                 self.__control_signal_out = 1
-                self.__control_signal_in = 5* (1 - np.exp( 10*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
+                self.__control_signal_in = 5* (1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
             else:
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
                 self.__calculate_control_signal_in()

@@ -581,28 +581,29 @@ class ControlModuleBase:
 
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
 
-        self.__SET_PIP_TIME = 0.5*self.__SET_I_PHASE
+        #self.__SET_PIP_TIME = 0.5*self.__SET_I_PHASE
 
-        if cycle_phase < self.__SET_PIP_TIME:
+        '''if cycle_phase < self.__SET_PIP_TIME:
             self.__KP = 1
             self.__KI = 2
             self.__KD = 0
             #target_pressure = cycle_phase*(self.__SET_PIP*1.1 - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
-            target_pressure = self.__SET_PIP*1.1
+            target_pressure = self.__SET_PIP
             self.__PID_OFFSET = 0
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt, RC = 0.5)
             self.__calculate_control_signal_in()
             self.__control_signal_out = 0   # close out valve
             #if self._DATA_PRESSURE > self.__SET_PIP:
-            #    self.__control_signal_in = 0
+            #    self.__control_signal_in = 0'''
 
-        elif cycle_phase < self.__SET_I_PHASE:
-            self.__KP = 0
-            self.__KI = 2
+        if cycle_phase < self.__SET_I_PHASE:
+            self.__KP = max(0,3*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
+            self.__KI = 6
             self.__KD = 0
             self.__PID_OFFSET = 0
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.5)
             self.__calculate_control_signal_in()
+            self.__control_signal_out = 0 
             # if self._DATA_PRESSURE > self.__SET_PIP+2:                                              
             #     self.__control_signal_out = 1                                                        # if exceeded, we open the exhaust valve
             # else:

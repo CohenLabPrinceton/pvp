@@ -105,7 +105,7 @@ class DerivedValues:
     Class to save derived values, analogous to SensorValues.
     Key difference: SensorValues come exclusively from the sensors, DerivedValues contain estimates of I_PHASE_DURATION, PIP_TIME, PEEP_time, PIP, PIP_PLATEAU, PEEP, and VTE.
     :param timestamp:
-    :param loop_counter:
+    :param breath_count:
     :param I_phase_duration:
     :param pip_time:
     :param peep_time:
@@ -114,9 +114,9 @@ class DerivedValues:
     :param peep:
     :param vte:
     """
-    def __init__(self, timestamp, loop_counter, I_phase_duration, pip_time, peep_time, pip, pip_plateau, peep, vte):
+    def __init__(self, timestamp, breath_count, I_phase_duration, pip_time, peep_time, pip, pip_plateau, peep, vte):
         self.timestamp        = timestamp
-        self.cycle_number     = loop_counter
+        self.breath_count     = breath_count
         self.I_phase_duration = I_phase_duration
         self.pip_time         = pip_time
         self.peep_time        = peep_time

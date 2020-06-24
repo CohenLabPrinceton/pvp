@@ -17,23 +17,6 @@ class ValueName(Enum):
     PRESSURE = auto()
     FLOWOUT = auto()
 
-controllable_values = {
-    ValueName.PIP,
-    ValueName.PIP_TIME,
-    ValueName.PEEP,
-    ValueName.BREATHS_PER_MINUTE,
-    ValueName.INSPIRATION_TIME_SEC,
-    ValueName.IE_RATIO
-}
-
-non_controllable_values = {
-    # TODO: is PEEP_TIME controllable? control_module doesn't allow set_control on it
-    ValueName.PEEP_TIME,
-    ValueName.FIO2,
-    ValueName.VTE,
-    ValueName.PRESSURE,
-}
-
 
 class Value(object):
 

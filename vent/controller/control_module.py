@@ -597,8 +597,8 @@ class ControlModuleBase:
             #    self.__control_signal_in = 0'''
 
         if cycle_phase < self.__SET_I_PHASE:
-            self.__KP = max(0,3*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
-            self.__KI = 6
+            self.__KP = max(0.5,3*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
+            self.__KI = 6*(1-np.exp(-cycle_phase / (0.075*self.__SET_I_PHASE)))
             self.__KD = 0
             self.__PID_OFFSET = 0
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.5)

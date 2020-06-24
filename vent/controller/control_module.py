@@ -1069,9 +1069,9 @@ class ControlModuleSimulator(ControlModuleBase):
         x:  Input current [mA]
         dt: Time since last setting in seconds [for the LP filter]
         '''
-        y = 8*x
+        y = 3*x
         flow_new = 1.0*(np.tanh(0.03*(y - 130)) + 1)
-        if y>160:
+        if y>170:
             flow_new = 1.72  #Maximum, ~100 l/min
         if y<0:
             flow_new = 0

@@ -268,7 +268,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def init_ui_status_bar(self):
         ############
         # Status Bar
-        status_box = QtWidgets.QGroupBox('System Status')
+        status_box = QtWidgets.QGroupBox('')
         status_box.setStyleSheet(styles.STATUS_BOX)
         status_layout = QtWidgets.QHBoxLayout()
         self.status_bar = widgets.Status_Bar()
@@ -283,7 +283,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         #########
         # display values
         # box that contains both the monitors and the plots
-        self.monitor_box = QtWidgets.QGroupBox("Sensor Monitor")
+        self.monitor_box = QtWidgets.QGroupBox('')
         self.monitor_layout = QtWidgets.QHBoxLayout()
         self.monitor_layout.setContentsMargins(0, 0, 0, 0)
         self.monitor_box.setLayout(self.monitor_layout)
@@ -311,7 +311,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.plot_layout.setContentsMargins(0, 0, 0, 0)
 
         # button to set plot history
-        button_box = QtWidgets.QGroupBox("Plot History")
+        button_box = QtWidgets.QGroupBox('')
         # button_group = QtWidgets.QButtonGroup()
         # button_group.exclusive()
         times = (("5s", 5),
@@ -350,7 +350,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def init_ui_controls(self):
         ####################
         # Controls
-        self.controls_box = QtWidgets.QGroupBox("Ventilator Controls")
+        self.controls_box = QtWidgets.QGroupBox('')
         # set name so it catches the stylesheet
         self.controls_box.setObjectName('CONTROLBOX')
         # controls_box.setStyleSheet(styles.CONTROL_BOX)

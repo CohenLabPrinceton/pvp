@@ -15,6 +15,8 @@ class ValueName(Enum):
     FIO2 = auto()
     VTE = auto()
     PRESSURE = auto()
+    FLOWOUT = auto()
+
 
 class Value(object):
 
@@ -194,7 +196,7 @@ VALUES = odict({
         'units': 'cm H2O',
         'abs_range': (0, 70), # FIXME
         'safe_range': (0, 50), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
-        'default': 22,           # FIXME
+        'default': 35,           # FIXME
         'decimals': 1,
         'control': True,
         'sensor': True
@@ -214,7 +216,7 @@ VALUES = odict({
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME
         'safe_range': (1, 3.0),  # FIXME
-        'default': 2.0,  # FIXME
+        'default': 1.0,  # FIXME
         'decimals': 1,
         'control': True,
         'sensor': True
@@ -244,9 +246,18 @@ VALUES = odict({
         'units': 'BPM', # Daniel re: FDA labels
         'abs_range': (0, 50), # FIXME
         'safe_range': (10, 30), # Stanford's socs https://www.vent4us.org/technical
-        'default': 17,            # FIXME
+        'default': 20,            # FIXME
         'decimals': 1,
         'control': True,
+        'sensor': True
+    }),
+    ValueName.FLOWOUT: Value(**{
+        'name': 'Flow OUT',
+        'units': 'l/s',
+        'abs_range': (0, 2),
+        'safe_range': (0, 2),
+        'decimals': 2,
+        'control': False,
         'sensor': True
     }),
 })

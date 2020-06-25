@@ -12,6 +12,7 @@ import os
 import logging
 from datetime import datetime
 from logging import handlers
+import scipy.io as sio
 
 
 import numpy as np
@@ -120,9 +121,9 @@ def log_exception(e, tb):
     raise
 
 
-class DataSample(pytb.IsDescription):
+class ContinuousData(pytb.IsDescription):
     """
-    Structure for the hdf5-table for waveform data; measured once per controller loop.
+    Structure for the hdf5-table for continuous waveform data; measured once per controller loop.
     """
     timestamp    = pytb.Float64Col()    # current time of the measurement - has to be 64 bit
     pressure     = pytb.Float64Col()
@@ -143,9 +144,9 @@ class ControlCommand(pytb.IsDescription):
     max_value = pytb.Float64Col()    # double (double-precision)
     timestamp = pytb.Float64Col()    # double (double-precision)
 
-class DerivedSample(pytb.IsDescription):
+class CycleData(pytb.IsDescription):
     """
-    Structure for the hdf5-table to store derived quantities from waveform measurements. Once per breath-cycle.
+    Structure for the hdf5-table to store derived quantities from waveform measurements. Measured once per breath-cycle.
     """
     timestamp        =  pytb.Float64Col()    # Start time of this breath cycle
     cycle_number     =  pytb.UInt32Col()     # Index of this breath cycle, Max is 2147483647 Breath Cycles (~78 years)
@@ -183,9 +184,14 @@ class DataLogger:
 
     def __init__(self, compression_level : int = 9):
 
+        # Logging the start of the DataLogger
+        self.logger = init_logger(__name__)
+        self.logger.info('DataLogger init')
+
         # general parameters for logging
         self._MAX_FILE_SIZE = 1e8          # Maximum allowed file size for circular logging
         self._MAX_NUM_LOGFILES = 10        # Maximum allowed file number for circular logging
+        self._data_save_allowed = True     # Data is allowed to be saved. If exceeds limits above, the flag is set to False, and logging stops.
 
         # If initialized, make a new file
         today = datetime.today()
@@ -216,11 +222,13 @@ class DataLogger:
         Opens the hdf5 file.
         """
         if not self.h5file.isopen:
+            self.logger.info('Reopening ' + self.file )
             self.h5file = pytb.open_file(self.file, mode = "a")
 
         if "/waveforms" not in self.h5file:
+            self.logger.info('Generating /waveform table in: ' + self.file )
             group = self.h5file.create_group("/", 'waveforms', 'Respiration waveforms')
-            self.data_table = self.h5file.create_table(group, 'readout', DataSample, "Breath Cycles",
+            self.data_table = self.h5file.create_table(group, 'readout', ContinuousData, "Breath Cycles",
                                                        filters = pytb.Filters(
                                                            complevel=self.compression_level,
                                                            complib='zlib'),
@@ -229,6 +237,7 @@ class DataLogger:
             self.data_table = self.h5file.root.waveforms.readout
 
         if "/controls" not in self.h5file:
+            self.logger.info('Generating /controls table in: ' + self.file )
             group = self.h5file.create_group("/", 'controls', 'Control signal history')
             self.control_table = self.h5file.create_table(group, 'readout', ControlCommand, "Control Commands",
                                                           filters = pytb.Filters(
@@ -239,8 +248,9 @@ class DataLogger:
             self.control_table = self.h5file.root.controls.readout
 
         if "/derived_quantities" not in self.h5file:
+            self.logger.info('Generating /derived_quantities table in: ' + self.file )
             group = self.h5file.create_group("/", 'derived_quantities', 'Quantities derived from waveform, one per cycle')
-            self.derived_table = self.h5file.create_table(group, 'readout', DerivedSample, "Derived Values",
+            self.derived_table = self.h5file.create_table(group, 'readout', CycleData, "Derived Values",
                                                           filters = pytb.Filters(
                                                               complevel=self.compression_level,
                                                               complib='zlib')
@@ -260,56 +270,60 @@ class DataLogger:
         Appends a datapoint to the file.
         NOTE: Not flushed yet.
         """
-        self._open_logfile()
-        datapoint                 = self.data_table.row
-        datapoint['timestamp']    = sensor_values.timestamp
-        datapoint['pressure']     = sensor_values.PRESSURE
-        datapoint['flow_out']     = sensor_values.FLOWOUT
-        datapoint['control_in']   = control_values.control_signal_in
-        datapoint['control_out']  = control_values.control_signal_out
-        datapoint['oxygen']       = sensor_values.FIO2
-        datapoint['cycle_number'] = sensor_values.breath_count
-        datapoint.append()
+        if self._data_save_allowed:
+            self._open_logfile()
+            datapoint                 = self.data_table.row
+            datapoint['timestamp']    = sensor_values.timestamp
+            datapoint['pressure']     = sensor_values.PRESSURE
+            datapoint['flow_out']     = sensor_values.FLOWOUT
+            datapoint['control_in']   = control_values.control_signal_in
+            datapoint['control_out']  = control_values.control_signal_out
+            datapoint['oxygen']       = sensor_values.FIO2
+            datapoint['cycle_number'] = sensor_values.breath_count
+            datapoint.append()
 
     def store_control_command(self, control_setting: 'ControlSetting'):
         """
         Appends a control signal to the hdf5 file.
         NOTE: Also not flushed yet.
         """
-        self._open_logfile()
-        datapoint               = self.control_table.row
-        datapoint['name']       = control_setting.name
-        datapoint['value']      = control_setting.value
-        datapoint['min_value']  = control_setting.min_value
-        datapoint['max_value']  = control_setting.max_value
-        datapoint['timestamp']  = control_setting.timestamp
-        datapoint.append()
+        if self._data_save_allowed:
+            self._open_logfile()
+            datapoint               = self.control_table.row
+            datapoint['name']       = control_setting.name
+            datapoint['value']      = control_setting.value
+            datapoint['min_value']  = control_setting.min_value
+            datapoint['max_value']  = control_setting.max_value
+            datapoint['timestamp']  = control_setting.timestamp
+            datapoint.append()
 
     def store_derived_data(self, derived_values: 'DerivedValues'):
         """
         Appends derived data to the hdf5 file.
         NOTE: Also not flushed yet.
         """
-        self._open_logfile()
-        datapoint                      = self.derived_table.row
-        datapoint['timestamp']         = derived_values.timestamp
-        datapoint['cycle_number']      = derived_values.cycle_number
-        datapoint['I_phase_duration']  = derived_values.I_phase_duration
-        datapoint['pip_time']          = derived_values.pip_time
-        datapoint['peep_time']         = derived_values.peep_time
-        datapoint['pip']               = derived_values.pip
-        datapoint['pip_plateau']       = derived_values.pip_plateau
-        datapoint['peep']              = derived_values.peep
-        datapoint['vte']               = derived_values.vte
-        datapoint.append()
+        if self._data_save_allowed:
+            self._open_logfile()
+            datapoint                      = self.derived_table.row
+            datapoint['timestamp']         = derived_values.timestamp
+            datapoint['cycle_number']      = derived_values.breath_count
+            datapoint['I_phase_duration']  = derived_values.I_phase_duration
+            datapoint['pip_time']          = derived_values.pip_time
+            datapoint['peep_time']         = derived_values.peep_time
+            datapoint['pip']               = derived_values.pip
+            datapoint['pip_plateau']       = derived_values.pip_plateau
+            datapoint['peep']              = derived_values.peep
+            datapoint['vte']               = derived_values.vte
+            datapoint.append()
 
     def flush_logfile(self):
         """
         This flushes the datapoints to the file.
         To be executed every other second, e.g. at the end of breath cycle.
         """
-        self.data_table.flush()
-        self.control_table.flush()
+        if self._data_save_allowed:
+            self.data_table.flush()
+            self.control_table.flush()
 
     def check_files(self):
         """
@@ -327,12 +341,17 @@ class DataLogger:
         max_size = np.min([total_space_hd*0.2, 1e10])      # Limit to whatever is smaller, 20% of the file system or 10 GB
 
         if len(os.listdir(self.log_dir)) > 1000:
-            raise OSError(f'Too many logfiles in {self.log_dir} (>1000 files). There are ' + str(len(os.listdir(self.log_dir))) + ' files. Delete some.')
-            # TODO: log a warning
-            # TODO: Turn off save data flag
-        elif total_size>max_size:     #
-            raise OSError(f'Logfiles in {self.log_dir} are too large. Max allowed is ' + '{0:.2f}'.format(max_size*1e-9) + 'GB, used is ' + '{0:.2f}'.format(total_size*1e-9) +  'GB. Free disk space.')
+            message = f'Too many logfiles in {self.log_dir} (>1000 files). There are ' + str(len(os.listdir(self.log_dir))) + ' files. Delete some.'
+            print(message)
+            # self.logger.exception(message)  # Log a warning
+            self._data_save_allowed = False # Stop data saving
+        elif total_size>max_size:
+            message = f'Logfiles in {self.log_dir} are too large. Max allowed is ' + '{0:.2f}'.format(max_size*1e-9) + 'GB, used is ' + '{0:.2f}'.format(total_size*1e-9) +  'GB. Free disk space.'
+            print(message)
+            self.logger.exception(message)  # Log a warning
+            self._data_save_allowed = False # Stop data saving
         else:
+            self._data_save_allowed = True  # Allow data saving
             return total_size  # size in bytes
 
     def rotation_newfile(self):
@@ -351,6 +370,7 @@ class DataLogger:
             self.h5file.close()                                         # Generate new file with right file structure
             self.h5file = pytb.open_file(self.file, mode = "w")
             self._open_logfile()
+            self.logger.info('DataLogger: rotated to new file.')
 
     def load_file(self, filename = None):
         """
@@ -376,3 +396,70 @@ class DataLogger:
 
         data_dict = {"waveform_data": waveform_data, "control_data": control_data, "derived_data": derived_data}
         return data_dict
+
+    def log2mat(self, filename = None):
+        """
+        Translates the compressed hdf5 into a matlab file containing a matlab struct. This struct has the same structure as the hdf5 file, but is not compressed.
+        Use for any file:
+            dl = DataLogger()
+            dl.log2mat(filename)
+        """
+        if filename == None:
+            filename = self.file
+
+        new_file = filename.split('h5')
+        new_filename = new_file[0] + '.mat'
+        # try:
+        dff = self.load_file(filename)
+        ls_wv = dff['waveform_data']
+        ls_dv = dff['derived_data']
+        ls_ct = dff['control_data']
+        matlab_data = {'waveforms': ls_wv, 'derived_quantities': ls_dv, 'control_commands': ls_ct}
+        sio.savemat(new_filename, matlab_data)
+        # except:
+            # print(filename + " not found.")
+
+
+    def log2csv(self, filename = None):
+        """
+        Translates the compressed hdf5 into three csv files containing:
+            - waveform_data (measurement once per cycle)
+            - derived_quantities (PEEP, PIP etc.)
+            - control_commands (control commands sent to the controller)
+
+        This is the best proxy for the structure contained in the hdf5 file.
+
+        Use for any file:
+            dl = DataLogger()
+            dl.log2mat(filename)
+        """
+        
+        if filename == None:
+            filename = self.file
+        new_file = filename.split('h5')
+
+        try:
+            dff = self.load_file(filename)
+            ls_wv = dff['waveform_data']
+            ls_dv = dff['derived_data']
+            ls_ct = dff['control_data']
+
+            # Waveform_data
+            new_filename = new_file[0] + "waveforms"+'.csv'
+            title = str(ls_wv.dtype.names)[1:-1]
+            title.replace("'",'')
+            np.savetxt(new_filename, ls_wv, delimiter=',', header=title, comments="")
+
+            # Derived quantities
+            new_filename = new_file[0] + "derived_quantities"+'.csv'
+            title = str(ls_dv.dtype.names)[1:-1]
+            title.replace("'",'')
+            np.savetxt(new_filename, ls_dv, delimiter=',', header=title, comments="")
+
+            # Control Commands
+            new_filename = new_file[0] + "control_commands"+'.csv'
+            title = str(ls_ct.dtype.names)[1:-1]
+            title.replace("'",'')
+            np.savetxt(new_filename, ls_ct, delimiter=',', header=title, fmt = ('%.18e,%.18e,%s,%.18e,%.18e'))
+        except:
+            print(filename + " not found.")

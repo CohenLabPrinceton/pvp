@@ -253,7 +253,7 @@ class ControlModuleBase:
                 #And the control value instance
                 derived_values = DerivedValues(
                     timestamp        = time.time(),
-                    loop_counter     = self._loop_counter,
+                    breath_count     = self._DATA_BREATH_COUNT,
                     I_phase_duration = self._DATA_I_PHASE,
                     pip_time         = self._DATA_PIP_TIME,
                     peep_time        = self._DATA_PEEP_TIME,
@@ -314,7 +314,7 @@ class ControlModuleBase:
                 elif control_setting.name == ValueName.PEEP_TIME:
                     self.COPY_SET_PEEP_TIME = control_setting.value
                 else:
-                    self.logger.warning(f'Couldnt set control {control_setting.name}, no corresponding variable in controller')
+                    self.logger.warning(f'Could not set control {control_setting.name}, no corresponding variable in controller')
                     return
 
                 if self._save_logs:
@@ -350,7 +350,7 @@ class ControlModuleBase:
                 return_value = ControlSetting(control_setting_name, self.COPY_SET_PEEP_TIME)
             else:
                 self.logger.warning(
-                    f'Couldnt get control {control_setting_name}, no corresponding variable in controller')
+                    f'Could not get control {control_setting_name}, no corresponding variable in controller')
                 return_value = None
 
         self._time_last_contact = time.time()
@@ -369,7 +369,7 @@ class ControlModuleBase:
         #RC = 0.250 # Time constant in seconds
         s = dt / (dt + RC)
         self._DATA_I = self._DATA_I + s*(error_new - self._DATA_I)     # Integral term on some timescale RC  -- TODO: If used, for real system, add integral windup
-        self._DATA_D = error_new - self._DATA_P
+        self._DATA_D = self._DATA_D + s*(error_new - self._DATA_P - self._DATA_D)
         self._DATA_P = error_new
 
     def __calculate_control_signal_in(self):
@@ -808,8 +808,9 @@ class ControlModuleDevice(ControlModuleBase):
         self._sensor_to_COPY()
 
     def __del__(self):
-        ControlModuleBase.__del__(self)
-        self.set_valves_standby()
+        self.set_valves_standby()           # First set valves to default
+        ControlModuleBase.__del__(self)     # and del the base
+
 
     def _sensor_to_COPY(self):
         # And the sensor measurements
@@ -830,7 +831,7 @@ class ControlModuleDevice(ControlModuleBase):
               'breath_count'                      : self._DATA_BREATH_COUNT
           })
             
-    # @timeout
+    @timeout
     def _set_HAL(self, valve_open_in, valve_open_out):
         """
         Set Controls with HAL, decorated with a timeout.
@@ -838,7 +839,7 @@ class ControlModuleDevice(ControlModuleBase):
         self.HAL.setpoint_in = max(min(100, int(valve_open_in)), 0)
         self.HAL.setpoint_ex = valve_open_out 
     
-    # @timeout
+    @timeout
     def _get_HAL(self):
         """
         Get sensor values from HAL, decorated with timeout.
@@ -872,12 +873,17 @@ class ControlModuleDevice(ControlModuleBase):
 
 
     def set_valves_standby(self):
+        """
+        This returns valves back to normal setting (in: closed, out: open)
+        """
+        self.logger.info('Valves to stand-by.')
         print("Valve settings back to stand-by.")
         self._set_HAL(valve_open_in = 0, valve_open_out = 1)  # Defined state to make sure that it does not pop up.
 
     def _start_mainloop(self):
         # start running, this should be run as a thread! 
         # Compare to initialization in Base Class!
+        self.logger.info('MainLoop: start')
 
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
@@ -888,6 +894,7 @@ class ControlModuleDevice(ControlModuleBase):
             dt = now - self._last_update                            # Time sincle last cycle of main-loop
 
             if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
+                self.logger.warning("MainLoop: Update too long: " + str(dt))
                 print("Restarted cycle.")
                 self._control_reset()
                 dt = self._LOOP_UPDATE_TIME
@@ -1063,9 +1070,9 @@ class ControlModuleSimulator(ControlModuleBase):
         x:  Input current [mA]
         dt: Time since last setting in seconds [for the LP filter]
         '''
-        y = 8*x
+        y = 3*x
         flow_new = 1.0*(np.tanh(0.03*(y - 130)) + 1)
-        if y>160:
+        if y>170:
             flow_new = 1.72  #Maximum, ~100 l/min
         if y<0:
             flow_new = 0
@@ -1103,7 +1110,7 @@ class ControlModuleSimulator(ControlModuleBase):
         # Compare to initialization in Base Class!
 
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
-
+        self.logger.info("MainLoop: start")
         while self._running.is_set():
             time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
@@ -1113,7 +1120,7 @@ class ControlModuleSimulator(ControlModuleBase):
             else:
                 dt = now - self._last_update                            # Time sincle last cycle of main-loop
                 if dt > 0.2:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
-                    # TODO: Log this
+                    self.logger.warning("MainLoop: Update too long: " + str(dt))
                     print("Restarted cycle.")
                     self._control_reset()
                     self.Balloon._reset()

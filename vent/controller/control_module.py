@@ -72,10 +72,10 @@ class ControlModuleBase:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
         self._pid_control_flag    = pid_control    # Default is: use PID control
-        self.__KP                 = 0            # The weights for the the PID terms -- was 4
-        self.__KI                 = 2
-        self.__KD                 = 0
-        self.__PID_OFFSET         = 0
+        #self.__KP                 = 0            # The weights for the the PID terms -- was 4
+        #self.__KI                 = 2
+        #self.__KD                 = 0
+        #self.__PID_OFFSET         = 0
 
         # Internal Control variables. "SET" indicates that this is set.
         self.__SET_PIP       = CONTROL[ValueName.PIP].default                     # Target PIP pressure
@@ -381,6 +381,7 @@ class ControlModuleBase:
         self.__control_signal_in +=  self.__KI*self._DATA_I
         self.__control_signal_in +=  self.__KD*self._DATA_D
         self.__control_signal_in +=  self.__PID_OFFSET
+        #self.__control_signal_in = min(self.__SET_PIP_TIME, self.__control_signal_in) #maximum flow setting
 
     def _get_control_signal_in(self):
         ''' This is the controlled signal on the inspiratory side '''
@@ -597,9 +598,9 @@ class ControlModuleBase:
             #    self.__control_signal_in = 0'''
 
         if cycle_phase < self.__SET_I_PHASE:
-            self.__KP = max(0.5,3*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
-            self.__KI = 6*(1-np.exp(-cycle_phase / (0.075*self.__SET_I_PHASE)))
-            self.__KD = 0
+            self.__KP = max(0,12*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
+            self.__KI = 6*(1-np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
+            self.__KD = 0#max(0,0*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
             self.__PID_OFFSET = 0
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.5)
             self.__calculate_control_signal_in()
@@ -628,7 +629,7 @@ class ControlModuleBase:
             if PEEP_VALVE_SET:
                 #self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
                 self.__control_signal_out = 1
-                self.__control_signal_in = 5* (1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
+                self.__control_signal_in = 20 *(1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
             else:
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
                 self.__calculate_control_signal_in()
@@ -842,7 +843,7 @@ class ControlModuleDevice(ControlModuleBase):
         """
         Get sensor values from HAL, decorated with timeout.
         """
-        glitchcatcher = True
+        glitchcatcher = False
 
         if not glitchcatcher:
             self._DATA_PRESSURE = self.HAL.pressure

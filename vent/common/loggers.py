@@ -431,7 +431,7 @@ class DataLogger:
 
         Use for any file:
             dl = DataLogger()
-            dl.log2mat(filename)
+            dl.log2csv(filename)
         """
         
         if filename == None:

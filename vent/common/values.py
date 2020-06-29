@@ -178,7 +178,7 @@ VALUES = odict({
         'name': 'PIP', # (Peak Inspiratory Pressure)
         'units': 'cmH2O',
         'abs_range': (0, 70), # FIXME
-        'safe_range': (0, 50), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
+        'safe_range': (0, 40), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
         'default': 35,           # FIXME
         'decimals': 1,
         'control': True,

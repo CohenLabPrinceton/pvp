@@ -11,10 +11,10 @@ import time
 sim_mode = False
 def main():
 
-    # coordinator = get_coordinator(single_process=False, sim_mode=sim_mode)
-    # app, gui = launch_gui(coordinator)
-    # sys.exit(app.exec_())
-
+    #coordinator = get_coordinator(single_process=False, sim_mode=sim_mode)
+    #app, gui = launch_gui(coordinator)
+    #sys.exit(app.exec_())
+    
     try:
         coordinator = get_coordinator(single_process=False, sim_mode=sim_mode)
         app, gui = launch_gui(coordinator)
@@ -32,6 +32,6 @@ def main():
                 time.sleep(0.01)
 
         print("...done")
-
+    
 if __name__ == '__main__':
     main()

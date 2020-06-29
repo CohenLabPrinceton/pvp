@@ -170,7 +170,7 @@ class Control(QtWidgets.QWidget):
         self.name_label.setStyleSheet(styles.CONTROL_NAME)
         self.name_label.setText(self.name)
         self.name_label.setWordWrap(True)
-        self.name_label.setAlignment(QtCore.Qt.AlignRight)
+        self.name_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
         self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                     QtWidgets.QSizePolicy.Expanding)
 
@@ -178,7 +178,7 @@ class Control(QtWidgets.QWidget):
         self.units_label = QtWidgets.QLabel()
         self.units_label.setStyleSheet(styles.CONTROL_UNITS)
         self.units_label.setText(self.units)
-        self.units_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+        self.units_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                     QtWidgets.QSizePolicy.Expanding)
 
@@ -194,6 +194,7 @@ class Control(QtWidgets.QWidget):
         self.toggle_button.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                          QtWidgets.QSizePolicy.Expanding)
         self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
+        self.toggle_button.setMaximumWidth(styles.TOGGLE_MAX_WIDTH)
 
         ###
         # layout
@@ -204,6 +205,16 @@ class Control(QtWidgets.QWidget):
         self.label_layout.addWidget(self.name_label, 0, 2, 1, 1, alignment=QtCore.Qt.AlignRight)
         self.label_layout.addWidget(self.units_label, 1, 2, 1, 1, alignment=QtCore.Qt.AlignRight)
         self.label_layout.addWidget(self.toggle_button, 0, 3, 2, 1, alignment=QtCore.Qt.AlignRight)
+        # pdb.set_trace()
+
+        self.label_layout.setColumnMinimumWidth(3, styles.TOGGLE_MAX_WIDTH)
+        self.label_layout.setColumnStretch(0, 2)
+        self.label_layout.setColumnStretch(1, 3)
+        self.label_layout.setColumnStretch(2, 2)
+        self.label_layout.setColumnStretch(3, 0)
+
+        self.label_layout.setRowStretch(0,2)
+        self.label_layout.setRowStretch(1, 1)
 
         # self.setLayout(self.layout)
         self.layout.addLayout(self.label_layout)

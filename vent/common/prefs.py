@@ -43,7 +43,7 @@ _DEFAULTS = {
     'LOGGING_MAX_FILES': 5,
     'TIMEOUT': 0.05, # timeout used for timeout decorator
     'HEARTBEAT_TIMEOUT': 0.02, # timeout used in heartbeat between gui and contorller,
-    'CONTROLLER_LOOP_UPDATE_TIME': 0,
+    'CONTROLLER_LOOP_UPDATE_TIME': 0.0,
     'CONTROLLER_LOOPS_UNTIL_UPDATE': 5, # update copied values like get_sensor every n loops,
     'CONTROLLER_RINGBUFFER_SIZE': 100,
     'COUGH_DURATION': 0.1

@@ -3,6 +3,7 @@ from PySide2 import QtWidgets, QtCore
 import PySide2
 import pyqtgraph as pg
 import pdb
+import sys
 
 from vent.gui import styles, mono_font
 from vent.gui.widgets.components import EditableLabel, DoubleSlider
@@ -295,7 +296,7 @@ class Control(QtWidgets.QWidget):
                 # if we're already opening a dialogue, don't try to set value or emit
                 return
 
-            if not self._confirmed_unsafe:
+            if (not self._confirmed_unsafe) and ('pytest' not in sys.modules):
 
                 self._dialog_open = True
                 safe_range = self.safe_range

@@ -33,15 +33,15 @@ from vent.gui import widgets
 from vent.common import message, values
 from vent.coordinator.coordinator import get_coordinator
 
+# from vent.common import prefs
+# prefs.set_pref('ENABLE_DIALOGS', False)
+
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
 import numpy as np
 
 ##################################
-
-
-
 
 # turn off gui limiting
 gui.limit_gui(False)
@@ -89,8 +89,9 @@ def generic_saferange():
         return abs_min, abs_max
     return _generic_saferange
 
-@pytest.fixture(params=[True, False])
-def spawn_gui(qtbot, request):
+@pytest.fixture()
+def spawn_gui(qtbot):
+
     assert qt_api.QApplication.instance() is not None
 
     app = qt_api.QApplication.instance()
@@ -98,10 +99,12 @@ def spawn_gui(qtbot, request):
     app.setStyleSheet(styles.DARK_THEME)
     app = styles.set_dark_palette(app)
 
-    coordinator = get_coordinator(sim_mode=True, single_process=request.param)
-    vent_gui = gui.Vent_Gui(coordinator)
+    coordinator = get_coordinator(sim_mode=True, single_process=False)
+    vent_gui = gui.Vent_Gui(coordinator, set_defaults=True)
+    # vent_gui.init_controls()
     #app, vent_gui = launch_gui(coordinator)
     qtbot.addWidget(vent_gui)
+    vent_gui.init_controls()
     return app, vent_gui
 
 
@@ -117,21 +120,21 @@ def test_gui_launch(qtbot, spawn_gui):
 
     assert vent_gui.isVisible()
 
-@pytest.mark.timeout(15)
-def test_gui_launch_mp(qtbot):
-    assert qt_api.QApplication.instance() is not None
-
-    coordinator = get_coordinator(sim_mode=True, single_process=False)
-    coordinator.start()
-
-    vent_gui = gui.Vent_Gui(coordinator)
-    qtbot.addWidget(vent_gui)
-    vent_gui.control_panel.start_button.click()
-
-    # wait for a second to let the simulation spin up and start spitting values
-    qtbot.wait(5000)
-
-    assert vent_gui.isVisible()
+# @pytest.mark.timeout(15)
+# def test_gui_launch_mp(qtbot):
+#     assert qt_api.QApplication.instance() is not None
+#
+#     # coordinator = get_coordinator(sim_mode=True, single_process=False)
+#     # coordinator.start()
+#     #
+#     # vent_gui = gui.Vent_Gui(coordinator)
+#     # qtbot.addWidget(vent_gui)
+#     # vent_gui.control_panel.start_button.click()
+#
+#     # wait for a second to let the simulation spin up and start spitting values
+#     qtbot.wait(5000)
+#
+#     assert vent_gui.isVisible()
 
 
 ################################

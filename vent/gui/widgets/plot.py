@@ -32,7 +32,7 @@ class Pressure_Waveform(pg.PlotWidget):
     """
     Display the ideal piecewise function parameterized by the controls and a history of traces
     """
-    control_changed = QtCore.Signal()
+    control_changed = QtCore.Signal(list)
 
     controlling_plot = QtCore.Signal(bool)
 
@@ -208,7 +208,7 @@ class Pressure_Waveform(pg.PlotWidget):
             name=value_name,
             value=new_val
         )
-        self.control_changed.emit(control)
+        self.control_changed.emit([control])
         self.draw_target()
 
 

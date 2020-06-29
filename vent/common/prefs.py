@@ -48,7 +48,8 @@ _DEFAULTS = {
     'CONTROLLER_RINGBUFFER_SIZE': 100,
     'COUGH_DURATION': 0.1,
     'LOGLEVEL': 'WARNING',
-    'GUI_STATE_FN': 'gui_state.json'
+    'GUI_STATE_FN': 'gui_state.json',
+    'ENABLE_DIALOGS': True
 }
 """
 Declare all available parameters and set default values. If no default, set as None. 

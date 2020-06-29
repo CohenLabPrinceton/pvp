@@ -344,6 +344,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         Returns:
 
         """
+        if isinstance(control_object, list):
+            control_object = control_object[0]
         # pdb.set_trace()
         self.logger.info(f'Setting control value: {control_object.name.name}, {control_object.value}')
 
@@ -832,25 +834,27 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
         if state:
             # check if all controls have been set
-            if not self.controls_set:
-                box = widgets.pop_dialog(
-                    'Not all controls have been set',
-                    'Please ensure all controls have been set before starting ventilation',
-                )
-                box.exec_()
-                self.control_panel.start_button.set_state('OFF')
-                return
+            if 'pytest' not in sys.modules:
+                if not self.controls_set:
+                    box = widgets.pop_dialog(
+                        'Not all controls have been set',
+                        'Please ensure all controls have been set before starting ventilation',
+                    )
+                    box.exec_()
+                    self.control_panel.start_button.set_state('OFF')
+                    return
 
-            box = widgets.pop_dialog(
-                'Confirm Ventilation Start',
-                modality = QtCore.Qt.WindowModal,
-                buttons = QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
-                default_button = QtWidgets.QMessageBox.Cancel
-            )
-            ret = box.exec_()
-            if ret != QtWidgets.QMessageBox.Ok:
-                self.control_panel.start_button.set_state('OFF')
-                return
+
+                box = widgets.pop_dialog(
+                    'Confirm Ventilation Start',
+                    modality = QtCore.Qt.WindowModal,
+                    buttons = QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
+                    default_button = QtWidgets.QMessageBox.Cancel
+                )
+                ret = box.exec_()
+                if ret != QtWidgets.QMessageBox.Ok:
+                    self.control_panel.start_button.set_state('OFF')
+                    return
 
 
             self.running = True
@@ -863,11 +867,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.toggle_lock(True)
         else:
             # TODO: what happens when u stop lol
-            box = widgets.pop_dialog(
-                'No such thing as stopping yet!',
-                'NotImplementedError.exe',
-            )
-            box.exec_()
+            # box = widgets.pop_dialog(
+            #     'No such thing as stopping yet!',
+            #     'NotImplementedError.exe',
+            # )
+            # box.exec_()
+            self.coordinator.stop()
             self.control_panel.start_button.set_state('ON')
             return
 
@@ -929,11 +934,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def save_state(self):
         try:
             # update timestamp
-            self._state['timestamp'] = time.time()
-            state_fn = os.path.join(prefs.get_pref('VENT_DIR'), prefs.get_pref('GUI_STATE_FN'))
-            with open(state_fn, 'w') as state_f:
-                json.dump(self._state, state_f,
-                          indent=4, separators=(',', ': '))
+            if 'pytest' not in sys.modules:
+                self._state['timestamp'] = time.time()
+                state_fn = os.path.join(prefs.get_pref('VENT_DIR'), prefs.get_pref('GUI_STATE_FN'))
+                with open(state_fn, 'w') as state_f:
+                    json.dump(self._state, state_f,
+                              indent=4, separators=(',', ': '))
 
         except Exception as e:
             self.logger.warning(f'State could not be saved, state:\n    {self._state}\n\nerror message:\n    {e}')

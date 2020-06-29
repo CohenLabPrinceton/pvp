@@ -59,6 +59,7 @@ class Control(QtWidgets.QWidget):
     def init_ui(self):
         # self.layout = QtWidgets.QGridLayout()
         self.layout = QtWidgets.QVBoxLayout()
+        self.layout.setContentsMargins(5,0,5,0)
         self.setLayout(self.layout)
         # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
         #                           QtWidgets.QSizePolicy.Maximum)
@@ -70,7 +71,6 @@ class Control(QtWidgets.QWidget):
         # Units
 
         # # set max size based on range
-        # # FIXME: TEMPORARY HACK - get sizing to work intelligibly with the dial
         # #n_ints = len(str(self.abs_range[1]))
         # n_ints = 3
         if self.decimals > 0:
@@ -104,7 +104,7 @@ class Control(QtWidgets.QWidget):
         self.sensor_frame.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                         QtWidgets.QSizePolicy.Maximum)
         self.sensor_layout = QtWidgets.QHBoxLayout()
-        #self.sensor_layout.setContentsMargins(0,0,0,0)
+        # self.sensor_layout.setContentsMargins(0,0,0,0)
 
 
         self.sensor_label = QtWidgets.QLabel()
@@ -160,8 +160,8 @@ class Control(QtWidgets.QWidget):
         self.value_label.setContentsMargins(0,0,0,0)
 
 
-        self.value_label.setFixedWidth(n_ints*styles.VALUE_SIZE*.6)
-        self.value_label.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+        self.value_label.setMinimumWidth(n_ints*styles.VALUE_SIZE*.6)
+        self.value_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                          QtWidgets.QSizePolicy.Maximum)
 
 
@@ -171,16 +171,16 @@ class Control(QtWidgets.QWidget):
         self.name_label.setText(self.name)
         self.name_label.setWordWrap(True)
         self.name_label.setAlignment(QtCore.Qt.AlignRight)
-        self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                     QtWidgets.QSizePolicy.Expanding)
 
 
         self.units_label = QtWidgets.QLabel()
         self.units_label.setStyleSheet(styles.CONTROL_UNITS)
         self.units_label.setText(self.units)
-        self.units_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-        self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                    QtWidgets.QSizePolicy.Maximum)
+        self.units_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+        self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                    QtWidgets.QSizePolicy.Expanding)
 
         # Expand drawer button
         self.toggle_button = QtWidgets.QToolButton(checkable=True,

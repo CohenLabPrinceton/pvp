@@ -277,11 +277,12 @@ VALUES = odict({
         'abs_range': (0, 100),
         'safe_range': (20, 100),
         'decimals': 1,
-        'control': True,
-        'sensor': True
+        'control': False,
+        'sensor': True,
+        'display': True
     }),
     ValueName.FLOWOUT: Value(**{
-        'name': 'Flow OUT',
+        'name': 'Flow',
         'units': 'l/s',
         'abs_range': (0, 2),
         'safe_range': (0, 2),

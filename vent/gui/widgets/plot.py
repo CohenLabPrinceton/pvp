@@ -9,6 +9,8 @@ import PySide2 # import so pyqtgraph recognizes as what we're using
 import pyqtgraph as pg
 
 
+
+
 from vent.gui import styles
 from vent.gui import mono_font
 from vent.gui import get_gui_instance
@@ -97,42 +99,70 @@ class Pressure_Waveform(pg.PlotWidget):
 
         self.setStyleSheet(styles.PRESSURE_PLOT_BOX)
 
+        # draw regions showing error tolerances
+        # draw these first so they are underneath
+        region_pen_kwargs = {'color': styles.SUBWAY_COLORS['red'],
+                             'width': 3}
+        self.region_pip = pg.LinearRegionItem((0, 0), orientation='horizontal', movable=False,
+                                              pen=region_pen_kwargs)
+        self.region_peep = pg.LinearRegionItem((0, 0), orientation='horizontal', movable=False,
+                                               pen=region_pen_kwargs)
+
+        self.addItem(self.region_pip)
+        self.addItem(self.region_peep)
+        self.region_pip.setBrush((0, 0, 0, 0.1))
+        self.region_peep.setBrush((0, 0, 0, 0.1))
+
         # draw lines
         # upward line
-        self.segment_inhale = self.plot(width=3, symbolPen='w')
-        self.segment_pip = NamedLine(ValueName.PIP, movable=True, angle=0, pos=0)
+        self.segment_inhale = self.plot(width=3, symbolPen=styles.BACKGROUND_COLOR,
+                                        symbolBrush=styles.SUBWAY_COLORS['lime'])
+        self.segment_pip = NamedLine(ValueName.PIP, movable=True, angle=0, pos=0,
+                                     pen={'color': styles.BACKGROUND_COLOR,
+                                          'width': 10},
+                                     label="PIP", labelOpts={
+                                        'position':0.5,
+                                        'color': styles.TEXT_COLOR,
+                                        'movable': False,
+                                        'fill': styles.BACKGROUND_COLOR
+                                     })
         self.segment_exhale = self.plot(width=3, symbolPen='w')
-        self.segment_peep = NamedLine(ValueName.PEEP, movable=True, angle=0, pos=0)
+        self.segment_peep = NamedLine(ValueName.PEEP, movable=True, angle=0, pos=0,
+                                      pen={'color':styles.BACKGROUND_COLOR,
+                                           'width':10},
+                                     label="PEEP", labelOpts={
+                                        'position':0.5,
+                                        'color': styles.TEXT_COLOR,
+                                        'movable': False,
+                                        'fill': styles.BACKGROUND_COLOR
+                                     })
 
         self.addItem(self.segment_pip)
         self.addItem(self.segment_peep)
 
-        self.segment_inhale.setPen(color=styles.SUBWAY_COLORS['blue'], width=10)
-        self.segment_pip.setPen(color=styles.SUBWAY_COLORS['blue'], width=10)
-        self.segment_exhale.setPen(color=styles.SUBWAY_COLORS['blue'], width=10)
-        self.segment_peep.setPen(color=styles.SUBWAY_COLORS['blue'], width=10)
+        self.segment_inhale.setPen(color=styles.BACKGROUND_COLOR, width=10)
+        self.segment_pip.setPen(color=styles.BACKGROUND_COLOR, width=10)
+        self.segment_exhale.setPen(color=styles.BACKGROUND_COLOR, width=10)
+        self.segment_peep.setPen(color=styles.BACKGROUND_COLOR, width=10)
 
         # draw points
-        self.point_pipt = ScatterDrag(value_name=ValueName.PIP_TIME, width=3, symbolBrush=(255, 0, 0), symbolPen='w')
-        self.point_inspt = ScatterDrag(value_name=ValueName.INSPIRATION_TIME_SEC, width=3, symbolBrush=(255, 0, 0), symbolPen='w')
-        self.point_peept = ScatterDrag(value_name=ValueName.PEEP_TIME, width=3, symbolBrush=(255, 0, 0), symbolPen='w')
+        self.point_pipt = ScatterDrag(value_name=ValueName.PIP_TIME, width=3,
+                                      brush=styles.SUBWAY_COLORS['lime'],
+                                      pen=styles.BACKGROUND_COLOR)
+        self.point_inspt = ScatterDrag(value_name=ValueName.INSPIRATION_TIME_SEC, width=3,
+                                       brush=styles.SUBWAY_COLORS['lime'],
+                                       pen=styles.BACKGROUND_COLOR)
+        self.point_peept = ScatterDrag(value_name=ValueName.PEEP_TIME, width=3,
+                                       brush= styles.SUBWAY_COLORS['lime'],
+                                       pen=styles.BACKGROUND_COLOR)
+
+
 
         self.addItem(self.point_pipt)
         self.addItem(self.point_inspt)
         self.addItem(self.point_peept)
 
-        # draw regions showing error tolerances
-        region_pen_kwargs = {'color':styles.SUBWAY_COLORS['red'],
-                             'width': 3}
-        self.region_pip = pg.LinearRegionItem((0,0), orientation='horizontal', movable=False,
-                                              pen=region_pen_kwargs)
-        self.region_peep = pg.LinearRegionItem((0,0), orientation='horizontal',movable=False,
-                                               pen=region_pen_kwargs)
 
-        self.addItem(self.region_pip)
-        self.addItem(self.region_peep)
-        self.region_pip.setBrush((0,0,0,0.1))
-        self.region_peep.setBrush((0,0,0,0.1))
 
         # connect signals to a general update method
         #self.segment_pip.sigPositionChanged.connect(self.param_changed)
@@ -477,6 +507,9 @@ class NamedLine(pg.InfiniteLine):
         self.name = name
         self.sigPositionChanged.connect(self._value_changed)
 
+        self.setHoverPen(color=styles.SUBWAY_COLORS['lime'],
+                         width=self.pen.width())
+
     def _value_changed(self):
         self.value_changed.emit((self.name, self.value()))
 
@@ -494,7 +527,7 @@ class ScatterDrag(pg.ScatterPlotItem):
     value_changed = QtCore.Signal(tuple)
     controlling_plot = QtCore.Signal(bool)
 
-    def __init__(self, value_name: ValueName, pos=(0, 0), *args, **kwargs):
+    def __init__(self, value_name: ValueName, pos=(0, 0), brush=None, pen=None, symbol=None, *args, **kwargs):
         self.mouseHovering = False
         self.mouseDragging = False
         super(ScatterDrag, self).__init__(*args, **kwargs)
@@ -502,6 +535,21 @@ class ScatterDrag(pg.ScatterPlotItem):
         self._name = value_name
         self._pos = pos
         self._movable = True
+
+        if brush:
+            if isinstance(brush, tuple):
+                self.setBrush(pg.mkBrush(*brush))
+            else:
+                self.setBrush(pg.mkBrush(brush))
+
+        if pen:
+            if isinstance(pen, tuple):
+                self.setPen(pg.mkPen(*pen))
+            else:
+                self.setPen(pg.mkPen(pen))
+
+        if symbol:
+            self.setSymbol(symbol)
 
         self.setAcceptHoverEvents(True)
         self.setData([pos[0]], [pos[1]])
@@ -583,7 +631,7 @@ class ScatterDrag(pg.ScatterPlotItem):
         self.mouseHovering = hover
         if hover:
             self.controlling_plot.emit(True)
-            self.setSize(30, update=True)
+            self.setSize(20, update=True)
         else:
             self.controlling_plot.emit(False)
             self.setSize(10,update=True)
@@ -810,171 +858,4 @@ class Plot(pg.PlotWidget):
                 f"<span style='{styles.PLOT_TITLE_STYLE}'>{titlestr}</span>"
             )
 
-
-
-    #
-    # def plot(self, *args, **kargs):
-    #     """
-    #     Override method :meth:`pyqtgraph.graphicsItems.PlotItem.plot` to return :class:`TimedPlotDataItem`
-    #
-    #     Add and return a new plot.
-    #     See :func:`PlotDataItem.__init__ <pyqtgraph.PlotDataItem.__init__>` for data arguments
-    #
-    #     Extra allowed arguments are:
-    #         clear    - clear all plots before displaying new data
-    #         params   - meta-parameters to associate with this data
-    #     """
-    #     clear = kargs.get('clear', False)
-    #     params = kargs.get('params', None)
-    #
-    #     if clear:
-    #         self.clear()
-    #
-    #     item = TimedPlotDataItem(*args, **kargs)
-    #
-    #     if params is None:
-    #         params = {}
-    #     self.addItem(item, params=params)
-    #
-    #     return item
-#
-# class TimedPlotDataItem(pg.PlotDataItem):
-#     """
-#     Subclass of :class:`pyqtgraph.PlotDataItem` that uses :class:`.TimedPlotCurveItem`
-#
-#     """
-#
-#     def __init__(self, *args, **kwargs):
-#         super(TimedPlotDataItem, self).__init__(*args, **kwargs)
-#
-#         # replace self.curve with timed version
-#         # mimic __init__ from parent
-#         # https://github.com/pyqtgraph/pyqtgraph/blob/a2053b13d0234e210561a73fa044625fd972e910/pyqtgraph/graphicsItems/PlotDataItem.py#L37
-#         self.curve = TimedPlotCurveItem()
-#         self.curve.setParentItem(self)
-#         self.curve.sigClicked.connect(self.curveClicked)
-#
-#         self.setData(*args, **kwargs)
-#
-# class TimedPlotCurveItem(pg.PlotCurveItem):
-#     """
-#     Subclass :class:`pyqtgraph.PlotCurveItem` to update with a fixed frequency instead of whenever new data pushed
-#
-#     Either creates or gets :data:`PLOT_TIMER` and connects it to :meth:`TimedPlotCurveItem.update`
-#     """
-#
-#
-#     def __init__(self, *args, **kwargs):
-#         super(TimedPlotCurveItem, self).__init__(*args, **kwargs)
-#
-#         if globals()['PLOT_TIMER'] is None:
-#             globals()['PLOT_TIMER'] = QtCore.QTimer()
-#
-#             get_gui_instance().gui_closing.connect(globals()['PLOT_TIMER'].stop)
-#
-#         self.timer = globals()['PLOT_TIMER']
-#         # stop timer, add ourselves, restart
-#         self.timer.timeout.connect(self.update)
-#
-#         try:
-#             self.fps = float(globals()['PLOT_FREQ'])
-#         except (ValueError, KeyError):
-#             self.fps = 15.
-#
-#         self.timer.start(1./self.fps)
-#
-#
-#
-#     def __del__(self):
-#         """
-#         On object deletion, remove from :data:`.PLOT_TIMER` 's signals
-#         """
-#         #self.timer.disconnect(self.update)
-#         #super(TimedPlotCurveItem, self).__del__()
-#
-#
-#     def updateData(self, *args, **kargs):
-#         """
-#         Override :meth:`pyqtgraph.PlotCurveItem.updateData` to omit call to :meth:`.update`
-#         which is done by :data:`.PLOT_TIMER`
-#
-#         """
-#         profiler = pg.debug.Profiler()
-#
-#         if 'compositionMode' in kargs:
-#             self.setCompositionMode(kargs['compositionMode'])
-#
-#         if len(args) == 1:
-#             kargs['y'] = args[0]
-#         elif len(args) == 2:
-#             kargs['x'] = args[0]
-#             kargs['y'] = args[1]
-#
-#         if 'y' not in kargs or kargs['y'] is None:
-#             kargs['y'] = np.array([])
-#         if 'x' not in kargs or kargs['x'] is None:
-#             kargs['x'] = np.arange(len(kargs['y']))
-#
-#         for k in ['x', 'y']:
-#             data = kargs[k]
-#             if isinstance(data, list):
-#                 data = np.array(data)
-#                 kargs[k] = data
-#             if not isinstance(data, np.ndarray) or data.ndim > 1:
-#                 raise Exception("Plot data must be 1D ndarray.")
-#             if data.dtype.kind == 'c':
-#                 raise Exception("Can not plot complex data types.")
-#
-#         profiler("data checks")
-#
-#         # self.setCacheMode(QtGui.QGraphicsItem.NoCache)  ## Disabling and re-enabling the cache works around a bug in Qt 4.6 causing the cached results to display incorrectly
-#         ##    Test this bug with test_PlotWidget and zoom in on the animated plot
-#         self.yData = kargs['y'].view(np.ndarray)
-#         self.xData = kargs['x'].view(np.ndarray)
-#
-#         self.invalidateBounds()
-#         self.prepareGeometryChange()
-#         self.informViewBoundsChanged()
-#
-#         profiler('copy')
-#
-#         if 'stepMode' in kargs:
-#             self.opts['stepMode'] = kargs['stepMode']
-#
-#         if self.opts['stepMode'] is True:
-#             if len(self.xData) != len(self.yData) + 1:  ## allow difference of 1 for step mode plots
-#                 raise Exception("len(X) must be len(Y)+1 since stepMode=True (got %s and %s)" % (
-#                 self.xData.shape, self.yData.shape))
-#         else:
-#             if self.xData.shape != self.yData.shape:  ## allow difference of 1 for step mode plots
-#                 raise Exception(
-#                     "X and Y arrays must be the same shape--got %s and %s." % (self.xData.shape, self.yData.shape))
-#
-#         self.path = None
-#         self.fillPath = None
-#         self._mouseShape = None
-#         # self.xDisp = self.yDisp = None
-#
-#         if 'name' in kargs:
-#             self.opts['name'] = kargs['name']
-#         if 'connect' in kargs:
-#             self.opts['connect'] = kargs['connect']
-#         if 'pen' in kargs:
-#             self.setPen(kargs['pen'])
-#         if 'shadowPen' in kargs:
-#             self.setShadowPen(kargs['shadowPen'])
-#         if 'fillLevel' in kargs:
-#             self.setFillLevel(kargs['fillLevel'])
-#         if 'fillOutline' in kargs:
-#             self.opts['fillOutline'] = kargs['fillOutline']
-#         if 'brush' in kargs:
-#             self.setBrush(kargs['brush'])
-#         if 'antialias' in kargs:
-#             self.opts['antialias'] = kargs['antialias']
-#
-#         profiler('set')
-#         #self.update()
-#         profiler('update')
-#         #self.sigPlotChanged.emit(self)
-#         profiler('emit')
 

@@ -349,12 +349,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # pdb.set_trace()
         self.logger.info(f'Setting control value: {control_object.name.name}, {control_object.value}')
 
+
+
+
         # FIXME: replace set_value with this kinda thing
         #self.logger.debug(control_object.__dict__)
         self.alarm_manager.update_dependencies(control_object)
         if control_object.name != ValueName.IE_RATIO:
             self.coordinator.set_control(control_object)
-        # FIXME: The recursion here is bad. should do a separate value_updated and update_value for outgoing/ingoing updates
+
         if control_object.name.name in self.controls.keys():
             self.controls[control_object.name.name].update_value(control_object.value)
 
@@ -578,13 +581,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_box_pressure.setContentsMargins(0, 0, 0, 0)
 
         self.controls_layout_pressure = QtWidgets.QVBoxLayout()
-        self.controls_layout_pressure.setContentsMargins(0, 0, 0, 0)
-        for control_name in (ValueName.PIP, ValueName.PEEP):
+        self.controls_layout_pressure.setContentsMargins(0, 5, 0, 5)
+        for i, control_name in enumerate((ValueName.PIP, ValueName.PEEP)):
             control_params = self.CONTROL[control_name]
             self.controls[control_name.name] = widgets.Control(control_params)
             self.controls[control_name.name].setObjectName(control_name.name)
             self.controls_layout_pressure.addWidget(self.controls[control_name.name])
-            self.controls_layout_pressure.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+            if i == 0:
+                self.controls_layout_pressure.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
 
         #self.controls_layout_pressure.addStretch(10)
         self.controls_box_pressure.setLayout(self.controls_layout_pressure)
@@ -606,8 +610,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_layout_cycle_widgets = QtWidgets.QVBoxLayout()
         self.controls_layout_cycle_buttons.addStretch(10)
         self.controls_cycle_layout.setContentsMargins(0, 0, 0, 0)
-        self.controls_layout_cycle_widgets.setContentsMargins(0, 0, 0, 0)
-        for control_name in (ValueName.BREATHS_PER_MINUTE, ValueName.INSPIRATION_TIME_SEC, ValueName.IE_RATIO):
+        self.controls_layout_cycle_widgets.setContentsMargins(0, 5, 0, 5)
+        n_cycle_lines_made = 0
+        for control_name in (ValueName.BREATHS_PER_MINUTE,
+                             ValueName.INSPIRATION_TIME_SEC,
+                             ValueName.IE_RATIO):
             control_params = values.VALUES[control_name]
             self.controls[control_name.name] = widgets.Control(control_params)
             self.controls[control_name.name].setObjectName(control_name.name)
@@ -619,7 +626,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
             #self.controls_layout_cycle_buttons.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
             if control_name != self._autocalc_cycle:
                 self.controls_layout_cycle_widgets.addWidget(self.controls[control_name.name])
-                self.controls_layout_cycle_widgets.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+                if n_cycle_lines_made == 0:
+                    self.controls_layout_cycle_widgets.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+                    n_cycle_lines_made += 1
             else:
                 self.controls[control_name.name].setVisible(False)
                 self.controls_cycle_buttons[control_name].setChecked(True)
@@ -643,13 +652,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_box_ramp.setContentsMargins(0, 0, 0, 0)
 
         self.controls_layout_ramp = QtWidgets.QVBoxLayout()
-        self.controls_layout_ramp.setContentsMargins(0, 0, 0, 0)
-        for control_name in (ValueName.PIP_TIME, ValueName.PEEP_TIME):
+        self.controls_layout_ramp.setContentsMargins(0, 5, 0, 5)
+        for i, control_name in enumerate((ValueName.PIP_TIME, ValueName.PEEP_TIME)):
             control_params = self.CONTROL[control_name]
             self.controls[control_name.name] = widgets.Control(control_params)
             self.controls[control_name.name].setObjectName(control_name.name)
             self.controls_layout_ramp.addWidget(self.controls[control_name.name])
-            self.controls_layout_ramp.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+            if i == 0:
+                self.controls_layout_ramp.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
 
         # self.controls_layout_ramp.addStretch(10)
         self.controls_box_ramp.setLayout(self.controls_layout_ramp)

@@ -20,7 +20,7 @@ BACKGROUND_COLOR = "#111111"
 BOX_BACKGROUND = "#333333"
 TEXT_COLOR = "#EEEEEE"
 BORDER_COLOR = "palette(midlight)"
-BOX_BORDERS = f"3px solid {BORDER_COLOR};"
+BOX_BORDERS = f"2px solid palette(midlight);"
 BOX_BORDERS_LOCKED = f"3px solid {SUBWAY_COLORS['lime']}"
 BOX_BORDERS_UNLOCKED = f"3px solid {SUBWAY_COLORS['red']}"
 BOX_MARGINS = 4
@@ -46,9 +46,9 @@ ALARM_COLOR = "#FF0000"
 DIVIDER_COLOR = "#FFFFFF"
 DIVIDER_COLOR_DARK = BOX_BACKGROUND
 
-VALUE_SIZE = 30 #72
-VALUE_MINOR_SIZE = 24
-NAME_SIZE = 10 #36
+VALUE_SIZE = 72 #30
+VALUE_MINOR_SIZE = 40
+NAME_SIZE = 36 #10
 UNIT_SIZE = 18
 TICK_SIZE = 12
 
@@ -293,14 +293,14 @@ CONTROL_SENSOR_FRAME = f"""
 QFrame {{
     background-color: {CONTROL_SENSOR_BACKGROUND};
     border-radius: 10px;
-    border-color: {BACKGROUND_COLOR};
+    border-color: palette(midlight);
     border-style: outset;
-    border-width: 2px;
+    border-width: 1px;
 }}
 
 QFrame QWidget {{
     border-radius: 0px;
-    border-color: {BACKGROUND_COLOR};
+    border-color: palette(midlight);
     border-style: outset;
     border-width: 0px;
 }}

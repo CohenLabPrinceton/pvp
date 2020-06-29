@@ -95,15 +95,35 @@ class ControlValues:
     Key difference: SensorValues come exclusively from the sensors, ControlValues contains controller variables, i.e. control signals and controlled signals (the flows).
     :param control_signal_in:
     :param control_signal_out:
-    :param flow_in:
-    :param flow_out:
     """
-    def __init__(self, control_signal_in, control_signal_out, flow_in, flow_out):
+    def __init__(self, control_signal_in, control_signal_out):
         self.control_signal_in = control_signal_in
         self.control_signal_out = control_signal_out
-        self.flow_in = flow_in
-        self.flow_out = flow_out
 
+class DerivedValues:
+    """
+    Class to save derived values, analogous to SensorValues.
+    Key difference: SensorValues come exclusively from the sensors, DerivedValues contain estimates of I_PHASE_DURATION, PIP_TIME, PEEP_time, PIP, PIP_PLATEAU, PEEP, and VTE.
+    :param timestamp:
+    :param breath_count:
+    :param I_phase_duration:
+    :param pip_time:
+    :param peep_time:
+    :param pip:
+    :param pip_plateau:
+    :param peep:
+    :param vte:
+    """
+    def __init__(self, timestamp, breath_count, I_phase_duration, pip_time, peep_time, pip, pip_plateau, peep, vte):
+        self.timestamp        = timestamp
+        self.breath_count     = breath_count
+        self.I_phase_duration = I_phase_duration
+        self.pip_time         = pip_time
+        self.peep_time        = peep_time
+        self.pip              = pip
+        self.pip_plateau      = pip_plateau
+        self.peep             = peep
+        self.vte              = vte
 
 class ControlSetting:
     def __init__(self,

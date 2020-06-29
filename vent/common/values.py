@@ -14,9 +14,9 @@ class ValueName(Enum):
     #Settings that are read out, but can not be controlled by software
     FIO2 = auto()
     VTE = auto()
-    VOLUME = auto()
     PRESSURE = auto()
-    FLOW = auto()
+    FLOWOUT = auto()
+
 
 class Value(object):
 
@@ -179,7 +179,7 @@ VALUES = odict({
         'units': 'cmH2O',
         'abs_range': (0, 70), # FIXME
         'safe_range': (0, 50), # From DrDan https://tigervents.slack.com/archives/C011MRVJS7L/p1588190130492300
-        'default': 22,           # FIXME
+        'default': 35,           # FIXME
         'decimals': 1,
         'control': True,
         'sensor': True,
@@ -212,7 +212,7 @@ VALUES = odict({
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME
         'safe_range': (1, 3.0),  # FIXME
-        'default': 2.0,  # FIXME
+        'default': 1.0,  # FIXME
         'decimals': 1,
         'control': True,
         'sensor': True,
@@ -261,26 +261,6 @@ VALUES = odict({
         'sensor': True,
         'display': True
     }),
-    ValueName.VOLUME: Value(**{
-        'name': 'Volume',
-        'units': 'L',
-        'abs_range': (1,2),
-        'safe_range': None,
-        'decimals': 1,
-        'control': False,
-        'sensor': True,
-        'display': True
-    }),
-    ValueName.FLOW: Value(**{
-        'name': 'Flow',
-        'units': 'L/s',
-        'abs_range': (-2,2),
-        'safe_range': (-2,2),
-        'decimals': 1,
-        'control': False,
-        'sensor': True,
-        'display': True
-    }),
     ValueName.VTE: Value(**{
         'name': 'VTE',
         'units': 'L',  # Unit is liters :-)
@@ -297,6 +277,15 @@ VALUES = odict({
         'abs_range': (0, 100),
         'safe_range': (20, 100),
         'decimals': 1,
+        'control': True,
+        'sensor': True
+    }),
+    ValueName.FLOWOUT: Value(**{
+        'name': 'Flow OUT',
+        'units': 'l/s',
+        'abs_range': (0, 2),
+        'safe_range': (0, 2),
+        'decimals': 2,
         'control': False,
         'sensor': True,
         'display': True

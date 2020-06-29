@@ -25,9 +25,9 @@ def do_stuff():
             print(t)
 
         ## Do things
-        command = ControlSetting(name=ValueName.PEEP, value=8)
+        command = ControlSetting(name=ValueName.PEEP, value=5)
         Controller.set_control(command)
-        command = ControlSetting(name=ValueName.PIP, value=35)
+        command = ControlSetting(name=ValueName.PIP, value=22)
         Controller.set_control(command)
         command = ControlSetting(name=ValueName.PIP_TIME, value=0.4)
         Controller.set_control(command)
@@ -40,7 +40,8 @@ def do_stuff():
         ## These are the sensor values
         pp    = Controller.HAL.pressure
         setin = Controller.HAL.setpoint_in
-        setex = Controller.HAL.setpoint_ex        
+        setex = Controller.HAL.setpoint_ex
+        o2    = Controller.HAL.oxygen        
         # flowin = Controller.HAL.flow_in
         # flowex = Controller.HAL.flow_ex
 
@@ -48,16 +49,24 @@ def do_stuff():
         Controller._get_HAL()
         ppc   = Controller._DATA_PRESSURE
 
-        print([pp, ppc, setin, setex])
+        print([o2, pp, ppc, setin, setex])
 
         p_store[idx,:] = np.array([time.time(), pp])
         idx += 1
 
         time.sleep(0.05)
 
-    Controller.HAL.setpoint_in = 0
-    Controller.HAL.setpoint_in = 0
+
     Controller.stop()
+
+    Controller.HAL.setpoint_in = 0
+    time.sleep(0.05)
+    Controller.HAL.setpoint_in = 0
+    time.sleep(0.05)
+    Controller.HAL.setpoint_ex = 1
+    time.sleep(0.05)
+    Controller.HAL.setpoint_ex = 1
+
 
     np.save("data_closedloop", p_store)
 

@@ -104,6 +104,8 @@ class ControlModuleBase:
         self.TECHA = [] # type: typing.List[Alarm]
         self.limit_hapa = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0][1].limit # TODO: Jonny write method to get limits from alarm manager
         self.cough_duration = prefs.get_pref('COUGH_DURATION')
+        self.breath_pressure_drop = 1 #prefs.get_pref('XXXXX')   #pressure drop below peep that is detected as an attempt to breath.
+
         self.sensor_stuck_since = None
 
         #########################  Data management  #########################
@@ -424,6 +426,8 @@ class ControlModuleBase:
                     time.sleep(0.02)
                 print("HAPA has been triggered")
                 self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
+            else:
+                print("Transient high pressure; probably a cough.")
         else:
             self.HAPA = None
 
@@ -637,6 +641,13 @@ class ControlModuleBase:
                 else:
                     self.__control_signal_out = 0
 
+            if self._DATA_PRESSURE < self.__SET_PEEP - self.breath_pressure_drop:  #breath!
+                print("Autonomous breath detected; starting next cycle.")
+                self._cycle_start = time.time()  # New cycle starts
+                self._DATA_VOLUME = 0            # ... start at zero volume in the lung
+                self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
+                next_cycle = True
+
         else:
             self._cycle_start = time.time()  # New cycle starts
             self._DATA_VOLUME = 0            # ... start at zero volume in the lung
@@ -806,6 +817,9 @@ class ControlModuleDevice(ControlModuleBase):
         self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
 
+        # Current settings of the valves to avoid unneccesary hardware queries
+        self.current_setting_ex = self.HAL.setpoint_ex
+        self.current_setting_in = self.HAL.setpoint_in
     def __del__(self):
         self.set_valves_standby()           # First set valves to default
         ControlModuleBase.__del__(self)     # and del the base
@@ -830,45 +844,39 @@ class ControlModuleDevice(ControlModuleBase):
               'breath_count'                      : self._DATA_BREATH_COUNT
           })
             
-    @timeout
+    # @timeout
     def _set_HAL(self, valve_open_in, valve_open_out):
         """
         Set Controls with HAL, decorated with a timeout.
         """
-        self.HAL.setpoint_in = max(min(100, int(valve_open_in)), 0)
-        self.HAL.setpoint_ex = valve_open_out 
+        if self.current_setting_in is not max(min(100, int(valve_open_in)), 0):
+            self.HAL.setpoint_in = max(min(100, int(valve_open_in)), 0)
+            self.current_setting_in = max(min(100, int(valve_open_in)), 0)
+
+        if self.current_setting_ex is not valve_open_out:
+            self.current_setting_ex = valve_open_out
+            self.HAL.setpoint_ex =  valve_open_out
     
-    @timeout
+    # @timeout
     def _get_HAL(self):
         """
         Get sensor values from HAL, decorated with timeout.
         """
-        glitchcatcher = True
 
-        if not glitchcatcher:
-            self._DATA_PRESSURE = self.HAL.pressure
-            self._DATA_Qout     = self.HAL.flow_ex
-            self._DATA_OXYGEN   = self.HAL.oxygen
+        self._DATA_PRESSURE = self.HAL.pressure
+        self._DATA_Qout     = 0 # self.HAL.flow_ex
+        self._DATA_OXYGEN   = 0 # self.HAL.oxygen
         
-        else:
-            pp = self.HAL.pressure
-            # if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is not a glitch, save it
-            self._DATA_PRESSURE = pp
+        # pq = self.HAL.flow_ex
+        # # ... estimate the baseline flow during expiration with a rankfilter (baseline of air that bypasses patient)
+        # # This has to be subtracted from flow_ex to integrate VTE
+        # if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:
+        #     self._flow_list.append(pq)
+        #     Qbaseline = np.percentile(self._flow_list, 5 )       
+        # else:
+        #     Qbaseline = 0
+        #     self._DATA_Qout = pq - Qbaseline
 
-            pq = self.HAL.flow_ex
-            if np.abs( pq  - self._DATA_Qout ) < 5:     # This is not a glitch, use it.
-                 # ... estimate the baseline flow during expiration with a rankfilter (baseline of air that bypasses patient)
-                 # This has to be subtracted from flow_ex to integrate VTE
-                if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:
-                    self._flow_list.append(pq)
-                    Qbaseline = np.percentile(self._flow_list, 5 )       
-                else:
-                    Qbaseline = 0
-                self._DATA_Qout = pq - Qbaseline
-
-            po = self.HAL.oxygen
-            # if np.abs(po - self._DATA_OXYGEN ) < 5:     # This is not a glitch, use it.
-            self._DATA_OXYGEN = po
 
 
     def set_valves_standby(self):
@@ -887,7 +895,6 @@ class ControlModuleDevice(ControlModuleBase):
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
         while self._running.is_set():
-            time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
             dt = now - self._last_update                            # Time sincle last cycle of main-loop
@@ -924,21 +931,16 @@ class Balloon_Simulator:
     Physics simulator for inflating balloon with a PEEP valve
 
     For math, see https://en.wikipedia.org/wiki/Two-balloon_experiment
-
-    Args:
-        leak: Boolean. True: leaky ballon with 5 sec time constant, False: not leaky.
     '''
 
-    def __init__(self, leak, peep_valve):
+    def __init__(self, peep_valve):
         # Hard parameters for the simulation
         self.max_volume = 6    # Liters  - 6?
         self.min_volume = 1.5  # Liters - baloon starts slightly inflated.
         self.PC = 40           # Proportionality constant that relates pressure to cm-H2O
         self.P0 = 0            # Baseline/Minimum pressure.
-        self.leak = leak
+        self.leak = True
 
-        self.temperature = 37  # keep track of these, as they are important output variable
-        self.humidity = 90
         self.fio2 = 60
 
         # Dynamical parameters - these are the initial conditions
@@ -983,26 +985,26 @@ class Balloon_Simulator:
     def update(self, dt):  # Performs an update of duration dt [seconds]
 
         if dt<1:                                        # This is the simulation, so not quite so important,
-            self.current_flow = self.Qin - self.Qout     # But no update should take longer than that
+            # self.current_flow = self.Qin - self.Qout     # But no update should take longer than that
+            s = dt / (0.050*np.abs(self.current_flow)  + dt)
+            self.current_flow = self.current_flow + s * ((self.Qin - self.Qout) - self.current_flow)
+
             self.current_volume += self.current_flow * dt
 
-            if self.leak:
-                RC = 5  # pulled 5 sec out of my hat
-                s = dt / (RC + dt)
-                self.current_volume = self.current_volume + s * (self.min_volume - self.current_volume)
+            # if self.leak:
+            #     RC = self.fio2/10  # pulled 5 sec out of my hat
+            #     s = dt / (RC + dt)
+            #     self.current_volume = self.current_volume + s * (self.min_volume - self.current_volume)
 
             # This is from the baloon equation, uses helper variable (the baloon radius)
             self.r_real = (3 * self.current_volume / (4 * np.pi)) ** (1 / 3)
             r0 = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)
 
-            self.current_pressure = self.P0 + (self.PC / (r0 ** 2 * self.r_real)) * (1 - (r0 / self.r_real) ** 6)
+            new_pressure = self.P0 + (self.PC / (r0 ** 2 * self.r_real)) * (1 - (r0 / self.r_real) ** 6)
+            self.current_pressure = new_pressure
 
-            # Temperature, humidity and o2 fluctuations modelled as OUprocess
-            self.temperature = self.OUupdate(self.temperature, dt=dt, mu=37, sigma=0.3, tau=1)
+            # o2 fluctuations modelled as OUprocess
             self.fio2 = self.OUupdate(self.fio2, dt=dt, mu=60, sigma=5, tau=1)
-            self.humidity = self.OUupdate(self.humidity, dt=dt, mu=90, sigma=5, tau=1)
-            if self.humidity > 100:
-                self.humidity = 100
         else:
             self._reset()
             print(self.current_pressure)
@@ -1049,7 +1051,7 @@ class ControlModuleSimulator(ControlModuleBase):
                 if ``float`` , fix dt updates with this value but still update at _LOOP_UPDATE_TIME
         """
         ControlModuleBase.__init__(self, pid_control = True, save_logs = False)
-        self.Balloon = Balloon_Simulator(leak=False, peep_valve = peep_valve_setting)          # This is the simulation
+        self.Balloon = Balloon_Simulator(peep_valve = peep_valve_setting)          # This is the simulation
         self._sensor_to_COPY()
 
         self.simulator_dt = simulator_dt
@@ -1111,7 +1113,7 @@ class ControlModuleSimulator(ControlModuleBase):
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
         self.logger.info("MainLoop: start")
         while self._running.is_set():
-            time.sleep(self._LOOP_UPDATE_TIME)
+            # time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
             if self.simulator_dt:

@@ -117,6 +117,12 @@ class Control_Panel(QtWidgets.QGroupBox):
         self.control_layout.addLayout(pressure_button_layout,
                                       0,1,alignment=QtCore.Qt.AlignRight)
 
+        ##########
+        # test overlay
+        self.overlay_button = QtWidgets.QPushButton('Toggle overlay')
+        self.overlay_button.setCheckable(True)
+        self.layout.addWidget(self.overlay_button)
+
         self.layout.addLayout(self.control_layout)
 
         # stretch for empty space

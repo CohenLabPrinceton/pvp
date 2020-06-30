@@ -471,6 +471,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.layout.setColumnStretch(1, self.plot_width)
         self.layout.setColumnStretch(2, self.control_width)
 
+        # self.overlay = widgets.Overlay(self.main_widget)
+
     def init_ui_status_bar(self):
         ############
         # Status Bar
@@ -587,7 +589,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_layout_pressure.setContentsMargins(0, 5, 0, 5)
         for i, control_name in enumerate((ValueName.PIP, ValueName.PEEP)):
             control_params = self.CONTROL[control_name]
-            self.controls[control_name.name] = widgets.Control(control_params)
+            self.controls[control_name.name] = widgets.Control(control_params, parent=self)
             self.controls[control_name.name].setObjectName(control_name.name)
             self.controls_layout_pressure.addWidget(self.controls[control_name.name])
             if i == 0:
@@ -708,6 +710,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # connect waveform plot elements to controls
         self.pressure_waveform.control_changed.connect(self.set_control)
         self.pressure_waveform.controlling_plot.connect(self.set_plot_control)
+
+        # TODO: testing overlay
+        self.control_panel.overlay_button.toggled.connect(self.toggle_overlay)
 
     @QtCore.Slot(QtWidgets.QAbstractButton)
     def toggle_cycle_widget(self, button):
@@ -952,6 +957,36 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 self.pressure_waveform.set_locked(False)
                 self.logger.debug('Lock state changed to unlocked')
 
+    def toggle_overlay(self, state):
+        if state:
+            self.highlight_widget(self.controls[ValueName.PIP.name])
+        else:
+            # self.overlay.setVisible(False)
+            self.overlay.close()
+
+        self.menuBar().height()
+
+    def highlight_widget(self, widget: QtWidgets.QWidget):
+        self.overlay = widgets.Overlay()
+        self.overlay.move(0, 0)
+        self.overlay.resize(self.width()/2, self.height())
+        self.overlay.setVisible(True)
+        # widget.raise_()
+        # parent = widget.parent()
+        # while parent != self:
+        #     parent.raise_()
+        #     parent = parent.parent()
+
+        # try:
+        #     self.overlay.resize(self.width(), self.height() + self.menuBar().height())
+        # except Exception as e:
+        #     self.logger.exception(e)
+        #     self.overlay.resize(self.width(), self.height())
+        # self.overlay.show()
+
+
+
+
     def update_state(self, state_type: str, key:str, val: typing.Union[str,float,int]):
         """
         Update the GUI state and save it to disk
@@ -1037,6 +1072,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.pressure_waveform.set_units(units)
         self.monitor[ValueName.PRESSURE.name].set_units(units)
         self.plots[ValueName.PRESSURE.name].set_units(units)
+
+    def resizeEvent(self, event):
+
+        self.overlay.resize(event.size())
+        super(Vent_Gui, self).resizeEvent(event)
 
 
 

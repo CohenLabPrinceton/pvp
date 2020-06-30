@@ -26,8 +26,8 @@ class Control(QtWidgets.QWidget):
     value_changed = QtCore.Signal(float)
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, value: Value, set_default: bool = False):
-        super(Control, self).__init__()
+    def __init__(self, value: Value, set_default: bool = False, parent=None):
+        super(Control, self).__init__(parent=parent)
 
         self.name = value.name
         self.units = value.units

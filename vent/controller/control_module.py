@@ -141,6 +141,7 @@ class ControlModuleBase:
         self.__DATA_old     = None
         self._last_update   = time.time()
         self._flow_list = deque(maxlen = 500)          # An archive of past flows, to calculate background flow out
+        self._DATA_PRESSURE_LIST = list()
 
         ############### Initialize COPY variables for threads  ##############
         # COPY variables that later updated on a regular basis
@@ -589,6 +590,9 @@ class ControlModuleBase:
 
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
 
+        self._DATA_PRESSURE = np.mean(self._DATA_PRESSURE_LIST)
+
+
         #self.__SET_PIP_TIME = 0.5*self.__SET_I_PHASE
         #maxflow = 60
 
@@ -888,6 +892,9 @@ class ControlModuleDevice(ControlModuleBase):
         Get sensor values from HAL, decorated with timeout.
         """
         self._DATA_PRESSURE = self.HAL.pressure
+        self._DATA_PRESSURE_LIST.append(self._DATA_PRESSURE)
+        if len(self._DATA_PRESSURE_LIST) > 3:
+            self._DATA_PRESSURE_LIST.pop(0)
         self._DATA_Qout     = 0 # self.HAL.flow_ex
         self._DATA_OXYGEN   = 0 # self.HAL.oxygen
         

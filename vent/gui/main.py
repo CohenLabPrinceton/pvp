@@ -885,8 +885,35 @@ class Vent_Gui(QtWidgets.QMainWindow):
             #     'NotImplementedError.exe',
             # )
             # box.exec_()
-            self.coordinator.stop()
-            self.control_panel.start_button.set_state('ON')
+            if not self.running:
+                return
+
+            do_stop = False
+
+            if 'pytest' not in sys.modules:
+                box = widgets.pop_dialog(
+                    'Confirm Ventilation Stop',
+                    'Stopping Ventilation Prematurely is Dangerous! Are you sure?',
+                    modality=QtCore.Qt.WindowModal,
+                    buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
+                    default_button=QtWidgets.QMessageBox.Cancel
+                )
+                ret = box.exec_()
+                if ret != QtWidgets.QMessageBox.Ok:
+                    self.control_panel.start_button.set_state('ON')
+                    return
+                else:
+                    do_stop = True
+
+            else:
+                do_stop = True
+
+            if do_stop:
+                self.coordinator.stop()
+                self.control_panel.start_button.set_state('OFF')
+                self.toggle_lock(False)
+                self.running = False
+                self.control_panel.runtime.stop_timer()
             return
 
         self.state_changed.emit(state)

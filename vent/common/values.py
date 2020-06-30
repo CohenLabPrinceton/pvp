@@ -230,7 +230,7 @@ VALUES = odict({
         'display': False
     }),
     ValueName.PIP_TIME: Value(**{
-        'name': 'RISEt',
+        'name': 'PIPt',
         'units': 'seconds',
         'abs_range': (0, 5),  # FIXME
         'safe_range': (0.2, 0.5),  # FIXME
@@ -283,7 +283,7 @@ VALUES = odict({
     }),
     ValueName.FLOWOUT: Value(**{
         'name': 'Flow',
-        'units': 'l/s',
+        'units': 'L/min',
         'abs_range': (0, 2),
         'safe_range': (0, 2),
         'decimals': 2,

@@ -130,8 +130,7 @@ class ControlModuleBase:
         self._cycle_start = time.time()
         self.__cycle_waveform = np.array([[0, 0, 0]])                            # To build up the current cycle's waveform
         self.__cycle_waveform_archive = deque(maxlen = self._RINGBUFFER_SIZE)          # An archive of past waveforms.
-        self.__pipflip = False
-        
+
         # These are measurements that change from timepoint to timepoint
         self._DATA_PRESSURE = 0
         self._DATA_VOLUME   = 0
@@ -384,7 +383,7 @@ class ControlModuleBase:
         self.__control_signal_in +=  self.__KI*self._DATA_I
         self.__control_signal_in +=  self.__KD*self._DATA_D
         self.__control_signal_in +=  self.__PID_OFFSET
-        #self.__control_signal_in = min(90, self.__control_signal_in) #maximum flow setting
+        #self.__control_signal_in = min(self.__SET_PIP_TIME, self.__control_signal_in) #maximum flow setting
 
     def _get_control_signal_in(self):
         ''' This is the controlled signal on the inspiratory side '''
@@ -526,7 +525,7 @@ class ControlModuleBase:
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from the measurements of the flow out
 
         if cycle_phase < self.__SET_PIP_TIME:
-            self.__control_signal_in = 0                                                       # STATE CONTROL: to PIP, air in as fast as possible
+            self.__control_signal_in = 50                                                       # STATE CONTROL: to PIP, air in as fast as possible
             self.__control_signal_out = 0
             if self._DATA_PRESSURE > self.__SET_PIP:
                 self.__control_signal_in = 0
@@ -584,7 +583,7 @@ class ControlModuleBase:
         now = time.time()
         cycle_phase = now - self._cycle_start
         next_cycle = False
-        
+
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
 
         #self.__SET_PIP_TIME = 0.5*self.__SET_I_PHASE
@@ -602,23 +601,12 @@ class ControlModuleBase:
             #if self._DATA_PRESSURE > self.__SET_PIP:
             #    self.__control_signal_in = 0'''
 
-
-        rampflow = self.__SET_PIP_TIME
-        
         if cycle_phase < self.__SET_I_PHASE:
-
-            if self.__pipflip == False and self._DATA_PRESSURE < self.__SET_PIP:
-                self.__PID_OFFSET = rampflow*np.cos(-cycle_phase*self.__SET_PEEP_TIME*np.pi/2) #np.round(np.exp(-cycle_phase / (0.1*self.__SET_I_PHASE)))
-                self.__KP = 0#max(0,4*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
-                self.__KI = 0#6*(1-np.exp(-cycle_phase / (0.25*self.__SET_I_PHASE)))
-                self.__KD = 0#max(0,0*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
-            else:
-                self.__PID_OFFSET = 0
-                self.__KP = 0
-                self.__KI = 2
-                self.__KD = 0
-                self.__pipflip = True;
-            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 1)
+            self.__KP = max(0,12*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
+            self.__KI = 6*(1-np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
+            self.__KD = 0#max(0,0*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
+            self.__PID_OFFSET = 0
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.5)
             self.__calculate_control_signal_in()
             self.__control_signal_out = 0 
             # if self._DATA_PRESSURE > self.__SET_PIP+2:                                              
@@ -666,12 +654,10 @@ class ControlModuleBase:
             self._DATA_VOLUME = 0            # ... start at zero volume in the lung
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
-            self.__pipflip = False
 
         self.__test_for_alarms()
         if next_cycle:                        # if a new breath cycle has started
             self.__start_new_breathcycle()
-            self.__pipflip = False
         else:
             self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self._DATA_VOLUME]], axis=0)
         if self._save_logs:
@@ -871,7 +857,6 @@ class ControlModuleDevice(ControlModuleBase):
         if self.current_setting_ex is not valve_open_out:
             self.current_setting_ex = valve_open_out
             self.HAL.setpoint_ex =  valve_open_out
-    
 
     # @timeout
     def _get_HAL(self):

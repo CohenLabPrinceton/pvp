@@ -610,13 +610,14 @@ class ControlModuleBase:
             #    self.__control_signal_in = 0'''
 
         if cycle_phase < self.__SET_I_PHASE:
-            self.__KP = 4*(np.exp(-max(0, cycle_phase-0.25)*.150))
-            self.__KI = 4
+            self.__KP = 4
+            self.__KI = 0
             self.__KD = 0
-            if cycle_phase < self.__SET_PIP_TIME:
+            self.__PID_OFFSET = 0
+            '''if cycle_phase < self.__SET_PIP_TIME:
                 self.__PID_OFFSET = 10
             else:
-                self.__PID_OFFSET = 10*(-(cycle_phase - .33*self.__SET_I_PHASE)*.25) # roll off the offset
+                self.__PID_OFFSET = 10*(-(cycle_phase - .33*self.__SET_I_PHASE)*.25) # roll off the offset'''
             '''if self._DATA_PRESSURE < self.__SET_PIP*.7 and self.__pipstage < 1:
                 self.__PID_OFFSET = maxflow
                 self.__KI = 0
@@ -893,7 +894,7 @@ class ControlModuleDevice(ControlModuleBase):
         """
         self._DATA_PRESSURE = self.HAL.pressure
         self._DATA_PRESSURE_LIST.append(self._DATA_PRESSURE)
-        if len(self._DATA_PRESSURE_LIST) > 3:
+        if len(self._DATA_PRESSURE_LIST) > 5:
             self._DATA_PRESSURE_LIST.pop(0)
         self._DATA_Qout     = 0 # self.HAL.flow_ex
         self._DATA_OXYGEN   = 0 # self.HAL.oxygen

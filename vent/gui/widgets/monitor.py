@@ -1,6 +1,7 @@
 import numpy as np
 import time
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
+import os
 
 from vent.gui import styles, mono_font
 from vent.gui.widgets.components import RangeSlider
@@ -11,11 +12,12 @@ from vent.common.values import ValueName, Value
 class Monitor(QtWidgets.QWidget):
     alarm = QtCore.Signal(tuple)
     limits_changed = QtCore.Signal(tuple)
+    set_value_changed = QtCore.Signal(float)
 
     def __init__(self, value: Value,
                  update_period=styles.MONITOR_UPDATE_INTERVAL,
                  enum_name = None,
-                 range_slider = False):
+                 alarm_limits = False):
         """
 
         Args:
@@ -32,7 +34,9 @@ class Monitor(QtWidgets.QWidget):
         self.decimals = value.decimals
         self.update_period = update_period
         self.enum_name = enum_name
-        self.has_range_slider = range_slider
+        self.has_alarm_limits = alarm_limits
+
+        self.setObjectName(self.enum_name.name)
 
         self.value = None
 
@@ -41,6 +45,11 @@ class Monitor(QtWidgets.QWidget):
 
         # whether we are currently styled as being in an alarm state
         self._alarm = False
+
+        #############
+        # handling setting VTE/FIO2 which has to be recorded and logged rather than parametricalyl set
+        self.log_values = False
+        self.logged_values = []
 
         self.init_ui()
 
@@ -92,46 +101,18 @@ class Monitor(QtWidgets.QWidget):
         )
         self.toggle_button.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                          QtWidgets.QSizePolicy.Expanding)
-        self.toggle_button.setArrowType(QtCore.Qt.RightArrow)
 
         # make range slider
-        if self.has_range_slider:
+        if self.has_alarm_limits:
             # first connect button
-            self.toggle_button.toggled.connect(self.toggle_control)
+            self.toggle_button.toggled.connect(self.toggle_record)
 
-            self.range_slider = RangeSlider(self.abs_range, self.safe_range,
-                                            decimals=self.decimals,
-                                            orientation=QtCore.Qt.Orientation.Horizontal)
-
-            # make comboboxes to display numerical value
-            self.max_safe = QtWidgets.QDoubleSpinBox()
-            self.max_safe.setDecimals(self.decimals)
-            self.max_safe.setRange(self.abs_range[0], self.abs_range[1])
-            self.max_safe.setSingleStep(10 ** (self.decimals * -1))
-            self.max_safe.setValue(self.safe_range[1])
-
-            self.min_safe = QtWidgets.QDoubleSpinBox()
-            self.min_safe.setDecimals(self.decimals)
-            self.min_safe.setRange(self.abs_range[0], self.abs_range[1])
-            self.min_safe.setSingleStep(10 ** (self.decimals * -1))
-            self.min_safe.setValue(self.safe_range[0])
-
-
-            ########
-            #connect widgets
-
-            # update boxes when slider changed
-            self.range_slider.valueChanged.connect(self.update_boxes)
-
-            # and vice versa
-            self.min_safe.valueChanged.connect(self.range_slider.setLow)
-            self.max_safe.valueChanged.connect(self.range_slider.setHigh)
-
-            # and connect them all to a general limits_changed method
-            # that also checks the alarm
-            self.range_slider.valueChanged.connect(self._limits_changed)
-            self.min_safe.valueChanged.connect(self._limits_changed)
-            self.max_safe.valueChanged.connect(self._limits_changed)
+            # load record icon
+            gui_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            rec_path = os.path.join(gui_dir, 'images', 'record.png')
+            image = QtGui.QPixmap(rec_path)
+            self.rec_icon = QtGui.QIcon(image)
+            self.toggle_button.setIcon(self.rec_icon)
         else:
             # make toggle button invisible but retain space if no rangeslider
             button_size_policy = self.toggle_button.sizePolicy()
@@ -146,7 +127,7 @@ class Monitor(QtWidgets.QWidget):
         # first make label layout
         label_layout = QtWidgets.QGridLayout()
         label_layout.setContentsMargins(0, 0, 0, 0)
-        # if self.has_range_slider:
+        # if self.has_alarm_limits:
         label_layout.addWidget(self.toggle_button, 0, 0, 2, 1)
         label_layout.addWidget(self.value_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignRight)
         label_layout.addWidget(self.name_label, 0, 2, 1, 1, alignment=QtCore.Qt.AlignRight)
@@ -154,33 +135,15 @@ class Monitor(QtWidgets.QWidget):
         # label_layout.addStretch()
         self.layout.addLayout(label_layout, 5)
 
-        if self.has_range_slider:
 
-            self.slider_layout = QtWidgets.QVBoxLayout()
-
-            minmax_layout = QtWidgets.QHBoxLayout()
-            minmax_layout.addWidget(QtWidgets.QLabel('Min:'))
-            minmax_layout.addWidget(self.min_safe)
-            minmax_layout.addStretch()
-            minmax_layout.addWidget(QtWidgets.QLabel('Max:'))
-            minmax_layout.addWidget(self.max_safe)
-            self.slider_layout.addLayout(minmax_layout)
-
-            self.slider_layout.addWidget(self.range_slider)
-
-            # and wrap them in a widget so we can show/hide more robustly
-            self.slider_frame = QtWidgets.QFrame()
-            self.slider_frame.setLayout(self.slider_layout)
-            self.slider_frame.setVisible(False)
-
-
-            self.layout.addLayout(self.slider_layout)
 
 
 
 
     @QtCore.Slot(bool)
     def toggle_control(self, state):
+        if self.has_alarm_limits:
+            return
         if state == True:
             self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
             self.layout.addWidget(self.slider_frame)
@@ -191,6 +154,24 @@ class Monitor(QtWidgets.QWidget):
             self.layout.removeWidget(self.slider_frame)
             self.slider_frame.setVisible(False)
             self.adjustSize()
+
+    def toggle_record(self, state):
+        if state == True:
+            self.log_values = True
+            self.logged_values = []
+
+            self.alarm_state = True
+            self.toggle_button.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DialogApplyButton))
+
+
+        else:
+            if len(self.logged_values)>0:
+                # get the mean logged value
+                mean_val = np.mean(self.logged_values)
+                self.set_value_changed.emit((mean_val))
+
+            self.toggle_button.setIcon(self.rec_icon)
+            self.alarm_state = False
 
 
     def update_boxes(self, new_values):
@@ -209,7 +190,10 @@ class Monitor(QtWidgets.QWidget):
             # just return
             # TODO: Should this raise an alarm?
             return
+
         self.value = new_value
+        if self.log_values:
+            self.logged_values.append(new_value)
         #self.check_alarm()
 
     @QtCore.Slot(tuple)

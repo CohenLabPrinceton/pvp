@@ -283,6 +283,18 @@ QLineEdit {{
 
 """
 
+CONTROL_VALUE_REC = f"""
+QLabel {{ 
+    color: {SUBWAY_COLORS['red']}; 
+    font-size: {VALUE_SIZE}pt;
+}}
+QLineEdit {{ 
+    color: {TEXT_COLOR}; 
+    font-size: {VALUE_SIZE}pt;
+}}
+
+"""
+
 CONTROL_SENSOR_LABEL = f"""
 QLabel {{
     color: {GRAY_TEXT};
@@ -442,6 +454,18 @@ QLabel {{
 CONTROL_UNITS = f"""
 QLabel {{ 
     color: {BACKGROUND_COLOR}; 
+    font-size: {UNIT_SIZE}pt;
+}}"""
+
+CONTROL_NAME_REC = f"""
+QLabel {{ 
+    color: {SUBWAY_COLORS['red']}; 
+    font-size: {NAME_SIZE}pt;
+}}"""
+
+CONTROL_UNITS_REC = f"""
+QLabel {{ 
+    color: {SUBWAY_COLORS['red']}; 
     font-size: {UNIT_SIZE}pt;
 }}"""
 

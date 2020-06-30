@@ -503,11 +503,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
             if display_key in self.CONTROL.keys():
                 continue
             if display_key in (ValueName.VTE, ValueName.FIO2):
-                range_slider = True
+                alarm_limits = True
             else:
-                range_slider = False
+                alarm_limits = False
             self.monitor[display_key.name] = widgets.Monitor(display_params, enum_name=display_key,
-                                                             range_slider=range_slider)
+                                                             alarm_limits=alarm_limits)
+            if display_key in (ValueName.VTE, ValueName.FIO2):
+                self.monitor[display_key.name].set_value_changed.connect(self.set_value)
+
             self.display_layout.addWidget(self.monitor[display_key.name])
             self.display_layout.addWidget(widgets.components.QHLine())
 
@@ -986,7 +989,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
         controls2set = [
             ValueName.PIP,
-            ValueName.PEEP,
             ValueName.PIP_TIME,
             ValueName.PEEP_TIME,
             ValueName.BREATHS_PER_MINUTE,

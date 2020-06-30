@@ -152,7 +152,7 @@ class ControlSetting:
                 logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
                 raise e
         elif isinstance(name, values.ValueName):
-            assert name in values.CONTROL.keys()
+            assert name in values.CONTROL.keys() or name in (values.ValueName.VTE, values.ValueName.FIO2)
 
         self.name = name # type: values.ValueName
 

@@ -1,9 +1,10 @@
 import numpy as np
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 import PySide2
 import pyqtgraph as pg
 import pdb
 import sys
+import os
 
 from vent.gui import styles, mono_font
 from vent.gui.widgets.components import EditableLabel, DoubleSlider
@@ -52,6 +53,11 @@ class Control(QtWidgets.QWidget):
         self._confirmed_unsafe = False
 
         self._locked = False
+
+        #############
+        # handling setting PEEP which has to be recorded and logged rather than parametricalyl set
+        self.log_values = False
+        self.logged_values = []
 
         self.init_ui()
 
@@ -182,19 +188,34 @@ class Control(QtWidgets.QWidget):
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                                     QtWidgets.QSizePolicy.Expanding)
 
-        # Expand drawer button
+        # Expand drawer button or 'record' button
+
         self.toggle_button = QtWidgets.QToolButton(checkable=True,
                                                    checked=False)
         self.toggle_button.setStyleSheet(styles.DISPLAY_NAME)
-
-        self.toggle_button.toggled.connect(self.toggle_control)
+        self.toggle_button.setSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Expanding)
+        self.toggle_button.setMaximumWidth(styles.TOGGLE_MAX_WIDTH)
         self.toggle_button.setToolButtonStyle(
             QtCore.Qt.ToolButtonIconOnly
         )
-        self.toggle_button.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
-                                         QtWidgets.QSizePolicy.Expanding)
-        self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
-        self.toggle_button.setMaximumWidth(styles.TOGGLE_MAX_WIDTH)
+
+        if self.name != ValueName.PEEP.name:
+            self.toggle_button.toggled.connect(self.toggle_control)
+            self.toggle_button.setArrowType(QtCore.Qt.LeftArrow)
+
+        else:
+            self.toggle_button.toggled.connect(self.toggle_record)
+
+            # load record icon
+            gui_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            rec_path = os.path.join(gui_dir, 'images', 'record.png')
+            image = QtGui.QPixmap(rec_path)
+            self.rec_icon = QtGui.QIcon(image)
+            self.toggle_button.setIcon(self.rec_icon)
+            # self.toggle_button.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DialogApplyButton))
+
 
         ###
         # layout
@@ -271,6 +292,8 @@ class Control(QtWidgets.QWidget):
 
     @QtCore.Slot(bool)
     def toggle_control(self, state):
+        if self.name == ValueName.PEEP.name:
+            return
         if state == True:
             self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
             # self.layout.addWidget(self.slider_frame, 3, 0, 1, 3)
@@ -282,6 +305,34 @@ class Control(QtWidgets.QWidget):
             self.layout.removeWidget(self.slider_frame)
             self.slider_frame.setVisible(False)
             self.adjustSize()
+
+    def toggle_record(self, state):
+        if state == True:
+            self.log_values = True
+            self.logged_values = []
+
+            self.toggle_button.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DialogApplyButton))
+            self.value_label.setStyleSheet(styles.CONTROL_VALUE_REC)
+            self.name_label.setStyleSheet(styles.CONTROL_NAME_REC)
+            self.units_label.setStyleSheet(styles.CONTROL_UNITS_REC)
+
+        else:
+            if len(self.logged_values)>0:
+                # get the mean logged value
+                mean_val = np.mean(self.logged_values)
+                # convert to displayed range if necessary (_value_changed) expects it
+                if self._convert_in:
+                    mean_val = self._convert_in(mean_val)
+
+                self._value_changed(mean_val)
+
+            self.toggle_button.setIcon(self.rec_icon)
+            self.value_label.setStyleSheet(styles.CONTROL_VALUE)
+            self.name_label.setStyleSheet(styles.CONTROL_NAME)
+            self.units_label.setStyleSheet(styles.CONTROL_UNITS)
+
+
+
 
     def _value_changed(self, new_value: float):
         """
@@ -441,8 +492,15 @@ class Control(QtWidgets.QWidget):
         if new_value is None:
             return
         self.sensor_value = new_value
+
+        # store values to set value by averaging sensor values
+        if self.log_values:
+            self.logged_values.append(new_value)
+
         if self._convert_in:
             new_value = self._convert_in(new_value)
+
+
         value_str = unit_conversion.rounded_string(new_value, self.decimals)
         self.sensor_label.setText(value_str)
         self.sensor_bar.setOpts(y1=np.array([new_value]))

@@ -477,11 +477,11 @@ class ADS1115(I2CDevice):
             self.write_register(self.pointer.P.pack('CONFIG'), self.cfg)
             self._last_cfg = self.cfg
             data_rate = self._config.DR.unpack(self.cfg)
-            while not (self._ready() or mode == 'CONTINUOUS'):
+            '''while not (self._ready() or mode == 'CONTINUOUS'):
                 # TODO: Needs timout
                 tick = time.time()
                 while (time.time() - tick) < (1 / data_rate):
-                    pass  # TODO: implement asyncio.sleep()
+                    pass  # TODO: implement asyncio.sleep()'''
         return self.read_register(self.pointer.P.pack('CONVERSION'), signed=True)
 
     def _read_last_cfg(self) -> int:

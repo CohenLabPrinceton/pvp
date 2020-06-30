@@ -72,6 +72,7 @@ class ControlModuleBase:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
         self._pid_control_flag    = pid_control    # Default is: use PID control
+        self.__pipstage           = 0
         #self.__KP                 = 0            # The weights for the the PID terms -- was 4
         #self.__KI                 = 2
         #self.__KD                 = 0
@@ -383,7 +384,9 @@ class ControlModuleBase:
         self.__control_signal_in +=  self.__KI*self._DATA_I
         self.__control_signal_in +=  self.__KD*self._DATA_D
         self.__control_signal_in +=  self.__PID_OFFSET
-        #self.__control_signal_in = min(self.__SET_PIP_TIME, self.__control_signal_in) #maximum flow setting
+        
+        self.__control_signal_in = min(self.__control_signal_in,100) #maximum flow setting
+        
 
     def _get_control_signal_in(self):
         ''' This is the controlled signal on the inspiratory side '''
@@ -587,12 +590,13 @@ class ControlModuleBase:
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
 
         #self.__SET_PIP_TIME = 0.5*self.__SET_I_PHASE
+        #maxflow = 60
 
         '''if cycle_phase < self.__SET_PIP_TIME:
-            self.__KP = 1
-            self.__KI = 2
+            self.__KP = 8
+            self.__KI = 0
             self.__KD = 0
-            #target_pressure = cycle_phase*(self.__SET_PIP*1.1 - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
+            target_pressure = cycle_phase*(self.__SET_PIP*1.1 - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
             target_pressure = self.__SET_PIP
             self.__PID_OFFSET = 0
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt, RC = 0.5)
@@ -602,10 +606,28 @@ class ControlModuleBase:
             #    self.__control_signal_in = 0'''
 
         if cycle_phase < self.__SET_I_PHASE:
-            self.__KP = max(0,12*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
-            self.__KI = 6*(1-np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
-            self.__KD = 0#max(0,0*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
-            self.__PID_OFFSET = 0
+            self.__KP = 4*(np.exp(-max(0, cycle_phase-0.25)*.150))
+            self.__KI = 4
+            self.__KD = 0
+            if cycle_phase < self.__SET_PIP_TIME:
+                self.__PID_OFFSET = 10
+            else:
+                self.__PID_OFFSET = 10*(-(cycle_phase - .33*self.__SET_I_PHASE)*.25) # roll off the offset
+            '''if self._DATA_PRESSURE < self.__SET_PIP*.7 and self.__pipstage < 1:
+                self.__PID_OFFSET = maxflow
+                self.__KI = 0
+            elif self._DATA_PRESSURE < self.__SET_PIP*.85 and self.__pipstage < 2:
+                self.__PID_OFFSET = maxflow*.5
+                self.__KI = 0
+                self.__pipstage = 1
+            elif self._DATA_PRESSURE < self.__SET_PIP and self.__pipstage < 3:
+                self.__PID_OFFSET = maxflow*.25
+                self.__KI = 0
+                self.__pipstage = 2
+            else:
+                self.__pipstage = 3
+                self.__PID_OFFSET = 0'''
+
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.5)
             self.__calculate_control_signal_in()
             self.__control_signal_out = 0 
@@ -648,12 +670,14 @@ class ControlModuleBase:
                 self._DATA_VOLUME = 0            # ... start at zero volume in the lung
                 self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
                 next_cycle = True
+                self.__pipstage = 0
 
         else:
             self._cycle_start = time.time()  # New cycle starts
             self._DATA_VOLUME = 0            # ... start at zero volume in the lung
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
+            self.__pipstage = 0
 
         self.__test_for_alarms()
         if next_cycle:                        # if a new breath cycle has started

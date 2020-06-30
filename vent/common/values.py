@@ -204,7 +204,7 @@ VALUES = odict({
     ValueName.PIP_TIME: Value(**{
         'name': 'PIPt',
         'units': 'seconds',
-        'abs_range': (0, 5),  # FIXME
+        'abs_range': (0, 1),  # FIXME
         'safe_range': (0.2, 0.5),  # FIXME
         'default': 0.3,  # FIXME
         'decimals': 1,

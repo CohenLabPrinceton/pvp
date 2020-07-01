@@ -590,14 +590,12 @@ class ControlModuleBase:
 
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
 
-        self._DATA_PRESSURE = np.mean(self._DATA_PRESSURE_LIST)
-
-
         #self.__SET_PIP_TIME = 0.5*self.__SET_I_PHASE
         PIP_INTENSITY = self.__SET_PIP_TIME
         maxflow = PIP_INTENSITY*10
 
         if cycle_phase < 0.3:
+            self._DATA_PRESSURE = np.mean(self._DATA_PRESSURE_LIST[-4:]) # check this tomorrow 7/2
             self.__KP = 4
             self.__KI = 0
             self.__KD = 0
@@ -607,7 +605,8 @@ class ControlModuleBase:
             self.__control_signal_out = 0
 
         elif cycle_phase < self.__SET_I_PHASE:
-            self.__KP = 2+2*(cycle_phase-0.3)/(.3)
+            self._DATA_PRESSURE = np.mean(self._DATA_PRESSURE_LIST)
+            self.__KP = 4-2*min((cycle_phase-0.3)/(0.7),0)
             self.__KI = 0
             self.__KD = 0
             self.__PID_OFFSET = 0
@@ -873,7 +872,7 @@ class ControlModuleDevice(ControlModuleBase):
         """
         self._DATA_PRESSURE = self.HAL.pressure
         self._DATA_PRESSURE_LIST.append(self._DATA_PRESSURE)
-        if len(self._DATA_PRESSURE_LIST) > 5:
+        if len(self._DATA_PRESSURE_LIST) > 10:
             self._DATA_PRESSURE_LIST.pop(0)
         self._DATA_Qout     = 0 # self.HAL.flow_ex
         self._DATA_OXYGEN   = 0 # self.HAL.oxygen

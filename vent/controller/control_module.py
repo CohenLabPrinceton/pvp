@@ -376,7 +376,7 @@ class ControlModuleBase:
         self._DATA_D = self._DATA_D + s*(error_new - self._DATA_P - self._DATA_D)
         self._DATA_P = error_new
 
-    def __calculate_control_signal_in(self):
+    def __calculate_control_signal_in(self, maximum_flow):
         """
         Calculated the PID control signal with the error terms and the three gain parameters.
         """
@@ -386,7 +386,7 @@ class ControlModuleBase:
         self.__control_signal_in +=  self.__KD*self._DATA_D
         self.__control_signal_in +=  self.__PID_OFFSET
         
-        self.__control_signal_in = min(self.__control_signal_in,100) #maximum flow setting
+        self.__control_signal_in = min(self.__control_signal_in,maximum_flow) #maximum flow setting
         
 
     def _get_control_signal_in(self):
@@ -594,47 +594,26 @@ class ControlModuleBase:
 
 
         #self.__SET_PIP_TIME = 0.5*self.__SET_I_PHASE
-        #maxflow = 60
+        PIP_INTENSITY = self.__SET_PIP_TIME
+        maxflow = PIP_INTENSITY*10
 
-        '''if cycle_phase < self.__SET_PIP_TIME:
-            self.__KP = 8
-            self.__KI = 0
-            self.__KD = 0
-            target_pressure = cycle_phase*(self.__SET_PIP*1.1 - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
-            target_pressure = self.__SET_PIP
-            self.__PID_OFFSET = 0
-            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt, RC = 0.5)
-            self.__calculate_control_signal_in()
-            self.__control_signal_out = 0   # close out valve
-            #if self._DATA_PRESSURE > self.__SET_PIP:
-            #    self.__control_signal_in = 0'''
-
-        if cycle_phase < self.__SET_I_PHASE:
+        if cycle_phase < 0.3:
             self.__KP = 4
             self.__KI = 0
             self.__KD = 0
             self.__PID_OFFSET = 0
-            '''if cycle_phase < self.__SET_PIP_TIME:
-                self.__PID_OFFSET = 10
-            else:
-                self.__PID_OFFSET = 10*(-(cycle_phase - .33*self.__SET_I_PHASE)*.25) # roll off the offset'''
-            '''if self._DATA_PRESSURE < self.__SET_PIP*.7 and self.__pipstage < 1:
-                self.__PID_OFFSET = maxflow
-                self.__KI = 0
-            elif self._DATA_PRESSURE < self.__SET_PIP*.85 and self.__pipstage < 2:
-                self.__PID_OFFSET = maxflow*.5
-                self.__KI = 0
-                self.__pipstage = 1
-            elif self._DATA_PRESSURE < self.__SET_PIP and self.__pipstage < 3:
-                self.__PID_OFFSET = maxflow*.25
-                self.__KI = 0
-                self.__pipstage = 2
-            else:
-                self.__pipstage = 3
-                self.__PID_OFFSET = 0'''
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.5)
+            self.__calculate_control_signal_in(maxflow)
+            self.__control_signal_out = 0
+
+        elif cycle_phase < self.__SET_I_PHASE:
+            self.__KP = 2+2*(cycle_phase-0.3)/(.3)
+            self.__KI = 0
+            self.__KD = 0
+            self.__PID_OFFSET = 0
 
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.5)
-            self.__calculate_control_signal_in()
+            self.__calculate_control_signal_in(max(maxflow,20))
             self.__control_signal_out = 0 
             # if self._DATA_PRESSURE > self.__SET_PIP+2:                                              
             #     self.__control_signal_out = 1                                                        # if exceeded, we open the exhaust valve
@@ -660,7 +639,7 @@ class ControlModuleBase:
             if PEEP_VALVE_SET:
                 #self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
                 self.__control_signal_out = 1
-                self.__control_signal_in = 20 *(1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
+                self.__control_signal_in = 5 *(1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
             else:
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
                 self.__calculate_control_signal_in()
@@ -675,14 +654,14 @@ class ControlModuleBase:
                 self._DATA_VOLUME = 0            # ... start at zero volume in the lung
                 self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
                 next_cycle = True
-                self.__pipstage = 0
+                #self.__pipstage = 0
 
         else:
             self._cycle_start = time.time()  # New cycle starts
             self._DATA_VOLUME = 0            # ... start at zero volume in the lung
             self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
             next_cycle = True
-            self.__pipstage = 0
+            #self.__pipstage = 0
 
         self.__test_for_alarms()
         if next_cycle:                        # if a new breath cycle has started

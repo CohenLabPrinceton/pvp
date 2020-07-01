@@ -857,17 +857,17 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     self.control_panel.start_button.set_state('OFF')
                     return
 
-
-                box = widgets.pop_dialog(
-                    'Confirm Ventilation Start',
-                    modality = QtCore.Qt.WindowModal,
-                    buttons = QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
-                    default_button = QtWidgets.QMessageBox.Cancel
-                )
-                ret = box.exec_()
-                if ret != QtWidgets.QMessageBox.Ok:
-                    self.control_panel.start_button.set_state('OFF')
-                    return
+                if prefs.get_pref('ENABLE_WARNINGS'):
+                    box = widgets.pop_dialog(
+                        'Confirm Ventilation Start',
+                        modality = QtCore.Qt.WindowModal,
+                        buttons = QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
+                        default_button = QtWidgets.QMessageBox.Cancel
+                    )
+                    ret = box.exec_()
+                    if ret != QtWidgets.QMessageBox.Ok:
+                        self.control_panel.start_button.set_state('OFF')
+                        return
 
 
             self.running = True
@@ -890,7 +890,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
             do_stop = False
 
-            if 'pytest' not in sys.modules:
+            if 'pytest' not in sys.modules and prefs.get_pref('ENABLE_WARNINGS'):
                 box = widgets.pop_dialog(
                     'Confirm Ventilation Stop',
                     'Stopping Ventilation Prematurely is Dangerous! Are you sure?',

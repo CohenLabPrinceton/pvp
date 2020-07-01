@@ -49,7 +49,8 @@ _DEFAULTS = {
     'COUGH_DURATION': 0.1,
     'LOGLEVEL': 'WARNING',
     'GUI_STATE_FN': 'gui_state.json',
-    'ENABLE_DIALOGS': True
+    'ENABLE_DIALOGS': True, # enable _all_ dialogs -- for testing on virtual frame buffer
+    'ENABLE_WARNINGS': True # enable user warnings and confirmations
 }
 """
 Declare all available parameters and set default values. If no default, set as None. 

@@ -11,7 +11,7 @@ from vent.gui.widgets.components import EditableLabel, DoubleSlider
 from vent.gui.widgets.dialog import pop_dialog
 from vent.common.message import ControlSetting
 from vent.common.values import Value, ValueName
-from vent.common import unit_conversion
+from vent.common import unit_conversion, prefs
 
 
 class Control(QtWidgets.QWidget):
@@ -358,7 +358,7 @@ class Control(QtWidgets.QWidget):
                 # if we're already opening a dialogue, don't try to set value or emit
                 return
 
-            if (not self._confirmed_unsafe) and ('pytest' not in sys.modules):
+            if (not self._confirmed_unsafe) and ('pytest' not in sys.modules) and prefs.get_pref('ENABLE_WARNINGS'):
 
                 self._dialog_open = True
                 safe_range = self.safe_range
@@ -379,6 +379,7 @@ class Control(QtWidgets.QWidget):
                 else:
                     # don't prompt again
                     self._confirmed_unsafe = True
+
 
         else:
             # reset _confirmed_unsafe if back in range

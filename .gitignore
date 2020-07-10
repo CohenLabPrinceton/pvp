@@ -8,3 +8,4 @@ tmp
 .coverage
 sandbox/data_1.npy
 *.npy
+*.ipynb_checkpoint*

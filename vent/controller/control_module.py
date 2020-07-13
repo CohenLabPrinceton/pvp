@@ -402,7 +402,7 @@ class ControlModuleBase:
         self.__control_signal_helpers[2] = self.__control_signal_helpers[1]
         self.__control_signal_helpers[1] = self.__control_signal_helpers[0]
         self.__control_signal_helpers[0] = new_value
-        self.__control_signal_in = np.mean(self.__control_signal_helpers)*self.__SET_PIP_GAIN
+        self.__control_signal_in = np.mean(self.__control_signal_helpers)
 
     def _get_control_signal_in(self):
         ''' This is the controlled signal on the inspiratory side '''
@@ -625,7 +625,7 @@ class ControlModuleBase:
             #    self.__control_signal_in = 0
 
         if cycle_phase < self.__SET_I_PHASE:
-            self.__KP = 0.1
+            self.__KP = 2*(self.__SET_PIP_GAIN-0.95)
             self.__KI = 2.0
             self.__KD = 0
             self.__PID_OFFSET = 0

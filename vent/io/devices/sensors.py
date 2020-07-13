@@ -284,9 +284,10 @@ class DLiteSensor(AnalogSensor):
         raw = super()._convert(raw)
         fit_param = 2.5837e-05
         if(raw >= 0):
-            converted_flow = (-1.0*np.sqrt(raw)/np.sqrt(fit_param))
+            #converted_flow = (-1.0*np.sqrt(raw)/np.sqrt(fit_param))
+            converted_flow = 192.6426*(raw)**(1/1.9128)
         else:
-            converted_flow = (1.0*np.sqrt(-1.0*raw)/np.sqrt(fit_param))
+            converted_flow = -192.6426*(np.abs(raw))**(1/1.9128)
         return converted_flow
         
     def calibrate(self, **kwargs):

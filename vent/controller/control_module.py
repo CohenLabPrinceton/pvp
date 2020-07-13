@@ -750,23 +750,22 @@ class ControlModuleDevice(ControlModuleBase):
 
         inspiration_phase = (time.time() - self._cycle_start) < self.COPY_SET_I_PHASE
 
+        self._DATA_PRESSURE = self.HAL.pressure                      # Get pressure reading
+        self._DATA_PRESSURE_LIST.append(self._DATA_PRESSURE)         # And append it to list -> is averaged over a couple values
+        if len(self._DATA_PRESSURE_LIST) > 5:
+            self._DATA_PRESSURE_LIST.pop(0)
+                
         if inspiration_phase:
-            self._DATA_PRESSURE = self.HAL.pressure                      # Get pressure reading
-            self._DATA_PRESSURE_LIST.append(self._DATA_PRESSURE)         # And append it to list -> is averaged over a couple values
-            if len(self._DATA_PRESSURE_LIST) > 5:
-                self._DATA_PRESSURE_LIST.pop(0)
             self._DATA_Qout         = 0                                  # Flow out and oxygen are not measured
             self.COPY_DATA_OXYGEN   = self._DATA_OXYGEN
-
         else:
             if time.time() - self._OXYGEN_LAST_READ > 5:                 # If the time has come, get an oxygen value.
                 self._DATA_OXYGEN = self.HAL.oxygen
                 self._OXYGEN_LAST_READ = time.time()
 
-            pq = self.HAL.flow_ex                                        # Get a flow reading,
+            pq = self.HAL.flow_ex/60                                     # Get a flow reading in l/sec
             self._flow_list.append(pq)
             Qbaseline = np.percentile(self._flow_list, 5 )               # stimate the baseline flow during expiration with a rankfilter (baseline of air that bypasses patient)
-            print("Qbaseline: " + str(Qbaseline))
 
             self._DATA_Qout = pq - Qbaseline                             # This has to be subtracted from flow_ex to integrate VTE
 

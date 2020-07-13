@@ -202,11 +202,11 @@ VALUES = odict({
         'sensor': True
     }),
     ValueName.PIP_TIME: Value(**{
-        'name': 'PIPt',
-        'units': 'seconds',
-        'abs_range': (1, 10),  # FIXME
-        'safe_range': (1, 10),  # FIXME
-        'default': 4,  # FIXME
+        'name': 'flow',
+        'units': '',
+        'abs_range': (1, 5),  # FIXME
+        'safe_range': (1, 5),  # FIXME
+        'default': 1,  # FIXME
         'decimals': 1,
         'control': True,
         'sensor': False

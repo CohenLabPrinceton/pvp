@@ -176,7 +176,7 @@ class ControlModuleBase:
             self.__SET_PEEP_TIME,
             self.__SET_CYCLE_DURATION
         ])
-        self._adaptivecontroller = PredictivePID(waveform)
+        self._adaptivecontroller = PredictivePID(self._waveform)
 
     def __del__(self):
         if self._save_logs:
@@ -489,10 +489,13 @@ class ControlModuleBase:
         """
         This selects between PID and state control. If other controllers are to be implemented, add here.
         """
+
         if self._pid_control_flag:
             self._PID_update(dt)
-        else:
+        elif False:
             self._STATECONTROL_update(dt)
+        else:
+            self._Predictive_PID_update(dt)
 
     def __start_new_breathcycle(self):
         """
@@ -685,7 +688,7 @@ class ControlModuleBase:
             self.__PID_OFFSET = 0
             
             self.__control_signal_in = self._adaptivecontroller.feed(self._DATA_PRESSURE, now.time())
-            self.__control_signal_out = 0 0                                                        # close out valve
+            self.__control_signal_out = 0                                                        # close out valve
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
 
@@ -1234,7 +1237,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
 
 
-def get_control_module(sim_mode=False, simulator_dt = None):
+def get_control_module(sim_mode=False, pid_control=True, simulator_dt = None):
     """
     Generates control module.
     Args:
@@ -1244,11 +1247,11 @@ def get_control_module(sim_mode=False, simulator_dt = None):
     if sim_mode == True:
         return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
-        return ControlModuleDevice(pid_control = True, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')
+        return ControlModuleDevice(pid_control = pid_control, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')
 
 
 class PredictivePID:
-    def __init__(self, waveform, hallucination_length=15,dt=0.003):
+    def __init__(self, waveform, hallucination_length=15, dt=0.003):
         # controller coeffs
         self.storage = 3
         self.errs = np.zeros(self.storage)
@@ -1257,34 +1260,30 @@ class PredictivePID:
         self.waveform = waveform
         self.hallucination_length = hallucination_length
         self.state_buffer = np.zeros(self.storage)
-        self.dt=dt
-        return
+        self.dt = dt
 
     def hallucinate(self, past, steps):
         p = np.poly1d(np.polyfit(range(len(past)), past, 1))
-        return np.array([p(len(past)+i) for i in range(steps)])
+        return np.array([p(len(past) + i) for i in range(steps)])
 
     def feed(self, state, t):
-        # ingests current error, updates controller states, outputs K_I control
+        # Ingests current error, updates controller states, outputs K_I control
         self.errs[0] = self.waveform.at(t) - state
         self.errs = np.roll(self.errs, -1)
         self.bias += np.sign(np.average(self.errs)) * self.bias_lr
 
-        #Update State
+        # Update State
         self.state_buffer[0] = state
-        self.state_buffer =np.roll(self.state_buffer, -1)
+        self.state_buffer = np.roll(self.state_buffer, -1)
 
         hallucinated_states = self.hallucinate(self.state_buffer, self.hallucination_length)
-        hallucinated_errors = [self.waveform.at(t + (j+1)*self.dt) - hallucinated_states[j] for j in range(self.hallucination_length)]
+        hallucinated_errors = [self.waveform.at(t + (j + 1) * self.dt) - hallucinated_states[j] for j in range(self.hallucination_length)]
         
         if t < 0.1 or t > 9.9:
-        u = np.sum(self.errs) +self.bias
+            u = np.sum(self.errs) + self.bias
         else:
-        ### The weird rescaling below is to keep the same scale as Paula's controller
-        ### Ideally one can do a convex combination of past and hallucinated sum - allowing to weight either information in a tunable manner.
-        ### TODO: Implement that
-        new_av = (np.sum(self.errs) + np.sum(hallucinated_errors))*(self.storage/(self.storage+len(hallucinated_errors)))
-        u =  new_av + self.bias
+            new_av = (np.sum(self.errs) + np.sum(hallucinated_errors)) * (self.storage / (self.storage + len(hallucinated_errors)))
+            u =  new_av + self.bias
         return u
 
 class BreathWaveform:

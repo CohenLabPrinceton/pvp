@@ -492,18 +492,6 @@ class ControlModuleBase:
 
         #self.TECHA = time.time()  # Technical alert, but continue running hoping for the best
 
-    def _control_update(self, dt):
-        """
-        This selects between PID and state control. If other controllers are to be implemented, add here.
-        """
-
-        if self._pid_control_flag:
-            self._PID_update(dt)
-        elif False:
-            self._STATECONTROL_update(dt)
-        else:
-            self._Predictive_PID_update(dt)
-
     def __start_new_breathcycle(self):
         """
         This has to be executed when the next breath cycles starts
@@ -621,6 +609,7 @@ class ControlModuleBase:
         next_cycle = False
 
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
+        self._DATA_PRESSURE = np.mean(self._DATA_PRESSURE_LIST)
 
         if cycle_phase < self.__SET_I_PHASE:
             self.__KP = max(0.5,3*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
@@ -887,7 +876,9 @@ class ControlModuleDevice(ControlModuleBase):
                 dt = self._LOOP_UPDATE_TIME
             
             self._get_HAL()                                          # Update pressure and flow measurement
-            self._PID_update(dt = dt)                            # With that, calculate controls
+            # self._PID_update(dt = dt)                              # With that, calculate controls
+            self._Predictive_PID_update(dt = dt)                     # With that, calculate controls
+
             valve_open_in  = self._get_control_signal_in()           #    -> Inspiratory side: get control signal for PropValve
             valve_open_out = self._get_control_signal_out()          #    -> Expiratory side: get control signal for Solenoid
             self._set_HAL(valve_open_in, valve_open_out)             # And set values.
@@ -1045,7 +1036,7 @@ class ControlModuleSimulator(ControlModuleBase):
         x:  Input current [mA]
         dt: Time since last setting in seconds [for the LP filter]
         '''
-        flow_new = (np.tanh(0.12*(x - 30)) + 1)
+        flow_new = (np.tanh(0.12*(0.5*x - 30)) + 1)
         if x<0:
             flow_new = 0
         return flow_new
@@ -1132,7 +1123,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
 
 
-def get_control_module(sim_mode=False, pid_control=True, simulator_dt = None):
+def get_control_module(sim_mode=False, simulator_dt = None):
     """
     Generates control module.
     Args:
@@ -1142,7 +1133,7 @@ def get_control_module(sim_mode=False, pid_control=True, simulator_dt = None):
     if sim_mode == True:
         return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
-        return ControlModuleDevice(pid_control = pid_control, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')
+        return ControlModuleDevice(save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')
 
 
 class PredictivePID:

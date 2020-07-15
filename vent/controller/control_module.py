@@ -659,6 +659,76 @@ class ControlModuleBase:
         if self._save_logs:
             self.__save_values()
 
+    def _Predictive_PID_update(self, dt):
+        ''' 
+        This instantiates the Predictive PID control algorithms.
+        During the breathing cycle, it goes through the four states:
+           1) Rise to PIP, while controlling dP/dt
+           2) Sustain PIP pressure
+           3) Quick fall to PEEP while controlling dP/dt
+           4) Sustaint PEEP pressure
+        Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
+        A record of pressure/volume waveforms is kept and saved
+        '''
+        PEEP_VALVE_SET = True
+
+        now = time.time()
+        cycle_phase = now - self._cycle_start
+        next_cycle = False
+
+        self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
+
+        if cycle_phase < self.__SET_I_PHASE:
+            self.__KP = max(0.5,3*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
+            self.__KI = 6*(1-np.exp(-cycle_phase / (0.075*self.__SET_I_PHASE)))
+            self.__KD = 0
+            self.__PID_OFFSET = 0
+            
+            self.__control_signal_in = self._adaptivecontroller.feed(self._DATA_PRESSURE, now.time())
+            self.__control_signal_out = 0 0                                                        # close out valve
+
+        elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
+
+            if PEEP_VALVE_SET:
+                self.__control_signal_in = 0 
+                self.__control_signal_out = 1
+
+            else:
+                target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
+                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
+                self.__calculate_control_signal_in()
+                self.__control_signal_out =  1
+                if self._DATA_PRESSURE < self.__SET_PEEP:
+                    self.__control_signal_out = 0
+
+        elif cycle_phase < self.__SET_CYCLE_DURATION:
+
+            if PEEP_VALVE_SET:
+                #self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
+                self.__control_signal_out = 1
+                self.__control_signal_in = 5* (1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
+            else:
+                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
+                self.__calculate_control_signal_in()
+                if self._DATA_PRESSURE > self.__SET_PEEP + 0.5:
+                    self.__control_signal_out = 1
+                else:
+                    self.__control_signal_out = 0
+
+        else:
+            self._cycle_start = time.time()  # New cycle starts
+            self._DATA_VOLUME = 0            # ... start at zero volume in the lung
+            self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
+            next_cycle = True
+
+        self.__test_for_alarms()
+        if next_cycle:                        # if a new breath cycle has started
+            self.__start_new_breathcycle()
+        else:
+            self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self._DATA_VOLUME]], axis=0)
+        if self._save_logs:
+            self.__save_values()
+
     def __save_values(self):
         """
             Small helper function to store key parameters in the main PID control loop

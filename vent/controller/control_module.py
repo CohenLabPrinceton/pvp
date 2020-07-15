@@ -170,6 +170,14 @@ class ControlModuleBase:
         self._time_last_contact = time.time()
         self._critical_time     = prefs.get_pref('HEARTBEAT_TIMEOUT')           #If Controller has not received set/get within the last 200 ms, it gets nervous.
 
+        self._waveform = BreathWaveform((self.__SET_PEEP, self.__SET_PIP), [
+            self.__SET_PIP_TIME,
+            self.__SET_I_PHASE,
+            self.__SET_PEEP_TIME,
+            self.__SET_CYCLE_DURATION
+        ])
+        self._adaptivecontroller = PredictivePID(waveform)
+
     def __del__(self):
         if self._save_logs:
             self.dl.close_logfile()
@@ -1167,3 +1175,53 @@ def get_control_module(sim_mode=False, simulator_dt = None):
         return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
         return ControlModuleDevice(pid_control = True, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')
+
+
+class PredictivePID:
+    def __init__(self, waveform, hallucination_length=15,dt=0.003):
+        # controller coeffs
+        self.storage = 3
+        self.errs = np.zeros(self.storage)
+        self.bias_lr = 0.01
+        self.bias = 0
+        self.waveform = waveform
+        self.hallucination_length = hallucination_length
+        self.state_buffer = np.zeros(self.storage)
+        self.dt=dt
+        return
+
+    def hallucinate(self, past, steps):
+        p = np.poly1d(np.polyfit(range(len(past)), past, 1))
+        return np.array([p(len(past)+i) for i in range(steps)])
+
+    def feed(self, state, t):
+        # ingests current error, updates controller states, outputs K_I control
+        self.errs[0] = self.waveform.at(t) - state
+        self.errs = np.roll(self.errs, -1)
+        self.bias += np.sign(np.average(self.errs)) * self.bias_lr
+
+        #Update State
+        self.state_buffer[0] = state
+        self.state_buffer =np.roll(self.state_buffer, -1)
+
+        hallucinated_states = self.hallucinate(self.state_buffer, self.hallucination_length)
+        hallucinated_errors = [self.waveform.at(t + (j+1)*self.dt) - hallucinated_states[j] for j in range(self.hallucination_length)]
+        
+        if t < 0.1 or t > 9.9:
+        u = np.sum(self.errs) +self.bias
+        else:
+        ### The weird rescaling below is to keep the same scale as Paula's controller
+        ### Ideally one can do a convex combination of past and hallucinated sum - allowing to weight either information in a tunable manner.
+        ### TODO: Implement that
+        new_av = (np.sum(self.errs) + np.sum(hallucinated_errors))*(self.storage/(self.storage+len(hallucinated_errors)))
+        u =  new_av + self.bias
+        return u
+
+class BreathWaveform:
+    def __init__(self, range, keypoints):
+        self.lo, self.hi = range
+        self.xp = [0] + keypoints
+        self.fp = [self.lo, self.hi, self.hi, self.lo, self.lo]
+
+    def at(self, t):
+        return np.interp(t, self.xp, self.fp, period=self.xp[-1])

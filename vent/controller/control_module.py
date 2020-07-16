@@ -610,17 +610,16 @@ class ControlModuleBase:
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
         self._DATA_PRESSURE = np.mean(self._DATA_PRESSURE_LIST)
 
+        self.__control_signal_in = self._adaptivecontroller.feed(self._DATA_PRESSURE, now)
+
         if cycle_phase < self.__SET_I_PHASE:            
-            self.__control_signal_in = self._adaptivecontroller.feed(self._DATA_PRESSURE, now)
             self.__control_signal_out = 0                                                        # close out valve
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
-            self.__control_signal_in = 0 
             self.__control_signal_out = 1
 
         elif cycle_phase < self.__SET_CYCLE_DURATION:
             self.__control_signal_out = 1
-            self.__control_signal_in = 5* (1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
 
         else:
             self._cycle_start = time.time()  # New cycle starts
@@ -1127,7 +1126,7 @@ class PredictivePID:
         return np.array([p(len(past) + i) for i in range(steps)])
 
     def feed(self, state, t):
-        # Ingests current error, updates controller states, outputs K_I control
+        # Ingests current error, updates controller states, outputs PredictivePID control
         self.errs[0] = self.waveform.at(t) - state
         self.errs = np.roll(self.errs, -1)
         self.bias += np.sign(np.average(self.errs)) * self.bias_lr
@@ -1139,7 +1138,7 @@ class PredictivePID:
         hallucinated_states = self.hallucinate(self.state_buffer, self.hallucination_length)
         hallucinated_errors = [self.waveform.at(t + (j + 1) * self.dt) - hallucinated_states[j] for j in range(self.hallucination_length)]
         
-        if t < 0.1 or t > 9.9:
+        if t < 0.1:
             u = np.sum(self.errs) + self.bias
         else:
             new_av = (np.sum(self.errs) + np.sum(hallucinated_errors)) * (self.storage / (self.storage + len(hallucinated_errors)))
@@ -1149,7 +1148,9 @@ class PredictivePID:
 class BreathWaveform:
     def __init__(self, range, keypoints):
         self.lo, self.hi = range
-        self.xp = [0] + keypoints
+        self.xp = [0]
+        for keypoint in keypoints:
+            self.xp.append(self.xp[-1] + keypoint)
         self.fp = [self.lo, self.hi, self.hi, self.lo, self.lo]
 
     def at(self, t):

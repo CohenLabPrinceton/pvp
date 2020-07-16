@@ -602,7 +602,6 @@ class ControlModuleBase:
         Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
         A record of pressure/volume waveforms is kept and saved
         '''
-        PEEP_VALVE_SET = True
 
         now = time.time()
         cycle_phase = now - self._cycle_start
@@ -611,42 +610,17 @@ class ControlModuleBase:
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
         self._DATA_PRESSURE = np.mean(self._DATA_PRESSURE_LIST)
 
-        if cycle_phase < self.__SET_I_PHASE:
-            self.__KP = max(0.5,3*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
-            self.__KI = 6*(1-np.exp(-cycle_phase / (0.075*self.__SET_I_PHASE)))
-            self.__KD = 0
-            self.__PID_OFFSET = 0
-            
+        if cycle_phase < self.__SET_I_PHASE:            
             self.__control_signal_in = self._adaptivecontroller.feed(self._DATA_PRESSURE, now)
             self.__control_signal_out = 0                                                        # close out valve
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
-
-            if PEEP_VALVE_SET:
-                self.__control_signal_in = 0 
-                self.__control_signal_out = 1
-
-            else:
-                target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
-                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
-                self.__calculate_control_signal_in()
-                self.__control_signal_out =  1
-                if self._DATA_PRESSURE < self.__SET_PEEP:
-                    self.__control_signal_out = 0
+            self.__control_signal_in = 0 
+            self.__control_signal_out = 1
 
         elif cycle_phase < self.__SET_CYCLE_DURATION:
-
-            if PEEP_VALVE_SET:
-                #self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
-                self.__control_signal_out = 1
-                self.__control_signal_in = 5* (1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
-            else:
-                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
-                self.__calculate_control_signal_in()
-                if self._DATA_PRESSURE > self.__SET_PEEP + 0.5:
-                    self.__control_signal_out = 1
-                else:
-                    self.__control_signal_out = 0
+            self.__control_signal_out = 1
+            self.__control_signal_in = 5* (1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
 
         else:
             self._cycle_start = time.time()  # New cycle starts

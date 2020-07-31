@@ -10,7 +10,6 @@ from itertools import count
 
 import vent.io as io
 
-from vent import prefs
 from vent.common.message import SensorValues, ControlValues, ControlSetting, DerivedValues
 from vent.common.loggers import init_logger, DataLogger
 from vent.common.values import CONTROL, ValueName
@@ -40,14 +39,13 @@ class ControlModuleBase:
         - get_alarms():                      Returns a List of all alarms, active and logged
         - get_control(ControlSetting):       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
         - get_past_waveforms():              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self. _RINGBUFFER_SIZE, AND clears this archive.
-        - get_target_waveform():             Returns a step-wise linear target waveform, as defined by the current settings.
         - start():                           Starts the main-loop of the controller
         - stop():                            Stops the main-loop of the controller
         - set_control():                     Set the control
 
     """
 
-    def __init__(self, pid_control: bool = True, save_logs: bool = False, flush_every: int = 10):
+    def __init__(self, save_logs: bool = False, flush_every: int = 10):
         """
 
         Args:
@@ -72,15 +70,11 @@ class ControlModuleBase:
         # This is what the machine has controll over:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
-        self._pid_control_flag    = pid_control    # Default is: use PID control
-        self.__KP                 = 0            # The weights for the the PID terms -- was 4
-        self.__KI                 = 2
-        self.__KD                 = 0
-        self.__PID_OFFSET         = 0
+        self.__control_signal_helpers = np.array([0,0,0]) # Helper variables for multiple low-pass filters
 
         # Internal Control variables. "SET" indicates that this is set.
         self.__SET_PIP       = CONTROL[ValueName.PIP].default                     # Target PIP pressure
-        self.__SET_PIP_TIME  = CONTROL[ValueName.PIP_TIME].default                # Target time to reach PIP in seconds
+        self.__SET_PIP_GAIN  = CONTROL[ValueName.PIP_TIME].default                # Target time to reach PIP in seconds
         self.__SET_PEEP      = CONTROL[ValueName.PEEP].default                    # Target PEEP pressure
         self.__SET_PEEP_TIME = CONTROL[ValueName.PEEP_TIME].default               # Target time to reach PEEP from PIP plateau
         self.__SET_BPM       = CONTROL[ValueName.BREATHS_PER_MINUTE].default      # Target breaths per minute
@@ -95,7 +89,6 @@ class ControlModuleBase:
             self.__SET_CYCLE_DURATION = 20
 
         self.__SET_E_PHASE        = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
-        self.__SET_T_PLATEAU      = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP         = self.__SET_E_PHASE - self.__SET_PEEP_TIME
 
         #########################  Alarm management  #########################
@@ -105,6 +98,8 @@ class ControlModuleBase:
         self.TECHA = [] # type: typing.List[Alarm]
         self.limit_hapa = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0][1].limit # TODO: Jonny write method to get limits from alarm manager
         self.cough_duration = prefs.get_pref('COUGH_DURATION')
+        self.breath_pressure_drop = 4 #prefs.get_pref('XXXXX')   #pressure drop below peep that is detected as an attempt to breath.
+
         self.sensor_stuck_since = None
 
         #########################  Data management  #########################
@@ -134,11 +129,15 @@ class ControlModuleBase:
         self._DATA_PRESSURE = 0
         self._DATA_VOLUME   = 0
         self._DATA_OXYGEN   = 0
+        self.COPY_DATA_OXYGEN  = 0        # Oxygen is not queried in every cycle. This is a copy of the value
+        self._OXYGEN_LAST_READ = 0        # Last time the oxygen sensor was read.
+
         self._DATA_Qout     = 0           # Measurement of the airflow out
         self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
         self.__DATA_old     = None
         self._last_update   = time.time()
         self._flow_list = deque(maxlen = 500)          # An archive of past flows, to calculate background flow out
+        self._DATA_PRESSURE_LIST = list()
 
         ############### Initialize COPY variables for threads  ##############
         # COPY variables that later updated on a regular basis
@@ -179,7 +178,7 @@ class ControlModuleBase:
         with self._lock:
         # Copy of the SET variables for threading.
             self.COPY_SET_PIP       = self.__SET_PIP 
-            self.COPY_SET_PIP_TIME  = self.__SET_PIP_TIME
+            self.COPY_SET_PIP_TIME  = self.__SET_PIP_GAIN
             self.COPY_SET_PEEP      = self.__SET_PEEP
             self.COPY_SET_PEEP_TIME = self.__SET_PEEP_TIME
             self.COPY_SET_BPM       = self.__SET_BPM
@@ -197,7 +196,7 @@ class ControlModuleBase:
         with self._lock:
             #Update values
             self.__SET_PIP       = self.COPY_SET_PIP
-            self.__SET_PIP_TIME  = self.COPY_SET_PIP_TIME
+            self.__SET_PIP_GAIN  = self.COPY_SET_PIP_TIME
             self.__SET_PEEP      = self.COPY_SET_PEEP
             self.__SET_PEEP_TIME = self.COPY_SET_PEEP_TIME
             self.__SET_BPM       = self.COPY_SET_BPM
@@ -211,7 +210,6 @@ class ControlModuleBase:
             self.__SET_CYCLE_DURATION = 20
 
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
-        self.__SET_T_PLATEAU = self.__SET_I_PHASE - self.__SET_PIP_TIME
         self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
 
     def __analyze_last_waveform(self):
@@ -260,7 +258,7 @@ class ControlModuleBase:
                     peep_time        = self._DATA_PEEP_TIME,
                     pip              = self._DATA_PIP,
                     pip_plateau      = self._DATA_PIP_PLATEAU,
-                    peep             = self._DATA_PEEP,
+                    peep             = self._DATA_PEEP, 
                     vte              = self._DATA_VTE
                 )
                 #And save both
@@ -373,15 +371,21 @@ class ControlModuleBase:
         self._DATA_D = self._DATA_D + s*(error_new - self._DATA_P - self._DATA_D)
         self._DATA_P = error_new
 
-    def __calculate_control_signal_in(self):
+    def __calculate_control_signal_in(self, dt):
         """
         Calculated the PID control signal with the error terms and the three gain parameters.
         """
-        self.__control_signal_in  = 0            # Some setting for the maximum flow.
-        self.__control_signal_in +=  self.__KP*self._DATA_P
-        self.__control_signal_in +=  self.__KI*self._DATA_I
-        self.__control_signal_in +=  self.__KD*self._DATA_D
-        self.__control_signal_in +=  self.__PID_OFFSET
+
+        new_value  = 0            # Some setting for the maximum flow.
+        new_value +=  self.__KP*self._DATA_P
+        new_value +=  self.__KI*self._DATA_I
+        new_value +=  self.__KD*self._DATA_D
+        new_value +=  self.__PID_OFFSET
+
+        self.__control_signal_helpers[2] = self.__control_signal_helpers[1]
+        self.__control_signal_helpers[1] = self.__control_signal_helpers[0]
+        self.__control_signal_helpers[0] = new_value
+        self.__control_signal_in = np.mean(self.__control_signal_helpers)
 
     def _get_control_signal_in(self):
         ''' This is the controlled signal on the inspiratory side '''
@@ -425,19 +429,21 @@ class ControlModuleBase:
                     time.sleep(0.02)
                 print("HAPA has been triggered")
                 self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
+            else:
+                print("Transient high pressure; probably a cough.")
         else:
             self.HAPA = None
 
         #### Second: Check for Technical Alerts via data plausibility:
         #  ->  Measurements change over time, and are in a plausible range
         if self.__DATA_old is None:
-            self.__DATA_old = [self._DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
+            self.__DATA_old = [self.COPY_DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
             inputs_dont_change = False 
         else:
-            inputs_dont_change = (self._DATA_OXYGEN == self.__DATA_old[0]) or \
+            inputs_dont_change = (self.COPY_DATA_OXYGEN == self.__DATA_old[0]) or \
                                  (self._DATA_Qout == self.__DATA_old[1]) or \
                                  (self._DATA_PRESSURE == self.__DATA_old[2])
-            self.__DATA_old = [self._DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
+            self.__DATA_old = [self.COPY_DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
 
         if inputs_dont_change:
             if self.sensor_stuck_since == None:
@@ -455,7 +461,7 @@ class ControlModuleBase:
             self.sensor_stuck_since = None                           # If ok, reset sensor_stuck
 
 
-        data_implausible = (self._DATA_OXYGEN < 0 or self._DATA_OXYGEN > 100) or \
+        data_implausible = (self.COPY_DATA_OXYGEN < 0 or self.COPY_DATA_OXYGEN > 100) or \
                            (self._DATA_Qout < 0 or self._DATA_Qout > limit_max_flows) or \
                            (self._DATA_PRESSURE < 0 or self._DATA_PRESSURE > limit_max_pressure)
         if data_implausible:
@@ -478,15 +484,6 @@ class ControlModuleBase:
 
         #self.TECHA = time.time()  # Technical alert, but continue running hoping for the best
 
-    def _control_update(self, dt):
-        """
-        This selects between PID and state control. If other controllers are to be implemented, add here.
-        """
-        if self._pid_control_flag:
-            self._PID_update(dt)
-        else:
-            self._STATECONTROL_update(dt)
-
     def __start_new_breathcycle(self):
         """
         This has to be executed when the next breath cycles starts
@@ -501,67 +498,6 @@ class ControlModuleBase:
         if self._save_logs and self._DATA_BREATH_COUNT % self._FLUSH_EVERY == 0:
             self.dl.flush_logfile()        # If we kept records, flush the data from the previous breath cycle
             self.dl.rotation_newfile()     # And Check whether we run out of space for the logger
-
-    def _STATECONTROL_update(self, dt):
-        ''' 
-        This instantiates the state control algorithms.
-        During the breathing cycle, it goes through the four states:
-           1) Rise to PIP
-           2) Sustain PIP pressure
-           3) Quick fall to PEEP
-           4) Sustaint PEEP pressure
-        Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
-        A record of pressure/volume waveforms is kept and saved
-        '''
-
-        now = time.time()
-        cycle_phase = now - self._cycle_start
-        next_cycle = False
-
-        self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from the measurements of the flow out
-
-        if cycle_phase < self.__SET_PIP_TIME:
-            self.__control_signal_in = 50                                                       # STATE CONTROL: to PIP, air in as fast as possible
-            self.__control_signal_out = 0
-            if self._DATA_PRESSURE > self.__SET_PIP:
-                self.__control_signal_in = 0
-
-        elif cycle_phase < self.__SET_I_PHASE:                                                           # then, we control PIP
-            self.__control_signal_in = 0                                                             # STATE CONTROL: keep PIP plateau, let air in if below
-            self.__control_signal_out = 0
-            if self._DATA_PRESSURE < self.__SET_PIP:
-                self.__control_signal_in = 20
-            # if self._DATA_PRESSURE > self.__SET_PIP:
-            #     self.__control_signal_out = 1
-
-        elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
-            self.__control_signal_in = 0
-            self.__control_signal_out = 1
-            # if self._DATA_PRESSURE < self.__SET_PEEP:
-            #     self.__control_signal_out = 0
-
-        elif cycle_phase < self.__SET_CYCLE_DURATION:                                                     # and control around PEEP
-            self.__control_signal_in = 5                                      # trust the PEEP valve; gentle flow in
-            self.__control_signal_out = 1
-            # if self._DATA_PRESSURE < self.__SET_PEEP:
-            #     self.__control_signal_in = np.inf
-            # if self._DATA_PRESSURE > self.__SET_PEEP:
-            #     self.__control_signal_out = 1
-
-        else:
-            self._cycle_start = time.time()  # New cycle starts
-            self._DATA_VOLUME = 0            # ... start at zero volume in the lung
-            self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
-            next_cycle = True
-
-
-        self.__test_for_alarms()
-        if next_cycle:                        # if a new breath cycle has started
-            self.__start_new_breathcycle()
-        else:
-            self.__cycle_waveform = np.append(self.__cycle_waveform, [[cycle_phase, self._DATA_PRESSURE, self._DATA_VOLUME]], axis=0)
-        if self._save_logs:
-            self.__save_values()
 
     def _PID_update(self, dt):
         ''' 
@@ -581,42 +517,28 @@ class ControlModuleBase:
         next_cycle = False
 
         self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
+        self._DATA_PRESSURE = np.mean(self._DATA_PRESSURE_LIST)
 
-        #self.__SET_PIP_TIME = 0.5*self.__SET_I_PHASE
-
-        '''if cycle_phase < self.__SET_PIP_TIME:
-            self.__KP = 1
-            self.__KI = 2
-            self.__KD = 0
-            #target_pressure = cycle_phase*(self.__SET_PIP*1.1 - self.__SET_PEEP) / self.__SET_PIP_TIME  + self.__SET_PEEP
-            target_pressure = self.__SET_PIP
-            self.__PID_OFFSET = 0
-            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt, RC = 0.5)
-            self.__calculate_control_signal_in()
-            self.__control_signal_out = 0   # close out valve
-            #if self._DATA_PRESSURE > self.__SET_PIP:
-            #    self.__control_signal_in = 0'''
 
         if cycle_phase < self.__SET_I_PHASE:
-            self.__KP = max(0.5,3*np.exp(-cycle_phase / (0.15*self.__SET_I_PHASE)))
-            self.__KI = 6*(1-np.exp(-cycle_phase / (0.075*self.__SET_I_PHASE)))
+            self.__KP = 2*(self.__SET_PIP_GAIN-0.95)
+            self.__KI = 2.0
             self.__KD = 0
             self.__PID_OFFSET = 0
-            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.5)
-            self.__calculate_control_signal_in()
+
+            self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.3)
+            self.__calculate_control_signal_in(dt = dt)
             self.__control_signal_out = 0
-            # if self._DATA_PRESSURE > self.__SET_PIP+2:
-            #     self.__control_signal_out = 1                                                        # if exceeded, we open the exhaust valve
-            # else:
-            #     self.__control_signal_out = 0                                                        # close out valve
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
 
             if PEEP_VALVE_SET:
                 self.__control_signal_in = 0 
                 self.__control_signal_out = 1
-
             else:
+                self.__KP = 0.1
+                self.__KI = 2.0
+                self.__KD = 0
                 target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
                 self.__calculate_control_signal_in()
@@ -627,16 +549,25 @@ class ControlModuleBase:
         elif cycle_phase < self.__SET_CYCLE_DURATION:
 
             if PEEP_VALVE_SET:
-                #self.__control_signal_in = 5                                        # Controlled by mechanical peep valve, gentle flow in
                 self.__control_signal_out = 1
-                self.__control_signal_in = 5* (1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )
+                self.__control_signal_in = 5 *(1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )  # Make this nice and smooth.
             else:
+                self.__KP = 0.1
+                self.__KI = 2.0
+                self.__KD = 0
                 self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
                 self.__calculate_control_signal_in()
                 if self._DATA_PRESSURE > self.__SET_PEEP + 0.5:
                     self.__control_signal_out = 1
                 else:
                     self.__control_signal_out = 0
+
+            if self._DATA_PRESSURE < self.__SET_PEEP - self.breath_pressure_drop:  #breath!
+                print("Autonomous breath detected; starting next cycle.")
+                self._cycle_start = time.time()  # New cycle starts
+                self._DATA_VOLUME = 0            # ... start at zero volume in the lung
+                self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
+                next_cycle = True
 
         else:
             self._cycle_start = time.time()  # New cycle starts
@@ -660,7 +591,7 @@ class ControlModuleBase:
         sensor_values =  SensorValues(vals={
         ValueName.PIP.name                  : self._DATA_PIP,
         ValueName.PEEP.name                 : self._DATA_PEEP,
-        ValueName.FIO2.name                 : self._DATA_OXYGEN,
+        ValueName.FIO2.name                 : self.COPY_DATA_OXYGEN,
         ValueName.PRESSURE.name             : self._DATA_PRESSURE,
         ValueName.VTE.name                  : self._DATA_VTE,
         ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
@@ -693,28 +624,6 @@ class ControlModuleBase:
             self.__cycle_waveform_archive.append(archive[-1])
         self._time_last_contact = time.time()
         return archive
-
-    def get_target_waveform(self):
-        """
-        Returns the target waveform, drawn as a sketch of a stepwise linear function
-        Format is time-points, pressure values - to be connected with straight lines
-                ______
-               /      \                         <- Sketch waveform of single breath cycle
-              /        \
-             /          \____________
-
-             ^  ^     ^  ^           ^
-             A  B     C  D           E           <- Critical time points
-        """
-        with self._lock:
-            wv = np.array([
-                (0, self.__SET_PEEP),                                            # A: start of the waveform
-                (self.__SET_PIP_TIME, self.__SET_PIP),                           # B: reaching PIP within PIP_TIME
-                (self.__SET_I_PHASE, self.__SET_PIP),                            # C: keeping the plateau during I_Phase
-                (self.__SET_PEEP_TIME + self.__SET_I_PHASE, self.__SET_PEEP),    # D: reaching PEEP within PEEP TIME
-                (self.__SET_CYCLE_DURATION, self.__SET_PEEP)])                    # E: Cycle ends
-        self._time_last_contact = time.time()
-        return wv
 
     def _start_mainloop(self):
         # This will depend on simulation or reality
@@ -778,97 +687,87 @@ class ControlModuleBase:
         self._time_last_contact = time.time()
         return self._loop_counter
 
-    def do_pid_control(self):
-        if self._pid_control_flag:
-            print("Already running PID control.")
-        self._pid_control_flag = True
-        self._time_last_contact = time.time()
-
-    def do_state_control(self):
-        if not self._pid_control_flag:
-            print("Already running State control.")
-        self._pid_control_flag = False
-        self._time_last_contact = time.time()
-
-
-
 class ControlModuleDevice(ControlModuleBase): 
     """
     Controlling Hardware.
     """
     # Implement ControlModuleBase functions
-    def __init__(self, pid_control = False, save_logs = True, flush_every = 10, config_file = None):
+    def __init__(self, save_logs = True, flush_every = 10, config_file = None):
         """
         Args:
             config_file (string): Path to device config file, e.g. 'vent/io/config/dinky-devices.ini'
         """
-        ControlModuleBase.__init__(self, pid_control, save_logs, flush_every)
+        ControlModuleBase.__init__(self, save_logs, flush_every)
         self.HAL = io.Hal(config_file)
         self._sensor_to_COPY()
+
+        # Current settings of the valves to avoid unneccesary hardware queries
+        self.current_setting_ex = self.HAL.setpoint_ex
+        self.current_setting_in = self.HAL.setpoint_in
 
     def __del__(self):
         self.set_valves_standby()           # First set valves to default
         ControlModuleBase.__del__(self)     # and del the base
 
-
     def _sensor_to_COPY(self):
         # And the sensor measurements
-        self._get_HAL()
+        self._get_HAL() 
 
         with self._lock:
           self.COPY_sensor_values = SensorValues(vals={
-              ValueName.PIP                  : self._DATA_PIP,
-              ValueName.PEEP                 : self._DATA_PEEP,
-              ValueName.FIO2                 : self._DATA_OXYGEN,
-              ValueName.PRESSURE             : self._DATA_PRESSURE,
-              ValueName.VTE                  : self._DATA_VTE,
-              ValueName.BREATHS_PER_MINUTE   : self._DATA_BPM,
-              ValueName.INSPIRATION_TIME_SEC : self._DATA_I_PHASE,
-              ValueName.FLOWOUT              : self._DATA_Qout,
-              'timestamp'                    : time.time(),
-              'loop_counter'                 : self._loop_counter,
-              'breath_count'                 : self._DATA_BREATH_COUNT
+              ValueName.PIP.name                  : self._DATA_PIP,
+              ValueName.PEEP.name                 : self._DATA_PEEP,
+              ValueName.FIO2.name                 : self.COPY_DATA_OXYGEN,
+              ValueName.PRESSURE.name             : self._DATA_PRESSURE,
+              ValueName.VTE.name                  : self._DATA_VTE,
+              ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+              ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+              ValueName.FLOWOUT.name              : self._DATA_Qout,
+              'timestamp'                         : time.time(),
+              'loop_counter'                      : self._loop_counter,
+              'breath_count'                      : self._DATA_BREATH_COUNT
           })
-
-    @timeout
+            
+    # @timeout
     def _set_HAL(self, valve_open_in, valve_open_out):
         """
         Set Controls with HAL, decorated with a timeout.
         """
-        self.HAL.setpoint_in = max(min(100, int(valve_open_in)), 0)
-        self.HAL.setpoint_ex = valve_open_out 
-    
-    @timeout
+        if self.current_setting_in is not max(min(100, int(valve_open_in)), 0):
+            self.HAL.setpoint_in = max(min(100, int(valve_open_in)), 0)
+            self.current_setting_in = max(min(100, int(valve_open_in)), 0)
+
+        if self.current_setting_ex is not valve_open_out:
+            self.current_setting_ex = valve_open_out
+            self.HAL.setpoint_ex =  valve_open_out
+
+    # @timeout
     def _get_HAL(self):
         """
         Get sensor values from HAL, decorated with timeout.
+        Only during expiration is the flow-sensor queried!
         """
-        glitchcatcher = True
 
-        if not glitchcatcher:
-            self._DATA_PRESSURE = self.HAL.pressure
-            self._DATA_Qout     = self.HAL.flow_ex
-            self._DATA_OXYGEN   = self.HAL.oxygen
+        inspiration_phase = (time.time() - self._cycle_start) < self.COPY_SET_I_PHASE
 
+        self._DATA_PRESSURE = self.HAL.pressure                      # Get pressure reading
+        self._DATA_PRESSURE_LIST.append(self._DATA_PRESSURE)         # And append it to list -> is averaged over a couple values
+        if len(self._DATA_PRESSURE_LIST) > 5:
+            self._DATA_PRESSURE_LIST.pop(0)
+
+        if inspiration_phase:
+            self._DATA_Qout         = 0                                  # Flow out and oxygen are not measured
+            self.COPY_DATA_OXYGEN   = self._DATA_OXYGEN
         else:
-            pp = self.HAL.pressure
-            # if np.abs( pp  - self._DATA_PRESSURE ) < 5: # This is not a glitch, save it
-            self._DATA_PRESSURE = pp
+            if time.time() - self._OXYGEN_LAST_READ > 5:                 # If the time has come, get an oxygen value.
+                self._DATA_OXYGEN = self.HAL.oxygen
+                self._OXYGEN_LAST_READ = time.time()
 
-            pq = self.HAL.flow_ex
-            if np.abs( pq  - self._DATA_Qout ) < 5:     # This is not a glitch, use it.
-                 # ... estimate the baseline flow during expiration with a rankfilter (baseline of air that bypasses patient)
-                 # This has to be subtracted from flow_ex to integrate VTE
-                if time.time() - self._cycle_start > self.COPY_SET_I_PHASE:
-                    self._flow_list.append(pq)
-                    Qbaseline = np.percentile(self._flow_list, 5 )
-                else:
-                    Qbaseline = 0
-                self._DATA_Qout = pq - Qbaseline
+            pq = self.HAL.flow_ex/60                                     # Get a flow reading in l/sec
+            self._flow_list.append(pq)
+            Qbaseline = np.percentile(self._flow_list, 5 )               # stimate the baseline flow during expiration with a rankfilter (baseline of air that bypasses patient)
 
-            po = self.HAL.oxygen
-            # if np.abs(po - self._DATA_OXYGEN ) < 5:     # This is not a glitch, use it.
-            self._DATA_OXYGEN = po
+            self._DATA_Qout = pq - Qbaseline                             # This has to be subtracted from flow_ex to integrate VTE
 
 
     def set_valves_standby(self):
@@ -887,7 +786,6 @@ class ControlModuleDevice(ControlModuleBase):
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
         while self._running.is_set():
-            time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
             dt = now - self._last_update                            # Time sincle last cycle of main-loop
@@ -899,7 +797,7 @@ class ControlModuleDevice(ControlModuleBase):
                 dt = self._LOOP_UPDATE_TIME
             
             self._get_HAL()                                          # Update pressure and flow measurement
-            self._control_update(dt = dt)                            # With that, calculate controls
+            self._PID_update(dt = dt)                            # With that, calculate controls
             valve_open_in  = self._get_control_signal_in()           #    -> Inspiratory side: get control signal for PropValve
             valve_open_out = self._get_control_signal_out()          #    -> Expiratory side: get control signal for Solenoid
             self._set_HAL(valve_open_in, valve_open_out)             # And set values.
@@ -922,23 +820,17 @@ class ControlModuleDevice(ControlModuleBase):
 class Balloon_Simulator:
     '''
     Physics simulator for inflating balloon with a PEEP valve
-
     For math, see https://en.wikipedia.org/wiki/Two-balloon_experiment
-
-    Args:
-        leak: Boolean. True: leaky ballon with 5 sec time constant, False: not leaky.
     '''
 
-    def __init__(self, leak, peep_valve):
+    def __init__(self, peep_valve):
         # Hard parameters for the simulation
         self.max_volume = 6    # Liters  - 6?
         self.min_volume = 1.5  # Liters - baloon starts slightly inflated.
         self.PC = 40           # Proportionality constant that relates pressure to cm-H2O
         self.P0 = 0            # Baseline/Minimum pressure.
-        self.leak = leak
+        self.leak = True
 
-        self.temperature = 37  # keep track of these, as they are important output variable
-        self.humidity = 90
         self.fio2 = 60
 
         # Dynamical parameters - these are the initial conditions
@@ -983,26 +875,21 @@ class Balloon_Simulator:
     def update(self, dt):  # Performs an update of duration dt [seconds]
 
         if dt<1:                                        # This is the simulation, so not quite so important,
-            self.current_flow = self.Qin - self.Qout     # But no update should take longer than that
-            self.current_volume += self.current_flow * dt
+            # self.current_flow = self.Qin - self.Qout     # But no update should take longer than that
+            s = dt / (0.050*np.abs(self.current_flow)  + dt)
+            self.current_flow = self.current_flow + s * ((self.Qin - self.Qout) - self.current_flow)
 
-            if self.leak:
-                RC = 5  # pulled 5 sec out of my hat
-                s = dt / (RC + dt)
-                self.current_volume = self.current_volume + s * (self.min_volume - self.current_volume)
+            self.current_volume += self.current_flow * dt
 
             # This is from the baloon equation, uses helper variable (the baloon radius)
             self.r_real = (3 * self.current_volume / (4 * np.pi)) ** (1 / 3)
             r0 = (3 * self.min_volume / (4 * np.pi)) ** (1 / 3)
 
-            self.current_pressure = self.P0 + (self.PC / (r0 ** 2 * self.r_real)) * (1 - (r0 / self.r_real) ** 6)
+            new_pressure = self.P0 + (self.PC / (r0 ** 2 * self.r_real)) * (1 - (r0 / self.r_real) ** 6)
+            self.current_pressure = new_pressure
 
-            # Temperature, humidity and o2 fluctuations modelled as OUprocess
-            self.temperature = self.OUupdate(self.temperature, dt=dt, mu=37, sigma=0.3, tau=1)
+            # o2 fluctuations modelled as OUprocess
             self.fio2 = self.OUupdate(self.fio2, dt=dt, mu=60, sigma=5, tau=1)
-            self.humidity = self.OUupdate(self.humidity, dt=dt, mu=90, sigma=5, tau=1)
-            if self.humidity > 100:
-                self.humidity = 100
         else:
             self._reset()
             print(self.current_pressure)
@@ -1048,8 +935,8 @@ class ControlModuleSimulator(ControlModuleBase):
             simulator_dt (None, float): if None, simulate dt at same rate controller updates.
                 if ``float`` , fix dt updates with this value but still update at _LOOP_UPDATE_TIME
         """
-        ControlModuleBase.__init__(self, pid_control = True, save_logs = False)
-        self.Balloon = Balloon_Simulator(leak=False, peep_valve = peep_valve_setting)          # This is the simulation
+        ControlModuleBase.__init__(self, save_logs = False)
+        self.Balloon = Balloon_Simulator(peep_valve = peep_valve_setting)          # This is the simulation
         self._sensor_to_COPY()
 
         self.simulator_dt = simulator_dt
@@ -1064,16 +951,12 @@ class ControlModuleSimulator(ControlModuleBase):
     def __SimulatedPropValve(self, x, dt):
         '''
         This simulates the action of a proportional valve.
-        Flow-current-curve eye-balled from the datasheet of SMC PVQ31-5G-23-01N  
-        
+        Flow-current-curve eye-balled generaic prop vale.
         x:  Input current [mA]
         dt: Time since last setting in seconds [for the LP filter]
         '''
-        y = 3*x
-        flow_new = 1.0*(np.tanh(0.03*(y - 130)) + 1)
-        if y>170:
-            flow_new = 1.72  #Maximum, ~100 l/min
-        if y<0:
+        flow_new = (np.tanh(0.12*(x - 30)) + 1)
+        if x<0:
             flow_new = 0
         return flow_new
 
@@ -1091,17 +974,17 @@ class ControlModuleSimulator(ControlModuleBase):
         # And the sensor measurements
         with self._lock:
             self.COPY_sensor_values = SensorValues(vals={
-              ValueName.PIP                  : self._DATA_PIP,
-              ValueName.PEEP                 : self._DATA_PEEP,
-              ValueName.FIO2                 : self.Balloon.fio2,
-              ValueName.PRESSURE             : self.Balloon.current_pressure,
-              ValueName.VTE                  : self._DATA_VTE,
-              ValueName.BREATHS_PER_MINUTE   : self._DATA_BPM,
-              ValueName.INSPIRATION_TIME_SEC : self._DATA_I_PHASE,
-              ValueName.FLOWOUT              : self._DATA_Qout,
-              'timestamp'                    : time.time(),
-              'loop_counter'                 : self._loop_counter,
-              'breath_count'                 : self._DATA_BREATH_COUNT
+              ValueName.PIP.name                  : self._DATA_PIP,
+              ValueName.PEEP.name                 : self._DATA_PEEP,
+              ValueName.FIO2.name                 : self.Balloon.fio2,
+              ValueName.PRESSURE.name             : self.Balloon.current_pressure,
+              ValueName.VTE.name                  : self._DATA_VTE,
+              ValueName.BREATHS_PER_MINUTE.name   : self._DATA_BPM,
+              ValueName.INSPIRATION_TIME_SEC.name : self._DATA_I_PHASE,
+              ValueName.FLOWOUT.name              : self._DATA_Qout,
+              'timestamp'                  : time.time(),
+              'loop_counter'             : self._loop_counter,
+              'breath_count': self._DATA_BREATH_COUNT
             })
 
     def _start_mainloop(self):
@@ -1111,7 +994,7 @@ class ControlModuleSimulator(ControlModuleBase):
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
         self.logger.info("MainLoop: start")
         while self._running.is_set():
-            time.sleep(self._LOOP_UPDATE_TIME)
+            # time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
             if self.simulator_dt:
@@ -1126,9 +1009,11 @@ class ControlModuleSimulator(ControlModuleBase):
                     dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
-            self._DATA_PRESSURE = self.Balloon.get_pressure()       # Get a pressure measurement from balloon and tell controller             --- SENSOR 1
+            self._DATA_PRESSURE_LIST.append(self.Balloon.get_pressure())       # Get a pressure measurement from balloon and tell controller             --- SENSOR 1
+            if len(self._DATA_PRESSURE_LIST) > 5:
+                self._DATA_PRESSURE_LIST.pop(0)
 
-            self._control_update(dt = dt)                               # Update the PID Controller
+            self._PID_update(dt = dt)                               # Update the PID Controller
 
             x = self._get_control_signal_in()                       # Inspiratory side: get control signal for PropValve
             Qin = self.__SimulatedPropValve(x, dt = dt)             # And calculate the produced flow Qin
@@ -1166,4 +1051,4 @@ def get_control_module(sim_mode=False, simulator_dt = None):
     if sim_mode == True:
         return ControlModuleSimulator(simulator_dt = simulator_dt)
     else:
-        return ControlModuleDevice(pid_control = True, save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')
+        return ControlModuleDevice(save_logs = True, flush_every = 1, config_file = 'vent/io/config/devices.ini')

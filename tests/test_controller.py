@@ -47,9 +47,6 @@ def test_control_settings(control_setting_name):
     assert c_get.name == c_set.name
     assert c_get.value == c_set.value
 
-    wv = Controller.get_target_waveform()
-    assert len(wv) == 5
-
 def test_restart_controller():
     '''
     This tests whether the controller can be started and stopped 10 times without problems
@@ -80,25 +77,13 @@ def test_restart_controller():
 #   good. (i.e. close to target within narrow margins).
 #
 
-@pytest.mark.parametrize("control_type", ["PID", "STATE"])
-
-def test_control_dynamical(control_type):
+def test_control_dynamical():
     ''' 
     This tests whether the controller is controlling pressure as intended.
     Start controller, set control values, measure whether actually there.
     '''
     Controller = get_control_module(sim_mode=True, simulator_dt=0.01)
     Controller._LOOP_UPDATE_TIME = 0.01
-
-
-    if control_type == "PID":
-        Controller.do_pid_control()
-        Controller.do_pid_control()
-        Inspiration_CI = 0.2
-    else:
-        Controller.do_state_control()
-        Controller.do_state_control()
-        Inspiration_CI = 0.4    # State control is not that precise, slightly wider confidence regions.
 
     vals_start = Controller.get_sensors()
 
@@ -159,14 +144,12 @@ def test_control_dynamical(control_type):
     print(v_pip)
     print(v_bpm)
     print(v_iphase)
-    print(Inspiration_CI)
-    print(control_type)
 
     assert (vals_stop.loop_counter - vals_start.loop_counter)  > 100 # In 20s, this program should go through a good couple of loops
-    assert np.abs(vals_stop.PEEP - v_peep)                     < 5   # PEEP error correct within 5 cmH2O
+    assert np.abs(vals_stop.PEEP - v_peep)                     < 2   # PEEP error correct within 5 cmH2O
     assert np.abs(vals_stop.PIP - v_pip)                       < 5   # PIP  error correct within 5 cmH2O
-    assert np.abs(vals_stop.BREATHS_PER_MINUTE - v_bpm)        < 5   # Breaths per minute correct within 5 bpm
-    assert np.abs(vals_stop.INSPIRATION_TIME_SEC - v_iphase)   < 0.2*vals_stop.INSPIRATION_TIME_SEC # Inspiration time, correct within 20%
+    assert np.abs(vals_stop.BREATHS_PER_MINUTE - v_bpm)        < 1   # Breaths per minute correct within 5 bpm
+    assert np.abs(vals_stop.INSPIRATION_TIME_SEC - v_iphase)   < 0.2 # Inspiration time, correct within 20%
 
     hb1 = Controller.get_heartbeat()
     assert hb1 > 0                                 # Test the heartbeat
@@ -213,6 +196,6 @@ def test_erratic_dt():
     peeps = np.unique([np.abs(s.PEEP - target_peep)  for s in ls if s.PEEP is not None])
     pips = np.unique([np.abs(s.PIP - target_pip)  for s in ls if s.PIP is not None])
 
-    assert np.mean(peeps) < 5
-    assert np.mean(pips) < 5
+    assert np.mean(peeps) < 8
+    assert np.mean(pips) < 8
 

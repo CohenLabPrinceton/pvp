@@ -392,9 +392,27 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 vals = self.coordinator.get_sensors()
 
             # update alarms
-            # only after first breath! many values are only defined after first cyce
+            # only after first breath! many values are only defined after first cycle
             if vals.breath_count > 1:
                 self.alarm_manager.update(vals)
+
+            try:
+                controller_alarms = self.coordinator.get_alarms()
+                if isinstance(controller_alarms, (tuple, list)):
+                    for alarm in controller_alarms:
+                        # alarm can either be Alarm object of a list of Alarm objects
+                        if isinstance(alarm, Alarm):
+                            self.handle_alarm(alarm)
+                        elif isinstance(alarm, (tuple, list)):
+                            for subalarm in alarm:
+                                self.handle_alarm(subalarm)
+                        else:
+                            self.logger.warning(f'Dont know how to handle {alarm} gotten from controller get_alarms() method')
+                elif controller_alarms is not None:
+                    self.logger.warning(f'Dont know how to handle {controller_alarms} gotten from controller get_alarms() method')
+            except Exception as e:
+                self.logger.exception(f'Couldnt get alarms from controller, got error {e}')
+                    
             #
             try:
             #     self.pressure_waveform.update_target_array(self.coordinator.get_target_waveform())
@@ -404,15 +422,24 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
             for plot_key, plot_obj in self.plots.items():
                 if hasattr(vals, plot_key):
-                    plot_obj.update_value((time.time(), getattr(vals, plot_key)))
+                    try:
+                        plot_obj.update_value((time.time(), getattr(vals, plot_key)))
+                    except Exception as e:
+                        self.logger.exception(f'Couldnt update plot with {plot_key}, got error {e}')
 
             for monitor_key, monitor_obj in self.monitor.items():
                 if hasattr(vals, monitor_key):
-                    monitor_obj.update_value(getattr(vals, monitor_key))
+                    try:
+                        monitor_obj.update_value(getattr(vals, monitor_key))
+                    except Exception as e:
+                        self.logger.exception(f'Couldnt update monitor object with {monitor_key}, got error {e}')
 
             for control_key, control in self.controls.items():
                 if hasattr(vals, control_key):
-                    control.update_sensor(getattr(vals, control_key))
+                    try:
+                        control.update_sensor(getattr(vals, control_key))
+                    except Exception as e:
+                        self.logger.exception(f'Couldnt update control object with {control_key}, got error {e}')
 
             # let our  timer know we got some data
             self.control_panel.heartbeat.beatheart(vals.timestamp)

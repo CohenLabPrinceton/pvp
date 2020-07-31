@@ -16,21 +16,12 @@ remote_controller = None
 
 
 def get_sensors():
-    # left as example of how to get loggers within these callbacks
-    #logger = logging.getLogger(__name__)
-    #logger.info('remote runnnnnnn')
     res = remote_controller.get_sensors()
     return pickle.dumps(res)
 
-
-# def get_active_alarms():
-#     res = remote_controller.get_active_alarms()
-#     return pickle.dumps(res)
-#
-#
-# def get_logged_alarms():
-#     res = remote_controller.get_logged_alarms()
-#     return pickle.dumps(res)
+def get_alarms():
+    res = remote_controller.get_alarms()
+    return pickle.dumps(res)
 
 
 def set_control(control_setting):
@@ -67,6 +58,7 @@ def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port)
     server.register_function(remote_controller.start, "start")
     server.register_function(remote_controller.is_running, "is_running")
     server.register_function(remote_controller.stop, "stop")
+    server.register_function(get_alarms, 'get_alarms')
     serve_event.set()
     server.serve_forever()
 

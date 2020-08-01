@@ -95,10 +95,19 @@ class ControlModuleBase:
 
         # Alarm management; controller can only react to High airway pressure alarm, and report Hardware problems
         self.HAPA = None
+        self.hapa_crossing_time = None # time that the pressure first crosses the threshold
         self.TECHA = [] # type: typing.List[Alarm]
         self.limit_hapa = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0][1].limit # TODO: Jonny write method to get limits from alarm manager
-        self.cough_duration = prefs.get_pref('COUGH_DURATION')
-        self.breath_pressure_drop = 4 #prefs.get_pref('XXXXX')   #pressure drop below peep that is detected as an attempt to breath.
+        self.cough_duration = prefs.get_pref('COUGH_DURATION') # type: typing.Union[float, int]
+        #self.breath_pressure_drop = 4 #prefs.get_pref('XXXXX')   #pressure drop below peep that is detected as an attempt to breath.
+        self.breath_pressure_drop = prefs.get_pref('BREATH_PRESSURE_DROP') # type: typing.Union[float, int]
+        self.breath_detection = prefs.get_pref('BREATH_DETECTION') # type: bool
+
+        self.limit_max_flows = prefs.get_pref('CONTROLLER_MAX_FLOW')            # If flows above that, hardware cannot be correct.
+        self.limit_max_pressure = prefs.get_pref('CONTROLLER_MAX_PRESSURE')       # If pressure above that, hardware cannot be correct.
+        self.limit_max_stuck_sensor = prefs.get_pref('CONTROLLER_MAX_STUCK_SENSOR')   # 200 ms, jonny, wherever you want this number to live
+
+
 
         self.sensor_stuck_since = None
 
@@ -355,6 +364,14 @@ class ControlModuleBase:
         self._time_last_contact = time.time()
         return return_value
 
+    def set_breath_detection(self, breath_detection: bool):
+        if isinstance(breath_detection, bool):
+            if self.breath_detection != breath_detection:
+                self.logger.info(f'Setting breath detection mode to {breath_detection}')
+                self.breath_detection = breath_detection
+        else:
+            self.logger.exception(f"Dont know how to set breath detection mode {breath_detection}, must be bool")
+
     def __get_PID_error(self, ytarget, yis, dt, RC):
         """
         Calculates the three terms for PID control. Also takes a timestep "dt" on which the integral-term is smoothed.
@@ -416,23 +433,32 @@ class ControlModuleBase:
 
         #### First: Check for High Airway Pressure (HAPA)
         if self._DATA_PRESSURE > self.limit_hapa:
-            if self.HAPA is None:
-                self.HAPA = Alarm(AlarmType.HIGH_PRESSURE,
-                                  AlarmSeverity.HIGH,
-                                  time.time(),
-                                  value=self._DATA_PRESSURE)
-            if time.time() - self.HAPA.start_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
+            # if just crossing, store time of threshold crossing
+            if self.hapa_crossing_time is None:
+                self.hapa_crossing_time = time.time()
+
+            # check if time elapsed is greater than cough duration.
+            if time.time() - self.hapa_crossing_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
                 self.__SET_PIP = 30                 # Default: PIP to 30
-                for i in range(5):                   # Make sure to send this command for 100ms -> release pressure immediately
-                    self.__control_signal_out = 1
-                    self.__control_signal_in  = 0
-                    time.sleep(0.02)
-                print("HAPA has been triggered")
+                if self.__control_signal_in != 0 and self.__control_signal_out != 1:
+                    for i in range(5):                   # Make sure to send this command for 100ms -> release pressure immediately
+                        self.__control_signal_out = 1
+                        self.__control_signal_in  = 0
+                        time.sleep(0.02)
+
+                # create HAPA alarm
+                if self.HAPA is None:
+                    self.HAPA = Alarm(AlarmType.HIGH_PRESSURE,
+                                      AlarmSeverity.HIGH,
+                                      time.time(),
+                                      value=self._DATA_PRESSURE)
+
                 self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
             else:
-                print("Transient high pressure; probably a cough.")
+                self.logger.debug("Transient high pressure; probably a cough.")
         else:
             self.HAPA = None
+            self.hapa_crossing_time = None
 
         #### Second: Check for Technical Alerts via data plausibility:
         #  ->  Measurements change over time, and are in a plausible range
@@ -440,30 +466,31 @@ class ControlModuleBase:
             self.__DATA_old = [self.COPY_DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
             inputs_dont_change = False 
         else:
-            inputs_dont_change = (self.COPY_DATA_OXYGEN == self.__DATA_old[0]) or \
-                                 (self._DATA_Qout == self.__DATA_old[1]) or \
+            inputs_dont_change = (self.COPY_DATA_OXYGEN == self.__DATA_old[0]) and \
+                                 (self._DATA_Qout == self.__DATA_old[1]) and \
                                  (self._DATA_PRESSURE == self.__DATA_old[2])
             self.__DATA_old = [self.COPY_DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
 
         if inputs_dont_change:
-            if self.sensor_stuck_since == None:
+            if self.sensor_stuck_since is None:
                 self.sensor_stuck_since = time.time()                # If inputs are stuck, remember the time.
                 time_elapsed = 0
             else:
                 time_elapsed = time.time() - self.sensor_stuck_since   # If happened again, how long?
 
-            if time_elapsed > limit_max_stuck_sensor and not any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
+            if time_elapsed > self.limit_max_stuck_sensor and not any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
                     self.TECHA.append(Alarm(
                         AlarmType.SENSORS_STUCK,
                         AlarmSeverity.TECHNICAL,
                     ))
         else:
+            self.TECHA = [a for a in self.TECHA if a.alarm_type != AlarmType.SENSORS_STUCK]
             self.sensor_stuck_since = None                           # If ok, reset sensor_stuck
 
 
         data_implausible = (self.COPY_DATA_OXYGEN < 0 or self.COPY_DATA_OXYGEN > 100) or \
-                           (self._DATA_Qout < 0 or self._DATA_Qout > limit_max_flows) or \
-                           (self._DATA_PRESSURE < 0 or self._DATA_PRESSURE > limit_max_pressure)
+                           (self._DATA_Qout < 0 or self._DATA_Qout > self.limit_max_flows) or \
+                           (self._DATA_PRESSURE < 0 or self._DATA_PRESSURE > self.limit_max_pressure)
         if data_implausible:
             if not any([a.alarm_type == AlarmType.BAD_SENSOR_READINGS for a in self.TECHA]):
                 self.TECHA.append(Alarm(
@@ -562,8 +589,8 @@ class ControlModuleBase:
                 else:
                     self.__control_signal_out = 0
 
-            if self._DATA_PRESSURE < self.__SET_PEEP - self.breath_pressure_drop:  #breath!
-                print("Autonomous breath detected; starting next cycle.")
+            if self.breath_detection and (self._DATA_PRESSURE < self.__SET_PEEP - self.breath_pressure_drop):  #breath!
+                self.logger.info("Autonomous breath detected; starting next cycle.")
                 self._cycle_start = time.time()  # New cycle starts
                 self._DATA_VOLUME = 0            # ... start at zero volume in the lung
                 self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation

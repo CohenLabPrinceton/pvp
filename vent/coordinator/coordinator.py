@@ -42,6 +42,9 @@ class CoordinatorBase:
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         pass
 
+    def set_breath_detection(self, breath_detection: bool):
+        pass
+
     def get_target_waveform(self):
         pass
 
@@ -83,6 +86,9 @@ class CoordinatorLocal(CoordinatorBase):
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
         return self.control_module.get_control(control_setting_name)
 
+    def set_breath_detection(self, breath_detection: bool):
+        self.control_module.set_breath_detection(breath_detection)
+
     def get_target_waveform(self):
         return self.control_module.get_target_waveform()
 
@@ -123,19 +129,6 @@ class CoordinatorRemote(CoordinatorBase):
         controller_alarms = pickle.loads(self.rpc_client.get_alarms().data)
         return controller_alarms
 
-
-    # def get_active_alarms(self) -> Dict[str, Alarm]:
-    #     pickled_res = self.rpc_client.get_active_alarms().data
-    #     return pickle.loads(pickled_res)
-    #
-    # def get_logged_alarms(self) -> List[Alarm]:
-    #     pickled_res = self.rpc_client.get_logged_alarms().data
-    #     return pickle.loads(pickled_res)
-    #
-    # def clear_logged_alarms(self):
-    #     # TODO: implement this
-    #     raise NotImplementedError
-
     def set_control(self, control_setting: ControlSetting):
         pickled_args = pickle.dumps(control_setting)
         self.rpc_client.set_control(pickled_args)
@@ -144,6 +137,10 @@ class CoordinatorRemote(CoordinatorBase):
         pickled_args = pickle.dumps(control_setting_name)
         pickled_res = self.rpc_client.get_control(pickled_args).data
         return pickle.loads(pickled_res)
+
+    def set_breath_detection(self, breath_detection: bool):
+        pickled_args = pickle.dumps(breath_detection)
+        self.rpc_client.set_breath_detection(pickled_args)
 
     def get_target_waveform(self):
         pickled_res = self.rpc_client.get_target_waveform().data

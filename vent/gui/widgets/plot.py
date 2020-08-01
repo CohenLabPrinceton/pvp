@@ -7,6 +7,7 @@ import numpy as np
 from PySide2 import QtCore
 import PySide2 # import so pyqtgraph recognizes as what we're using
 import pyqtgraph as pg
+pg.setConfigOptions(antialias=True)
 
 
 
@@ -741,6 +742,7 @@ class Plot(pg.PlotWidget):
         self.early_curve = self.plot(width=3)
         self.late_curve = self.plot(width=3)
         self.time_marker = pg.InfiniteLine(movable=False, angle=90, pos=0)
+        self.time_marker.setPen(color="#FFFFFF", width=10)
 
 
 

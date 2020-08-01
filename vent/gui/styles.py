@@ -684,6 +684,8 @@ QPushButton:checked {{
 }}
 """
 
+
+
 DARK_THEME =  f"""
 /*
 adapted from https://github.com/gmarull/qtmodern/blob/master/qtmodern/resources/style.qss

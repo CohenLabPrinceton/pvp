@@ -47,10 +47,16 @@ _DEFAULTS = {
     'CONTROLLER_LOOPS_UNTIL_UPDATE': 1, # update copied values like get_sensor every n loops,
     'CONTROLLER_RINGBUFFER_SIZE': 100,
     'COUGH_DURATION': 0.1,
+    'BREATH_PRESSURE_DROP': 4,
+    'BREATH_DETECTION': True,
     'LOGLEVEL': 'WARNING',
     'GUI_STATE_FN': 'gui_state.json',
     'ENABLE_DIALOGS': True, # enable _all_ dialogs -- for testing on virtual frame buffer
-    'ENABLE_WARNINGS': True # enable user warnings and confirmations
+    'ENABLE_WARNINGS': True, # enable user warnings and confirmations
+    'CONTROLLER_MAX_FLOW': 10,
+    'CONTROLLER_MAX_PRESSURE': 100,
+    'CONTROLLER_MAX_STUCK_SENSOR': 0.2
+
 }
 """
 Declare all available parameters and set default values. If no default, set as None. 
@@ -62,6 +68,11 @@ Declare all available parameters and set default values. If no default, set as N
 * ``LOGGING_MAX_BYTES`` : the **total** storage space for all loggers -- each logger gets ``LOGGING_MAX_BYTES/len(loggers)`` space
 * ``LOGGING_MAX_FILES`` : number of files to split each logger's logs across
 * ``GUI_STATE_FN``: Filename of gui control state file, relative to ``VENT_DIR``
+* ``BREATH_PRESSURE_DROP`` : pressure drop below peep that is detected as an attempt to breath.
+* ``BREATH_DETECTION``: (bool) whether the controller allows autonomous breaths (measured pressure is ``BREATH_PRESSURE_DROP`` below set PEEP)
+* ``CONTROLLER_MAX_FLOW``: If flows above that, hardware cannot be correct.
+* ``CONTROLLER_MAX_PRESSURE``: If pressure above that, hardware cannot be correct.
+* ``CONTROLLER_MAX_STUCK_SENSOR``: Max amount of time (in s) before considering a sensor stuck
 """
 
 def set_pref(key: str, val):

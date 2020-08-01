@@ -67,8 +67,8 @@ class Control(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.setContentsMargins(5,0,5,0)
         self.setLayout(self.layout)
-        # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-        #                           QtWidgets.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                           QtWidgets.QSizePolicy.Maximum)
 
 
         # Value, Controller

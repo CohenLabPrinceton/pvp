@@ -8,6 +8,7 @@ from collections import OrderedDict as odict
 from PySide2 import QtGui
 from vent.common.values import ValueName, SENSOR
 from vent.gui import styles
+from vent.common.loggers import init_logger
 
 LIMIT_GUI_INSTANCE = True
 """
@@ -101,9 +102,11 @@ def load_mono_font():
         font_db.addApplicationFont(os.path.join(external_dir, 'FiraCode-Regular.otf'))
         font_db.addApplicationFont(os.path.join(external_dir, 'FiraCode-Bold.otf'))
         mono_font = QtGui.QFont('Fira Code')
-    except:   # pragma: no cover
+    except Exception as e:   # pragma: no cover
         # if that fails, try to load liberation mono
         # TODO: Log this
+        init_logger(__name__).exception(f'Couldnt load Fira Code, exception: {e}')
+
         try:
             mono_font = QtGui.QFont('Liberation Mono')
 

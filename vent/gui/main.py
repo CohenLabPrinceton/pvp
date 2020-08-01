@@ -8,6 +8,7 @@ import json
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
+import vent.gui.widgets.alarm_bar
 from vent import prefs
 from vent.alarm import AlarmSeverity, Alarm
 from vent.common import values
@@ -412,7 +413,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     self.logger.warning(f'Dont know how to handle {controller_alarms} gotten from controller get_alarms() method')
             except Exception as e:
                 self.logger.exception(f'Couldnt get alarms from controller, got error {e}')
-                    
+
             #
             try:
             #     self.pressure_waveform.update_target_array(self.coordinator.get_target_waveform())
@@ -680,24 +681,23 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_box_ramp = QtWidgets.QGroupBox("Ramp Controls")
         self.controls_box_ramp.setStyleSheet(styles.CONTROL_SUBBOX)
         self.controls_box_ramp.setContentsMargins(0, 0, 0, 0)
+        self.controls_box_ramp.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                  QtWidgets.QSizePolicy.Maximum)
 
         self.controls_layout_ramp = QtWidgets.QVBoxLayout()
         self.controls_layout_ramp.setContentsMargins(0, 5, 0, 5)
-        for i, control_name in enumerate((ValueName.PIP_TIME, ValueName.PEEP_TIME)):
-            control_params = self.CONTROL[control_name]
-            self.controls[control_name.name] = widgets.Control(control_params)
-            self.controls[control_name.name].setObjectName(control_name.name)
-            self.controls_layout_ramp.addWidget(self.controls[control_name.name])
-            if i == 0:
-                self.controls_layout_ramp.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
 
-        # self.controls_layout_ramp.addStretch(10)
+        control_params = self.CONTROL[ValueName.PIP_TIME]
+        self.controls[ValueName.PIP_TIME.name] = widgets.Control(control_params)
+        self.controls[ValueName.PIP_TIME.name].setObjectName(ValueName.PIP_TIME.name)
+        self.controls_layout_ramp.addWidget(self.controls[ValueName.PIP_TIME.name])
         self.controls_box_ramp.setLayout(self.controls_layout_ramp)
 
 
         self.controls_layout.addWidget(self.controls_box_pressure)
         self.controls_layout.addWidget(self.controls_box_cycle)
         self.controls_layout.addWidget(self.controls_box_ramp)
+        self.controls_layout.addStretch(10)
 
         self.layout.addWidget(self.controls_box, 1,2,3,1)
 
@@ -726,8 +726,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # connect lock button
         self.control_panel.lock_button.toggled.connect(self.toggle_lock)
 
-        # pressure units
+        # control panel buttons & settings
         self.control_panel.pressure_units_changed.connect(self.set_pressure_units)
+        self.control_panel.breath_detection_button.toggled.connect(self.set_breath_detection)
 
         # connect heartbeat indicator to set off before controller starts
         self.state_changed.connect(self.control_panel.heartbeat.set_state)
@@ -1044,7 +1045,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         controls2set = [
             ValueName.PIP,
             ValueName.PIP_TIME,
-            ValueName.PEEP_TIME,
             ValueName.BREATHS_PER_MINUTE,
             ValueName.INSPIRATION_TIME_SEC
         ]
@@ -1064,6 +1064,16 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.pressure_waveform.set_units(units)
         self.monitor[ValueName.PRESSURE.name].set_units(units)
         self.plots[ValueName.PRESSURE.name].set_units(units)
+
+    def set_breath_detection(self, breath_detection: bool):
+        """
+        Connected to :attr:`~Control_Panel.breath_detection_button` - toggles autonomous breath detection in the controller
+
+        Args:
+            breath_detection (bool): Whether the controller detects autonomous breaths and resets the breath cycle accordingly
+        """
+        self.coordinator.set_breath_detection(breath_detection)
+
 
 
 

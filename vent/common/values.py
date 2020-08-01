@@ -249,7 +249,7 @@ VALUES = odict({
         'decimals': 1,
         'control': True,
         'sensor': False,
-        'display': True
+        'display': False
     }),
     ValueName.PRESSURE: Value(**{
         'name': 'Pressure',

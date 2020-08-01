@@ -113,11 +113,11 @@ class Control(QtWidgets.QWidget):
         # self.sensor_layout.setContentsMargins(0,0,0,0)
 
 
-        self.sensor_label = QtWidgets.QLabel()
-        self.sensor_label.setStyleSheet(styles.CONTROL_SENSOR_LABEL)
-        self.sensor_label.setFont(mono_font())
-        self.sensor_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
-        self.sensor_label.setFixedWidth(n_ints * styles.VALUE_MINOR_SIZE * .6)
+        self.set_value_label = QtWidgets.QLabel()
+        self.set_value_label.setStyleSheet(styles.CONTROL_SENSOR_LABEL)
+        self.set_value_label.setFont(mono_font())
+        self.set_value_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+        self.set_value_label.setFixedWidth(n_ints * styles.VALUE_MINOR_SIZE * .6)
 
         # bar graph that's an indicator of current value
         self.sensor_plot = pg.PlotWidget(background=styles.CONTROL_SENSOR_BACKGROUND)
@@ -151,7 +151,7 @@ class Control(QtWidgets.QWidget):
         self.sensor_plot.addItem(self.sensor_set)
         self.sensor_plot.setFixedWidth(styles.CONTROL_SENSOR_BAR_WIDTH)
 
-        self.sensor_layout.addWidget(self.sensor_label)
+        self.sensor_layout.addWidget(self.set_value_label)
         self.sensor_layout.addWidget(self.sensor_plot)
         self.sensor_frame.setLayout(self.sensor_layout)
 
@@ -503,7 +503,7 @@ class Control(QtWidgets.QWidget):
 
 
         value_str = unit_conversion.rounded_string(new_value, self.decimals)
-        self.sensor_label.setText(value_str)
+        self.set_value_label.setText(value_str)
         self.sensor_bar.setOpts(y1=np.array([new_value]))
         # self.sensor_plot.autoRange(padding=.001)
         self.update_yrange()

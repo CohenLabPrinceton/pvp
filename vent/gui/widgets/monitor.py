@@ -12,7 +12,7 @@ from vent.common.values import ValueName, Value
 class Monitor(QtWidgets.QWidget):
     alarm = QtCore.Signal(tuple)
     limits_changed = QtCore.Signal(tuple)
-    set_value_changed = QtCore.Signal(float)
+    value_changed = QtCore.Signal(float)
 
     def __init__(self, value: Value,
                  update_period=styles.MONITOR_UPDATE_INTERVAL,
@@ -48,8 +48,8 @@ class Monitor(QtWidgets.QWidget):
 
         #############
         # handling setting VTE/FIO2 which has to be recorded and logged rather than parametricalyl set
-        self.log_values = False
-        self.logged_values = []
+        self._log_values = False
+        self._logged_values = []
 
         self.init_ui()
 
@@ -64,16 +64,16 @@ class Monitor(QtWidgets.QWidget):
 
 
         # labels to display values
-        self.value_label = QtWidgets.QLabel()
-        self.value_label.setStyleSheet(styles.DISPLAY_VALUE)
-        self.value_label.setFont(mono_font())
-        self.value_label.setAlignment(QtCore.Qt.AlignRight)
-        self.value_label.setMargin(0)
-        self.value_label.setContentsMargins(0,0,0,0)
+        self.sensor_label = QtWidgets.QLabel()
+        self.sensor_label.setStyleSheet(styles.DISPLAY_VALUE)
+        self.sensor_label.setFont(mono_font())
+        self.sensor_label.setAlignment(QtCore.Qt.AlignRight)
+        self.sensor_label.setMargin(0)
+        self.sensor_label.setContentsMargins(0, 0, 0, 0)
         # at minimum make space for 4 digits
-        self.value_label.setMinimumWidth(4 * styles.VALUE_SIZE * .6)
-        self.value_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                       QtWidgets.QSizePolicy.Minimum)
+        self.sensor_label.setMinimumWidth(4 * styles.VALUE_SIZE * .6)
+        self.sensor_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                        QtWidgets.QSizePolicy.Minimum)
 
         self.name_label = QtWidgets.QLabel()
         self.name_label.setStyleSheet(styles.DISPLAY_NAME)
@@ -129,7 +129,7 @@ class Monitor(QtWidgets.QWidget):
         label_layout.setContentsMargins(0, 0, 0, 0)
         # if self.has_alarm_limits:
         label_layout.addWidget(self.toggle_button, 0, 0, 2, 1)
-        label_layout.addWidget(self.value_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignRight)
+        label_layout.addWidget(self.sensor_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignRight)
         label_layout.addWidget(self.name_label, 0, 2, 1, 1, alignment=QtCore.Qt.AlignRight)
         label_layout.addWidget(self.units_label, 1, 2, 1, 1, alignment=QtCore.Qt.AlignRight)
         # label_layout.addStretch()
@@ -157,18 +157,18 @@ class Monitor(QtWidgets.QWidget):
 
     def toggle_record(self, state):
         if state == True:
-            self.log_values = True
-            self.logged_values = []
+            self._log_values = True
+            self._logged_values = []
 
             self.alarm_state = True
             self.toggle_button.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DialogApplyButton))
 
 
         else:
-            if len(self.logged_values)>0:
+            if len(self._logged_values)>0:
                 # get the mean logged value
-                mean_val = np.mean(self.logged_values)
-                self.set_value_changed.emit((mean_val))
+                mean_val = np.mean(self._logged_values)
+                self.value_changed.emit((mean_val))
 
             self.toggle_button.setIcon(self.rec_icon)
             self.alarm_state = False
@@ -192,8 +192,8 @@ class Monitor(QtWidgets.QWidget):
             return
 
         self.value = new_value
-        if self.log_values:
-            self.logged_values.append(new_value)
+        if self._log_values:
+            self._logged_values.append(new_value)
         #self.check_alarm()
 
     @QtCore.Slot(tuple)
@@ -210,7 +210,7 @@ class Monitor(QtWidgets.QWidget):
             else:
                 set_value = self.value
             value_str = unit_conversion.rounded_string(set_value, self.decimals)
-            self.value_label.setText(value_str)
+            self.sensor_label.setText(value_str)
 
         QtCore.QTimer.singleShot(round(self.update_period*1000), self.timed_update)
 
@@ -226,12 +226,12 @@ class Monitor(QtWidgets.QWidget):
     @alarm_state.setter
     def alarm_state(self, alarm):
         if alarm == True:
-            self.value_label.setStyleSheet(styles.DISPLAY_VALUE_ALARM)
+            self.sensor_label.setStyleSheet(styles.DISPLAY_VALUE_ALARM)
             self.name_label.setStyleSheet(styles.DISPLAY_NAME_ALARM)
             self.units_label.setStyleSheet(styles.DISPLAY_UNITS_ALARM)
             self._alarm = True
         elif alarm == False:
-            self.value_label.setStyleSheet(styles.DISPLAY_VALUE)
+            self.sensor_label.setStyleSheet(styles.DISPLAY_VALUE)
             self.name_label.setStyleSheet(styles.DISPLAY_NAME)
             self.units_label.setStyleSheet(styles.DISPLAY_UNITS)
             self._alarm = False

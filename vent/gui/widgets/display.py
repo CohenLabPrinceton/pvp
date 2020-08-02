@@ -357,6 +357,8 @@ class Display(QtWidgets.QWidget):
             self.adjustSize()
 
     def toggle_record(self, state):
+        if self.control != 'record':
+            return
         if state == True:
             self.log_values = True
             self.logged_values = []

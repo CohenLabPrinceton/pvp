@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../vent'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'ventilator'
+project = 'PVP'
 copyright = '2020, jonny saunders et al'
 author = 'jonny saunders et al'
 
@@ -44,7 +44,8 @@ extensions = [
     # 'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon', # parse google style docstrings
     'autodocsumm',
-    'recommonmark'   # support markdown
+    'recommonmark',   # support markdown
+    'sphinx_sass' # support sass/scss
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -117,6 +118,30 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+sass_configs = [
+    {
+    'entry':'_src/sass/theme.sass',
+    'output':'_static/pvp_theme.css'
+    }
+]
+html_style="pvp_theme.css"
+
+html_theme_options = {
+    'canonical_url': '',
+    'analytics_id': 'UA-XXXXXXX-1',  #  Provided by Google in your dashboard
+    'logo_only': False,
+    'display_version': True,
+    'prev_next_buttons_location': 'bottom',
+    'style_external_links': False,
+    'vcs_pageview_mode': '',
+    'style_nav_header_background': 'white',
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

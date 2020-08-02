@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>vent.coordinator package &mdash; ventilator 0.0.0 documentation</title>
+  <title>vent.coordinator package &mdash; PVP 0.0.0 documentation</title>
   
 
   
@@ -31,8 +31,9 @@
     
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -44,11 +45,11 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: white" >
           
 
           
-            <a href="index.html" class="icon icon-home"> ventilator
+            <a href="index.html" class="icon icon-home"> PVP
           
 
           
@@ -82,7 +83,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Hardware:</span></p>
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
 </ul>
@@ -93,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -119,7 +125,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">ventilator</a>
+          <a href="index.html">PVP</a>
         
       </nav>
 
@@ -183,13 +189,17 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase" title="vent.coordinator.coordinator.CoordinatorBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoordinatorBase</span></code></a>([sim_mode])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase" title="vent.coordinator.coordinator.CoordinatorBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoordinatorBase</span></code></a>([sim_mode])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal" title="vent.coordinator.coordinator.CoordinatorLocal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoordinatorLocal</span></code></a>([sim_mode])</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorLocal" title="vent.coordinator.coordinator.CoordinatorLocal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoordinatorLocal</span></code></a>([sim_mode])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param sim_mode</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorRemote" title="vent.coordinator.coordinator.CoordinatorRemote"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoordinatorRemote</span></code></a>([sim_mode])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorRemote" title="vent.coordinator.coordinator.CoordinatorRemote"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoordinatorRemote</span></code></a>([sim_mode])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -201,7 +211,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.get_coordinator" title="vent.coordinator.coordinator.get_coordinator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coordinator</span></code></a>([single_process, sim_mode])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.get_coordinator" title="vent.coordinator.coordinator.get_coordinator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coordinator</span></code></a>([single_process, sim_mode])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -217,70 +227,54 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.clear_logged_alarms" title="vent.coordinator.coordinator.CoordinatorBase.clear_logged_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_logged_alarms</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase.get_control" title="vent.coordinator.coordinator.CoordinatorBase.get_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_control</span></code></a>(control_setting_name)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.do_process" title="vent.coordinator.coordinator.CoordinatorBase.do_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_process</span></code></a>(command)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase.get_sensors" title="vent.coordinator.coordinator.CoordinatorBase.get_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sensors</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_active_alarms" title="vent.coordinator.coordinator.CoordinatorBase.get_active_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_active_alarms</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase.is_running" title="vent.coordinator.coordinator.CoordinatorBase.is_running"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_running</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_control" title="vent.coordinator.coordinator.CoordinatorBase.get_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_control</span></code></a>(control_setting_name)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase.set_control" title="vent.coordinator.coordinator.CoordinatorBase.set_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control</span></code></a>(control_setting)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_logged_alarms" title="vent.coordinator.coordinator.CoordinatorBase.get_logged_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logged_alarms</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase.start" title="vent.coordinator.coordinator.CoordinatorBase.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_msg_timestamp" title="vent.coordinator.coordinator.CoordinatorBase.get_msg_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_msg_timestamp</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.get_sensors" title="vent.coordinator.coordinator.CoordinatorBase.get_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sensors</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase.set_control" title="vent.coordinator.coordinator.CoordinatorBase.set_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control</span></code></a>(control_setting)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase.stop" title="vent.coordinator.coordinator.CoordinatorBase.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt id="vent.coordinator.coordinator.CoordinatorBase.get_sensors">
-<code class="sig-name descname">get_sensors</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="common.html#vent.common.message.SensorValues" title="vent.common.message.SensorValues">vent.common.message.SensorValues</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.get_sensors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.get_sensors" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorBase.get_active_alarms">
-<code class="sig-name descname">get_active_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="common.html#vent.common.message.Alarm" title="vent.common.message.Alarm">vent.common.message.Alarm</a><span class="p">]</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.get_active_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.get_active_alarms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorBase.get_logged_alarms">
-<code class="sig-name descname">get_logged_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="common.html#vent.common.message.Alarm" title="vent.common.message.Alarm">vent.common.message.Alarm</a><span class="p">]</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.get_logged_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.get_logged_alarms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorBase.clear_logged_alarms">
-<code class="sig-name descname">clear_logged_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.clear_logged_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.clear_logged_alarms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_sensors</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="vent.common.html#vent.common.message.SensorValues" title="vent.common.message.SensorValues">vent.common.message.SensorValues</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.get_sensors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.get_sensors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="vent.coordinator.coordinator.CoordinatorBase.set_control">
-<code class="sig-name descname">set_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.set_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.set_control" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span><span class="p">:</span> <span class="n"><a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.set_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.set_control" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="vent.coordinator.coordinator.CoordinatorBase.get_control">
-<code class="sig-name descname">get_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting_name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.message.ControlSettingName" title="vent.common.message.ControlSettingName">vent.common.message.ControlSettingName</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.get_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.get_control" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting_name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.values.ValueName" title="vent.common.values.ValueName">vent.common.values.ValueName</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.get_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.get_control" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorBase.get_msg_timestamp">
-<code class="sig-name descname">get_msg_timestamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.get_msg_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.get_msg_timestamp" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.coordinator.coordinator.CoordinatorBase.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.start" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorBase.do_process">
-<code class="sig-name descname">do_process</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.message.IPCMessageCommand" title="vent.common.message.IPCMessageCommand">vent.common.message.IPCMessageCommand</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.do_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.do_process" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.coordinator.coordinator.CoordinatorBase.is_running">
+<code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.is_running" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.coordinator.coordinator.CoordinatorBase.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorBase.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorBase.stop" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -288,7 +282,12 @@
 <dl class="py class">
 <dt id="vent.coordinator.coordinator.CoordinatorLocal">
 <em class="property">class </em><code class="sig-prename descclassname">vent.coordinator.coordinator.</code><code class="sig-name descname">CoordinatorLocal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase" title="vent.coordinator.coordinator.CoordinatorBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.coordinator.coordinator.CoordinatorBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase" title="vent.coordinator.coordinator.CoordinatorBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.coordinator.coordinator.CoordinatorBase</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sim_mode</strong> – </p>
+</dd>
+</dl>
 <p><strong>Methods</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -296,112 +295,106 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.clear_logged_alarms" title="vent.coordinator.coordinator.CoordinatorLocal.clear_logged_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_logged_alarms</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorLocal.__init__" title="vent.coordinator.coordinator.CoordinatorLocal.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([sim_mode])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param sim_mode</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorLocal.get_control" title="vent.coordinator.coordinator.CoordinatorLocal.get_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_control</span></code></a>(control_setting_name)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.do_process" title="vent.coordinator.coordinator.CoordinatorLocal.do_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_process</span></code></a>(command)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorLocal.get_sensors" title="vent.coordinator.coordinator.CoordinatorLocal.get_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sensors</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_active_alarms" title="vent.coordinator.coordinator.CoordinatorLocal.get_active_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_active_alarms</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorLocal.is_running" title="vent.coordinator.coordinator.CoordinatorLocal.is_running"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_running</span></code></a>()</p></td>
+<td><p>Test whether the whole system is running</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorLocal.set_control" title="vent.coordinator.coordinator.CoordinatorLocal.set_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control</span></code></a>(control_setting)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_control" title="vent.coordinator.coordinator.CoordinatorLocal.get_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_control</span></code></a>(control_setting_name)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorLocal.start" title="vent.coordinator.coordinator.CoordinatorLocal.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p>Start the coordinator.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_logged_alarms" title="vent.coordinator.coordinator.CoordinatorLocal.get_logged_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logged_alarms</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_msg_timestamp" title="vent.coordinator.coordinator.CoordinatorLocal.get_msg_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_msg_timestamp</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.get_sensors" title="vent.coordinator.coordinator.CoordinatorLocal.get_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sensors</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.set_control" title="vent.coordinator.coordinator.CoordinatorLocal.set_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control</span></code></a>(control_setting)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorLocal.start" title="vent.coordinator.coordinator.CoordinatorLocal.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorLocal.stop" title="vent.coordinator.coordinator.CoordinatorLocal.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p>Stop the coordinator.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py attribute">
+<dt id="vent.coordinator.coordinator.CoordinatorLocal._is_running">
+<code class="sig-name descname">_is_running</code><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal._is_running" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">.set()</span></code> when thread should stop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.coordinator.coordinator.CoordinatorLocal.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sim_mode</strong> – </p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="id0">
+<code class="sig-name descname">_is_running</code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">.set()</span></code> when thread should stop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.coordinator.coordinator.CoordinatorLocal.get_sensors">
+<code class="sig-name descname">get_sensors</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="vent.common.html#vent.common.message.SensorValues" title="vent.common.message.SensorValues">vent.common.message.SensorValues</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.get_sensors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.get_sensors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="vent.coordinator.coordinator.CoordinatorLocal.set_control">
-<code class="sig-name descname">set_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.set_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.set_control" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span><span class="p">:</span> <span class="n"><a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.set_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.set_control" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="vent.coordinator.coordinator.CoordinatorLocal.get_control">
-<code class="sig-name descname">get_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting_name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.message.ControlSettingName" title="vent.common.message.ControlSettingName">vent.common.message.ControlSettingName</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.get_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.get_control" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorLocal.get_sensors">
-<code class="sig-name descname">get_sensors</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="common.html#vent.common.message.SensorValues" title="vent.common.message.SensorValues">vent.common.message.SensorValues</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.get_sensors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.get_sensors" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorLocal.get_logged_alarms">
-<code class="sig-name descname">get_logged_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="common.html#vent.common.message.Alarm" title="vent.common.message.Alarm">vent.common.message.Alarm</a><span class="p">]</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.get_logged_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.get_logged_alarms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorLocal.get_active_alarms">
-<code class="sig-name descname">get_active_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="common.html#vent.common.message.Alarm" title="vent.common.message.Alarm">vent.common.message.Alarm</a><span class="p">]</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.get_active_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.get_active_alarms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorLocal.clear_logged_alarms">
-<code class="sig-name descname">clear_logged_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.clear_logged_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.clear_logged_alarms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorLocal.get_msg_timestamp">
-<code class="sig-name descname">get_msg_timestamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.get_msg_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.get_msg_timestamp" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.coordinator.CoordinatorLocal.do_process">
-<code class="sig-name descname">do_process</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.do_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.do_process" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting_name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.values.ValueName" title="vent.common.values.ValueName">vent.common.values.ValueName</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.get_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.get_control" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="vent.coordinator.coordinator.CoordinatorLocal.start">
 <code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.start" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Start the coordinator.
+This does a soft start (not allocating a process).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.coordinator.coordinator.CoordinatorLocal.is_running">
+<code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.is_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether the whole system is running</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.coordinator.coordinator.CoordinatorLocal.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorLocal.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorLocal.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the coordinator.
+This does a soft stop (not kill a process)</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="vent.coordinator.coordinator.CoordinatorRemote">
 <em class="property">class </em><code class="sig-prename descclassname">vent.coordinator.coordinator.</code><code class="sig-name descname">CoordinatorRemote</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorRemote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorRemote" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="coordinator.html#vent.coordinator.coordinator.CoordinatorBase" title="vent.coordinator.coordinator.CoordinatorBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.coordinator.coordinator.CoordinatorBase</span></code></a></p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="vent.coordinator.coordinator.get_coordinator">
-<code class="sig-prename descclassname">vent.coordinator.coordinator.</code><code class="sig-name descname">get_coordinator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">single_process</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sim_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#get_coordinator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.get_coordinator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-vent.coordinator.ipc">
-<span id="vent-coordinator-ipc-module"></span><h2>vent.coordinator.ipc module<a class="headerlink" href="#module-vent.coordinator.ipc" title="Permalink to this headline">¶</a></h2>
-<p><strong>Classes</strong></p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.ipc.IPC" title="vent.coordinator.ipc.IPC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPC</span></code></a>([listen])</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py class">
-<dt id="vent.coordinator.ipc.IPC">
-<em class="property">class </em><code class="sig-prename descclassname">vent.coordinator.ipc.</code><code class="sig-name descname">IPC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">listen</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/ipc.html#IPC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.ipc.IPC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase" title="vent.coordinator.coordinator.CoordinatorBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.coordinator.coordinator.CoordinatorBase</span></code></a></p>
 <p><strong>Methods</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -409,34 +402,71 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.ipc.IPC.recvMsg" title="vent.coordinator.ipc.IPC.recvMsg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recvMsg</span></code></a>([timeout])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorRemote.get_control" title="vent.coordinator.coordinator.CoordinatorRemote.get_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_control</span></code></a>(control_setting_name)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.ipc.IPC.sendMsg" title="vent.coordinator.ipc.IPC.sendMsg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sendMsg</span></code></a>(msg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorRemote.get_sensors" title="vent.coordinator.coordinator.CoordinatorRemote.get_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sensors</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.ipc.IPC.start" title="vent.coordinator.ipc.IPC.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorRemote.is_running" title="vent.coordinator.coordinator.CoordinatorRemote.is_running"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_running</span></code></a>()</p></td>
+<td><p>Test whether the whole system is running</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorRemote.set_control" title="vent.coordinator.coordinator.CoordinatorRemote.set_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control</span></code></a>(control_setting)</p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorRemote.start" title="vent.coordinator.coordinator.CoordinatorRemote.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p>Start the coordinator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorRemote.stop" title="vent.coordinator.coordinator.CoordinatorRemote.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p>Stop the coordinator.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt id="vent.coordinator.ipc.IPC.sendMsg">
-<code class="sig-name descname">sendMsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/ipc.html#IPC.sendMsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.ipc.IPC.sendMsg" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.coordinator.coordinator.CoordinatorRemote.get_sensors">
+<code class="sig-name descname">get_sensors</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="vent.common.html#vent.common.message.SensorValues" title="vent.common.message.SensorValues">vent.common.message.SensorValues</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorRemote.get_sensors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorRemote.get_sensors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.coordinator.ipc.IPC.recvMsg">
-<code class="sig-name descname">recvMsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/ipc.html#IPC.recvMsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.ipc.IPC.recvMsg" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.coordinator.coordinator.CoordinatorRemote.set_control">
+<code class="sig-name descname">set_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span><span class="p">:</span> <span class="n"><a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorRemote.set_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorRemote.set_control" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.coordinator.ipc.IPC.start">
-<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/ipc.html#IPC.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.ipc.IPC.start" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.coordinator.coordinator.CoordinatorRemote.get_control">
+<code class="sig-name descname">get_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting_name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.values.ValueName" title="vent.common.values.ValueName">vent.common.values.ValueName</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorRemote.get_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorRemote.get_control" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.coordinator.coordinator.CoordinatorRemote.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorRemote.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorRemote.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the coordinator.
+This does a soft start (not allocating a process).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.coordinator.coordinator.CoordinatorRemote.is_running">
+<code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorRemote.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorRemote.is_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether the whole system is running</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.coordinator.coordinator.CoordinatorRemote.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#CoordinatorRemote.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.CoordinatorRemote.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the coordinator.
+This does a soft stop (not kill a process)</p>
+</dd></dl>
 
 </dd></dl>
 
+<dl class="py function">
+<dt id="vent.coordinator.coordinator.get_coordinator">
+<code class="sig-prename descclassname">vent.coordinator.coordinator.</code><code class="sig-name descname">get_coordinator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">single_process</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sim_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#vent.coordinator.coordinator.CoordinatorBase" title="vent.coordinator.coordinator.CoordinatorBase">vent.coordinator.coordinator.CoordinatorBase</a><a class="reference internal" href="_modules/vent/coordinator/coordinator.html#get_coordinator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.coordinator.get_coordinator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="vent-coordinator-ipc-module">
+<h2>vent.coordinator.ipc module<a class="headerlink" href="#vent-coordinator-ipc-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-vent.coordinator.process_manager">
 <span id="vent-coordinator-process-manager-module"></span><h2>vent.coordinator.process_manager module<a class="headerlink" href="#module-vent.coordinator.process_manager" title="Permalink to this headline">¶</a></h2>
@@ -447,14 +477,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.process_manager.ProcessManager" title="vent.coordinator.process_manager.ProcessManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessManager</span></code></a>([startCommandLine, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.process_manager.ProcessManager" title="vent.coordinator.process_manager.ProcessManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessManager</span></code></a>(sim_mode[, startCommandLine, …])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt id="vent.coordinator.process_manager.ProcessManager">
-<em class="property">class </em><code class="sig-prename descclassname">vent.coordinator.process_manager.</code><code class="sig-name descname">ProcessManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">startCommandLine</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxHeartbeatInterval</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vent.coordinator.process_manager.</code><code class="sig-name descname">ProcessManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_mode</span></em>, <em class="sig-param"><span class="n">startCommandLine</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxHeartbeatInterval</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p><strong>Methods</strong></p>
 <table class="longtable docutils align-default">
@@ -463,46 +493,38 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.process_manager.ProcessManager.heartbeat" title="vent.coordinator.process_manager.ProcessManager.heartbeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heartbeat</span></code></a>(timestamp)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.process_manager.ProcessManager.heartbeat" title="vent.coordinator.process_manager.ProcessManager.heartbeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heartbeat</span></code></a>(timestamp)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.process_manager.ProcessManager.restartProcess" title="vent.coordinator.process_manager.ProcessManager.restartProcess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restartProcess</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.process_manager.ProcessManager.restart_process" title="vent.coordinator.process_manager.ProcessManager.restart_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restart_process</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.process_manager.ProcessManager.start" title="vent.coordinator.process_manager.ProcessManager.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.coordinator.process_manager.ProcessManager.start_process" title="vent.coordinator.process_manager.ProcessManager.start_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_process</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.process_manager.ProcessManager.startProcess" title="vent.coordinator.process_manager.ProcessManager.startProcess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">startProcess</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinator.html#vent.coordinator.process_manager.ProcessManager.stopProcess" title="vent.coordinator.process_manager.ProcessManager.stopProcess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopProcess</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.coordinator.process_manager.ProcessManager.try_stop_process" title="vent.coordinator.process_manager.ProcessManager.try_stop_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">try_stop_process</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt id="vent.coordinator.process_manager.ProcessManager.startProcess">
-<code class="sig-name descname">startProcess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager.startProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager.startProcess" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.coordinator.process_manager.ProcessManager.start_process">
+<code class="sig-name descname">start_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager.start_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager.start_process" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.coordinator.process_manager.ProcessManager.stopProcess">
-<code class="sig-name descname">stopProcess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager.stopProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager.stopProcess" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.coordinator.process_manager.ProcessManager.try_stop_process">
+<code class="sig-name descname">try_stop_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager.try_stop_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager.try_stop_process" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="vent.coordinator.process_manager.ProcessManager.restartProcess">
-<code class="sig-name descname">restartProcess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager.restartProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager.restartProcess" title="Permalink to this definition">¶</a></dt>
+<dt id="vent.coordinator.process_manager.ProcessManager.restart_process">
+<code class="sig-name descname">restart_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager.restart_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager.restart_process" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="vent.coordinator.process_manager.ProcessManager.heartbeat">
 <code class="sig-name descname">heartbeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timestamp</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager.heartbeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager.heartbeat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="vent.coordinator.process_manager.ProcessManager.start">
-<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/coordinator/process_manager.html#ProcessManager.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.coordinator.process_manager.ProcessManager.start" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -549,6 +571,18 @@
 
   
   
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
     
    
 

@@ -1,0 +1,707 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>vent.gui.main &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../gui.html">vent.gui</a> &raquo;</li>
+        
+      <li>vent.gui.main</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for vent.gui.main</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+
+<span class="kn">from</span> <span class="nn">vent.alarm</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span>
+<span class="kn">from</span> <span class="nn">vent.common</span> <span class="kn">import</span> <span class="n">values</span>
+<span class="kn">from</span> <span class="nn">vent.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span>
+<span class="kn">from</span> <span class="nn">vent.common.message</span> <span class="kn">import</span> <span class="n">ControlSetting</span>
+<span class="kn">from</span> <span class="nn">vent.common.logging</span> <span class="kn">import</span> <span class="n">init_logger</span>
+<span class="kn">from</span> <span class="nn">vent</span> <span class="kn">import</span> <span class="n">gui</span>
+<span class="kn">from</span> <span class="nn">vent.gui</span> <span class="kn">import</span> <span class="n">widgets</span><span class="p">,</span> <span class="n">set_gui_instance</span><span class="p">,</span> <span class="n">get_gui_instance</span><span class="p">,</span> <span class="n">styles</span><span class="p">,</span> <span class="n">PLOTS</span>
+<span class="kn">from</span> <span class="nn">vent.gui.alarm_manager</span> <span class="kn">import</span> <span class="n">AlarmManager</span>
+
+
+
+
+<div class="viewcode-block" id="Vent_Gui"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui">[docs]</a><span class="k">class</span> <span class="nc">Vent_Gui</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+
+    <span class="n">gui_closing</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :class:`PySide2.QtCore.Signal` emitted when the GUI is closing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">alarms_updated</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :class:`PySide2.QtCore.Signal` emitted whenever alarms are updated.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns the result of ``self.coordinator.get_active_alarms``, so will emit an</span>
+<span class="sd">    empty dict if there are no active alarms.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">MONITOR</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">SENSOR</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    see :data:`.gui.defaults.SENSOR`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">CONTROL</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">CONTROL</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    see :data:`.gui.defaults.CONTROL`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">PLOTS</span> <span class="o">=</span> <span class="n">PLOTS</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    see :data:`.gui.defaults.PLOTS`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">monitor_width</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">plot_width</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">control_width</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">total_width</span> <span class="o">=</span> <span class="n">monitor_width</span> <span class="o">+</span> <span class="n">plot_width</span> <span class="o">+</span> <span class="n">control_width</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    computed from ``monitor_width+plot_width+control_width``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">status_height</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">main_height</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">total_height</span> <span class="o">=</span> <span class="n">status_height</span><span class="o">+</span><span class="n">main_height</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    computed from ``status_height+main_height``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Vent_Gui.__init__"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinator</span><span class="p">,</span> <span class="n">update_period</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The Main GUI window.</span>
+
+<span class="sd">        Only one instance can be created at a time. Uses :func:`set_gui_instance` to</span>
+<span class="sd">        store a reference to itself. after initialization, use `get_gui_instance` to</span>
+<span class="sd">        retrieve a reference.</span>
+
+<span class="sd">        .. todo:</span>
+
+<span class="sd">            Jonny add a screenshot here when final version.</span>
+
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            monitor (dict): Dictionary mapping :data:`.values.SENSOR` keys to :class:`.widgets.Monitor_Value` objects</span>
+<span class="sd">            plots (dict): Dictionary mapping :data:`.gui.PLOT` keys to :class:`.widgets.Plot` objects</span>
+<span class="sd">            controls (dict): Dictionary mapping :data:`.values.CONTROL` keys to :class:`.widgets.Control` objects</span>
+<span class="sd">            coordinator (:class:`vent.coordinator.coordinator.CoordinatorBase`): Some coordinator object that we use to communicate with the controller</span>
+<span class="sd">            control_module (:class:`vent.controller.control_module.ControlModuleBase`): Reference to the control module, retrieved from coordinator</span>
+<span class="sd">            start_time (float): Start time as returned by :func:`time.time`</span>
+<span class="sd">            update_period (float): The global delay between redraws of the GUI (seconds)</span>
+<span class="sd">            alarm_manager (:class:`~.AlarmManager`)</span>
+
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            update_period (float): The global delay between redraws of the GUI (seconds)</span>
+<span class="sd">            test (bool): Whether the monitored values and plots should be fed sine waves for visual testing.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;gui init&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">get_gui_instance</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">gui</span><span class="o">.</span><span class="n">limit_gui</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Instance of gui already running!&#39;</span><span class="p">)</span> <span class="c1"># pragma: no cover</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">set_gui_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Vent_Gui</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_manager</span> <span class="o">=</span> <span class="n">AlarmManager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alarm_state</span> <span class="o">=</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">OFF</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coordinator</span> <span class="o">=</span> <span class="n">coordinator</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">control_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinator</span><span class="o">.</span><span class="n">control_module</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">control_module</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># start QTimer to update values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">setSingleShot</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">)</span>
+        <span class="c1"># stop QTimer when program closing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui_closing</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+        <span class="c1"># set update period (after timer is created!!)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_period</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_period</span> <span class="o">=</span> <span class="n">update_period</span>
+
+        <span class="c1"># initialize controls to starting values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_controls</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">update_period</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_period</span>
+
+    <span class="nd">@update_period</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">update_period</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_period</span><span class="p">):</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">update_period</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">update_period</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">update_period</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_period</span><span class="p">:</span>
+            <span class="c1"># if the timer is active, stop it and restart with new period</span>
+            <span class="c1"># if self.timer.isActive():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">setInterval</span><span class="p">(</span><span class="n">update_period</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
+
+            <span class="c1"># store new value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_period</span> <span class="o">=</span> <span class="n">update_period</span>
+
+<div class="viewcode-block" id="Vent_Gui.init_controls"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.init_controls">[docs]</a>    <span class="k">def</span> <span class="nf">init_controls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        on startup, set controls in coordinator to ensure init state is synchronized</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">control_name</span><span class="p">,</span> <span class="n">control_params</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONTROL</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">control_params</span><span class="o">.</span><span class="n">default</span><span class="p">,</span> <span class="n">control_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.set_value"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a control value with the ``coordinator``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_value (float): Som</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get sender ID</span>
+        <span class="k">if</span> <span class="n">value_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">()</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># TODO: More explicitly check for enum</span>
+            <span class="n">value_name</span> <span class="o">=</span> <span class="n">value_name</span><span class="o">.</span><span class="n">name</span>
+
+
+        <span class="n">control_object</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ValueName</span><span class="p">,</span> <span class="n">value_name</span><span class="p">),</span>
+                                        <span class="n">value</span><span class="o">=</span><span class="n">new_value</span><span class="p">,</span>
+                                        <span class="n">min_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONTROL</span><span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ValueName</span><span class="p">,</span> <span class="n">value_name</span><span class="p">)][</span><span class="s1">&#39;safe_range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">max_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONTROL</span><span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ValueName</span><span class="p">,</span> <span class="n">value_name</span><span class="p">)][</span><span class="s1">&#39;safe_range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coordinator</span><span class="o">.</span><span class="n">set_control</span><span class="p">(</span><span class="n">control_object</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Vent_Gui.update_gui"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.update_gui">[docs]</a>    <span class="k">def</span> <span class="nf">update_gui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># get alarms</span>
+            <span class="c1">#active_alarms = self.coordinator.get_active_alarms()</span>
+            <span class="c1">#self.alarms_updated.emit(active_alarms)</span>
+
+
+            <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinator</span><span class="o">.</span><span class="n">get_sensors</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">plot_key</span><span class="p">,</span> <span class="n">plot_obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">plot_key</span><span class="p">):</span>
+                    <span class="n">plot_obj</span><span class="o">.</span><span class="n">update_value</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">plot_key</span><span class="p">)))</span>
+
+            <span class="k">for</span> <span class="n">monitor_key</span><span class="p">,</span> <span class="n">monitor_obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">monitor_key</span><span class="p">):</span>
+                    <span class="n">monitor_obj</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">monitor_key</span><span class="p">))</span>
+
+        <span class="c1">#</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+
+
+<div class="viewcode-block" id="Vent_Gui.update_value"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            value_name (str): Name of key in :attr:`.Vent_Gui.monitor` and :attr:`.Vent_Gui.plots` to update</span>
+<span class="sd">            new_value (int, float): New value to display/plot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.init_ui"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the UI components for the ventilator screen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># basic initialization</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span><span class="p">)</span>
+
+        <span class="c1"># layout</span>
+        <span class="c1">#   - two rows (status, main)</span>
+        <span class="c1">#   - three columns</span>
+        <span class="c1">#       left:   monitor values</span>
+        <span class="c1">#       center: plotted values</span>
+        <span class="c1">#       right:  controls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="c1"># layout that includes the display and controls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+
+        <span class="c1"># call sub-create functions to make ui sections</span>
+        <span class="c1"># top status bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_status_bar</span><span class="p">()</span>
+        <span class="c1"># left monitored values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_monitor</span><span class="p">()</span>
+        <span class="c1"># plots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_plots</span><span class="p">()</span>
+        <span class="c1"># controls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_controls</span><span class="p">()</span>
+
+        <span class="c1"># add main ui area to layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_height</span><span class="p">)</span>
+
+        <span class="c1"># connect signals and slots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_signals</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.init_ui_status_bar"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.init_ui_status_bar">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_status_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">############</span>
+        <span class="c1"># Status Bar</span>
+        <span class="n">status_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;System Status&#39;</span><span class="p">)</span>
+        <span class="n">status_box</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">STATUS_BOX</span><span class="p">)</span>
+        <span class="n">status_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Status_Bar</span><span class="p">()</span>
+        <span class="n">status_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="p">)</span>
+        <span class="n">status_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">status_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">status_layout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">status_box</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status_height</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.init_ui_monitor"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.init_ui_monitor">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1">#########</span>
+        <span class="c1"># display values</span>
+        <span class="c1"># box that contains both the monitors and the plots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Sensor Monitor&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">monitor_layout</span><span class="p">)</span>
+
+        <span class="c1"># box that just displays the monitor widgets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">display_key</span><span class="p">,</span> <span class="n">display_params</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MONITOR</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">display_key</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Monitor</span><span class="p">(</span><span class="n">display_params</span><span class="p">,</span> <span class="n">enum_name</span><span class="o">=</span><span class="n">display_key</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">display_key</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">QHLine</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_layout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor_width</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">monitor_box</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_width</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor_width</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Vent_Gui.init_ui_plots"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.init_ui_plots">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">###########</span>
+        <span class="c1"># plots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># button to set plot history</span>
+        <span class="n">button_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Plot History&quot;</span><span class="p">)</span>
+        <span class="c1"># button_group = QtWidgets.QButtonGroup()</span>
+        <span class="c1"># button_group.exclusive()</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;5s&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;10s&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;30s&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;1m&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;5m&quot;</span><span class="p">,</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;15m&quot;</span><span class="p">,</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">15</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;60m&quot;</span><span class="p">,</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">button_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">button_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">a_time</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QRadioButton</span><span class="p">(</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">a_time</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_plot_duration</span><span class="p">)</span>
+            <span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">a_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+        <span class="n">button_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">button_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">button_box</span><span class="p">)</span>
+
+        <span class="c1"># the plot widgets themselves</span>
+        <span class="k">for</span> <span class="n">plot_key</span><span class="p">,</span> <span class="n">plot_params</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLOTS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_key</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="o">**</span><span class="n">plot_params</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_key</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+
+        <span class="c1"># self.main_layout.addLayout(self.plot_layout,5)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_layout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_width</span><span class="p">)</span>
+
+        <span class="c1">######################</span>
+        <span class="c1"># set the default view as 30s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_buttons</span><span class="p">[</span><span class="n">times</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">click</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.init_ui_controls"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.init_ui_controls">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_controls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">####################</span>
+        <span class="c1"># Controls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Ventilator Controls&quot;</span><span class="p">)</span>
+        <span class="c1"># set name so it catches the stylesheet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_box</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s1">&#39;CONTROLBOX&#39;</span><span class="p">)</span>
+        <span class="c1"># controls_box.setStyleSheet(styles.CONTROL_BOX)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_box</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">control_name</span><span class="p">,</span> <span class="n">control_params</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONTROL</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">control_name</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Control</span><span class="p">(</span><span class="n">control_params</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">control_name</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">control_name</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">control_name</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">value_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">control_name</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">QHLine</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">DIVIDER_COLOR_DARK</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controls_layout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controls_box</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_width</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.init_ui_signals"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.init_ui_signals">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect Qt signals and slots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># hook up monitors and plots</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ValueName</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set_safe_limits</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">update_limits</span><span class="p">)</span>
+
+        <span class="c1"># connect monitors to alarm_manager</span>
+        <span class="k">for</span> <span class="n">monitor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">monitor</span><span class="o">.</span><span class="n">alarm</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarm_manager</span><span class="o">.</span><span class="n">monitor_alarm</span><span class="p">)</span>
+
+        <span class="c1"># connect alarms to alarm manager, and then back to us</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarms_updated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarm_manager</span><span class="o">.</span><span class="n">update_alarms</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_manager</span><span class="o">.</span><span class="n">new_alarm</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_alarm</span><span class="p">)</span>
+        <span class="c1"># FIXME: THis should be handled by alarm manager, that&#39;s what it&#39;s there for!</span>
+        <span class="c1">#self.status_bar.status_message.level_changed.connect(self.alarm_state_changed)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">status_message</span><span class="o">.</span><span class="n">message_cleared</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_cleared_alarm</span><span class="p">)</span>
+
+        <span class="c1"># connect start button to coordinator start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinator</span><span class="o">.</span><span class="n">start</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.handle_alarm"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.handle_alarm">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="n">Alarm</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">handle_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">status_message</span><span class="o">.</span><span class="n">update_message</span><span class="p">(</span><span class="n">alarm</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">alarm</span><span class="o">.</span><span class="n">alarm_name</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">alarm_state</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># FIXME: will be fixed when values are displayed next to controls</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm_state</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alarm_state</span> <span class="o">=</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.handle_cleared_alarm"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.handle_cleared_alarm">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="n">Alarm</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">handle_cleared_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">alarm</span><span class="o">.</span><span class="n">alarm_name</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">alarm_state</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># FIXME: will be fixed when values are displayed next to controls</span>
+            <span class="k">pass</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">alarm_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alarm_state</span>
+
+    <span class="nd">@alarm_state</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">alarm_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">HIGH</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+<div class="viewcode-block" id="Vent_Gui.alarm_state_changed"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.alarm_state_changed">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="n">AlarmSeverity</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">alarm_state_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_state</span> <span class="o">=</span> <span class="n">state</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.set_plot_duration"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.set_plot_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_plot_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dur</span><span class="p">):</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">()</span><span class="o">.</span><span class="n">objectName</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">dur</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.closeEvent"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Emit :attr:`.gui_closing` and close!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#globals()[&#39;_GUI_INSTANCE&#39;] = None</span>
+        <span class="n">set_gui_instance</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui_closing</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinator</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coordinator</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;had a thread object, but the thread object couldnt be stopped&#39;</span><span class="p">)</span>
+
+        <span class="n">event</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Vent_Gui.start"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.Vent_Gui.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Click the :meth:`~.gui.widgets.status_bar.Status_Bar.start` button</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="launch_gui"><a class="viewcode-back" href="../../../gui.html#vent.gui.main.launch_gui">[docs]</a><span class="k">def</span> <span class="nf">launch_gui</span><span class="p">(</span><span class="n">coordinator</span><span class="p">):</span>
+
+    <span class="c1"># just for testing, should be run from main</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="s1">&#39;Fusion&#39;</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">DARK_THEME</span><span class="p">)</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">set_dark_palette</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="n">gui</span> <span class="o">=</span> <span class="n">Vent_Gui</span><span class="p">(</span><span class="n">coordinator</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">app</span><span class="p">,</span> <span class="n">gui</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

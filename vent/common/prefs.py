@@ -162,7 +162,8 @@ def save_prefs(prefs_fn: str = None):
             json.dump(globals()['_PREFS']._getvalue(), prefs_f,
                       indent=4, separators=(',', ': '))
 
-    globals()['_LOGGER'].info(f'Saved prefs to {prefs_fn}')
+    if globals()['_LOGGER'] is not None:
+        globals()['_LOGGER'].info(f'Saved prefs to {prefs_fn}')
 
 
 

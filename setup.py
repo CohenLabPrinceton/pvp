@@ -41,6 +41,7 @@ setup(
         'pytest-qt',
         'pytest-timeout',
         'pigpio',
+        'scipy',
         'tables'
     ],
     dependency_links=depend_links,

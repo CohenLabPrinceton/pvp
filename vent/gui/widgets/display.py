@@ -441,6 +441,69 @@ class Display(QtWidgets.QWidget):
         if changed:
             self.value_changed.emit(self.value)
 
+    def update_value(self):
+        """inward value setting (set from elsewhere)"""
+        pass
+
+    def update_limits(self):
+        pass
+
+
+
+    def redraw(self):
+        # TODO: make a bit lighter weight than current redraw method
+
+    def set_units(self, units):
+        if self.name in (ValueName.PIP.name, ValueName.PEEP.name):
+            if units == 'cmH2O':
+                self.decimals = 1
+                self.slider.setDecimals(self.decimals)
+                self.units = units
+                self.units_label.setText(units)
+                self._convert_in = None
+                self._convert_out = None
+                self.redraw()
+            elif units == 'hPa':
+                self.decimals = 0
+                self.slider.setDecimals(self.decimals)
+                self.units = units
+                self.units_label.setText(units)
+                self._convert_in = unit_conversion.cmH2O_to_hPa
+                self._convert_out = unit_conversion.hPa_to_cmH2O
+                self.redraw()
+        else:
+            print(
+                f'error setting units {units}'
+            )
+            return
+
+
+    def set_locked(self, locked: bool):
+        if locked:
+            self.locked = True
+            if self.control:
+                if self.control == "slider":
+                    self.toggle_control(False)
+                self.toggle_button.setEnabled(False)
+                self.value_label.setEditable(False)
+            # self.setStyleSheet()
+        else:
+            self.locked = False
+            if self.control:
+                self.toggle_button.setEnabled(True)
+                self.value_label.setEditable(False)
+    # ---------------------------------
+    # Properties
+    # ---------------------------------
+    @property
+    def is_set(self):
+        if self.value is None:
+            return False
+        else:
+            return True
+
+
+
 
 
 
@@ -490,7 +553,12 @@ class Limits_Plot(pg.PlotWidget):
         self.setFixedWidth(styles.CONTROL_SENSOR_BAR_WIDTH)
 
 
+    def update_yrange(self):
+        """
+        from control.update_yrange
+        Returns:
 
+        """
 
 
 

@@ -33,7 +33,7 @@ class Display(QtWidgets.QWidget):
                  update_period: float = styles.MONITOR_UPDATE_INTERVAL,
                  enum_name: ValueName = None,
                  button_orientation: str = "left",
-                 control: typing.Union[None, str] = None,
+                 control_type: typing.Union[None, str] = None,
                  style: str="dark",
                  *args, **kwargs):
         """
@@ -81,7 +81,7 @@ class Display(QtWidgets.QWidget):
         self.update_period = update_period
         self.enum_name = enum_name
         self.orientation = button_orientation
-        self.control = control
+        self.control = control_type
         self.style = style
         self._styles = {}
 

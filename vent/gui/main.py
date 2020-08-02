@@ -44,12 +44,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
     """
 
 
-    MONITOR = values.DISPLAY
+    MONITOR = values.DISPLAY_MONITOR
     """
-    see :data:`.gui.defaults.DISPLAY`
+    see :data:`.gui.defaults.DISPLAY_MONITOR`
     """
 
-    CONTROL = values.CONTROL
+    CONTROL = values.DISPLAY_CONTROL
     """
     see :data:`.gui.defaults.CONTROL`
     """
@@ -91,9 +91,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         Attributes:
-            monitor (dict): Dictionary mapping :data:`.values.SENSOR` keys to :class:`.widgets.Monitor_Value` objects
+            monitor (dict): Dictionary mapping :data:`.values.SENSOR` keys to :class:`.widgets.Display_Value` objects
             plots (dict): Dictionary mapping :data:`.gui.PLOT` keys to :class:`.widgets.Plot` objects
-            controls (dict): Dictionary mapping :data:`.values.CONTROL` keys to :class:`.widgets.Control` objects
+            controls (dict): Dictionary mapping :data:`.values.CONTROL` keys to :class:`.widgets.Display` objects
             coordinator (:class:`vent.coordinator.coordinator.CoordinatorBase`): Some coordinator object that we use to communicate with the controller
             control_module (:class:`vent.controller.control_module.ControlModuleBase`): Reference to the control module, retrieved from coordinator
             start_time (float): Start time as returned by :func:`time.time`
@@ -129,9 +129,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.alarm_manager.add_dependency_callback(self.limits_updated)
         self.logger.debug('Alarm Manager instantiated')
 
-        self.monitor = {} # type: typing.Dict[ValueName: widgets.Monitor]
+        self.monitor = {} # type: typing.Dict[ValueName: widgets.Display]
         self.plots = {} # type: typing.Dict[ValueName: widgets.Plot]
-        self.controls = {} # type: typing.Dict[ValueName.name: widgets.Control]
+        self.controls = {} # type: typing.Dict[ValueName.name: widgets.Display]
 
         self.coordinator = coordinator
 
@@ -534,7 +534,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 alarm_limits = True
             else:
                 alarm_limits = False
-            self.monitor[display_key.name] = widgets.Monitor(display_params, enum_name=display_key,
+            self.monitor[display_key.name] = widgets.Display(display_params, enum_name=display_key,
                                                              alarm_limits=alarm_limits)
             if display_key in (ValueName.VTE, ValueName.FIO2):
                 self.monitor[display_key.name].set_value_changed.connect(self.set_value)
@@ -606,23 +606,32 @@ class Vent_Gui(QtWidgets.QMainWindow):
         ####################
         # Controls - Pressure
 
-
-        self.controls_box_pressure = QtWidgets.QGroupBox("Pressure Controls")
-        self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX)
-        self.controls_box_pressure.setContentsMargins(0, 0, 0, 0)
-
-        self.controls_layout_pressure = QtWidgets.QVBoxLayout()
-        self.controls_layout_pressure.setContentsMargins(0, 5, 0, 5)
-        for i, control_name in enumerate((ValueName.PIP, ValueName.PEEP)):
-            control_params = self.CONTROL[control_name]
-            self.controls[control_name.name] = widgets.Control(control_params)
+        for control_name, control in self.CONTROL.items():
+            self.controls[control_name.name] = widgets.Display(value=control, button_orientation="right", style="light",
+                                                               enum_name=control_name,
+                                                               control_type=control.control_type)
             self.controls[control_name.name].setObjectName(control_name.name)
-            self.controls_layout_pressure.addWidget(self.controls[control_name.name])
-            if i == 0:
-                self.controls_layout_pressure.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+            self.controls_layout.addWidget(self.controls[control_name.name])
 
-        #self.controls_layout_pressure.addStretch(10)
-        self.controls_box_pressure.setLayout(self.controls_layout_pressure)
+        # TODO: Jonny implement groups (maybe?) and move the automatic calculation to the control panel
+
+        #
+        # # self.controls_box_pressure = QtWidgets.QGroupBox("Pressure Controls")
+        # # self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX)
+        # # self.controls_box_pressure.setContentsMargins(0, 0, 0, 0)
+        #
+        # # self.controls_layout_pressure = QtWidgets.QVBoxLayout()
+        # # self.controls_layout_pressure.setContentsMargins(0, 5, 0, 5)
+        # for i, control_name in enumerate((ValueName.PIP, ValueName.PEEP)):
+        #     control_params = self.CONTROL[control_name]
+        #     self.controls[control_name.name] = widgets.Display(control_params)
+        #     self.controls[control_name.name].setObjectName(control_name.name)
+        #     self.controls_layout_pressure.addWidget(self.controls[control_name.name])
+        #     if i == 0:
+        #         self.controls_layout_pressure.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+        #
+        # #self.controls_layout_pressure.addStretch(10)
+        # self.controls_box_pressure.setLayout(self.controls_layout_pressure)
 
         ####################
         # Controls - Cycle
@@ -647,7 +656,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                              ValueName.INSPIRATION_TIME_SEC,
                              ValueName.IE_RATIO):
             control_params = values.VALUES[control_name]
-            self.controls[control_name.name] = widgets.Control(control_params)
+            self.controls[control_name.name] = widgets.Display(control_params)
             self.controls[control_name.name].setObjectName(control_name.name)
 
             self.controls_cycle_buttons[control_name] = QtWidgets.QRadioButton(control_params.name)
@@ -688,7 +697,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.controls_layout_ramp.setContentsMargins(0, 5, 0, 5)
 
         control_params = self.CONTROL[ValueName.PIP_TIME]
-        self.controls[ValueName.PIP_TIME.name] = widgets.Control(control_params)
+        self.controls[ValueName.PIP_TIME.name] = widgets.Display(control_params)
         self.controls[ValueName.PIP_TIME.name].setObjectName(ValueName.PIP_TIME.name)
         self.controls_layout_ramp.addWidget(self.controls[ValueName.PIP_TIME.name])
         self.controls_box_ramp.setLayout(self.controls_layout_ramp)

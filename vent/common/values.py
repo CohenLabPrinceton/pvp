@@ -29,6 +29,8 @@ class Value(object):
                  control: bool,
                  sensor: bool,
                  display: bool,
+                 control_type: typing.Union[None, str] = None,
+                 group: typing.Union[None, dict] = None,
                  default: (int, float) = None):
         """
         Definition of a value.
@@ -61,6 +63,8 @@ class Value(object):
         self._control = None
         self._sensor = None
         self._display = None
+        self._control_type = None
+        self._group = None
 
         self.name = name
         self.units = units
@@ -70,6 +74,8 @@ class Value(object):
         self.control = control
         self.sensor = sensor
         self.display = display
+        self.control_type = control_type
+        self.group = group
 
         if default is not None:
             self.default = default
@@ -151,6 +157,27 @@ class Value(object):
             display = False
         self._display = display
 
+    @property
+    def control_type(self):
+        return self._control_type
+
+    @control_type.setter
+    def control_type(self, control_type):
+        assert(control_type is None or control_type in ('record', 'slider'))
+        self._control_type = control_type
+
+    @property
+    def group(self):
+        return self._group
+
+    @group.setter
+    def group(self, group):
+        assert(group is None or isinstance(group, dict))
+        if isinstance(group, dict):
+            assert(len(group) == 1 and all([isinstance(k, int) for k in group.keys()]))
+
+        self._group = group
+
 
     def __setitem__(self, key, value):
         self.__setattr__(key, value)
@@ -182,6 +209,8 @@ VALUES = odict({
         'default': 35,           # FIXME
         'decimals': 1,
         'control': True,
+        'control_type': 'slider',
+        'group': {0:'Pressure Controls'},
         'sensor': True,
         'display': True
     }),
@@ -193,6 +222,8 @@ VALUES = odict({
         'default': 5,            # FIXME
         'decimals': 1,
         'control': True,
+        'control_type': 'record',
+        'group': {0:'Pressure Controls'},
         'sensor': True,
         'display': True
     }),
@@ -204,6 +235,7 @@ VALUES = odict({
         'default': 17,            # FIXME
         'decimals': 1,
         'control': True,
+        'control_type': 'slider',
         'sensor': True,
         'display': True
     }),
@@ -215,6 +247,7 @@ VALUES = odict({
         'default': 1.0,  # FIXME
         'decimals': 1,
         'control': True,
+        'control_type': 'slider',
         'sensor': True,
         'display': True
     }),
@@ -226,6 +259,7 @@ VALUES = odict({
         'decimals': 2,
         'default':0.5,
         'control': True,
+        'control_type': 'slider',
         'sensor': False,
         'display': False
     }),
@@ -237,6 +271,7 @@ VALUES = odict({
         'default': 1,  # FIXME
         'decimals': 1,
         'control': True,
+        'control_type': 'slider',
         'sensor': False,
         'display': True
     }),
@@ -294,7 +329,7 @@ VALUES = odict({
 })
 
 SENSOR = odict({
-    k:v for k, v in VALUES.items() if v.sensor == True
+    k:v for k, v in VALUES.items() if v.sensor
 })
 """
 Values to monitor but not control. 
@@ -312,7 +347,7 @@ Used to set alarms for out-of-bounds sensor values. These should be sent from th
 
 
 CONTROL = odict({
-    k: v for k, v in VALUES.items() if v.control == True
+    k: v for k, v in VALUES.items() if v.control
 })
 """
 Values to control but not monitor.
@@ -329,8 +364,16 @@ Sent to control module to control operation of ventilator.::
     }
 """
 
-DISPLAY = odict({
-    k: v for k, v in VALUES.items() if (v.control == False) and (v.display == True)
+DISPLAY_MONITOR = odict({
+    k: v for k, v in VALUES.items() if v.sensor and v.display
+})
+"""
+Values that should be displayed in the GUI. If a value is also a CONTROL it will always have the measured value displayed,
+these values are those that are sensor values that are uncontrolled and should be displayed.
+"""
+
+DISPLAY_CONTROL = odict({
+    k: v for k, v in VALUES.items() if v.control and v.display == True
 })
 """
 Values that should be displayed in the GUI. If a value is also a CONTROL it will always have the measured value displayed,

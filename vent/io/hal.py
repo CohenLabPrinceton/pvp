@@ -93,6 +93,13 @@ class Hal:
         """
         return self._pressure_sensor.get()
 
+    
+    @property
+    def oxygen(self) -> float:
+        """ Returns the oxygen concentration from the primary oxygen sensor.
+        """
+        return self._oxygen_sensor.get()
+
     @property
     def aux_pressure(self) -> float:
         """ Returns the pressure from the auxiliary pressure sensor, if so equipped.

@@ -7,7 +7,6 @@ import json
 import multiprocessing as mp
 from ctypes import c_bool
 
-from vent.common.logging import init_logger
 import logging
 
 _PREF_MANAGER = mp.Manager()
@@ -41,7 +40,13 @@ bool: flag to indicate whether prefs have been loaded (and thus :func:`set_pref`
 _DEFAULTS = {
     'PREFS_FN': None,
     'LOGGING_MAX_BYTES': 2 * 2 ** 30, # total
-    'LOGGING_MAX_FILES': 5
+    'LOGGING_MAX_FILES': 5,
+    'TIMEOUT': 0.05, # timeout used for timeout decorator
+    'HEARTBEAT_TIMEOUT': 0.02, # timeout used in heartbeat between gui and contorller,
+    'CONTROLLER_LOOP_UPDATE_TIME': 0.0,
+    'CONTROLLER_LOOPS_UNTIL_UPDATE': 1, # update copied values like get_sensor every n loops,
+    'CONTROLLER_RINGBUFFER_SIZE': 100,
+    'COUGH_DURATION': 0.1
 }
 """
 Declare all available parameters and set default values. If no default, set as None. 
@@ -115,12 +120,13 @@ def load_prefs(prefs_fn: str):
 
     # update prefs
     globals()['_PREFS'].update(new_prefs)
-    globals()['LOADED'] = True
+    globals()['LOADED'].value = True
 
     # log
     if globals()['_LOGGER'] is None:
         # if program is just starting, logger shouldn't be created in case LOG_DIR is different than default
         # so it's ok to start it here.
+        from vent.common.loggers import init_logger
         globals()['_LOGGER'] = init_logger(__name__)
 
     globals()['_LOGGER'].info(f'Loaded prefs from {prefs_fn}')

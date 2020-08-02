@@ -1,6 +1,9 @@
+import time
+
 from vent.common import values
 from copy import copy
 from collections import OrderedDict as odict
+from vent.common.loggers import init_logger
 
 class SensorValues:
 
@@ -88,17 +91,42 @@ class SensorValues:
 
 class ControlValues:
     """
-    Class to save control values.
+    Class to save control values, analogous to SensorValues.
+    Key difference: SensorValues come exclusively from the sensors, ControlValues contains controller variables, i.e. control signals and controlled signals (the flows).
+    :param control_signal_in:
+    :param control_signal_out:
     """
-    def __init__(self, control_signal_in, control_signal_out, flow_in, flow_out):
+    def __init__(self, control_signal_in, control_signal_out):
         self.control_signal_in = control_signal_in
         self.control_signal_out = control_signal_out
-        self.flow_in = flow_in
-        self.flow_out = flow_out
 
+class DerivedValues:
+    """
+    Class to save derived values, analogous to SensorValues.
+    Key difference: SensorValues come exclusively from the sensors, DerivedValues contain estimates of I_PHASE_DURATION, PIP_TIME, PEEP_time, PIP, PIP_PLATEAU, PEEP, and VTE.
+    :param timestamp:
+    :param breath_count:
+    :param I_phase_duration:
+    :param pip_time:
+    :param peep_time:
+    :param pip:
+    :param pip_plateau:
+    :param peep:
+    :param vte:
+    """
+    def __init__(self, timestamp, breath_count, I_phase_duration, pip_time, peep_time, pip, pip_plateau, peep, vte):
+        self.timestamp        = timestamp
+        self.breath_count     = breath_count
+        self.I_phase_duration = I_phase_duration
+        self.pip_time         = pip_time
+        self.peep_time        = peep_time
+        self.pip              = pip
+        self.pip_plateau      = pip_plateau
+        self.peep             = peep
+        self.vte              = vte
 
 class ControlSetting:
-    def __init__(self, name, value, min_value, max_value, timestamp):
+    def __init__(self, name, value = None, min_value = None, max_value = None, timestamp = None):
         """
         TODO: if enum is hard to use, we may just use a predefined set, e.g. {'PIP', 'PEEP', ...}
         :param name: enum belong to ValueName
@@ -107,10 +135,31 @@ class ControlSetting:
         :param max_value:
         :param timestamp:
         """
-        self.name = name
+        if isinstance(name, str):
+            try:
+                name = values.CONTROL.__members__[name]
+            except KeyError as e:
+                logger = init_logger(__name__)
+                logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
+                raise e
+        elif isinstance(name, values.ValueName):
+            assert name in values.CONTROL.keys()
+
+        self.name = name # type: values.ValueName
+
+        if (value is None) and (min_value is None) and (max_value is None):
+            logger = init_logger(__name__)
+            ex_string = 'at least one of value, min_value, or max_value must be set in a ControlSetting'
+            logger.exception(ex_string)
+            raise ValueError(ex_string)
+
         self.value = value
         self.min_value = min_value
         self.max_value = max_value
+
+        if timestamp is None:
+            timestamp = time.time()
+
         self.timestamp = timestamp
 
 

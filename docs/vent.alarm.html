@@ -1,0 +1,1539 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>vent.alarm package &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>vent.alarm package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/vent.alarm.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="vent-alarm-package">
+<h1>vent.alarm package<a class="headerlink" href="#vent-alarm-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-vent.alarm.alarm">
+<span id="vent-alarm-alarm-module"></span><h2>vent.alarm.alarm module<a class="headerlink" href="#module-vent.alarm.alarm" title="Permalink to this headline">¶</a></h2>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm.Alarm" title="vent.alarm.alarm.Alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Alarm</span></code></a>(alarm_type, severity, start_time[, …])</p></td>
+<td><p>Class used by the program to control and coordinate alarms.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="vent.alarm.alarm.Alarm">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.alarm.</code><code class="sig-name descname">Alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_type</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType">vent.alarm.AlarmType</a></span></em>, <em class="sig-param"><span class="n">severity</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmSeverity" title="vent.alarm.AlarmSeverity">vent.alarm.AlarmSeverity</a></span></em>, <em class="sig-param"><span class="n">start_time</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">latch</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">managed</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm.html#Alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm.Alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class used by the program to control and coordinate alarms.</p>
+<p>Parameterized by a <code class="xref py py-class docutils literal notranslate"><span class="pre">Alarm_Rule</span></code> and managed by <code class="xref py py-class docutils literal notranslate"><span class="pre">Alarm_Manager</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alarm_type</strong> – </p></li>
+<li><p><strong>severity</strong> – </p></li>
+<li><p><strong>start_time</strong> – </p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – optional - numerical value that generated the alarm</p></li>
+<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – optional - override default text generated by <a class="reference internal" href="gui.html#vent.gui.alarm_manager.AlarmManager" title="vent.gui.alarm_manager.AlarmManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmManager</span></code></a></p></li>
+<li><p><strong>managed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – if created by the alarm_manager, don’t register</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm.Alarm.__init__" title="vent.alarm.alarm.Alarm.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(alarm_type, severity, start_time[, …])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param alarm_type</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm.Alarm.deactivate" title="vent.alarm.alarm.Alarm.deactivate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deactivate</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm.Alarm.alarm_type" title="vent.alarm.alarm.Alarm.alarm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alarm_type</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm.Alarm.id_counter" title="vent.alarm.alarm.Alarm.id_counter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id_counter</span></code></a></p></td>
+<td><p>used to generate unique IDs for each alarm</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm.Alarm.manager" title="vent.alarm.alarm.Alarm.manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">manager</span></code></a></p></td>
+<td><p>have ta do it this janky way to avoid circular imports</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm.Alarm.severity" title="vent.alarm.alarm.Alarm.severity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">severity</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.alarm.alarm.Alarm.id_counter">
+<code class="sig-name descname">id_counter</code><em class="property"> = count(0)</em><a class="headerlink" href="#vent.alarm.alarm.Alarm.id_counter" title="Permalink to this definition">¶</a></dt>
+<dd><p>used to generate unique IDs for each alarm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.count</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm.Alarm.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_type</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType">vent.alarm.AlarmType</a></span></em>, <em class="sig-param"><span class="n">severity</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmSeverity" title="vent.alarm.AlarmSeverity">vent.alarm.AlarmSeverity</a></span></em>, <em class="sig-param"><span class="n">start_time</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">latch</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">managed</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm.html#Alarm.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm.Alarm.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alarm_type</strong> – </p></li>
+<li><p><strong>severity</strong> – </p></li>
+<li><p><strong>start_time</strong> – </p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – optional - numerical value that generated the alarm</p></li>
+<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – optional - override default text generated by <a class="reference internal" href="gui.html#vent.gui.alarm_manager.AlarmManager" title="vent.gui.alarm_manager.AlarmManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmManager</span></code></a></p></li>
+<li><p><strong>managed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – if created by the alarm_manager, don’t register</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm.Alarm.manager">
+<em class="property">property </em><code class="sig-name descname">manager</code><a class="headerlink" href="#vent.alarm.alarm.Alarm.manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>have ta do it this janky way to avoid circular imports</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm.Alarm.severity">
+<em class="property">property </em><code class="sig-name descname">severity</code><a class="headerlink" href="#vent.alarm.alarm.Alarm.severity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm.Alarm.alarm_type">
+<em class="property">property </em><code class="sig-name descname">alarm_type</code><a class="headerlink" href="#vent.alarm.alarm.Alarm.alarm_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm.Alarm.deactivate">
+<code class="sig-name descname">deactivate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm.html#Alarm.deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm.Alarm.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vent.alarm.alarm_manager">
+<span id="vent-alarm-alarm-manager-module"></span><h2>vent.alarm.alarm_manager module<a class="headerlink" href="#module-vent.alarm.alarm_manager" title="Permalink to this headline">¶</a></h2>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager" title="vent.alarm.alarm_manager.Alarm_Manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Alarm_Manager</span></code></a>()</p></td>
+<td><p><dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.active_alarms">
+<code class="sig-prename descclassname">vent.alarm.alarm_manager.</code><code class="sig-name descname">active_alarms</code><a class="headerlink" href="#vent.alarm.alarm_manager.active_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.alarm_manager.</code><code class="sig-name descname">Alarm_Manager</code><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="vent.alarm.alarm_manager.Alarm_Manager.active_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">active_alarms</span></code></a></p></td>
+<td><p>dict() -&gt; new empty dictionary</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id4" title="vent.alarm.alarm_manager.Alarm_Manager.callbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">callbacks</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id2" title="vent.alarm.alarm_manager.Alarm_Manager.cleared_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cleared_alarms</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.dependencies" title="vent.alarm.alarm_manager.Alarm_Manager.dependencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dependencies</span></code></a></p></td>
+<td><p>dict() -&gt; new empty dictionary</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.logged_alarms" title="vent.alarm.alarm_manager.Alarm_Manager.logged_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logged_alarms</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id1" title="vent.alarm.alarm_manager.Alarm_Manager.pending_clears"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pending_clears</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.rules" title="vent.alarm.alarm_manager.Alarm_Manager.rules"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rules</span></code></a></p></td>
+<td><p>dict() -&gt; new empty dictionary</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id3" title="vent.alarm.alarm_manager.Alarm_Manager.snoozed_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snoozed_alarms</span></code></a></p></td>
+<td><p>dict() -&gt; new empty dictionary</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.add_callback" title="vent.alarm.alarm_manager.Alarm_Manager.add_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_callback</span></code></a>(callback)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.check_rule" title="vent.alarm.alarm_manager.Alarm_Manager.check_rule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_rule</span></code></a>(rule, sensor_values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.clear_all_alarms" title="vent.alarm.alarm_manager.Alarm_Manager.clear_all_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_all_alarms</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.deactivate_alarm" title="vent.alarm.alarm_manager.Alarm_Manager.deactivate_alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deactivate_alarm</span></code></a>(alarm)</p></td>
+<td><p>Mark an alarm’s internal active flags and remove from <a class="reference internal" href="#vent.alarm.alarm_manager.active_alarms" title="vent.alarm.alarm_manager.active_alarms"><code class="xref py py-attr docutils literal notranslate"><span class="pre">active_alarms</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.dismiss_alarm" title="vent.alarm.alarm_manager.Alarm_Manager.dismiss_alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dismiss_alarm</span></code></a>(alarm_type, duration)</p></td>
+<td><p>GUI or other object requests an alarm to be dismissed &amp; deactivated</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.emit_alarm" title="vent.alarm.alarm_manager.Alarm_Manager.emit_alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">emit_alarm</span></code></a>(alarm_type, severity)</p></td>
+<td><p>Emit alarm (by calling all callbacks with it).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.get_alarm_severity" title="vent.alarm.alarm_manager.Alarm_Manager.get_alarm_severity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_alarm_severity</span></code></a>(alarm_type)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.load_rule" title="vent.alarm.alarm_manager.Alarm_Manager.load_rule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_rule</span></code></a>(alarm_rule)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.load_rules" title="vent.alarm.alarm_manager.Alarm_Manager.load_rules"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_rules</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.register_alarm" title="vent.alarm.alarm_manager.Alarm_Manager.register_alarm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_alarm</span></code></a>(alarm)</p></td>
+<td><p>Add alarm to registry.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.register_dependency" title="vent.alarm.alarm_manager.Alarm_Manager.register_dependency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_dependency</span></code></a>(condition, dependency)</p></td>
+<td><p>Add dependency in a Condition object to be updated when values are changed</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.reset" title="vent.alarm.alarm_manager.Alarm_Manager.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>reset all conditions, callbacks, and other stateful attributes and clear alarms</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.update" title="vent.alarm.alarm_manager.Alarm_Manager.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(sensor_values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager.update_dependencies" title="vent.alarm.alarm_manager.Alarm_Manager.update_dependencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_dependencies</span></code></a>(control_setting)</p></td>
+<td><p>Update Condition objects that update their value according to some control parameter</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.active_alarms">
+<code class="sig-name descname">active_alarms</code><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.active_alarms" title="Permalink to this definition">¶</a></dt>
+<dd><p>{<a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmType</span></code></a>: <a class="reference internal" href="#vent.alarm.alarm.Alarm" title="vent.alarm.alarm.Alarm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alarm</span></code></a>}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.pending_clears">
+<code class="sig-name descname">pending_clears</code><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.pending_clears" title="Permalink to this definition">¶</a></dt>
+<dd><p>[<a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmType</span></code></a>] list of alarms that have been requested to be cleared</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.callbacks">
+<code class="sig-name descname">callbacks</code><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of callables that accept <cite>Alarm</cite> s when they are raised/altered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.cleared_alarms">
+<code class="sig-name descname">cleared_alarms</code><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.cleared_alarms" title="Permalink to this definition">¶</a></dt>
+<dd><p>of <a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmType</span></code></a> s, alarms that have been cleared but have not dropped back into the ‘off’ range to enable re-raising</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.snoozed_alarms">
+<code class="sig-name descname">snoozed_alarms</code><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.snoozed_alarms" title="Permalink to this definition">¶</a></dt>
+<dd><p>of <a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmType</span></code></a> s : times, alarms that should not be raised because they have been silenced for a period of time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>If an Alarm_Manager already exists, when initing just return that one</p>
+<dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager._instance">
+<code class="sig-name descname">_instance</code><em class="property"> = None</em><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager._instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="id0">
+<code class="sig-name descname">active_alarms</code><em class="property">: Dict[vent.alarm.AlarmType, vent.alarm.alarm.Alarm]</em><em class="property"> = {}</em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.logged_alarms">
+<code class="sig-name descname">logged_alarms</code><em class="property">: List[vent.alarm.alarm.Alarm]</em><em class="property"> = []</em><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.logged_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.dependencies">
+<code class="sig-name descname">dependencies</code><em class="property"> = {}</em><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.dependencies" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="id1">
+<code class="sig-name descname">pending_clears</code><em class="property"> = []</em><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="id2">
+<code class="sig-name descname">cleared_alarms</code><em class="property"> = []</em><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="id3">
+<code class="sig-name descname">snoozed_alarms</code><em class="property"> = {}</em><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="id4">
+<code class="sig-name descname">callbacks</code><em class="property"> = []</em><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.rules">
+<code class="sig-name descname">rules</code><em class="property"> = {}</em><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.load_rules">
+<code class="sig-name descname">load_rules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.load_rules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.load_rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.load_rule">
+<code class="sig-name descname">load_rule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_rule</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.rule.Alarm_Rule" title="vent.alarm.rule.Alarm_Rule">vent.alarm.rule.Alarm_Rule</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.load_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.load_rule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensor_values</span><span class="p">:</span> <span class="n"><a class="reference internal" href="vent.common.html#vent.common.message.SensorValues" title="vent.common.message.SensorValues">vent.common.message.SensorValues</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.check_rule">
+<code class="sig-name descname">check_rule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rule</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.rule.Alarm_Rule" title="vent.alarm.rule.Alarm_Rule">vent.alarm.rule.Alarm_Rule</a></span></em>, <em class="sig-param"><span class="n">sensor_values</span><span class="p">:</span> <span class="n"><a class="reference internal" href="vent.common.html#vent.common.message.SensorValues" title="vent.common.message.SensorValues">vent.common.message.SensorValues</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.check_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.check_rule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.emit_alarm">
+<code class="sig-name descname">emit_alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_type</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType">vent.alarm.AlarmType</a></span></em>, <em class="sig-param"><span class="n">severity</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmSeverity" title="vent.alarm.AlarmSeverity">vent.alarm.AlarmSeverity</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.emit_alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.emit_alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emit alarm (by calling all callbacks with it).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method emits <em>and</em> clears alarms – a cleared alarm is emitted with <code class="xref py py-attr docutils literal notranslate"><span class="pre">AlarmSeverity.OFF</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alarm_type</strong> (<a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmType</span></code></a>) – </p></li>
+<li><p><strong>severity</strong> (<a class="reference internal" href="#vent.alarm.AlarmSeverity" title="vent.alarm.AlarmSeverity"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmSeverity</span></code></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.deactivate_alarm">
+<code class="sig-name descname">deactivate_alarm</code><span class="sig-paren">(</span><em class="sig-param">alarm: (&lt;enum 'AlarmType'&gt;</em>, <em class="sig-param">&lt;class 'vent.alarm.alarm.Alarm'&gt;)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.deactivate_alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.deactivate_alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark an alarm’s internal active flags and remove from <a class="reference internal" href="#id0" title="vent.alarm.alarm_manager.Alarm_Manager.active_alarms"><code class="xref py py-attr docutils literal notranslate"><span class="pre">active_alarms</span></code></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This does <em>not</em> alert listeners that an alarm has been cleared,
+for that emit an alarm with AlarmSeverity.OFF</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alarm</strong> – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.dismiss_alarm">
+<code class="sig-name descname">dismiss_alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_type</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType">vent.alarm.AlarmType</a></span></em>, <em class="sig-param"><span class="n">duration</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.dismiss_alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.dismiss_alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>GUI or other object requests an alarm to be dismissed &amp; deactivated</p>
+<p>GUI will wait until it receives an <cite>emit_alarm</cite> of severity == OFF to remove
+alarm widgets. If the alarm is not latched</p>
+<p>If the alarm is latched, alarm_manager will not decrement alarm severity or emit
+<cite>OFF</cite> until a) the condition returns to <cite>OFF</cite>, and b) the user dismisses the alarm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alarm_type</strong> (<a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmType</span></code></a>) – Alarm to dismiss</p></li>
+<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – seconds - amount of time to wait before alarm can be re-raised
+If a duration is provided, the alarm will not be able to be re-raised</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.get_alarm_severity">
+<code class="sig-name descname">get_alarm_severity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_type</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType">vent.alarm.AlarmType</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.get_alarm_severity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.get_alarm_severity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.register_alarm">
+<code class="sig-name descname">register_alarm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.alarm.Alarm" title="vent.alarm.alarm.Alarm">vent.alarm.alarm.Alarm</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.register_alarm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.register_alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add alarm to registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alarm</strong> (<a class="reference internal" href="#vent.alarm.alarm.Alarm" title="vent.alarm.alarm.Alarm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alarm</span></code></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.register_dependency">
+<code class="sig-name descname">register_dependency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">condition</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.condition.Condition" title="vent.alarm.condition.Condition">vent.alarm.condition.Condition</a></span></em>, <em class="sig-param"><span class="n">dependency</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.register_dependency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.register_dependency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add dependency in a Condition object to be updated when values are changed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>condition</strong> – </p></li>
+<li><p><strong>dependency</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – either a (ValueName, attribute_name) or optionally also + transformation callable</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.update_dependencies">
+<code class="sig-name descname">update_dependencies</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span><span class="p">:</span> <span class="n"><a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.update_dependencies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.update_dependencies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update Condition objects that update their value according to some control parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>control_setting</strong> (<a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlSetting</span></code></a>) – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.add_callback">
+<code class="sig-name descname">add_callback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.add_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.add_callback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.clear_all_alarms">
+<code class="sig-name descname">clear_all_alarms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.clear_all_alarms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.clear_all_alarms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.alarm_manager.Alarm_Manager.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/alarm_manager.html#Alarm_Manager.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.alarm_manager.Alarm_Manager.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>reset all conditions, callbacks, and other stateful attributes and clear alarms</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vent.alarm.condition">
+<span id="vent-alarm-condition-module"></span><h2>vent.alarm.condition module<a class="headerlink" href="#module-vent.alarm.condition" title="Permalink to this headline">¶</a></h2>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.AlarmSeverityCondition" title="vent.alarm.condition.AlarmSeverityCondition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AlarmSeverityCondition</span></code></a>(alarm_type, severity, …)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param alarm_type</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.condition.Condition" title="vent.alarm.condition.Condition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Condition</span></code></a>(depends, *args, **kwargs)</p></td>
+<td><p>Base class for specifying alarm test conditions</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.CycleAlarmSeverityCondition" title="vent.alarm.condition.CycleAlarmSeverityCondition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CycleAlarmSeverityCondition</span></code></a>(n_cycles, *args, …)</p></td>
+<td><p>alarm goes out of range for a specific number of breath cycles</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.condition.CycleValueCondition" title="vent.alarm.condition.CycleValueCondition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CycleValueCondition</span></code></a>(n_cycles, *args, **kwargs)</p></td>
+<td><p>value goes out of range for a specific number of breath cycles</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.TimeValueCondition" title="vent.alarm.condition.TimeValueCondition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeValueCondition</span></code></a>(time, *args, **kwargs)</p></td>
+<td><p>value goes out of range for specific amount of time</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.condition.ValueCondition" title="vent.alarm.condition.ValueCondition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueCondition</span></code></a>(value_name, limit, mode, …)</p></td>
+<td><p>value is greater or lesser than some max/min</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.get_alarm_manager" title="vent.alarm.condition.get_alarm_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_alarm_manager</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt id="vent.alarm.condition.get_alarm_manager">
+<code class="sig-prename descclassname">vent.alarm.condition.</code><code class="sig-name descname">get_alarm_manager</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#get_alarm_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.get_alarm_manager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="vent.alarm.condition.Condition">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.condition.</code><code class="sig-name descname">Condition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">depends</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#Condition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.Condition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for specifying alarm test conditions</p>
+<p>Need to be able to condition alarms based on
+* value ranges
+* value ranges &amp; durations
+* levels of other alarms</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.Condition.__init__" title="vent.alarm.condition.Condition.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(depends, *args, **kwargs)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param depends</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.condition.Condition.check" title="vent.alarm.condition.Condition.check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check</span></code></a>(sensor_values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.Condition.reset" title="vent.alarm.condition.Condition.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>If a condition is stateful, need to provide some method of resetting the state</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id5" title="vent.alarm.condition.Condition.manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">manager</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.alarm.condition.Condition.manager">
+<code class="sig-name descname">manager</code><a class="headerlink" href="#vent.alarm.condition.Condition.manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>alarm manager, used to get status of alarms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#vent.alarm.alarm_manager.Alarm_Manager" title="vent.alarm.alarm_manager.Alarm_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.alarm.alarm_manager.Alarm_Manager</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.condition.Condition._child">
+<code class="sig-name descname">_child</code><a class="headerlink" href="#vent.alarm.condition.Condition._child" title="Permalink to this definition">¶</a></dt>
+<dd><p>if another condition is added to this one, store a reference to it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#vent.alarm.condition.Condition" title="vent.alarm.condition.Condition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Condition</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>depends</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – <p>a list of, or a single dict:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;value_name&#39;</span><span class="p">:</span><span class="n">ValueName</span><span class="p">,</span>
+<span class="s1">&#39;value_attr&#39;</span><span class="p">:</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ControlMessage</span><span class="p">,</span>
+ <span class="s1">&#39;condition_attr&#39;</span><span class="p">,</span>
+ <span class="n">optional</span><span class="p">:</span> <span class="n">transformation</span><span class="p">:</span> <span class="n">callable</span><span class="p">)</span>
+<span class="n">that</span> <span class="n">declare</span> <span class="n">what</span> <span class="n">values</span> <span class="n">are</span> <span class="n">needed</span> <span class="n">to</span> <span class="n">update</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>*args</strong> – </p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="vent.alarm.condition.Condition.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">depends</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#Condition.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.Condition.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>depends</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – <p>a list of, or a single dict:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;value_name&#39;</span><span class="p">:</span><span class="n">ValueName</span><span class="p">,</span>
+<span class="s1">&#39;value_attr&#39;</span><span class="p">:</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ControlMessage</span><span class="p">,</span>
+ <span class="s1">&#39;condition_attr&#39;</span><span class="p">,</span>
+ <span class="n">optional</span><span class="p">:</span> <span class="n">transformation</span><span class="p">:</span> <span class="n">callable</span><span class="p">)</span>
+<span class="n">that</span> <span class="n">declare</span> <span class="n">what</span> <span class="n">values</span> <span class="n">are</span> <span class="n">needed</span> <span class="n">to</span> <span class="n">update</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>*args</strong> – </p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id5">
+<em class="property">property </em><code class="sig-name descname">manager</code><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.Condition.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensor_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#Condition.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.Condition.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.Condition.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#Condition.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.Condition.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a condition is stateful, need to provide some method of resetting the state</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.alarm.condition.ValueCondition">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.condition.</code><code class="sig-name descname">ValueCondition</code><span class="sig-paren">(</span><em class="sig-param">value_name: vent.common.values.ValueName</em>, <em class="sig-param">limit: (&lt;class 'int'&gt;</em>, <em class="sig-param">&lt;class 'float'&gt;)</em>, <em class="sig-param">mode: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#ValueCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.ValueCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.alarm.condition.Condition" title="vent.alarm.condition.Condition"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.alarm.condition.Condition</span></code></a></p>
+<p>value is greater or lesser than some max/min</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value_name</strong> (<a class="reference internal" href="common.html#vent.common.values.ValueName" title="vent.common.values.ValueName"><em>ValueName</em></a>) – Which value to check</p></li>
+<li><p><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – value to check against</p></li>
+<li><p><strong>mode</strong> (<em>'min'</em><em>, </em><em>'max'</em>) – whether the limit is a minimum or maximum</p></li>
+<li><p><strong>*args</strong> – </p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.ValueCondition.__init__" title="vent.alarm.condition.ValueCondition.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(value_name, limit, mode, *args, …)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param value_name</dt>
+<dd class="field-odd"><p>Which value to check</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.condition.ValueCondition.check" title="vent.alarm.condition.ValueCondition.check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check</span></code></a>(sensor_values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.ValueCondition.reset" title="vent.alarm.condition.ValueCondition.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>not stateful, do nothing.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.ValueCondition.mode" title="vent.alarm.condition.ValueCondition.mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mode</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.alarm.condition.ValueCondition.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">value_name: vent.common.values.ValueName</em>, <em class="sig-param">limit: (&lt;class 'int'&gt;</em>, <em class="sig-param">&lt;class 'float'&gt;)</em>, <em class="sig-param">mode: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#ValueCondition.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.ValueCondition.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value_name</strong> (<a class="reference internal" href="common.html#vent.common.values.ValueName" title="vent.common.values.ValueName"><em>ValueName</em></a>) – Which value to check</p></li>
+<li><p><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – value to check against</p></li>
+<li><p><strong>mode</strong> (<em>'min'</em><em>, </em><em>'max'</em>) – whether the limit is a minimum or maximum</p></li>
+<li><p><strong>*args</strong> – </p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.ValueCondition.mode">
+<em class="property">property </em><code class="sig-name descname">mode</code><a class="headerlink" href="#vent.alarm.condition.ValueCondition.mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.ValueCondition.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensor_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#ValueCondition.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.ValueCondition.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.ValueCondition.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#ValueCondition.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.ValueCondition.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>not stateful, do nothing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.alarm.condition.CycleValueCondition">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.condition.</code><code class="sig-name descname">CycleValueCondition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_cycles</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#CycleValueCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.CycleValueCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.alarm.condition.ValueCondition" title="vent.alarm.condition.ValueCondition"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.alarm.condition.ValueCondition</span></code></a></p>
+<p>value goes out of range for a specific number of breath cycles</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.CycleValueCondition.check" title="vent.alarm.condition.CycleValueCondition.check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check</span></code></a>(sensor_values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.condition.CycleValueCondition.reset" title="vent.alarm.condition.CycleValueCondition.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>not stateful, do nothing.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.CycleValueCondition.n_cycles" title="vent.alarm.condition.CycleValueCondition.n_cycles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_cycles</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.alarm.condition.CycleValueCondition._start_cycle">
+<code class="sig-name descname">_start_cycle</code><a class="headerlink" href="#vent.alarm.condition.CycleValueCondition._start_cycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The breath cycle where the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.condition.CycleValueCondition._mid_check">
+<code class="sig-name descname">_mid_check</code><a class="headerlink" href="#vent.alarm.condition.CycleValueCondition._mid_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether a value has left the acceptable range and we are counting consecutive breath cycles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Args:
+value_name (ValueName): Which value to check
+limit (int, float): value to check against
+mode (‘min’, ‘max’): whether the limit is a minimum or maximum
+<a href="#id6"><span class="problematic" id="id7">*</span></a>args:
+<a href="#id8"><span class="problematic" id="id9">**</span></a>kwargs:</p>
+<dl class="py method">
+<dt id="vent.alarm.condition.CycleValueCondition.n_cycles">
+<em class="property">property </em><code class="sig-name descname">n_cycles</code><a class="headerlink" href="#vent.alarm.condition.CycleValueCondition.n_cycles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.CycleValueCondition.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensor_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#CycleValueCondition.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.CycleValueCondition.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.CycleValueCondition.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#CycleValueCondition.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.CycleValueCondition.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>not stateful, do nothing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.alarm.condition.TimeValueCondition">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.condition.</code><code class="sig-name descname">TimeValueCondition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#TimeValueCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.TimeValueCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.alarm.condition.ValueCondition" title="vent.alarm.condition.ValueCondition"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.alarm.condition.ValueCondition</span></code></a></p>
+<p>value goes out of range for specific amount of time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – number of seconds value must be out of range</p></li>
+<li><p><strong>*args</strong> – </p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.TimeValueCondition.__init__" title="vent.alarm.condition.TimeValueCondition.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(time, *args, **kwargs)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param time</dt>
+<dd class="field-odd"><p>number of seconds value must be out of range</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.condition.TimeValueCondition.check" title="vent.alarm.condition.TimeValueCondition.check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check</span></code></a>(sensor_values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.TimeValueCondition.reset" title="vent.alarm.condition.TimeValueCondition.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>not stateful, do nothing.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.alarm.condition.TimeValueCondition.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#TimeValueCondition.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.TimeValueCondition.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – number of seconds value must be out of range</p></li>
+<li><p><strong>*args</strong> – </p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.TimeValueCondition.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensor_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#TimeValueCondition.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.TimeValueCondition.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.TimeValueCondition.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#TimeValueCondition.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.TimeValueCondition.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>not stateful, do nothing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.alarm.condition.AlarmSeverityCondition">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.condition.</code><code class="sig-name descname">AlarmSeverityCondition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_type</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType">vent.alarm.AlarmType</a></span></em>, <em class="sig-param"><span class="n">severity</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmSeverity" title="vent.alarm.AlarmSeverity">vent.alarm.AlarmSeverity</a></span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">'min'</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#AlarmSeverityCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.AlarmSeverityCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.alarm.condition.Condition" title="vent.alarm.condition.Condition"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.alarm.condition.Condition</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alarm_type</strong> – </p></li>
+<li><p><strong>severity</strong> – </p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – <p>one of ‘min’, ‘equals’,  or ‘max’.
+‘min’ returns true if the alarm is at least this value
+(note the difference from ValueCondition which returns true if the alarm is less than..)
+and vice versa for ‘max’.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>’min’ and ‘max’ use &gt;= and &lt;= rather than &gt; and &lt;</p>
+</div>
+</p></li>
+<li><p><strong>*args</strong> – </p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.AlarmSeverityCondition.__init__" title="vent.alarm.condition.AlarmSeverityCondition.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(alarm_type, severity, mode, *args, …)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param alarm_type</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.condition.AlarmSeverityCondition.check" title="vent.alarm.condition.AlarmSeverityCondition.check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check</span></code></a>(sensor_values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.AlarmSeverityCondition.reset" title="vent.alarm.condition.AlarmSeverityCondition.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>If a condition is stateful, need to provide some method of resetting the state</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.AlarmSeverityCondition.mode" title="vent.alarm.condition.AlarmSeverityCondition.mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mode</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.alarm.condition.AlarmSeverityCondition.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alarm_type</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType">vent.alarm.AlarmType</a></span></em>, <em class="sig-param"><span class="n">severity</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmSeverity" title="vent.alarm.AlarmSeverity">vent.alarm.AlarmSeverity</a></span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">'min'</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#AlarmSeverityCondition.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.AlarmSeverityCondition.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alarm_type</strong> – </p></li>
+<li><p><strong>severity</strong> – </p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – <p>one of ‘min’, ‘equals’,  or ‘max’.
+‘min’ returns true if the alarm is at least this value
+(note the difference from ValueCondition which returns true if the alarm is less than..)
+and vice versa for ‘max’.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>’min’ and ‘max’ use &gt;= and &lt;= rather than &gt; and &lt;</p>
+</div>
+</p></li>
+<li><p><strong>*args</strong> – </p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.AlarmSeverityCondition.mode">
+<em class="property">property </em><code class="sig-name descname">mode</code><a class="headerlink" href="#vent.alarm.condition.AlarmSeverityCondition.mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.AlarmSeverityCondition.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensor_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#AlarmSeverityCondition.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.AlarmSeverityCondition.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.AlarmSeverityCondition.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#AlarmSeverityCondition.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.AlarmSeverityCondition.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a condition is stateful, need to provide some method of resetting the state</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.alarm.condition.CycleAlarmSeverityCondition">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.condition.</code><code class="sig-name descname">CycleAlarmSeverityCondition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_cycles</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#CycleAlarmSeverityCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.CycleAlarmSeverityCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vent.alarm.condition.AlarmSeverityCondition" title="vent.alarm.condition.AlarmSeverityCondition"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.alarm.condition.AlarmSeverityCondition</span></code></a></p>
+<p>alarm goes out of range for a specific number of breath cycles</p>
+<div class="admonition-todo admonition" id="id10">
+<p class="admonition-title">Todo</p>
+<p>note that this is exactly the same as CycleValueCondition. Need to do the multiple inheritance thing</p>
+</div>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.CycleAlarmSeverityCondition.check" title="vent.alarm.condition.CycleAlarmSeverityCondition.check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check</span></code></a>(sensor_values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.condition.CycleAlarmSeverityCondition.reset" title="vent.alarm.condition.CycleAlarmSeverityCondition.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>If a condition is stateful, need to provide some method of resetting the state</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.condition.CycleAlarmSeverityCondition.n_cycles" title="vent.alarm.condition.CycleAlarmSeverityCondition.n_cycles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_cycles</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.alarm.condition.CycleAlarmSeverityCondition._start_cycle">
+<code class="sig-name descname">_start_cycle</code><a class="headerlink" href="#vent.alarm.condition.CycleAlarmSeverityCondition._start_cycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The breath cycle where the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.condition.CycleAlarmSeverityCondition._mid_check">
+<code class="sig-name descname">_mid_check</code><a class="headerlink" href="#vent.alarm.condition.CycleAlarmSeverityCondition._mid_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether a value has left the acceptable range and we are counting consecutive breath cycles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Args:
+alarm_type:
+severity:
+mode (str): one of ‘min’, ‘equals’,  or ‘max’.</p>
+<blockquote>
+<div><p>‘min’ returns true if the alarm is at least this value
+(note the difference from ValueCondition which returns true if the alarm is less than..)
+and vice versa for ‘max’.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>‘min’ and ‘max’ use &gt;= and &lt;= rather than &gt; and &lt;</p>
+</div>
+</div></blockquote>
+<p><a href="#id11"><span class="problematic" id="id12">*</span></a>args:
+<a href="#id13"><span class="problematic" id="id14">**</span></a>kwargs:</p>
+<dl class="py method">
+<dt id="vent.alarm.condition.CycleAlarmSeverityCondition.n_cycles">
+<em class="property">property </em><code class="sig-name descname">n_cycles</code><a class="headerlink" href="#vent.alarm.condition.CycleAlarmSeverityCondition.n_cycles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.CycleAlarmSeverityCondition.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensor_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#CycleAlarmSeverityCondition.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.CycleAlarmSeverityCondition.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.condition.CycleAlarmSeverityCondition.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/condition.html#CycleAlarmSeverityCondition.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.condition.CycleAlarmSeverityCondition.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a condition is stateful, need to provide some method of resetting the state</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vent.alarm.rule">
+<span id="vent-alarm-rule-module"></span><h2>vent.alarm.rule module<a class="headerlink" href="#module-vent.alarm.rule" title="Permalink to this headline">¶</a></h2>
+<p>Class to declare alarm rules</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.rule.Alarm_Rule" title="vent.alarm.rule.Alarm_Rule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Alarm_Rule</span></code></a>(name, conditions[, latch, …])</p></td>
+<td><p><ul class="simple">
+<li><p>name of rule</p></li>
+</ul>
+</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="vent.alarm.rule.Alarm_Rule">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.rule.</code><code class="sig-name descname">Alarm_Rule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType">vent.alarm.AlarmType</a></span></em>, <em class="sig-param"><span class="n">conditions</span></em>, <em class="sig-param"><span class="n">latch</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">technical</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/rule.html#Alarm_Rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.rule.Alarm_Rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<ul class="simple">
+<li><p>name of rule</p></li>
+<li><p>conditions: ((alarm_type, (condition_1, condition_2)), …)</p></li>
+<li><p>persistent (bool): if True, alarm will not be visually dismissed until alarm conditions are no longer true</p></li>
+<li><p>latch (bool): if True, alarm severity cannot be decremented until user manually dismisses</p></li>
+<li><p>silencing/overriding rules</p></li>
+</ul>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.rule.Alarm_Rule.check" title="vent.alarm.rule.Alarm_Rule.check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check</span></code></a>(sensor_values)</p></td>
+<td><p>Check all of our <code class="xref py py-attr docutils literal notranslate"><span class="pre">conditions</span></code> .</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.rule.Alarm_Rule.reset" title="vent.alarm.rule.Alarm_Rule.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.rule.Alarm_Rule.severity" title="vent.alarm.rule.Alarm_Rule.severity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">severity</span></code></a></p></td>
+<td><p>Last Alarm Severity from <code class="docutils literal notranslate"><span class="pre">.check()</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="vent.alarm.rule.Alarm_Rule.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensor_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/rule.html#Alarm_Rule.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.rule.Alarm_Rule.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check all of our <code class="xref py py-attr docutils literal notranslate"><span class="pre">conditions</span></code> .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sensor_values</strong> – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.rule.Alarm_Rule.severity">
+<em class="property">property </em><code class="sig-name descname">severity</code><a class="headerlink" href="#vent.alarm.rule.Alarm_Rule.severity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Last Alarm Severity from <code class="docutils literal notranslate"><span class="pre">.check()</span></code>
+:returns: <a class="reference internal" href="#vent.alarm.AlarmSeverity" title="vent.alarm.AlarmSeverity"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmSeverity</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vent.alarm.rule.Alarm_Rule.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/alarm/rule.html#Alarm_Rule.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.rule.Alarm_Rule.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vent.alarm">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-vent.alarm" title="Permalink to this headline">¶</a></h2>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.AlarmSeverity" title="vent.alarm.AlarmSeverity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AlarmSeverity</span></code></a></p></td>
+<td><p>An enumeration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.AlarmType" title="vent.alarm.AlarmType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AlarmType</span></code></a></p></td>
+<td><p>An enumeration.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="vent.alarm.AlarmType">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.</code><code class="sig-name descname">AlarmType</code><a class="reference internal" href="_modules/vent/alarm.html#AlarmType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.AlarmType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>An enumeration.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.HIGH_O2" title="vent.alarm.AlarmType.HIGH_O2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HIGH_O2</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.HIGH_PEEP" title="vent.alarm.AlarmType.HIGH_PEEP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HIGH_PEEP</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.HIGH_PRESSURE" title="vent.alarm.AlarmType.HIGH_PRESSURE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HIGH_PRESSURE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.HIGH_VTE" title="vent.alarm.AlarmType.HIGH_VTE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HIGH_VTE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.LEAK" title="vent.alarm.AlarmType.LEAK"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LEAK</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.LOW_O2" title="vent.alarm.AlarmType.LOW_O2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LOW_O2</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.LOW_PEEP" title="vent.alarm.AlarmType.LOW_PEEP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LOW_PEEP</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.LOW_PRESSURE" title="vent.alarm.AlarmType.LOW_PRESSURE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LOW_PRESSURE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.LOW_VTE" title="vent.alarm.AlarmType.LOW_VTE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LOW_VTE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.AlarmType.OBSTRUCTION" title="vent.alarm.AlarmType.OBSTRUCTION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OBSTRUCTION</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.LOW_PRESSURE">
+<code class="sig-name descname">LOW_PRESSURE</code><em class="property"> = 1</em><a class="headerlink" href="#vent.alarm.AlarmType.LOW_PRESSURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.HIGH_PRESSURE">
+<code class="sig-name descname">HIGH_PRESSURE</code><em class="property"> = 2</em><a class="headerlink" href="#vent.alarm.AlarmType.HIGH_PRESSURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.LOW_VTE">
+<code class="sig-name descname">LOW_VTE</code><em class="property"> = 3</em><a class="headerlink" href="#vent.alarm.AlarmType.LOW_VTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.HIGH_VTE">
+<code class="sig-name descname">HIGH_VTE</code><em class="property"> = 4</em><a class="headerlink" href="#vent.alarm.AlarmType.HIGH_VTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.LOW_PEEP">
+<code class="sig-name descname">LOW_PEEP</code><em class="property"> = 5</em><a class="headerlink" href="#vent.alarm.AlarmType.LOW_PEEP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.HIGH_PEEP">
+<code class="sig-name descname">HIGH_PEEP</code><em class="property"> = 6</em><a class="headerlink" href="#vent.alarm.AlarmType.HIGH_PEEP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.LOW_O2">
+<code class="sig-name descname">LOW_O2</code><em class="property"> = 7</em><a class="headerlink" href="#vent.alarm.AlarmType.LOW_O2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.HIGH_O2">
+<code class="sig-name descname">HIGH_O2</code><em class="property"> = 8</em><a class="headerlink" href="#vent.alarm.AlarmType.HIGH_O2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.OBSTRUCTION">
+<code class="sig-name descname">OBSTRUCTION</code><em class="property"> = 9</em><a class="headerlink" href="#vent.alarm.AlarmType.OBSTRUCTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmType.LEAK">
+<code class="sig-name descname">LEAK</code><em class="property"> = 10</em><a class="headerlink" href="#vent.alarm.AlarmType.LEAK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vent.alarm.AlarmSeverity">
+<em class="property">class </em><code class="sig-prename descclassname">vent.alarm.</code><code class="sig-name descname">AlarmSeverity</code><a class="reference internal" href="_modules/vent/alarm.html#AlarmSeverity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.alarm.AlarmSeverity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>An enumeration.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.AlarmSeverity.HIGH" title="vent.alarm.AlarmSeverity.HIGH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HIGH</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.AlarmSeverity.LOW" title="vent.alarm.AlarmSeverity.LOW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LOW</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.alarm.AlarmSeverity.MEDIUM" title="vent.alarm.AlarmSeverity.MEDIUM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MEDIUM</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.alarm.AlarmSeverity.OFF" title="vent.alarm.AlarmSeverity.OFF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OFF</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmSeverity.HIGH">
+<code class="sig-name descname">HIGH</code><em class="property"> = 3</em><a class="headerlink" href="#vent.alarm.AlarmSeverity.HIGH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmSeverity.MEDIUM">
+<code class="sig-name descname">MEDIUM</code><em class="property"> = 2</em><a class="headerlink" href="#vent.alarm.AlarmSeverity.MEDIUM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmSeverity.LOW">
+<code class="sig-name descname">LOW</code><em class="property"> = 1</em><a class="headerlink" href="#vent.alarm.AlarmSeverity.LOW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="vent.alarm.AlarmSeverity.OFF">
+<code class="sig-name descname">OFF</code><em class="property"> = 0</em><a class="headerlink" href="#vent.alarm.AlarmSeverity.OFF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

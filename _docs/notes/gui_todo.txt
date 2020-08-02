@@ -1,0 +1,7 @@
+* when gui starts check if controller already running - be able to be restarted by controller
+* make technical alarm class and display that can also display the error message & etc.
+* alarm objects shouldnt' have a deactivation method.
+* remove temp and humitdity
+* check that logging space limit is set overall rather than per-logger
+* docker image so that ventilator starts on system startup
+* ui mode for testinga

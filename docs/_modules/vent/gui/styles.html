@@ -1,0 +1,684 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>vent.gui.styles &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../gui.html">vent.gui</a> &raquo;</li>
+        
+      <li>vent.gui.styles</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for vent.gui.styles</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
+<span class="n">SUBWAY_COLORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;blue&#39;</span><span class="p">:</span> <span class="s2">&quot;#0039A6&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;lime&#39;</span><span class="p">:</span> <span class="s2">&quot;#6CBE45&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;gray&#39;</span><span class="p">:</span> <span class="s2">&quot;A7A9AC&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;orange&#39;</span><span class="p">:</span> <span class="s2">&quot;#FF6319&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;yellow&#39;</span><span class="p">:</span> <span class="s2">&quot;#FCCC0A&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;red&#39;</span><span class="p">:</span> <span class="s2">&quot;#EE352E&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;green&#39;</span><span class="p">:</span> <span class="s2">&quot;#00933C&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;purple&#39;</span><span class="p">:</span> <span class="s2">&quot;#B933AD&quot;</span>
+<span class="p">}</span>
+
+<span class="n">BACKGROUND_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#111111&quot;</span>
+<span class="n">BOX_BACKGROUND</span> <span class="o">=</span> <span class="s2">&quot;#333333&quot;</span>
+<span class="n">TEXT_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#EEEEEE&quot;</span>
+<span class="n">CONTROL_BACKGROUND</span> <span class="o">=</span> <span class="s2">&quot;#EEEEEE&quot;</span>
+<span class="n">CONTROL_TEXT</span> <span class="o">=</span> <span class="n">BACKGROUND_COLOR</span>
+<span class="n">HANDLE_HEIGHT</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">SLIDER_WIDTH</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="n">SLIDER_HEIGHT</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">INDICATOR_WIDTH</span> <span class="o">=</span> <span class="n">SLIDER_WIDTH</span><span class="o">/</span><span class="mi">3</span>
+<span class="n">SLIDER_COLOR</span> <span class="o">=</span> <span class="n">TEXT_COLOR</span>
+<span class="n">INDICATOR_COLOR</span> <span class="o">=</span> <span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">]</span>
+<span class="n">ALARM_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#FF0000&quot;</span>
+
+<span class="n">DIVIDER_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#FFFFFF&quot;</span>
+<span class="n">DIVIDER_COLOR_DARK</span> <span class="o">=</span> <span class="n">BOX_BACKGROUND</span>
+
+<span class="n">VALUE_SIZE</span> <span class="o">=</span> <span class="mi">72</span>
+<span class="n">NAME_SIZE</span> <span class="o">=</span> <span class="mi">36</span>
+<span class="n">UNIT_SIZE</span> <span class="o">=</span> <span class="mi">18</span>
+<span class="n">TICK_SIZE</span> <span class="o">=</span> <span class="mi">12</span>
+
+<span class="n">MONITOR_UPDATE_INTERVAL</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">(float): inter-update interval (seconds) for :class:`~vent.gui.widgets.monitor.Monitor`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">GLOBAL</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QWidget </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    font-size: 20pt;</span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">TEXT_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">RANGE_SLIDER</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QSlider </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    font-size : </span><span class="si">{</span><span class="n">TICK_SIZE</span><span class="si">}</span><span class="s2">px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QSlider::groove:vertical </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    border: 1px solid #FFFFFF;</span>
+<span class="s2">    width: </span><span class="si">{</span><span class="n">SLIDER_WIDTH</span><span class="si">}</span><span class="s2">px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QSlider::handle:vertical </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    height: </span><span class="si">{</span><span class="n">HANDLE_HEIGHT</span><span class="si">}</span><span class="s2">px;</span>
+<span class="s2">    width: 20px;</span>
+<span class="s2">    margin: 0px -20px 0px px;</span>
+<span class="s2">    background-color: </span><span class="si">{</span><span class="n">SLIDER_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QSlider::groove:horizontal </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    margin: 0px, 0px, 30px, 0px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QSlider::handle:horizontal </span><span class="se">{{</span><span class="s2"></span>
+
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<span class="c1"># RANGE_SLIDER = &quot;&quot;&quot;</span>
+<span class="c1"># QSlider {{</span>
+<span class="c1">#     font-size: 12px;</span>
+<span class="c1"># }}</span>
+<span class="c1"># QSlider::groove:vertical {{</span>
+<span class="c1"># border: 1px solid #FFFFFF;</span>
+<span class="c1"># width: {slider_width}px;</span>
+<span class="c1"># }}</span>
+<span class="c1"># QSlider::handle:vertical {{</span>
+<span class="c1"># height: {height}px;</span>
+<span class="c1"># width: 20px;</span>
+<span class="c1"># margin: 0px -20px 0px px;</span>
+<span class="c1"># background-color: {slider_color};</span>
+<span class="c1"># }}</span>
+<span class="c1">#</span>
+<span class="c1"># &quot;&quot;&quot;.format(slider_width=INDICATOR_WIDTH,</span>
+<span class="c1">#     height=HANDLE_HEIGHT,</span>
+<span class="c1">#            slider_color=SLIDER_COLOR)</span>
+
+
+
+<span class="n">DISPLAY_VALUE</span> <span class="o">=</span>  <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel {{ </span>
+<span class="s2">    color: </span><span class="si">{textcolor}</span><span class="s2">; </span>
+<span class="s2">    font-size: </span><span class="si">{value_size}</span><span class="s2">pt;</span>
+<span class="s2">}}&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">textcolor</span><span class="o">=</span><span class="n">TEXT_COLOR</span><span class="p">,</span>
+             <span class="n">value_size</span><span class="o">=</span><span class="n">VALUE_SIZE</span><span class="p">)</span>
+
+<span class="n">DISPLAY_VALUE_ALARM</span> <span class="o">=</span>  <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel { </span>
+<span class="s2">    color: #ff0000; </span>
+<span class="s2">    font-size: 72pt; </span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">}&quot;&quot;&quot;</span>
+
+<span class="n">DISPLAY_NAME</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel {{ </span>
+<span class="s2">    color: </span><span class="si">{textcolor}</span><span class="s2">; </span>
+<span class="s2">    font-size: </span><span class="si">{name_size}</span><span class="s2">pt;</span>
+<span class="s2">}}&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">textcolor</span><span class="o">=</span><span class="n">TEXT_COLOR</span><span class="p">,</span>
+             <span class="n">name_size</span><span class="o">=</span><span class="n">NAME_SIZE</span><span class="p">)</span>
+
+<span class="n">DISPLAY_NAME_ALARM</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel {{ </span>
+<span class="s2">    color: #ff0000; </span>
+<span class="s2">    font-size: </span><span class="si">{name_size}</span><span class="s2">pt;</span>
+<span class="s2">}}&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name_size</span><span class="o">=</span><span class="n">NAME_SIZE</span><span class="p">)</span>
+
+<span class="n">DISPLAY_UNITS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel {{ </span>
+<span class="s2">    color: </span><span class="si">{textcolor}</span><span class="s2">; </span>
+<span class="s2">    font-size: </span><span class="si">{unit_size}</span><span class="s2">pt;</span>
+<span class="s2">}}&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">textcolor</span><span class="o">=</span><span class="n">TEXT_COLOR</span><span class="p">,</span>
+             <span class="n">unit_size</span><span class="o">=</span><span class="n">UNIT_SIZE</span><span class="p">)</span>
+
+<span class="n">DISPLAY_UNITS_ALARM</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel </span><span class="se">{{</span><span class="s2"> </span>
+<span class="s2">    color: #ff0000; </span>
+<span class="s2">    font-size: </span><span class="si">{</span><span class="n">UNIT_SIZE</span><span class="si">}</span><span class="s2">pt;</span>
+<span class="se">}}</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">DISPLAY_WIDGET</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">border-bottom: 2px solid white;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">CONTROL_LABEL</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    font-size: 12px;</span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">BACKGROUND_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">CONTROL_VALUE</span> <span class="o">=</span>  <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel </span><span class="se">{{</span><span class="s2"> </span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">BACKGROUND_COLOR</span><span class="si">}</span><span class="s2">; </span>
+<span class="s2">    font-size: </span><span class="si">{</span><span class="n">VALUE_SIZE</span><span class="si">}</span><span class="s2">pt;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">QLineEdit </span><span class="se">{{</span><span class="s2"> </span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">TEXT_COLOR</span><span class="si">}</span><span class="s2">; </span>
+<span class="s2">    font-size: </span><span class="si">{</span><span class="n">VALUE_SIZE</span><span class="si">}</span><span class="s2">pt;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">CONTROL_BOX</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QGroupBox </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    background-color: </span><span class="si">{</span><span class="n">TEXT_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">    border: 1px solid #000000;</span>
+<span class="s2">    border-radius: 4px;</span>
+<span class="s2">    margin-top: 20px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QGroupBox::title </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  subcontrol-origin: margin;</span>
+<span class="s2">  subcontrol-position: top left;</span>
+<span class="s2">  left: 3px;</span>
+<span class="s2">  top: -5px;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">CONTROL_NAME</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel </span><span class="se">{{</span><span class="s2"> </span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">BACKGROUND_COLOR</span><span class="si">}</span><span class="s2">; </span>
+<span class="s2">    font-size: </span><span class="si">{</span><span class="n">NAME_SIZE</span><span class="si">}</span><span class="s2">pt;</span>
+<span class="se">}}</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">CONTROL_UNITS</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QLabel </span><span class="se">{{</span><span class="s2"> </span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">BACKGROUND_COLOR</span><span class="si">}</span><span class="s2">; </span>
+<span class="s2">    font-size: </span><span class="si">{</span><span class="n">UNIT_SIZE</span><span class="si">}</span><span class="s2">pt;</span>
+<span class="se">}}</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">TITLE_STYLE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">font-size: 32pt;</span>
+<span class="s2">color: </span><span class="si">{text_color}</span><span class="s2">;</span>
+<span class="s2">text-align: left;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text_color</span><span class="o">=</span><span class="n">TEXT_COLOR</span><span class="p">)</span>
+
+
+
+<span class="n">STATUS_NORMAL</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QFrame </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    background-color: </span><span class="si">{</span><span class="n">BACKGROUND_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">TEXT_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">STATUS_WARN</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QFrame </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    background-color: </span><span class="si">{</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;orange&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">TEXT_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">STATUS_ALARM</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QFrame </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    background-color: </span><span class="si">{</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">TEXT_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">HEARTBEAT_NORMAL</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QRadioButton::indicator </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 </span><span class="si">{</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">);</span>
+<span class="s2">    border-radius: 5px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QLabel </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">TEXT_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">HEARTBEAT_ALARM</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QRadioButton::indicator </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    background: qradialgradient(cx:0, cy:0, radius:1, fx:0.5, fy:0.5, stop:0 white, stop:1 </span><span class="si">{</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">);</span>
+<span class="s2">    border-radius: 5px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QLabel </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    color: </span><span class="si">{</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">STATUS_BOX</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QWidget </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    background-color: </span><span class="si">{</span><span class="n">BACKGROUND_COLOR</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">DARK_THEME</span> <span class="o">=</span>  <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">/*</span>
+<span class="s2">adapted from https://github.com/gmarull/qtmodern/blob/master/qtmodern/resources/style.qss</span>
+<span class="s2">*/</span>
+
+<span class="s2">/*</span>
+<span class="s2"> * QGroupBox</span>
+<span class="s2"> */</span>
+
+
+<span class="s2">QGroupBox </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background-color: palette(alternate-base);</span>
+<span class="s2">  border: 1px solid palette(midlight);</span>
+<span class="s2">  margin-top: 25px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QGroupBox::title </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    background-color: transparent;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QGroupBox#CONTROLBOX </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    background-color: </span><span class="si">{</span><span class="n">CONTROL_BACKGROUND</span><span class="si">}</span><span class="s2">;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">/*</span>
+<span class="s2"> * QToolBar</span>
+<span class="s2"> */</span>
+
+<span class="s2">QToolBar </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  border: none;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">/*</span>
+<span class="s2"> * QTabBar</span>
+<span class="s2"> */</span>
+
+<span class="s2">QTabBar</span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background-color: transparent;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QTabBar::tab</span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  padding: 4px 6px;</span>
+<span class="s2">  background-color: transparent;</span>
+<span class="s2">  border-bottom: 2px solid transparent;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QTabBar::tab:selected, QTabBar::tab:hover </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  color: palette(text);</span>
+<span class="s2">  border-bottom: 2px solid palette(highlight);</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QTabBar::tab:selected:disabled </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  border-bottom: 2px solid palette(light);</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">/*</span>
+<span class="s2"> * QScrollBar</span>
+<span class="s2"> */</span>
+
+<span class="s2">QScrollBar:vertical </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background: palette(base);</span>
+<span class="s2">  border-top-right-radius: 2px;</span>
+<span class="s2">  border-bottom-right-radius: 2px;</span>
+<span class="s2">  width: 16px;</span>
+<span class="s2">  margin: 0px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QScrollBar::handle:vertical </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background-color: palette(alternate-base);</span>
+<span class="s2">  border-radius: 2px;</span>
+<span class="s2">  min-height: 20px;</span>
+<span class="s2">  margin: 2px 4px 2px 4px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:pressed, QScrollBar::handle:horizontal:pressed </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background-color:palette(midlight);</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QScrollBar::add-line:vertical </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background: none;</span>
+<span class="s2">  height: 0px;</span>
+<span class="s2">  subcontrol-position: right;</span>
+<span class="s2">  subcontrol-origin: margin;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QScrollBar::sub-line:vertical </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background: none;</span>
+<span class="s2">  height: 0px;</span>
+<span class="s2">  subcontrol-position: left;</span>
+<span class="s2">  subcontrol-origin: margin;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QScrollBar:horizontal</span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background: palette(base);</span>
+<span class="s2">  height: 16px;</span>
+<span class="s2">  margin: 0px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QScrollBar::handle:horizontal </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background-color: palette(alternate-base);</span>
+<span class="s2">  border-radius: 2px;</span>
+<span class="s2">  min-width: 20px;</span>
+<span class="s2">  margin: 4px 2px 4px 2px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+
+<span class="s2">QScrollBar::add-line:horizontal </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background: none;</span>
+<span class="s2">  width: 0px;</span>
+<span class="s2">  subcontrol-position: bottom;</span>
+<span class="s2">  subcontrol-origin: margin;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QScrollBar::sub-line:horizontal </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background: none;</span>
+<span class="s2">  width: 0px;</span>
+<span class="s2">  subcontrol-position: top;</span>
+<span class="s2">  subcontrol-origin: margin;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">/*</span>
+<span class="s2"> * QScrollArea</span>
+<span class="s2"> */</span>
+
+<span class="s2">QScrollArea </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  border-style: none;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QScrollArea &gt; QWidget &gt; QWidget </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background-color: palette(alternate-base);</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">/*</span>
+<span class="s2"> * QSlider</span>
+<span class="s2"> */</span>
+
+<span class="s2">QSlider::handle:horizontal </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  border-radius: 5px;</span>
+<span class="s2">  background-color: palette(light);</span>
+<span class="s2">  max-height: 20px;</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QSlider::add-page:horizontal </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background: palette(base);</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QSlider::sub-page:horizontal </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background: palette(highlight);</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QSlider::sub-page:horizontal:disabled </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background-color: palette(light);</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QTableView </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">  background-color: palette(link-visited);</span>
+<span class="s2">  alternate-background-color: palette(midlight);</span>
+<span class="se">}}</span><span class="s2"></span>
+
+<span class="s2">QWidget </span><span class="se">{{</span><span class="s2"></span>
+<span class="s2">    font-size: 20pt;</span>
+<span class="se">}}</span><span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="set_dark_palette"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.styles.set_dark_palette">[docs]</a><span class="k">def</span> <span class="nf">set_dark_palette</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Apply Dark Theme to the Qt application instance.</span>
+
+<span class="sd">    borrowed from https://github.com/gmarull/qtmodern/blob/master/qtmodern/styles.py</span>
+<span class="sd">        Args:</span>
+<span class="sd">            app (QApplication): QApplication instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">darkPalette</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="p">()</span>
+
+    <span class="c1"># base</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">WindowText</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">TEXT_COLOR</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Button</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">53</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">53</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Light</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Midlight</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Dark</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">35</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Text</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">BrightText</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">ButtonText</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">42</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Window</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">BACKGROUND_COLOR</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Shadow</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Highlight</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">130</span><span class="p">,</span> <span class="mi">218</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">HighlightedText</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Link</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">56</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">196</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">AlternateBase</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">BOX_BACKGROUND</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">ToolTipBase</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">53</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">53</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">ToolTipText</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">LinkVisited</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+
+    <span class="c1"># disabled</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Disabled</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">WindowText</span><span class="p">,</span>
+                         <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Disabled</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Text</span><span class="p">,</span>
+                         <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Disabled</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">ButtonText</span><span class="p">,</span>
+                         <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Disabled</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Highlight</span><span class="p">,</span>
+                         <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+    <span class="n">darkPalette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Disabled</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">HighlightedText</span><span class="p">,</span>
+                         <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">))</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">setPalette</span><span class="p">(</span><span class="n">darkPalette</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">app</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

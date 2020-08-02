@@ -1,0 +1,97 @@
+// In here are varibles used for sphinx_rtd_theme, they either add to or overwrite the default ones
+// that are set in wyrm_core/wy_variables.sass. You'll find wyrm in bower_components if you're looking
+// for a reference.
+
+$fa-font-path:                        "fonts"
+$static-img:                          "../img/"
+
+$accent-color: darken($red, 15%)
+
+$nav-content-width:                   800px
+$nav-media-query:                     (($nav-desktop-width) + ($nav-content-width))
+
+$mathjax-color:                       $text-color
+
+$headerlink-color:                    $text-color
+
+$link-color:                          $accent-color
+$link-color-visited:                  lighten($accent-color, 15%)
+$link-color-hover:                    lighten($link-color, 6%) !default
+$link-color-alt:                      hsl(33, 100%, 51%)
+
+// Code colors
+$text-viewcode-color:                 $green
+$text-codexref-color:                 $text-color
+
+// Definition list colors
+$class-color:                         $blue
+$method-color:                        $gray
+
+// GUI label color
+$guilabel-color:                      $accent-color
+
+// Footer colors
+$footer-color:                        $text-medium
+
+// Menu colors
+$menu-vertical-background-color:      $section-background-color
+
+// backtround color
+// https://codepen.io/edmundojr/pen/xOYJGw
+$bg-color: $section-background-color
+$dot-color: darken($section-background-color,15%)
+// Dimensions
+$dot-size: 2px
+$dot-space: 15px
+
+$background-color: linear-gradient(90deg, $bg-color ($dot-space - $dot-size), transparent 1%) center, linear-gradient($bg-color ($dot-space - $dot-size), transparent 1%) center, $dot-color
+$background-size: $dot-space $dot-space
+
+// Menu text colors
+$menu-color:                          $text-color
+$menu-dark:                           darken($section-background-color, 20%)
+$menu-medium:                         darken($section-background-color, 15%) !default
+$menu-light:                          darken($section-background-color, 10%)!default
+$menu-lighter:                        darken($section-background-color, 5%) !default
+
+// Menu link colors
+$menu-link-color:                     $text-color
+$menu-link-dark:                      $text-dark
+$menu-link-medium:                    $text-medium
+$menu-link-light:                     $text-lighter
+$menu-link-active:                    $white
+$menu-link-background-hover: $accent-color
+$menu-link-color-hover: $white
+
+// Navigation colors
+$menu-background-color: $section-background-color
+$nav-background-color:                $menu-background-color
+$nav-search-background-color:         $blue
+$nav-search-color:                    $section-background-color
+$nav-link-color:                      $blue
+$nav-link-color-visited:              $purple
+$nav-link-color-hover:                lighten($nav-link-color, 6%) !default
+$nav-link-color-alt:                  hsl(33, 100%, 51%)
+$nav-caption:                         $accent-color
+$nav-border: 1px solid $gray
+
+// Sidebar colors
+$sidebar-background-color:            $table-stripe-color
+$sidebar-border-color:                $table-border-color
+$sidebar-title-background-color:      $table-border-color
+
+// Sphinx highlight color
+$highlight-color:                     $yellow
+
+$base-font-family:                    "Work Sans", "proxima-nova", "Helvetica Neue", Arial, sans-serif
+$custom-font-family:                  "Bebas Neue", "Roboto Slab", "ff-tisa-web-pro", "Georgia", Arial, sans-serif
+$custom-font-weight: 800
+$custom-font-family2:                 Georgia, serif
+$code-font-family:                    "Cutive Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", Courier, monospace
+$nav-top-font-family: $base-font-family
+$nav-top-font-weight: 700
+$title-font-family: $custom-font-family
+$title-font-size: 300%
+
+
+$font-display:                        block

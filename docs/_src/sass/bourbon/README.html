@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>A simple and lightweight mixin library for Sass. &mdash; ventilator 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/_static/pvp_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ventilator
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ventilator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+      <li>A simple and lightweight mixin library for Sass.</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/_src/sass/bourbon/README.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <p><a class="reference external" href="http://bourbon.io"><img alt="Bourbon" src="http://images.thoughtbot.com/bourbon/bourbon-logo.svg" /></a></p>
+<p><a class="reference external" href="https://github.com/thoughtbot/bourbon/releases"><img alt="GitHub release" src="https://img.shields.io/github/release/thoughtbot/bourbon.svg" /></a>
+<a class="reference external" href="https://circleci.com/gh/thoughtbot/bourbon/tree/master"><img alt="CircleCI branch" src="https://img.shields.io/circleci/project/thoughtbot/bourbon/master.svg" /></a></p>
+<div class="section" id="a-simple-and-lightweight-mixin-library-for-sass">
+<h1>A simple and lightweight mixin library for Sass.<a class="headerlink" href="#a-simple-and-lightweight-mixin-library-for-sass" title="Permalink to this headline">¶</a></h1>
+<p>Bourbon is a library of pure Sass mixins that are designed to be simple and easy to use. No configuration required. The mixins aim to be as vanilla as possible, meaning they should be as close to the original CSS syntax as possible.</p>
+<p>The mixins contain vendor specific prefixes for all CSS3 properties for support amongst modern browsers. The prefixes also ensure graceful degradation for older browsers that support only CSS3 prefixed properties. Bourbon uses SCSS syntax.</p>
+<ul class="simple">
+<li><p><strong><a class="reference external" href="http://bourbon.io/docs">Documentation</a></strong></p></li>
+<li><p><strong><a class="reference external" href="https://github.com/thoughtbot/bourbon/releases">Changelog</a></strong></p></li>
+<li><p><strong><a class="reference external" href="https://github.com/thoughtbot/bourbon/issues">Issues &amp; Bugs</a></strong></p></li>
+</ul>
+<p>Follow the <a class="reference external" href="https://twitter.com/bourbonsass">&#64;bourbonsass</a> Twitter account
+for updates.</p>
+</div>
+<div class="section" id="requirements">
+<h1>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/sass/sass">Sass</a> 3.4+ or <a class="reference external" href="https://github.com/sass/libsass">LibSass</a> 3.1+</p></li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>For command line help, visit our wiki page on Bourbon’s <a class="reference external" href="https://github.com/thoughtbot/bourbon/wiki/Command-Line-Interface">command line interface</a>.</p>
+<ol class="simple">
+<li><p>Install the Bourbon gem using the <a class="reference external" href="https://rubygems.org">RubyGems</a> package manager:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gem install bourbon
+</pre></div>
+</div>
+<p>Alternatively, you can install Bourbon with <a class="reference external" href="http://bower.io">Bower</a>.</p>
+<ol class="simple">
+<li><p>Install the Bourbon library into the current directory:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bourbon install
+</pre></div>
+</div>
+<p><strong>Pro Tip:</strong> You can target installation into a specific directory using the <code class="docutils literal notranslate"><span class="pre">path</span></code> flag:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bourbon install --path my/custom/path/
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Import Bourbon at the beginning of your stylesheet:</p></li>
+</ol>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="k">@import</span> <span class="s2">&quot;bourbon/bourbon&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>It’s not recommended to add or modify the Bourbon files so that you can update them easily.</p>
+</div>
+<div class="section" id="installation-for-ruby-on-rails-3-1">
+<h1>Installation for Ruby on Rails 3.1+<a class="headerlink" href="#installation-for-ruby-on-rails-3-1" title="Permalink to this headline">¶</a></h1>
+<ol class="simple">
+<li><p>Add Bourbon to your Gemfile:</p></li>
+</ol>
+<div class="highlight-ruby notranslate"><div class="highlight"><pre><span></span><span class="n">gem</span> <span class="s1">&#39;bourbon&#39;</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Then run:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bundle install
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Restart your server and rename <code class="docutils literal notranslate"><span class="pre">application.css</span></code> to <code class="docutils literal notranslate"><span class="pre">application.scss</span></code>:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Delete <em>all</em> Sprockets directives in <code class="docutils literal notranslate"><span class="pre">application.scss</span></code> (<code class="docutils literal notranslate"><span class="pre">require</span></code>, <code class="docutils literal notranslate"><span class="pre">require_tree</span></code> and <code class="docutils literal notranslate"><span class="pre">require_self</span></code>) and use Sass’s native <code class="docutils literal notranslate"><span class="pre">&#64;import</span></code> instead. (<a class="reference external" href="http://pivotallabs.com/structure-your-sass-files-with-import">why?</a>)</p></li>
+<li><p>Import Bourbon at the beginning of <code class="docutils literal notranslate"><span class="pre">application.scss</span></code>. All additional stylesheets should be imported below Bourbon:</p></li>
+</ol>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="k">@import</span> <span class="s2">&quot;bourbon&quot;</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s2">&quot;home&quot;</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s2">&quot;users&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://github.com/thoughtbot/bourbon/wiki/Rails-Help-%5C-Undefined-mixin">Help! I’m getting an undefined mixin error.</a></p>
+</div>
+<div class="section" id="installing-with-npm-and-using-a-node-based-asset-pipeline">
+<h1>Installing with npm and using a Node-based asset pipeline<a class="headerlink" href="#installing-with-npm-and-using-a-node-based-asset-pipeline" title="Permalink to this headline">¶</a></h1>
+<ol class="simple">
+<li><p>Add Bourbon as a dependency:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm install --save bourbon
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>If you’re using <a class="reference external" href="http://eyeglass.rocks">Eyeglass</a>, skip to Step 3. Otherwise, you’ll need to add Bourbon to your node-sass <code class="docutils literal notranslate"><span class="pre">includePaths</span></code> option. <code class="docutils literal notranslate"><span class="pre">require(&quot;bourbon&quot;).includePaths</span></code> is an array of directories that you should pass to node-sass. How you do this depends on how node-sass is integrated into your project.</p></li>
+<li><p>Import Bourbon into your Sass files:</p></li>
+</ol>
+<div class="highlight-scss notranslate"><div class="highlight"><pre><span></span><span class="k">@import</span> <span class="s2">&quot;bourbon&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-older-versions-of-bourbon">
+<h1>Installing older versions of Bourbon<a class="headerlink" href="#installing-older-versions-of-bourbon" title="Permalink to this headline">¶</a></h1>
+<ol class="simple">
+<li><p>Uninstall any Bourbon gem versions you already have:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gem uninstall bourbon
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Reinstall the Bourbon gem, using the <code class="docutils literal notranslate"><span class="pre">-v</span></code> flag to specify the version you need:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gem install bourbon -v <span class="m">3</span>.2.4
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Follow the <a class="reference external" href="#installation">instructions above</a> to install Bourbon into your project.</p></li>
+</ol>
+</div>
+<div class="section" id="browser-support">
+<h1>Browser support<a class="headerlink" href="#browser-support" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Chrome 26+</p></li>
+<li><p>Firefox 29+</p></li>
+<li><p>Internet Explorer 9+</p></li>
+<li><p>Opera 15+</p></li>
+<li><p>Safari 6.1+</p></li>
+</ul>
+</div>
+<div class="section" id="the-bourbon-family">
+<h1>The Bourbon family<a class="headerlink" href="#the-bourbon-family" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/thoughtbot/bourbon">Bourbon</a>: A simple and lightweight mixin library for Sass</p></li>
+<li><p><a class="reference external" href="https://github.com/thoughtbot/neat">Neat</a>: A lightweight semantic grid framework for Sass and Bourbon</p></li>
+<li><p><a class="reference external" href="https://github.com/thoughtbot/bitters">Bitters</a>: Scaffold styles, variables and structure for Bourbon projects</p></li>
+<li><p><a class="reference external" href="https://github.com/thoughtbot/refills">Refills</a>: Prepackaged patterns and components built with Bourbon, Neat and Bitters</p></li>
+</ul>
+<p>Also check out <a class="reference external" href="https://github.com/thoughtbot/proteus">Proteus</a>, a collection of useful starter kits to help you prototype faster. Each kit comes with Bourbon, Neat and Bitters out-of-the-box.</p>
+</div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>Copyright © 2011–2017 <a class="reference external" href="http://thoughtbot.com">thoughtbot, inc</a>.
+Bourbon is free software,
+and may be redistributed under the terms specified in the <a class="reference internal" href="LICENSE.html"><span class="doc">license</span></a>.</p>
+</div>
+<div class="section" id="about-thoughtbot">
+<h1>About thoughtbot<a class="headerlink" href="#about-thoughtbot" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://thoughtbot.com/hire-us?utm_source=github"><img src="http://thoughtbot.github.io/images/signature.svg" width="250" alt="thoughtbot logo"></a></p>
+<p>Bourbon is maintained and funded by thoughtbot, inc.
+The names and logos for thoughtbot are trademarks of thoughtbot, inc.</p>
+<p>We love open source software!
+See <a class="reference external" href="https://thoughtbot.com/community?utm_source=github">our other projects</a> or
+<a class="reference external" href="https://thoughtbot.com/hire-us?utm_source=github">hire us</a> to design, develop, and grow your product.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

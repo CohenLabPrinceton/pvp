@@ -1,10 +1,7 @@
 common module
 ===================
 
-Submodules
-----------
-
-vent.common.message module
+message
 --------------------------
 
 .. automodule:: vent.common.message
@@ -13,10 +10,12 @@ vent.common.message module
    :show-inheritance:
 
 
-Module contents
+values
 ---------------
 
-.. automodule:: vent.common
+Parameterization of variables and values
+
+.. automodule:: vent.common.values
    :members:
    :undoc-members:
    :show-inheritance:

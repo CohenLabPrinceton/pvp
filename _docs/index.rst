@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ventilator's documentation!
+The People's Ventilator Project
 ======================================
 
 .. toctree::
@@ -16,7 +16,7 @@ Welcome to ventilator's documentation!
    :maxdepth: 4
    :caption: Hardware:
 
-   Hardware Placeholder <hardware>
+   Hardware Overview <hardware>
 
 
 .. toctree::

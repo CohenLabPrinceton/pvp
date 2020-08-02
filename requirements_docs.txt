@@ -8,3 +8,4 @@ sphinxcontrib-napoleon
 recommonmark
 autodocsumm
 tables
+git+https://github.com/mwibrow/sphinx-sass.git

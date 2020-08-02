@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>vent.gui package &mdash; ventilator 0.0.0 documentation</title>
+  <title>vent.gui package &mdash; PVP 0.0.0 documentation</title>
   
 
   
@@ -31,8 +31,9 @@
     
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -44,11 +45,11 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: white" >
           
 
           
-            <a href="index.html" class="icon icon-home"> ventilator
+            <a href="index.html" class="icon icon-home"> PVP
           
 
           
@@ -82,7 +83,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Hardware:</span></p>
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
 </ul>
@@ -93,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -119,7 +125,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">ventilator</a>
+          <a href="index.html">PVP</a>
         
       </nav>
 
@@ -177,14 +183,174 @@
 <div class="section" id="vent-gui-defaults-module">
 <h2>vent.gui.defaults module<a class="headerlink" href="#vent-gui-defaults-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="vent-gui-styles-module">
-<h2>vent.gui.styles module<a class="headerlink" href="#vent-gui-styles-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vent.gui.styles">
+<span id="vent-gui-styles-module"></span><h2>vent.gui.styles module<a class="headerlink" href="#module-vent.gui.styles" title="Permalink to this headline">¶</a></h2>
+<p><strong>Data</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.gui.styles.MONITOR_UPDATE_INTERVAL" title="vent.gui.styles.MONITOR_UPDATE_INTERVAL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MONITOR_UPDATE_INTERVAL</span></code></a></p></td>
+<td><p>inter-update interval (seconds) for <a class="reference internal" href="gui.html#vent.gui.widgets.monitor.Monitor" title="vent.gui.widgets.monitor.Monitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Monitor</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.gui.styles.set_dark_palette" title="vent.gui.styles.set_dark_palette"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_dark_palette</span></code></a>(app)</p></td>
+<td><p>Apply Dark Theme to the Qt application instance.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt id="vent.gui.styles.MONITOR_UPDATE_INTERVAL">
+<code class="sig-prename descclassname">vent.gui.styles.</code><code class="sig-name descname">MONITOR_UPDATE_INTERVAL</code><em class="property"> = 0.5</em><a class="headerlink" href="#vent.gui.styles.MONITOR_UPDATE_INTERVAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>inter-update interval (seconds) for <a class="reference internal" href="gui.html#vent.gui.widgets.monitor.Monitor" title="vent.gui.widgets.monitor.Monitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Monitor</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.gui.styles.set_dark_palette">
+<code class="sig-prename descclassname">vent.gui.styles.</code><code class="sig-name descname">set_dark_palette</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui/styles.html#set_dark_palette"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.styles.set_dark_palette" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply Dark Theme to the Qt application instance.</p>
+<dl class="simple">
+<dt>borrowed from <a class="reference external" href="https://github.com/gmarull/qtmodern/blob/master/qtmodern/styles.py">https://github.com/gmarull/qtmodern/blob/master/qtmodern/styles.py</a></dt><dd><dl class="simple">
+<dt>Args:</dt><dd><p>app (QApplication): QApplication instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
-<div class="section" id="vent-gui-widgets-module">
-<h2>vent.gui.widgets module<a class="headerlink" href="#vent-gui-widgets-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vent.gui.widgets">
+<span id="vent-gui-widgets-module"></span><h2>vent.gui.widgets module<a class="headerlink" href="#module-vent.gui.widgets" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vent.gui">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-vent.gui" title="Permalink to this headline">¶</a></h2>
+<p><strong>Data</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.gui.LIMIT_GUI_INSTANCE" title="vent.gui.LIMIT_GUI_INSTANCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LIMIT_GUI_INSTANCE</span></code></a></p></td>
+<td><p>whether there hsould only be one GUI instance at a time. disabled during testing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.gui.PLOTS" title="vent.gui.PLOTS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOTS</span></code></a></p></td>
+<td><p>Values to plot.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.gui.get_gui_instance" title="vent.gui.get_gui_instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gui_instance</span></code></a>()</p></td>
+<td><p>Retreive the currently running instance of the GUI</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.gui.limit_gui" title="vent.gui.limit_gui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">limit_gui</span></code></a>([limit])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.gui.load_mono_font" title="vent.gui.load_mono_font"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_mono_font</span></code></a>()</p></td>
+<td><p>Load the monospaced font and set the module-global <code class="xref py py-data docutils literal notranslate"><span class="pre">_MONO_FONT</span></code> object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#vent.gui.mono_font" title="vent.gui.mono_font"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mono_font</span></code></a>()</p></td>
+<td><p>module function to return a <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtGui.QFont</span></code> to use as the mono font.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#vent.gui.set_gui_instance" title="vent.gui.set_gui_instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gui_instance</span></code></a>(instance)</p></td>
+<td><p>Store the current instance of the GUI</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt id="vent.gui.LIMIT_GUI_INSTANCE">
+<code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">LIMIT_GUI_INSTANCE</code><em class="property"> = False</em><a class="headerlink" href="#vent.gui.LIMIT_GUI_INSTANCE" title="Permalink to this definition">¶</a></dt>
+<dd><p>whether there hsould only be one GUI instance at a time. disabled during testing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.gui.limit_gui">
+<code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">limit_gui</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui.html#limit_gui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.limit_gui" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="vent.gui.PLOTS">
+<code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">PLOTS</code><em class="property"> = {&lt;ValueName.PRESSURE: 10&gt;: {'abs_range': (0, 70), 'color': '#FF6319', 'control': False, 'decimals': 1, 'default': None, 'name': 'Pressure', 'safe_range': (0, 60), 'sensor': True, 'units': 'mmH2O'}}</em><a class="headerlink" href="#vent.gui.PLOTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values to plot.</p>
+<p>Should have the same key as some key in <code class="xref py py-data docutils literal notranslate"><span class="pre">SENSOR</span></code>. If it does,
+it will be mutually connected to the resulting <code class="xref py py-class docutils literal notranslate"><span class="pre">gui.widgets.Monitor_Value</span></code>
+such that the set limit range is updated when the horizontal bars on the plot are updated.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;name&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="n">title</span> <span class="n">of</span> <span class="n">plot</span><span class="p">,</span>
+    <span class="s1">&#39;abs_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="n">absolute</span> <span class="n">limit</span> <span class="n">of</span> <span class="n">plot</span> <span class="nb">range</span><span class="p">,</span>
+    <span class="s1">&#39;safe_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="n">safe</span> <span class="nb">range</span><span class="p">,</span> <span class="n">will</span> <span class="n">be</span> <span class="n">discolored</span> <span class="n">outside</span> <span class="n">of</span> <span class="n">this</span> <span class="nb">range</span><span class="p">,</span>
+    <span class="s1">&#39;color&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="nb">hex</span> <span class="n">color</span> <span class="n">of</span> <span class="n">line</span> <span class="p">(</span><span class="n">like</span> <span class="s2">&quot;#FF0000&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.gui.set_gui_instance">
+<code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">set_gui_instance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">instance</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui.html#set_gui_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.set_gui_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store the current instance of the GUI</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instance</strong> (<a class="reference internal" href="gui.html#vent.gui.main.Vent_Gui" title="vent.gui.main.Vent_Gui"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vent_Gui</span></code></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.gui.mono_font">
+<code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">mono_font</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui.html#mono_font"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.mono_font" title="Permalink to this definition">¶</a></dt>
+<dd><p>module function to return a <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtGui.QFont</span></code> to use as the mono font.</p>
+<p>use this instead of just making because <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtGui.QFontDatabase</span></code> can’t be instantiated before the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QApplication</span></code> is instantiated, so we load the font after the app</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.gui.load_mono_font">
+<code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">load_mono_font</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui.html#load_mono_font"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.load_mono_font" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the monospaced font and set the module-global <code class="xref py py-data docutils literal notranslate"><span class="pre">_MONO_FONT</span></code> object.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Must be called after <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QApplication</span></code> is instantiated!</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="vent.gui.get_gui_instance">
+<code class="sig-prename descclassname">vent.gui.</code><code class="sig-name descname">get_gui_instance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/gui.html#get_gui_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.gui.get_gui_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retreive the currently running instance of the GUI</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><a class="reference internal" href="gui.html#vent.gui.main.Vent_Gui" title="vent.gui.main.Vent_Gui"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vent_Gui</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -224,6 +390,18 @@
 
   
   
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
     
    
 

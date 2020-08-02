@@ -3,30 +3,37 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ventilator's documentation!
+The People's Ventilator Project
 ======================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
+   :caption: Overview
+
+   Control Overview <control_overview>
+
+.. toctree::
+   :maxdepth: 4
    :caption: Hardware:
 
    Hardware Placeholder <hardware>
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Software:
 
-
+   main <main>
    common <common>
    controller <controller>
    coordinator <coordinator>
    GUI <gui>
    io <io>
+   alarm <alarm>
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Resources:
 
    Ventilator Requirements <requirements>
@@ -35,7 +42,7 @@ Welcome to ventilator's documentation!
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 4
    :caption: Meta:
 
    Changelog <changelog/index>

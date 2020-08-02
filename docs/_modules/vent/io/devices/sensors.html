@@ -1,0 +1,625 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>vent.io.devices.sensors &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pvp_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware.html">Hardware Placeholder</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>vent.io.devices.sensors</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for vent.io.devices.sensors</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">vent.io.devices</span> <span class="kn">import</span> <span class="n">I2CDevice</span><span class="p">,</span> <span class="n">be16_to_native</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="Sensor"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor">[docs]</a><span class="k">class</span> <span class="nc">Sensor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Abstract base Class describing generalized sensors. Defines a mechanism for limited internal storage of recent</span>
+<span class="sd">    observations and methods to pull that data out for external use.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_DEFAULT_STORED_OBSERVATIONS</span> <span class="o">=</span> <span class="mi">128</span>
+
+<div class="viewcode-block" id="Sensor.__init__"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Upon creation, calls update() to ensure that if get is called there will be something to return.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maxlen_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DEFAULT_STORED_OBSERVATIONS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">maxlen_data</span><span class="p">),</span>
+            <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">maxlen_data</span><span class="p">)</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="Sensor.update"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Make a sensor reading, verify that it makes sense and store the result internally. Returns True if reading</span>
+<span class="sd">        was verified and False if something went wrong.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verify</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Sensor.get"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Return the most recent sensor reading, or an average of readings since last get(). Clears internal memory so as not to have stale data.&quot;&quot;&quot;</span>
+        <span class="c1"># FIXME - timeout decorators for everyone</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Sensor.age"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor.age">[docs]</a>    <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the time in seconds since the last sensor update, or -1 if never updated.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Sensor.reset"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Resets the sensors internal memory. May be overloaded by subclasses to extend functionality specific to a</span>
+<span class="sd">        device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear</span><span class="p">()</span></div>
+            
+<div class="viewcode-block" id="Sensor._clear"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor._clear">[docs]</a>    <span class="k">def</span> <span class="nf">_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Resets the sensors internal memory. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns all Locally-stored observations. </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: An array of timestamped observations arranged oldest to newest.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">maxlen_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number of observations kept in the Sensor&#39;s internal ndarray. Once the ndarray has been filled,</span>
+<span class="sd">        the sensor begins overwriting the oldest elements of the ndarray with new observations such that the size of the</span>
+<span class="sd">        internal storage stays constant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxlen_data</span>
+
+    <span class="nd">@maxlen_data</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">maxlen_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_data_length</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set a new length for stored observations. Clears existing</span>
+<span class="sd">        observations and resets.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_data_length (int): The new length of internal observation storage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_data_length</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">new_data_length</span><span class="p">),</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">new_data_length</span><span class="p">)}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">new_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maxlen_data</span> <span class="o">=</span> <span class="n">new_data_length</span>
+
+<div class="viewcode-block" id="Sensor._read"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor._read">[docs]</a>    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Calls _raw_read and scales the result before returning it.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_read</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Sensor._verify"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor._verify">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Validate reading and throw exception/alarm if sensor does not appear to be working correctly.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Sensor._convert"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor._convert">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts a raw reading from a sensor in whatever format the device communicates with into a meaningful</span>
+<span class="sd">        result.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Sensor._raw_read"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.Sensor._raw_read">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_raw_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Requests a new observation from the device and returns the raw result in whatever format/units the device</span>
+<span class="sd">        communicates with.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="AnalogSensor"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.AnalogSensor">[docs]</a><span class="k">class</span> <span class="nc">AnalogSensor</span><span class="p">(</span><span class="n">Sensor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generalized class describing an analog sensor attached to the ADS1115 analog to digital converter. Inherits from</span>
+<span class="sd">    the sensor base class and extends with functionality specific to analog sensors attached to the ADS1115. If</span>
+<span class="sd">    instantiated without a subclass, conceptually represents a voltmeter with a normalized output.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO The offset voltage/output span &amp; verify/calibrate stuff needs a rethink.</span>
+    <span class="n">_DEFAULT_offset_voltage</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_DEFAULT_output_span</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">_DEFAULT_CALIBRATION</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;offset_voltage&#39;</span><span class="p">:</span> <span class="n">_DEFAULT_offset_voltage</span><span class="p">,</span>
+        <span class="s1">&#39;output_span&#39;</span><span class="p">:</span> <span class="n">_DEFAULT_output_span</span><span class="p">,</span>
+        <span class="s1">&#39;conversion_factor&#39;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="AnalogSensor.__init__"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.AnalogSensor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Links analog sensor on the ADC with configuration options specified. If no options are specified, it assumes</span>
+<span class="sd">        the settings currently on the ADC.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            adc (vent.io.devices.ADS1115): The adc object to which the AnalogSensor is attached</span>
+<span class="sd">            **kwargs: `field=value` - see vent.io.devices.ADS1115 for additional documentation. Strongly suggested to</span>
+<span class="sd">                specify `MUX=adc_pin` here unless you know what you&#39;re doing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adc</span> <span class="o">=</span> <span class="n">adc</span>
+        <span class="k">if</span> <span class="s1">&#39;MUX&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s1">&#39;User must specify MUX for AnalogSensor creation&#39;</span>
+            <span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><span class="s1">&#39;pig&#39;</span><span class="p">,)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_set_attr</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnalogSensor.calibrate"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.AnalogSensor.calibrate">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the calibration of the sensor, either to the values contained in the passed tuple or by some routine;</span>
+<span class="sd">        the current routine is pretty rudimentary and only calibrates offset voltage.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: calibration_field=value, where calibration field is one of the following: &#39;offset_voltage&#39;,</span>
+<span class="sd">                output_span&#39; or &#39;conversion_factor&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># FIXME</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">fld</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">fld</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DEFAULT_CALIBRATION</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fld</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+                <span class="c1"># PRINT FOR DEBUG / HARDWARE TESTING</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Analog Sensor Calibration @ </span><span class="si">{:6.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]),</span>
+                    <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset_voltage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">50</span><span class="p">:])</span>
+            <span class="c1"># PRINT FOR DEBUG / HARDWARE TESTING</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Calibrated low-end of AnalogSensor @&quot;</span><span class="p">,</span>
+                  <span class="s1">&#39; </span><span class="si">%6.4f</span><span class="s1"> V&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset_voltage</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnalogSensor._read"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.AnalogSensor._read">[docs]</a>    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns a value in the range of 0 - 1 corresponding to a fraction of the full input range of the sensor.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_read</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="AnalogSensor._verify"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.AnalogSensor._verify">[docs]</a>    <span class="k">def</span> <span class="nf">_verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Checks to make sure sensor reading was indeed in [0, 1].</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (float): Sensor reading to validate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">conversion_factor</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span>
+       <span class="c1"># if not report:</span>
+            <span class="c1"># FIXME: Right now this just expands the calibration range whenever bounds are exceeded, because we&#39;re not</span>
+            <span class="c1">#  familiar enough with our sensors to know when we should really be rejecting values. This approach should</span>
+            <span class="c1">#  work for debugging/R&amp;D purposes but really ought to be thought through and/or replaced for production.</span>
+            <span class="c1">#  For example, negative voltages are probably bad. voltages about VDD (~5V) are also probably bad. There is</span>
+            <span class="c1">#  some expected drift around offset voltage and output span, however, and that drift is going to change</span>
+            <span class="c1">#  depending on the sensor in question; i.e., voltages between offset_voltage and zero may or may not be ok,</span>
+            <span class="c1">#  and voltages above the offset+span that do not exceed VDD may or may not be ok as well.</span>
+        <span class="c1">#    self.offset_voltage = min(self.offset_voltage, value)</span>
+        <span class="c1">#    self.output_span = max(self.output_span, value - self.offset_voltage)</span>
+        <span class="c1">#    print(&#39;Warning: AnalogSensor calibration adjusted&#39;)</span>
+        <span class="k">return</span> <span class="n">report</span></div>
+
+<div class="viewcode-block" id="AnalogSensor._convert"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.AnalogSensor._convert">[docs]</a>    <span class="k">def</span> <span class="nf">_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Scales raw voltage into the range 0 - 1.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            raw (float): The raw sensor reading to convert.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conversion_factor</span> <span class="o">*</span> <span class="p">((</span><span class="n">raw</span> <span class="o">-</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;offset_voltage&#39;</span><span class="p">))</span> <span class="o">/</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;output_span&#39;</span><span class="p">))</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnalogSensor._raw_read"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.AnalogSensor._raw_read">[docs]</a>    <span class="k">def</span> <span class="nf">_raw_read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Builds kwargs from configured fields to pass along to adc, then calls adc.read_conversion(), which returns</span>
+<span class="sd">        a raw voltage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adc</span><span class="o">.</span><span class="n">USER_CONFIGURABLE_FIELDS</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+            <span class="n">fields</span><span class="p">,</span>
+            <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">)</span>
+        <span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">adc</span><span class="o">.</span><span class="n">read_conversion</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnalogSensor._fill_attr"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.AnalogSensor._fill_attr">[docs]</a>    <span class="k">def</span> <span class="nf">_fill_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Examines self to see if there are any fields identified as user configurable or calibration that have not</span>
+<span class="sd">        been write (i.e. were not passed to __init__ as **kwargs). If a field is missing, grabs the default value either</span>
+<span class="sd">        from the ADC or from _DEFAULT_CALIBRATION and sets it as an attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">cfld</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">adc</span><span class="o">.</span><span class="n">USER_CONFIGURABLE_FIELDS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfld</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span>
+                    <span class="n">cfld</span><span class="p">,</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adc</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">cfld</span><span class="p">)</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adc</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">for</span> <span class="n">dcal</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DEFAULT_CALIBRATION</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dcal</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dcal</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnalogSensor._check_and_set_attr"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.AnalogSensor._check_and_set_attr">[docs]</a>    <span class="k">def</span> <span class="nf">_check_and_set_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks to see if arguments passed to __init__ are recognized as user configurable or calibration fields. If</span>
+<span class="sd">        so, write the value as an attribute like: self.KEY = VALUE. Keeps track of how many attributes are write in this</span>
+<span class="sd">        way; if at the end there unknown arguments leftover, raises a TypeError; otherwise, calls _fill_attr() to fill</span>
+<span class="sd">        in fields that were not passed as arguments.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: `field=value` - see vent.io.devices.ADS1115 for additional documentation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">adc</span><span class="o">.</span><span class="n">USER_CONFIGURABLE_FIELDS</span><span class="p">,</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_DEFAULT_CALIBRATION</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">fld</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">fld</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fld</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;AnalogSensor was passed unknown field(s)&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">allowed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fill_attr</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="DLiteSensor"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.DLiteSensor">[docs]</a><span class="k">class</span> <span class="nc">DLiteSensor</span><span class="p">(</span><span class="n">AnalogSensor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; D-Lite flow sensor setup.</span>
+<span class="sd">    This consists of the GE D-Lite sensor configured with</span>
+<span class="sd">    vacuum lines running to an analog differential pressure sensor.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">adc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DLiteSensor._convert"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.DLiteSensor._convert">[docs]</a>    <span class="k">def</span> <span class="nf">_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Converts the raw differential voltage signal to</span>
+<span class="sd">        a measurement of flow in liters-per-minute (LPM).</span>
+<span class="sd">        </span>
+<span class="sd">        We calibrate the D-Lite flow readings using the</span>
+<span class="sd">        (pre-calibrated) Sensirion flow sensor (see SFM3200). </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            raw (float): The raw sensor reading to convert.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+        <span class="n">fit_param</span> <span class="o">=</span> <span class="mf">2.5837e-05</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">raw</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">converted_flow</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fit_param</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_flow</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="o">*</span><span class="n">raw</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fit_param</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">converted_flow</span></div>
+        
+<div class="viewcode-block" id="DLiteSensor.calibrate"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.DLiteSensor.calibrate">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Do not run a calibration routine.</span>
+<span class="sd">        Overrides attempt to calibrate. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div></div>
+
+
+<div class="viewcode-block" id="SFM3200"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SFM3200">[docs]</a><span class="k">class</span> <span class="nc">SFM3200</span><span class="p">(</span><span class="n">Sensor</span><span class="p">,</span> <span class="n">I2CDevice</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; I2C Inspiratory flow sensor manufactured by Sensirion AG. Range: +/- 250 SLM</span>
+<span class="sd">    Datasheet:</span>
+<span class="sd">         https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/ ...</span>
+<span class="sd">            ... 5_Mass_Flow_Meters/Datasheets/Sensirion_Mass_Flow_Meters_SFM3200_Datasheet.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_DEFAULT_ADDRESS</span> <span class="o">=</span> <span class="mh">0x40</span>
+    <span class="n">_FLOW_OFFSET</span> <span class="o">=</span> <span class="mi">32768</span>
+    <span class="n">_FLOW_SCALE_FACTOR</span> <span class="o">=</span> <span class="mi">120</span>
+
+<div class="viewcode-block" id="SFM3200.__init__"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SFM3200.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">_DEFAULT_ADDRESS</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            address (int): The I2C Address of the SFM3200 (usually 0x40)</span>
+<span class="sd">            i2c_bus (int): The I2C Bus to use (usually `1` on the Raspberry Pi)</span>
+<span class="sd">            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">I2CDevice</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="p">,</span> <span class="n">pig</span><span class="p">)</span>
+        <span class="n">Sensor</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SFM3200.reset"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SFM3200.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extended to add device specific behavior: Asks the sensor to perform a soft reset. 80 ms soft reset time.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_device</span><span class="p">(</span><span class="mh">0x2000</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">08</span><span class="p">)</span>  <span class="c1"># TODO: this should be an await</span></div>
+
+<div class="viewcode-block" id="SFM3200._start"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SFM3200._start">[docs]</a>    <span class="k">def</span> <span class="nf">_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Device specific:Sends the &#39;start measurement&#39; command to the sensor. Start-up time once command has been</span>
+<span class="sd">        recieved is &#39;less than 100ms&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_device</span><span class="p">(</span><span class="mh">0x1000</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># TODO: this should be an await</span></div>
+
+<div class="viewcode-block" id="SFM3200._verify"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SFM3200._verify">[docs]</a>    <span class="k">def</span> <span class="nf">_verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; No further verification needed for this sensor. Onboard chip handles all that. Could throw in a CRC8 checker</span>
+<span class="sd">        instead of discarding them in _convert().</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (float): The sensor reading to verify.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SFM3200._convert"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SFM3200._convert">[docs]</a>    <span class="k">def</span> <span class="nf">_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Overloaded to replace with device-specific protocol. Convert raw int to a flow reading having type float</span>
+<span class="sd">        with units slm. Implementation differs from parent for clarity and consistency with source material.</span>
+
+<span class="sd">        Source:</span>
+<span class="sd">          https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/ ...</span>
+<span class="sd">            ... 5_Mass_Flow_Meters/Application_Notes/Sensirion_Mass_Flo_Meters_SFM3xxx_I2C_Functional_Description.pdf</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            raw (int): The raw value read from the SFM3200</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">raw</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FLOW_OFFSET</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FLOW_SCALE_FACTOR</span></div>
+
+<div class="viewcode-block" id="SFM3200._raw_read"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SFM3200._raw_read">[docs]</a>    <span class="k">def</span> <span class="nf">_raw_read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Performs an read on the sensor, converts received bytearray, discards the last two bytes (crc values - could</span>
+<span class="sd">        implement in future), and returns a signed int converted from the big endian two complement that remains.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">be16_to_native</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_device</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="SimSensor"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SimSensor">[docs]</a><span class="k">class</span> <span class="nc">SimSensor</span><span class="p">(</span><span class="n">Sensor</span><span class="p">):</span>
+<div class="viewcode-block" id="SimSensor.__init__"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SimSensor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; TODO</span>
+<span class="sd">        Stub simulated sensor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            low: Lower-bound of possible sensor values</span>
+<span class="sd">            high: Upper-bound of possible sensor values</span>
+<span class="sd">            pig (PigpioConnection): Ignored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">low</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">high</span></div>
+
+<div class="viewcode-block" id="SimSensor._verify"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SimSensor._verify">[docs]</a>    <span class="k">def</span> <span class="nf">_verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Usually verifies sensor readings but occasionally misbehaves.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (float): The sensor reading to verify</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SimSensor._convert"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SimSensor._convert">[docs]</a>    <span class="k">def</span> <span class="nf">_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Does nothing for a simulated sensor. Returns what it is passed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            raw (float): The raw value to convert</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">raw</span></div>
+
+<div class="viewcode-block" id="SimSensor._raw_read"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.sensors.SimSensor._raw_read">[docs]</a>    <span class="k">def</span> <span class="nf">_raw_read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Initializes randomly, otherwise does a random walk-ish thing.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">high</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

@@ -452,6 +452,7 @@ class Display(QtWidgets.QWidget):
 
     def redraw(self):
         # TODO: make a bit lighter weight than current redraw method
+        pass
 
     def set_units(self, units):
         if self.name in (ValueName.PIP.name, ValueName.PEEP.name):

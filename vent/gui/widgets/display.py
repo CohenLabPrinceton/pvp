@@ -17,6 +17,7 @@ from vent.gui import styles, mono_font
 from vent.common import message, unit_conversion
 from vent.common.values import ValueName, Value
 from vent.common.message import ControlSetting
+from vent.common.loggers import init_logger
 from vent.common import unit_conversion, prefs
 from vent.gui.widgets.components import EditableLabel, DoubleSlider
 from vent.gui.widgets.dialog import pop_dialog
@@ -74,6 +75,8 @@ class Display(QtWidgets.QWidget):
         self.alarm_range = self.safe_range
         self.decimals = value.decimals
 
+        self.logger = init_logger(__name__)
+
         # store parameters
         self.update_period = update_period
         self.enum_name = enum_name
@@ -94,6 +97,7 @@ class Display(QtWidgets.QWidget):
         # for storing set and sensed values
         self.set_value = None
         self.sensor_value = None
+        self._firstset = False # don't pop dialog boxes until the control is brought within the safe range one time
         # for sensor value display
         self._yrange = ()
         # for confirming dangerous values
@@ -109,6 +113,8 @@ class Display(QtWidgets.QWidget):
         # create graphical objects
         self.init_ui()
 
+        self.timed_update()
+
     def init_ui(self):
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
@@ -121,14 +127,14 @@ class Display(QtWidgets.QWidget):
             self._styles['label_value'] = styles.DISPLAY_VALUE
             self._styles['label_name'] = styles.DISPLAY_NAME
             self._styles['label_units'] = styles.DISPLAY_UNITS
-            self._styles['control_label'] = styles.CONTROL_VALUE
+            self._styles['set_value_label'] = styles.CONTROL_VALUE
             self._styles['slider_label'] = styles.CONTROL_LABEL
             # self._styles['sensor_frame'] = styles.CONTROL_SENSOR_FRAME
         elif self.style == "light":
             self._styles['label_value'] = styles.CONTROL_VALUE
             self._styles['label_name'] = styles.CONTROL_NAME
             self._styles['label_units'] = styles.CONTROL_UNITS
-            self._styles['control_label'] = styles.CONTROL_VALUE
+            self._styles['set_value_label'] = styles.CONTROL_VALUE
             self._styles['slider_label'] = styles.CONTROL_LABEL
             # self._styles['sensor_frame'] = styles.CONTROL_SENSOR_FRAME
         else:
@@ -159,7 +165,6 @@ class Display(QtWidgets.QWidget):
 
         #--------------
         # and then connect internal signals
-
 
     def init_ui_labels(self):
         # label to display measured/sensed values
@@ -208,7 +213,6 @@ class Display(QtWidgets.QWidget):
             self.toggle_button.setSizePolicy(button_size_policy)
             self.toggle_button.setHidden(True)
 
-
     def init_ui_limits(self):
         """
         Create widgets to display sensed value alongside set value
@@ -222,18 +226,16 @@ class Display(QtWidgets.QWidget):
         # self.sensor_layout.setContentsMargins(0,0,0,0)
 
         # label to display and edit set value
-        self.control_label = EditableLabel()
-        self.control_label.setStyleSheet(self._styles['control_label'])
-        self.control_label.label.setFont(mono_font())
-        self.control_label.lineEdit.setFont(mono_font())
-        self.control_label.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
-        self.control_label.setMinimumWidth(4 * styles.VALUE_MINOR_SIZE * .6)
-        self.control_label.setContentsMargins(0,0,0,0)
+        self.set_value_label = EditableLabel()
+        self.set_value_label.setStyleSheet(self._styles['set_value_label'])
+        self.set_value_label.label.setFont(mono_font())
+        self.set_value_label.lineEdit.setFont(mono_font())
+        self.set_value_label.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+        self.set_value_label.setMinimumWidth(4 * styles.VALUE_MINOR_SIZE * .6)
+        self.set_value_label.setContentsMargins(0, 0, 0, 0)
 
         # bar graph that indicates current value and limits
         self.sensor_plot = Limits_Plot()
-
-
 
     def init_ui_slider(self):
         # -------
@@ -309,7 +311,7 @@ class Display(QtWidgets.QWidget):
             self.main_layout.addWidget(self.toggle_button)
             if self.control:
                 self.main_layout.addWidget(self.sensor_plot)
-                self.main_layout.addWidget(self.control_label)
+                self.main_layout.addWidget(self.set_value_label)
             else:
                 self.main_layout.addStretch()
 
@@ -320,7 +322,7 @@ class Display(QtWidgets.QWidget):
             # control objects
             if self.control:
                 self.main_layout.addWidget(self.sensor_plot)
-                self.main_layout.addWidget(self.control_label)
+                self.main_layout.addWidget(self.set_value_label)
             else:
                 self.main_layout.addStretch()
             self.main_layout.addWidget(self.toggle_button)
@@ -332,7 +334,7 @@ class Display(QtWidgets.QWidget):
     def init_ui_signals(self):
 
         if self.control:
-            self.control_label.textChanged.connect(self._value_changed)
+            self.set_value_label.textChanged.connect(self._value_changed)
 
         if self.control == "slider":
             self.toggle_button.toggled.connect(self.toggle_control)
@@ -359,9 +361,9 @@ class Display(QtWidgets.QWidget):
     def toggle_record(self, state):
         if self.control != 'record':
             return
-        if state == True:
-            self.log_values = True
-            self.logged_values = []
+        if state:
+            self._log_values = True
+            self._logged_values = []
 
             self.toggle_button.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DialogApplyButton))
             self.sensor_label.setStyleSheet(styles.CONTROL_VALUE_REC)
@@ -383,10 +385,9 @@ class Display(QtWidgets.QWidget):
             self.name_label.setStyleSheet(styles.CONTROL_NAME)
             self.units_label.setStyleSheet(styles.CONTROL_UNITS)
 
-
     def _value_changed(self, new_value: float):
         """
-        Control value changed by components
+        "outward-directed" Control value changed by components
 
         Args:
             new_value (float):
@@ -408,7 +409,10 @@ class Display(QtWidgets.QWidget):
                 # if we're already opening a dialogue, don't try to set value or emit
                 return
 
-            if (not self._confirmed_unsafe) and ('pytest' not in sys.modules) and prefs.get_pref('ENABLE_WARNINGS'):
+            if (not self._confirmed_unsafe) and \
+               ('pytest' not in sys.modules) and \
+                prefs.get_pref('ENABLE_WARNINGS') and \
+                self._firstset:
 
                 self._dialog_open = True
                 safe_range = self.safe_range
@@ -430,55 +434,181 @@ class Display(QtWidgets.QWidget):
                     # don't prompt again
                     self._confirmed_unsafe = True
 
-
         else:
             # reset _confirmed_unsafe if back in range
             if self._confirmed_unsafe:
                 self._confirmed_unsafe = False
 
+            # set firstset flag if we're going in safe range for the first time
+            if not self._firstset:
+                self._firstset = True
 
-
-
-        changed = self.update_value(new_value)
+        changed = self.update_set_value(new_value)
         if changed:
             self.value_changed.emit(self.value)
 
-    def update_value(self):
+    def update_set_value(self, new_value: float):
         """inward value setting (set from elsewhere)"""
-        pass
 
-    def update_limits(self):
-        pass
+        if isinstance(new_value, str):
+            new_value = float(new_value)
 
+        # don't convert value here,
+        # assume the only hPa values would come from the widget itself since it's display only
 
+        changed = False
+        if (new_value <= self.abs_range[1]) and (new_value >= self.abs_range[0]):
+            if (new_value != self.value):
+                self.set_value = new_value
+                changed = True
+        else:
+            self.logger.exception(f'Attempted to set {self.name} out of range ({self.abs_range}) with value {new_value}')
+
+        if changed:
+
+            self.redraw()
+        return changed
+
+    def update_sensor_value(self, new_value: float):
+        if new_value is None:
+            return
+
+        self.sensor_value = new_value
+
+        # store values to set value by averaging sensor values
+        if self._log_values:
+            self._logged_values.append(new_value)
+
+        if self._convert_in:
+            new_value = self._convert_in(new_value)
+
+        value_str = unit_conversion.rounded_string(new_value, self.decimals)
+        self.set_value_label.setText(value_str)
+        if self.control:
+            self.sensor_plot.update_value(sensor_value = new_value)
+
+    def update_limits(self, control: ControlSetting):
+        """
+        Update the alarm range and the GUI elements corresponding to it
+
+        Args:
+            control (:class:`~.ControlSetting`): control setting with min_value or max_value
+        """
+        if self.set_value is None or self.control is None:
+            return
+
+        if control.min_value and control.min_value != self.alarm_range[0]:
+            if self._convert_in:
+                self.sensor_plot.update_value(min=self._convert_in(control.min_value))
+            else:
+                self.sensor_plot.update_value(min=control.min_value)
+            self.alarm_range = (control.min_value, self.alarm_range[1])
+
+        if control.max_value and control.max_value != self.alarm_range[1]:
+            if self._convert_in:
+                self.sensor_plot.update_value(max=self._convert_in(control.max_value))
+            else:
+                self.sensor_plot.update_value(max=control.max_value)
+            self.alarm_range = (self.alarm_range[0], control.max_value)
 
     def redraw(self):
-        # TODO: make a bit lighter weight than current redraw method
-        pass
+        """
+        Redraw all graphical elements to ensure internal model matches view
+        """
+        # convert some guaranteed values
+        abs_range = self.abs_range
+        if self._convert_in:
+            abs_range = (self._convert_in(x) for x in abs_range)
 
-    def set_units(self, units):
+        # sensor value
+        if self.sensor_value:
+            sensor_value = self.sensor_value
+            if self._convert_in:
+                sensor_value = self._convert_in(sensor_value)
+
+            # don't update sensor value label, it should be on timed update
+            # just make sure the sensor bar is correct
+            if self.control:
+                self.sensor_plot.update_value(sensor_value=sensor_value)
+
+        # set value
+        if self.set_value:
+            set_value = self.set_value
+            if self._convert_in:
+                set_value = self._convert_in(set_value)
+
+            # update label and plot
+            if self.control:
+                set_value_str = unit_conversion.rounded_string(set_value, self.decimals)
+                self.set_value_label.setText(set_value_str)
+
+                self.sensor_plot.update_value(set_value=set_value)
+
+                if self.control == "slider":
+                    try:
+                        self.slider.blockSignals(True)
+                        self.slider.setValue(set_value)
+                        self.slider.setMinimum(abs_range[0])
+                        self.slider.setMaximum(abs_range[1])
+                        self.slider.setDecimals(self.decimals)
+                        self.slider_min.setText(unit_conversion.rounded_string(abs_range[0], self.decimals))
+                        self.slider_max.setText(unit_conversion.rounded_string(abs_range[1], self.decimals))
+                    finally:
+                        self.slider.blockSignals(False)
+
+        # alarm limits
+        if self.alarm_range:
+            alarm_range = self.alarm_range
+            if self._convert_in:
+                alarm_range = (self._convert_in(x) for x in alarm_range)
+            self.sensor_plot.update_value(min=alarm_range[0], max=alarm_range[1])
+
+
+    def timed_update(self):
+        # format value based on decimals
+        try:
+            if self.sensor_value:
+                if self._convert_in:
+                    sensor_value = self._convert_in(self.value)
+                else:
+                    sensor_value = self.value
+                value_str = unit_conversion.rounded_string(sensor_value, self.decimals)
+                self.sensor_label.setText(value_str)
+        except Exception as e:
+            self.logger.exception(f"{self.name} - error in timed update - {e}")
+        finally:
+            QtCore.QTimer.singleShot(round(self.update_period*1000), self.timed_update)
+
+
+
+    def set_units(self, units: str):
+        """
+        Set pressure units to display as cmH2O or hPa
+
+        Args:
+            units ('cmH2O', 'hPa'):
+        """
         if self.name in (ValueName.PIP.name, ValueName.PEEP.name):
             if units == 'cmH2O':
                 self.decimals = 1
-                self.slider.setDecimals(self.decimals)
-                self.units = units
-                self.units_label.setText(units)
                 self._convert_in = None
                 self._convert_out = None
-                self.redraw()
+
             elif units == 'hPa':
                 self.decimals = 0
-                self.slider.setDecimals(self.decimals)
-                self.units = units
-                self.units_label.setText(units)
                 self._convert_in = unit_conversion.cmH2O_to_hPa
                 self._convert_out = unit_conversion.hPa_to_cmH2O
-                self.redraw()
+
+            else:
+                self.logger.exception(f'couldnt set units {units}')
+                return
+
+            self.units = units
+            self.units_label.setText(units)
+            self.redraw()
+
         else:
-            print(
-                f'error setting units {units}'
-            )
-            return
+            self.logger.exception(f'error setting units {self.name} - {units}')
 
 
     def set_locked(self, locked: bool):
@@ -488,19 +618,19 @@ class Display(QtWidgets.QWidget):
                 if self.control == "slider":
                     self.toggle_control(False)
                 self.toggle_button.setEnabled(False)
-                self.value_label.setEditable(False)
+                self.set_value_label.setEditable(False)
             # self.setStyleSheet()
         else:
             self.locked = False
             if self.control:
                 self.toggle_button.setEnabled(True)
-                self.value_label.setEditable(False)
+                self.set_value_label.setEditable(False)
     # ---------------------------------
     # Properties
     # ---------------------------------
     @property
     def is_set(self):
-        if self.value is None:
+        if self.set_value is None:
             return False
         else:
             return True
@@ -551,10 +681,40 @@ class Limits_Plot(pg.PlotWidget):
                                           pen={'color': styles.BACKGROUND_COLOR, 'width': 5})
 
         self.addItem(self.sensor_bar)
-        self.addItem(self.sensor_limits)
+        self.addItem(self.top_limit)
+        self.addItem(self.bottom_limit)
         self.addItem(self.sensor_set)
         self.setFixedWidth(styles.CONTROL_SENSOR_BAR_WIDTH)
 
+    def update_value(self,
+                     min: float = None,
+                     max: float = None,
+                     sensor_value: float = None,
+                     set_value: float = None):
+        """
+        Move the lines! Pass any of the represented values
+
+        Args:
+            min (float): new alarm minimum
+            max (float): new alarm maximum
+            sensor_value (float): new value for the sensor bar plot
+            set_value (float): new value for the set value line
+
+        """
+        if min:
+            self.bottom_limit.setValue(float(min))
+
+        if max:
+            self.bottom_limit.setValue(float(max))
+
+        if sensor_value:
+            self.sensor_bar.setOpts(y1=np.array([float(sensor_value)]))
+
+        if set_value:
+            self.sensor_set.setValue(float(set_value))
+
+
+        self.update_yrange()
 
     def update_yrange(self):
         """
@@ -562,6 +722,27 @@ class Limits_Plot(pg.PlotWidget):
         Returns:
 
         """
+        """
+                set y range to include max and min and value
+
+                Returns:
+
+                """
+        if self.sensor_value is None:
+            new_yrange = self.alarm_range
+        else:
+            y_min = np.min([self.sensor_value, self.alarm_range[0]])
+            y_max = np.max([self.sensor_value, self.alarm_range[1]])
+            new_yrange = (y_min, y_max)
+
+        if self._convert_in:
+            new_yrange = (self._convert_in(new_yrange[0]),
+                          self._convert_in(new_yrange[1]))
+
+        if self.yrange != new_yrange:
+            self.sensor_plot.setYRange(*new_yrange)
+            self.yrange = new_yrange
+
 
 
 

@@ -76,6 +76,14 @@ QWidget {{
 }}
 """
 
+DISPLAY_DARK = f"""
+
+"""
+
+DISPLAY_LIGHT = f"""
+
+"""
+
 RANGE_SLIDER = f"""
 QSlider {{
     font-size : {TICK_SIZE}px;

@@ -84,6 +84,8 @@ def mono_font():
     if globals()['_MONO_FONT'] is None:
         load_mono_font()
 
+    print(globals()['_MONO_FONT'])
+
     return globals()['_MONO_FONT']
 
 def load_mono_font():

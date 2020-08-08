@@ -44,7 +44,7 @@ class Display(QtWidgets.QWidget):
             enum_name (:class:`.ValueName`): Value name (not in Value objects)
             button_orientation (str: 'left' or 'right'): whether the button should be on the left or right
             control_type (None, str: 'slider', 'record'): whether a slider, a button to record recent values, or ``None`` control should be used with this object
-            style (str: 'light', 'dark', or a QtStylesheet string): style for the display
+            style (str: 'light', 'dark', or a QtStylesheet string): _style for the display
             *args, **kwargs: passed to :class:`PySide2.QtWidgets.QWidget`
 
         Attributes:
@@ -57,7 +57,7 @@ class Display(QtWidgets.QWidget):
             self.enum_name:
             self.orientation:
             self.control:
-            self.style:
+            self._style:
             self.set_value:
             self.sensor_value:
         """
@@ -82,7 +82,7 @@ class Display(QtWidgets.QWidget):
         self.enum_name = enum_name
         self.orientation = button_orientation
         self.control = control_type
-        self.style = style
+        self._style = style
         self._styles = {}
 
         ## initialize stateful attributes
@@ -108,7 +108,7 @@ class Display(QtWidgets.QWidget):
 
         # become identifiable
         if self.enum_name:
-            self.setObjectName(self.enum_name)
+            self.setObjectName(self.enum_name.name)
 
         # create graphical objects
         self.init_ui()
@@ -120,17 +120,19 @@ class Display(QtWidgets.QWidget):
         self.layout.setContentsMargins(0,0,0,0)
         self.setLayout(self.layout)
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                           QtWidgets.QSizePolicy.Maximum)
+                           QtWidgets.QSizePolicy.Expanding)
 
         # choose stylesheets
-        if self.style == "dark":
+        if self._style == "dark":
+            self._styles['main'] = styles.DISPLAY_DARK
             self._styles['label_value'] = styles.DISPLAY_VALUE
             self._styles['label_name'] = styles.DISPLAY_NAME
             self._styles['label_units'] = styles.DISPLAY_UNITS
             self._styles['set_value_label'] = styles.CONTROL_VALUE
             self._styles['slider_label'] = styles.CONTROL_LABEL
             # self._styles['sensor_frame'] = styles.CONTROL_SENSOR_FRAME
-        elif self.style == "light":
+        elif self._style == "light":
+            self._styles['main'] = styles.DISPLAY_LIGHT
             self._styles['label_value'] = styles.CONTROL_VALUE
             self._styles['label_name'] = styles.CONTROL_NAME
             self._styles['label_units'] = styles.CONTROL_UNITS
@@ -138,8 +140,9 @@ class Display(QtWidgets.QWidget):
             self._styles['slider_label'] = styles.CONTROL_LABEL
             # self._styles['sensor_frame'] = styles.CONTROL_SENSOR_FRAME
         else:
-            raise NotImplementedError('Need to use "light" or "dark" for style')
+            raise NotImplementedError('Need to use "light" or "dark" for _style')
 
+        self.setStyleSheet(self._styles['main'])
         # -----------------------
         # first create all the widgets that we need
         # widgets common to all display objects
@@ -171,7 +174,7 @@ class Display(QtWidgets.QWidget):
         self.sensor_label = QtWidgets.QLabel()
         self.sensor_label.setStyleSheet(self._styles['label_value'])
         self.sensor_label.setFont(mono_font())
-        self.sensor_label.setAlignment(QtCore.Qt.AlignRight)
+        self.sensor_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter)
         self.sensor_label.setMargin(0)
         self.sensor_label.setContentsMargins(0, 0, 0, 0)
         # at minimum make space for 4 digits
@@ -183,8 +186,8 @@ class Display(QtWidgets.QWidget):
         self.name_label = QtWidgets.QLabel()
         self.name_label.setStyleSheet(self._styles['label_name'])
         self.name_label.setText(self.name)
-        self.name_label.setAlignment(QtCore.Qt.AlignRight)
-        self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+        self.name_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom )
+        self.name_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                       QtWidgets.QSizePolicy.Expanding)
 
         # label to display units
@@ -193,7 +196,7 @@ class Display(QtWidgets.QWidget):
         self.units_label.setText(self.units)
         self.units_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Expanding)
+                                         QtWidgets.QSizePolicy.Maximum)
 
     def init_ui_toggle_button(self):
         self.toggle_button = QtWidgets.QToolButton(checkable=True, checked=False)
@@ -233,6 +236,8 @@ class Display(QtWidgets.QWidget):
         self.set_value_label.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
         self.set_value_label.setMinimumWidth(4 * styles.VALUE_MINOR_SIZE * .6)
         self.set_value_label.setContentsMargins(0, 0, 0, 0)
+        self.set_value_label.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                                      QtWidgets.QSizePolicy.Maximum)
 
         # bar graph that indicates current value and limits
         self.sensor_plot = Limits_Plot()
@@ -301,12 +306,13 @@ class Display(QtWidgets.QWidget):
         self.main_layout.setContentsMargins(0,0,0,0)
         self.label_layout.setContentsMargins(0,0,0,0)
 
-        # labels are always laid out the same becuse numbers have to be aligned right...
-        self.label_layout.addWidget(self.sensor_label, 0, 0, 2, 1, alignment=QtCore.Qt.AlignRight)
-        self.label_layout.addWidget(self.name_label, 0, 1, 1, 1, alignment=QtCore.Qt.AlignRight)
-        self.label_layout.addWidget(self.units_label, 1, 1, 1, 1, alignment=QtCore.Qt.AlignRight)
 
         if self.orientation == "left":
+
+            self.label_layout.addWidget(self.sensor_label, 0, 0, 2, 1, alignment=QtCore.Qt.AlignRight)
+            self.label_layout.addWidget(self.name_label, 0, 1, 1, 1, alignment=QtCore.Qt.AlignRight)
+            self.label_layout.addWidget(self.units_label, 1, 1, 1, 1, alignment=QtCore.Qt.AlignRight)
+
             # control objects
             self.main_layout.addWidget(self.toggle_button)
             if self.control:
@@ -317,12 +323,18 @@ class Display(QtWidgets.QWidget):
 
             self.main_layout.addLayout(self.label_layout)
         elif self.orientation == "right":
+
+            # labels are always laid out the same becuse numbers have to be aligned right...
+            self.label_layout.addWidget(self.sensor_label, 0, 1, 2, 1, alignment=QtCore.Qt.AlignRight)
+            self.label_layout.addWidget(self.name_label, 0, 0, 1, 1, alignment=QtCore.Qt.AlignLeft)
+            self.label_layout.addWidget(self.units_label, 1, 0, 1, 1, alignment=QtCore.Qt.AlignLeft)
+
             self.main_layout.addLayout(self.label_layout)
 
             # control objects
             if self.control:
-                self.main_layout.addWidget(self.sensor_plot)
                 self.main_layout.addWidget(self.set_value_label)
+                self.main_layout.addWidget(self.sensor_plot)
             else:
                 self.main_layout.addStretch()
             self.main_layout.addWidget(self.toggle_button)
@@ -371,9 +383,9 @@ class Display(QtWidgets.QWidget):
             self.units_label.setStyleSheet(styles.CONTROL_UNITS_REC)
 
         else:
-            if len(self.logged_values)>0:
+            if len(self._logged_values)>0:
                 # get the mean logged value
-                mean_val = np.mean(self.logged_values)
+                mean_val = np.mean(self._logged_values)
                 # convert to displayed range if necessary (_value_changed) expects it
                 if self._convert_in:
                     mean_val = self._convert_in(mean_val)
@@ -429,7 +441,7 @@ class Display(QtWidgets.QWidget):
                 self._dialog_open = False
                 if ret != QtWidgets.QMessageBox.Ok:
                     # if canceled, set value to current value
-                    new_value = self.value
+                    new_value = self.set_value
                 else:
                     # don't prompt again
                     self._confirmed_unsafe = True
@@ -445,7 +457,7 @@ class Display(QtWidgets.QWidget):
 
         changed = self.update_set_value(new_value)
         if changed:
-            self.value_changed.emit(self.value)
+            self.value_changed.emit(self.set_value)
 
     def update_set_value(self, new_value: float):
         """inward value setting (set from elsewhere)"""
@@ -458,7 +470,7 @@ class Display(QtWidgets.QWidget):
 
         changed = False
         if (new_value <= self.abs_range[1]) and (new_value >= self.abs_range[0]):
-            if (new_value != self.value):
+            if (new_value != self.set_value):
                 self.set_value = new_value
                 changed = True
         else:
@@ -483,7 +495,7 @@ class Display(QtWidgets.QWidget):
             new_value = self._convert_in(new_value)
 
         value_str = unit_conversion.rounded_string(new_value, self.decimals)
-        self.set_value_label.setText(value_str)
+        # self.sensor_label.setText(value_str)
         if self.control:
             self.sensor_plot.update_value(sensor_value = new_value)
 
@@ -569,9 +581,9 @@ class Display(QtWidgets.QWidget):
         try:
             if self.sensor_value:
                 if self._convert_in:
-                    sensor_value = self._convert_in(self.value)
+                    sensor_value = self._convert_in(self.sensor_value)
                 else:
-                    sensor_value = self.value
+                    sensor_value = self.sensor_value
                 value_str = unit_conversion.rounded_string(sensor_value, self.decimals)
                 self.sensor_label.setText(value_str)
         except Exception as e:
@@ -593,11 +605,15 @@ class Display(QtWidgets.QWidget):
                 self.decimals = 1
                 self._convert_in = None
                 self._convert_out = None
+                self.sensor_plot._convert_in = None
+                self.sensor_plot._convert_out = None
 
             elif units == 'hPa':
                 self.decimals = 0
                 self._convert_in = unit_conversion.cmH2O_to_hPa
                 self._convert_out = unit_conversion.hPa_to_cmH2O
+                self.sensor_plot._convert_in = unit_conversion.cmH2O_to_hPa
+                self.sensor_plot._convert_out = unit_conversion.hPa_to_cmH2O
 
             else:
                 self.logger.exception(f'couldnt set units {units}')
@@ -648,8 +664,19 @@ class Limits_Plot(pg.PlotWidget):
     Widget to display current value in a bar graph along with alarm limits
     """
 
-    def __init__(self, background = styles.CONTROL_SENSOR_BACKGROUND, *args, **kwaargs):
+    def __init__(self, background = styles.CONTROL_SENSOR_BACKGROUND, *args, **kwargs):
+        self.set_value = None
+        self.sensor_value = None
+        self._minimum = None
+        self._maximum = None
+        self.yrange = (0, 1)
+
+        self._convert_in = None
+        self._convert_out = None
+
         super(Limits_Plot, self).__init__(background=background, *args, **kwargs)
+
+
 
         self.init_ui()
 
@@ -684,6 +711,8 @@ class Limits_Plot(pg.PlotWidget):
         self.addItem(self.top_limit)
         self.addItem(self.bottom_limit)
         self.addItem(self.sensor_set)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                           QtWidgets.QSizePolicy.Maximum)
         self.setFixedWidth(styles.CONTROL_SENSOR_BAR_WIDTH)
 
     def update_value(self,
@@ -696,22 +725,26 @@ class Limits_Plot(pg.PlotWidget):
 
         Args:
             min (float): new alarm minimum
-            max (float): new alarm maximum
+            max (float): new alarm _maximum
             sensor_value (float): new value for the sensor bar plot
             set_value (float): new value for the set value line
 
         """
         if min:
             self.bottom_limit.setValue(float(min))
+            self._minimum = float(min)
 
         if max:
             self.bottom_limit.setValue(float(max))
+            self._maximum = float(max)
 
         if sensor_value:
             self.sensor_bar.setOpts(y1=np.array([float(sensor_value)]))
+            self.sensor_value = float(sensor_value)
 
         if set_value:
             self.sensor_set.setValue(float(set_value))
+            self.set_value = float(set_value)
 
 
         self.update_yrange()
@@ -728,19 +761,22 @@ class Limits_Plot(pg.PlotWidget):
                 Returns:
 
                 """
-        if self.sensor_value is None:
-            new_yrange = self.alarm_range
-        else:
-            y_min = np.min([self.sensor_value, self.alarm_range[0]])
-            y_max = np.max([self.sensor_value, self.alarm_range[1]])
+        if self._minimum and self._maximum and self.sensor_value:
+            y_min = np.min([self.sensor_value, self._minimum])
+            y_max = np.max([self.sensor_value, self._maximum])
             new_yrange = (y_min, y_max)
+        elif self._minimum and self._maximum:
+            new_yrange = (self._minimum, self._maximum)
+        else:
+            return
+
 
         if self._convert_in:
             new_yrange = (self._convert_in(new_yrange[0]),
                           self._convert_in(new_yrange[1]))
 
         if self.yrange != new_yrange:
-            self.sensor_plot.setYRange(*new_yrange)
+            self.setRange(yRange=new_yrange)
             self.yrange = new_yrange
 
 

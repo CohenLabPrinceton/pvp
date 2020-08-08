@@ -17,7 +17,7 @@ from vent.common.loggers import init_logger
 from vent.common.message import ControlSetting, SensorValues
 from vent.coordinator import coordinator
 from vent import gui
-from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS
+from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS, mono_font
 from vent.alarm import Alarm_Manager
 
 
@@ -113,6 +113,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
         self.logger = init_logger(__name__)
 
+        # load mono font before initing widgets
+        _ = mono_font()
+
         if get_gui_instance() is not None and gui.limit_gui():
             self.logger.exception('GUI attempted to be instantiated but instance of gui already running!')
             raise Exception('Instance of gui already running!') # pragma: no cover
@@ -167,7 +170,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if set_defaults:
             self.init_controls()
 
+        self.toggle_cycle_widget(values.ValueName.INSPIRATION_TIME_SEC)
+
+        self.show()
         self.update_gui()
+
+        # no idea why but we have to set the stylesheets again after showing in order to
+        # get the fonts to work right
+        self.controls_box.setStyleSheet(styles.CONTROL_BOX)
+        self.monitor_box.setStyleSheet(styles.MONITOR_BOX)
 
         self.logger.info('GUI Initialized Successfully')
 
@@ -360,10 +371,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.coordinator.set_control(control_object)
 
         if control_object.name.name in self.controls.keys():
-            self.controls[control_object.name.name].update_value(control_object.value)
+            self.controls[control_object.name.name].update_set_value(control_object.value)
 
-        if control_object.name in self.pressure_waveform.PARAMETERIZING_VALUES:
-            self.pressure_waveform.update_target(control_object)
+        # if control_object.name in self.pressure_waveform.PARAMETERIZING_VALUES:
+        #     self.pressure_waveform.update_target(control_object)
 
         self.update_state('controls', control_object.name.name, control_object.value)
 
@@ -415,11 +426,11 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 self.logger.exception(f'Couldnt get alarms from controller, got error {e}')
 
             #
-            try:
-            #     self.pressure_waveform.update_target_array(self.coordinator.get_target_waveform())
-                self.pressure_waveform.update_waveform(vals)
-            except Exception as e:
-                self.logger.exception(f'Couldnt draw ideal waveform, got error {e}')
+            # try:
+            # #     self.pressure_waveform.update_target_array(self.coordinator.get_target_waveform())
+            # #     self.pressure_waveform.update_waveform(vals)
+            # except Exception as e:
+            #     self.logger.exception(f'Couldnt draw ideal waveform, got error {e}')
 
             for plot_key, plot_obj in self.plots.items():
                 if hasattr(vals, plot_key):
@@ -431,14 +442,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
             for monitor_key, monitor_obj in self.monitor.items():
                 if hasattr(vals, monitor_key):
                     try:
-                        monitor_obj.update_value(getattr(vals, monitor_key))
+                        monitor_obj.update_sensor_value(getattr(vals, monitor_key))
                     except Exception as e:
                         self.logger.exception(f'Couldnt update monitor object with {monitor_key}, got error {e}')
 
             for control_key, control in self.controls.items():
                 if hasattr(vals, control_key):
                     try:
-                        control.update_sensor(getattr(vals, control_key))
+                        control.update_sensor_value(getattr(vals, control_key))
                     except Exception as e:
                         self.logger.exception(f'Couldnt update control object with {control_key}, got error {e}')
 
@@ -530,14 +541,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
         for display_key, display_params in self.MONITOR.items():
             if display_key in self.CONTROL.keys():
                 continue
-            if display_key in (ValueName.VTE, ValueName.FIO2):
-                alarm_limits = True
-            else:
-                alarm_limits = False
+
             self.monitor[display_key.name] = widgets.Display(display_params, enum_name=display_key,
-                                                             alarm_limits=alarm_limits)
-            if display_key in (ValueName.VTE, ValueName.FIO2):
-                self.monitor[display_key.name].set_value_changed.connect(self.set_value)
+                                                             control_type=display_params.control_type,
+                                                             button_orientation='left', style='dark')
+            # if display_key in (ValueName.VTE, ValueName.FIO2):
+            #     self.monitor[display_key.name].set_value_changed.connect(self.set_value)
 
             self.display_layout.addWidget(self.monitor[display_key.name])
             self.display_layout.addWidget(widgets.components.QHLine())
@@ -548,6 +557,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.layout.addWidget(self.monitor_box, 2,0,2,1)
 
+
+
     def init_ui_plots(self):
         ###########
         # plots
@@ -555,18 +566,18 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.plot_layout.setContentsMargins(0, 0, 0, 0)
 
         # the idealized waveform display
-        self.pressure_waveform = widgets.Pressure_Waveform()
-
-        self.pressure_waveform_box = QtWidgets.QGroupBox("Pressure Control Waveform")
-        self.pressure_waveform_box.setStyleSheet(styles.PRESSURE_PLOT_BOX)
-        self.pressure_waveform_box.setContentsMargins(0, 0, 0, 0)
-
-        self.pressure_waveform_layout = QtWidgets.QVBoxLayout()
-        # self.pressure_waveform_layout.setContentsMargins(0, 0, 0, 0)
-        self.pressure_waveform_layout.addWidget(self.pressure_waveform)
-        self.pressure_waveform_box.setLayout(self.pressure_waveform_layout)
-
-        self.plot_layout.addWidget(self.pressure_waveform_box, len(self.plots))
+        # self.pressure_waveform = widgets.Pressure_Waveform()
+        #
+        # self.pressure_waveform_box = QtWidgets.QGroupBox("Pressure Control Waveform")
+        # self.pressure_waveform_box.setStyleSheet(styles.PRESSURE_PLOT_BOX)
+        # self.pressure_waveform_box.setContentsMargins(0, 0, 0, 0)
+        #
+        # self.pressure_waveform_layout = QtWidgets.QVBoxLayout()
+        # # self.pressure_waveform_layout.setContentsMargins(0, 0, 0, 0)
+        # self.pressure_waveform_layout.addWidget(self.pressure_waveform)
+        # self.pressure_waveform_box.setLayout(self.pressure_waveform_layout)
+        #
+        # self.plot_layout.addWidget(self.pressure_waveform_box, len(self.plots))
 
 
         # the plot widgets themselves
@@ -595,7 +606,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # All-controls box
 
         self.controls_box = QtWidgets.QGroupBox("Controls")
-        self.controls_box.setStyleSheet(styles.CONTROL_BOX)
         self.controls_box.setContentsMargins(0, 0, 0, 0)
 
         self.controls_layout = QtWidgets.QVBoxLayout()
@@ -612,9 +622,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
                                                                control_type=control.control_type)
             self.controls[control_name.name].setObjectName(control_name.name)
             self.controls_layout.addWidget(self.controls[control_name.name])
+            self.controls_layout.addWidget(widgets.components.QHLine(color=styles.BACKGROUND_COLOR))
 
         # TODO: Jonny implement groups (maybe?) and move the automatic calculation to the control panel
-
+        self.controls_box.setStyleSheet(styles.CONTROL_BOX)
         #
         # # self.controls_box_pressure = QtWidgets.QGroupBox("Pressure Controls")
         # # self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX)
@@ -632,81 +643,81 @@ class Vent_Gui(QtWidgets.QMainWindow):
         #
         # #self.controls_layout_pressure.addStretch(10)
         # self.controls_box_pressure.setLayout(self.controls_layout_pressure)
-
-        ####################
-        # Controls - Cycle
-        self.controls_box_cycle = QtWidgets.QGroupBox("Breath Cycle Controls")
-        self.controls_box_cycle.setStyleSheet(styles.CONTROL_SUBBOX)
-        #self.controls_box_cycle.setContentsMargins(0, 0, 0, 0)
-
-        self.controls_cycle_layout = QtWidgets.QVBoxLayout()
-        # one row of radio buttons to select which is autoset
-        # then the control widgets are added below
-        # self.controls_cycle_group = QtWidgets.QGroupBox('Auto-Calculate')
-        self.controls_cycle_button_group = QtWidgets.QButtonGroup()
-        # self.controls_cycle_group.setStyleSheet(styles.CONTROL_CYCLE_BOX)
-        self.controls_cycle_buttons = {}
-        self.controls_layout_cycle_buttons = QtWidgets.QHBoxLayout()
-        self.controls_layout_cycle_widgets = QtWidgets.QVBoxLayout()
-        self.controls_layout_cycle_buttons.addStretch(10)
-        self.controls_cycle_layout.setContentsMargins(0, 0, 0, 0)
-        self.controls_layout_cycle_widgets.setContentsMargins(0, 5, 0, 5)
-        n_cycle_lines_made = 0
-        for control_name in (ValueName.BREATHS_PER_MINUTE,
-                             ValueName.INSPIRATION_TIME_SEC,
-                             ValueName.IE_RATIO):
-            control_params = values.VALUES[control_name]
-            self.controls[control_name.name] = widgets.Display(control_params)
-            self.controls[control_name.name].setObjectName(control_name.name)
-
-            self.controls_cycle_buttons[control_name] = QtWidgets.QRadioButton(control_params.name)
-            self.controls_cycle_buttons[control_name].setObjectName(control_name.name)
-            self.controls_layout_cycle_buttons.addWidget(self.controls_cycle_buttons[control_name])
-            self.controls_cycle_button_group.addButton(self.controls_cycle_buttons[control_name])
-            #self.controls_layout_cycle_buttons.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
-            if control_name != self._autocalc_cycle:
-                self.controls_layout_cycle_widgets.addWidget(self.controls[control_name.name])
-                if n_cycle_lines_made == 0:
-                    self.controls_layout_cycle_widgets.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
-                    n_cycle_lines_made += 1
-            else:
-                self.controls[control_name.name].setVisible(False)
-                self.controls_cycle_buttons[control_name].setChecked(True)
-
-        self.controls_layout_cycle_buttons.addWidget(QtWidgets.QLabel("Auto-Calculate"))
-
-        self.controls_cycle_button_group.buttonClicked.connect(self.toggle_cycle_widget)
-
-        # self.controls_cycle_group.setLayout(self.controls_layout_cycle_buttons)
-
-        self.controls_cycle_layout.addLayout(self.controls_layout_cycle_buttons)
-        self.controls_cycle_layout.addLayout(self.controls_layout_cycle_widgets)
-
-        self.controls_box_cycle.setLayout(self.controls_cycle_layout)
-
-        ########
-        # Controls - ramp
-
-        self.controls_box_ramp = QtWidgets.QGroupBox("Ramp Controls")
-        self.controls_box_ramp.setStyleSheet(styles.CONTROL_SUBBOX)
-        self.controls_box_ramp.setContentsMargins(0, 0, 0, 0)
-        self.controls_box_ramp.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                  QtWidgets.QSizePolicy.Maximum)
-
-        self.controls_layout_ramp = QtWidgets.QVBoxLayout()
-        self.controls_layout_ramp.setContentsMargins(0, 5, 0, 5)
-
-        control_params = self.CONTROL[ValueName.PIP_TIME]
-        self.controls[ValueName.PIP_TIME.name] = widgets.Display(control_params)
-        self.controls[ValueName.PIP_TIME.name].setObjectName(ValueName.PIP_TIME.name)
-        self.controls_layout_ramp.addWidget(self.controls[ValueName.PIP_TIME.name])
-        self.controls_box_ramp.setLayout(self.controls_layout_ramp)
-
-
-        self.controls_layout.addWidget(self.controls_box_pressure)
-        self.controls_layout.addWidget(self.controls_box_cycle)
-        self.controls_layout.addWidget(self.controls_box_ramp)
-        self.controls_layout.addStretch(10)
+        #
+        # ####################
+        # # Controls - Cycle
+        # self.controls_box_cycle = QtWidgets.QGroupBox("Breath Cycle Controls")
+        # self.controls_box_cycle.setStyleSheet(styles.CONTROL_SUBBOX)
+        # #self.controls_box_cycle.setContentsMargins(0, 0, 0, 0)
+        #
+        # self.controls_cycle_layout = QtWidgets.QVBoxLayout()
+        # # one row of radio buttons to select which is autoset
+        # # then the control widgets are added below
+        # # self.controls_cycle_group = QtWidgets.QGroupBox('Auto-Calculate')
+        # self.controls_cycle_button_group = QtWidgets.QButtonGroup()
+        # # self.controls_cycle_group.setStyleSheet(styles.CONTROL_CYCLE_BOX)
+        # self.controls_cycle_buttons = {}
+        # self.controls_layout_cycle_buttons = QtWidgets.QHBoxLayout()
+        # self.controls_layout_cycle_widgets = QtWidgets.QVBoxLayout()
+        # self.controls_layout_cycle_buttons.addStretch(10)
+        # self.controls_cycle_layout.setContentsMargins(0, 0, 0, 0)
+        # self.controls_layout_cycle_widgets.setContentsMargins(0, 5, 0, 5)
+        # n_cycle_lines_made = 0
+        # for control_name in (ValueName.BREATHS_PER_MINUTE,
+        #                      ValueName.INSPIRATION_TIME_SEC,
+        #                      ValueName.IE_RATIO):
+        #     control_params = values.VALUES[control_name]
+        #     self.controls[control_name.name] = widgets.Display(control_params)
+        #     self.controls[control_name.name].setObjectName(control_name.name)
+        #
+        #     self.controls_cycle_buttons[control_name] = QtWidgets.QRadioButton(control_params.name)
+        #     self.controls_cycle_buttons[control_name].setObjectName(control_name.name)
+        #     self.controls_layout_cycle_buttons.addWidget(self.controls_cycle_buttons[control_name])
+        #     self.controls_cycle_button_group.addButton(self.controls_cycle_buttons[control_name])
+        #     #self.controls_layout_cycle_buttons.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+        #     if control_name != self._autocalc_cycle:
+        #         self.controls_layout_cycle_widgets.addWidget(self.controls[control_name.name])
+        #         if n_cycle_lines_made == 0:
+        #             self.controls_layout_cycle_widgets.addWidget(widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
+        #             n_cycle_lines_made += 1
+        #     else:
+        #         self.controls[control_name.name].setVisible(False)
+        #         self.controls_cycle_buttons[control_name].setChecked(True)
+        #
+        # self.controls_layout_cycle_buttons.addWidget(QtWidgets.QLabel("Auto-Calculate"))
+        #
+        # self.controls_cycle_button_group.buttonClicked.connect(self.toggle_cycle_widget)
+        #
+        # # self.controls_cycle_group.setLayout(self.controls_layout_cycle_buttons)
+        #
+        # self.controls_cycle_layout.addLayout(self.controls_layout_cycle_buttons)
+        # self.controls_cycle_layout.addLayout(self.controls_layout_cycle_widgets)
+        #
+        # self.controls_box_cycle.setLayout(self.controls_cycle_layout)
+        #
+        # ########
+        # # Controls - ramp
+        #
+        # self.controls_box_ramp = QtWidgets.QGroupBox("Ramp Controls")
+        # self.controls_box_ramp.setStyleSheet(styles.CONTROL_SUBBOX)
+        # self.controls_box_ramp.setContentsMargins(0, 0, 0, 0)
+        # self.controls_box_ramp.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        #                           QtWidgets.QSizePolicy.Maximum)
+        #
+        # self.controls_layout_ramp = QtWidgets.QVBoxLayout()
+        # self.controls_layout_ramp.setContentsMargins(0, 5, 0, 5)
+        #
+        # control_params = self.CONTROL[ValueName.PIP_TIME]
+        # self.controls[ValueName.PIP_TIME.name] = widgets.Display(control_params)
+        # self.controls[ValueName.PIP_TIME.name].setObjectName(ValueName.PIP_TIME.name)
+        # self.controls_layout_ramp.addWidget(self.controls[ValueName.PIP_TIME.name])
+        # self.controls_box_ramp.setLayout(self.controls_layout_ramp)
+        #
+        #
+        # self.controls_layout.addWidget(self.controls_box_pressure)
+        # self.controls_layout.addWidget(self.controls_box_cycle)
+        # self.controls_layout.addWidget(self.controls_box_ramp)
+        # self.controls_layout.addStretch(10)
 
         self.layout.addWidget(self.controls_box, 1,2,3,1)
 
@@ -729,11 +740,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
         for control in self.controls.values():
             control.value_changed.connect(self.set_value)
 
+        # TODO also connect monitor signals
+
         # connect start button to coordinator start
         self.control_panel.start_button.toggled.connect(self.toggle_start)
 
         # connect lock button
         self.control_panel.lock_button.toggled.connect(self.toggle_lock)
+
+        self.control_panel.controls_cycle_button_group.buttonClicked.connect(self.toggle_cycle_widget)
 
         # control panel buttons & settings
         self.control_panel.pressure_units_changed.connect(self.set_pressure_units)
@@ -743,19 +758,29 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.state_changed.connect(self.control_panel.heartbeat.set_state)
 
         # connect waveform plot elements to controls
-        self.pressure_waveform.control_changed.connect(self.set_control)
-        self.pressure_waveform.controlling_plot.connect(self.set_plot_control)
+        # self.pressure_waveform.control_changed.connect(self.set_control)
+        # self.pressure_waveform.controlling_plot.connect(self.set_plot_control)
 
     @QtCore.Slot(QtWidgets.QAbstractButton)
     def toggle_cycle_widget(self, button):
-        # get name of button
-        value_name = button.objectName()
-        #pdb.set_trace()
-        self._autocalc_cycle = ValueName.__members__[value_name]
+
+        if isinstance(button, QtWidgets.QAbstractButton):
+            # get name of button
+            value_name = button.objectName()
+            #pdb.set_trace()
+            self._autocalc_cycle = ValueName.__members__[value_name]
+
+        elif isinstance(button, values.ValueName):
+            value_name = button.name
+            self._autocalc_cycle = button
+
+        else:
+            self.logger.exception(f"Dont know how to set autocalc cycle with {button}")
+            return
 
         # clear everything
-        while self.controls_layout_cycle_widgets.count():
-            _ = self.controls_layout_cycle_widgets.takeAt(0)
+        # while self.controls_layout_cycle_widgets.count():
+        #     _ = self.controls_layout_cycle_widgets.takeAt(0)
 
         line_added = False
         for value in (ValueName.BREATHS_PER_MINUTE, ValueName.INSPIRATION_TIME_SEC, ValueName.IE_RATIO):
@@ -766,8 +791,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
             else:
                 #if not control.isVisible():
                 control.setVisible(True)
-                self.controls_layout_cycle_widgets.addWidget(control)
-                control.adjustSize()
+                # self.controls_layout_cycle_widgets.addWidget(control)
+                # control.adjustSize()
                 # if not line_added:
                 #     self.controls_layout_cycle_widgets.addWidget(
                 #         widgets.components.QHLine(color=styles.DIVIDER_COLOR_DARK))
@@ -806,7 +831,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if control.name.name in self.controls.keys():
             self.controls[control.name.name].update_limits(control)
         if control.name in (ValueName.PIP, ValueName.PEEP):
-            self.pressure_waveform.update_target(control)
+            # self.pressure_waveform.update_target(control)
             # PIP sets high/low limits on pressure plot
             if ValueName.PRESSURE.name in self.plots.keys():
                 self.plots[ValueName.PRESSURE.name].set_safe_limits(control)
@@ -963,30 +988,31 @@ class Vent_Gui(QtWidgets.QMainWindow):
             if state:
                 self.control_panel.lock_button.set_state('LOCKED')
                 self.controls_box.setStyleSheet(styles.CONTROL_BOX_LOCKED)
-                self.pressure_waveform_box.setStyleSheet(styles.PRESSURE_PLOT_BOX_LOCKED)
-                self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX_LOCKED)
-                self.controls_box_cycle.setStyleSheet(styles.CONTROL_SUBBOX_LOCKED)
-                self.controls_box_ramp.setStyleSheet(styles.CONTROL_SUBBOX_LOCKED)
+                # self.monitor_box.setStyleSheet(styles.MONITOR_BOX)
+                # self.pressure_waveform_box.setStyleSheet(styles.PRESSURE_PLOT_BOX_LOCKED)
+                # self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX_LOCKED)
+                # self.controls_box_cycle.setStyleSheet(styles.CONTROL_SUBBOX_LOCKED)
+                # self.controls_box_ramp.setStyleSheet(styles.CONTROL_SUBBOX_LOCKED)
 
                 # FIXME: Implement locking
                 for control in self.controls.values():
                     control.set_locked(True)
                     # control.set
 
-                self.pressure_waveform.set_locked(True)
+                # self.pressure_waveform.set_locked(True)
 
                 self.logger.debug('Lock state changed to locked')
             else:
                 self.control_panel.lock_button.set_state('UNLOCKED')
                 self.controls_box.setStyleSheet(styles.CONTROL_BOX_UNLOCKED)
-                self.pressure_waveform_box.setStyleSheet(styles.PRESSURE_PLOT_BOX_UNLOCKED)
-                self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX)
-                self.controls_box_cycle.setStyleSheet(styles.CONTROL_SUBBOX)
-                self.controls_box_ramp.setStyleSheet(styles.CONTROL_SUBBOX)
+                # self.pressure_waveform_box.setStyleSheet(styles.PRESSURE_PLOT_BOX_UNLOCKED)
+                # self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX)
+                # self.controls_box_cycle.setStyleSheet(styles.CONTROL_SUBBOX)
+                # self.controls_box_ramp.setStyleSheet(styles.CONTROL_SUBBOX)
                 for control in self.controls.values():
                     control.set_locked(False)
 
-                self.pressure_waveform.set_locked(False)
+                # self.pressure_waveform.set_locked(False)
                 self.logger.debug('Lock state changed to unlocked')
 
     def update_state(self, state_type: str, key:str, val: typing.Union[str,float,int]):
@@ -1070,7 +1096,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.controls[ValueName.PIP.name].set_units(units)
         self.controls[ValueName.PEEP.name].set_units(units)
-        self.pressure_waveform.set_units(units)
+        # self.pressure_waveform.set_units(units)
         self.monitor[ValueName.PRESSURE.name].set_units(units)
         self.plots[ValueName.PRESSURE.name].set_units(units)
 
@@ -1094,5 +1120,6 @@ def launch_gui(coordinator, set_defaults=False):
     app.setStyleSheet(styles.DARK_THEME)
     app = styles.set_dark_palette(app)
     gui = Vent_Gui(coordinator, set_defaults)
+    gui.show()
 
     return app, gui

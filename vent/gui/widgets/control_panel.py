@@ -1,5 +1,6 @@
 import time
 import os
+from collections import OrderedDict as odict
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
@@ -7,7 +8,7 @@ from vent.gui import styles, mono_font
 from vent.gui import get_gui_instance
 from vent.gui.widgets.components import QHLine, OnOffButton
 from vent.alarm import Alarm, AlarmType
-from vent.common import prefs
+from vent.common import prefs, values
 
 class Control_Panel(QtWidgets.QGroupBox):
     """
@@ -20,9 +21,12 @@ class Control_Panel(QtWidgets.QGroupBox):
     """
 
     pressure_units_changed = QtCore.Signal(str)
+    cycle_autoset_changed = QtCore.Signal()
 
     def __init__(self):
         super(Control_Panel, self).__init__('Control Panel')
+
+        self._autocalc_cycle = values.ValueName.INSPIRATION_TIME_SEC
 
         self.init_ui()
 
@@ -113,6 +117,37 @@ class Control_Panel(QtWidgets.QGroupBox):
         self.breath_detection_button.setChecked(prefs.get_pref('BREATH_DETECTION'))
         self.control_layout.addWidget(self.breath_detection_button,
                                       1, 1, alignment=QtCore.Qt.AlignRight)
+
+        # -------------------------
+        # Breath Cycle Controls
+        # --------------------------
+        self.control_layout.addWidget(QtWidgets.QLabel('Autoset Cycle Control'),
+                                      2,0,alignment=QtCore.Qt.AlignLeft)
+
+        self.cycle_buttons = odict({
+            values.ValueName.BREATHS_PER_MINUTE: QtWidgets.QPushButton('RR') ,
+            values.ValueName.INSPIRATION_TIME_SEC: QtWidgets.QPushButton('INSPt'),
+            values.ValueName.IE_RATIO: QtWidgets.QPushButton('I:E')
+        })
+
+        self.controls_cycle_button_group = QtWidgets.QButtonGroup()
+        self.controls_cycle_button_group.setExclusive(True)
+        self.controls_layout_cycle_buttons = QtWidgets.QHBoxLayout()
+
+        for button_name, button in self.cycle_buttons.items():
+            button.setObjectName(button_name.name)
+            button.setCheckable(True)
+            self.controls_cycle_button_group.addButton(button)
+            button.setStyleSheet(styles.TOGGLE_BUTTON)
+            self.controls_layout_cycle_buttons.addWidget(button)
+
+        self.cycle_buttons[values.ValueName.INSPIRATION_TIME_SEC].setChecked(True)
+
+        self.controls_cycle_button_group.buttonClicked.connect(self.cycle_autoset_changed)
+
+        self.control_layout.addLayout(self.controls_layout_cycle_buttons,
+                                      2, 1, alignment=QtCore.Qt.AlignRight)
+
 
 
 

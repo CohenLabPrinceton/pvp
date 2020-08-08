@@ -1,5 +1,6 @@
 from collections import OrderedDict as odict
 from enum import Enum, auto
+import typing
 
 # TODO: Zhenyu's job is to make sure the print value is an intepretable string
 class ValueName(Enum):
@@ -153,8 +154,6 @@ class Value(object):
     @display.setter
     def display(self, display):
         assert(isinstance(display, bool))
-        if self.control:
-            display = False
         self._display = display
 
     @property
@@ -261,7 +260,7 @@ VALUES = odict({
         'control': True,
         'control_type': 'slider',
         'sensor': False,
-        'display': False
+        'display': True
     }),
     ValueName.PIP_TIME: Value(**{
         'name': 'flow',
@@ -303,6 +302,7 @@ VALUES = odict({
         'safe_range': (0, 100),
         'decimals': 2,
         'control': False,
+        'control_type': 'record',
         'sensor': True,
         'display': True
     }),
@@ -373,7 +373,7 @@ these values are those that are sensor values that are uncontrolled and should b
 """
 
 DISPLAY_CONTROL = odict({
-    k: v for k, v in VALUES.items() if v.control and v.display == True
+    k: v for k, v in VALUES.items() if v.control and v.display
 })
 """
 Values that should be displayed in the GUI. If a value is also a CONTROL it will always have the measured value displayed,

@@ -212,67 +212,67 @@ def test_gui_launch_mp(qtbot):
 #         assert(control_value.value == test_value)
 
 
-@pytest.mark.parametrize("test_value", [(k, v) for k, v in values.SENSOR.items()])
-def test_gui_monitor(qtbot, spawn_gui, test_value):
+# @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.SENSOR.items()])
+# def test_gui_monitor(qtbot, spawn_gui, test_value):
 
 
-    app, vent_gui = spawn_gui
+#     app, vent_gui = spawn_gui
 
-    vent_gui.start()
-    vent_gui.timer.stop()
-
-
-    value_name = test_value[0]
-    value_params = test_value[1]
-    abs_range = value_params.abs_range
-
-    # generate target value
-    def gen_test_values():
-        test_value = np.random.rand(2)*(abs_range[1]-abs_range[0]) + abs_range[0]
-        test_value = np.round(test_value, value_params.decimals)
-        return np.min(test_value), np.max(test_value)
-
-    monitor_widget = vent_gui.monitor[value_name.name]
-
-    # open the control
-    assert(monitor_widget.slider_frame.isVisible() == False)
-    monitor_widget.toggle_button.click()
-    assert (monitor_widget.slider_frame.isVisible() == True)
-
-    # set handles to abs_min and max so are on absolute right and left sides
-    monitor_widget.range_slider.setValue(abs_range)
-    assert(monitor_widget.range_slider.low == monitor_widget.range_slider.minimum())
-    assert (monitor_widget.range_slider.high == monitor_widget.range_slider.maximum())
-    #
-    # # move left a quarter of the way to the right
-    # widget_size = monitor_widget.range_slider.size()
-    #
-    # # get low box position
-    # low_pos = monitor_widget.range_slider.get_handle_rect(0)
-    # click_pos = low_pos.center()
-    # move_pos = copy(click_pos)
-    # move_pos.setX(move_pos.x() + (widget_size.width()/4))
-    #
-    # qtbot.mouseMove(monitor_widget.range_slider, click_pos, delay=100)
-    # qtbot.mousePress(monitor_widget.range_slider, QtCore.Qt.LeftButton, delay=200)
-    # qtbot.mouseMove(monitor_widget.range_slider, move_pos)
-    # qtbot.mouseRelease(monitor_widget.range_slider, QtCore.Qt.LeftButton, pos=move_pos, delay=200)
+#     vent_gui.start()
+#     vent_gui.timer.stop()
 
 
-    # set with range_slider
-    # for i in range(n_samples):
-    #     test_min, test_max = gen_test_values()
-    #
-    #
-    #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-    #         monitor_widget.range_slider.setLow(test_min)
-    #         sleep(0.01)
-    #         assert(blocker.args[0][0]==test_min)
-    #
-    #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-    #         monitor_widget.range_slider.setHigh(test_max)
-    #         sleep(0.01)
-    #         assert(blocker.args[0][1]==test_max)
+#     value_name = test_value[0]
+#     value_params = test_value[1]
+#     abs_range = value_params.abs_range
+
+#     # generate target value
+#     def gen_test_values():
+#         test_value = np.random.rand(2)*(abs_range[1]-abs_range[0]) + abs_range[0]
+#         test_value = np.round(test_value, value_params.decimals)
+#         return np.min(test_value), np.max(test_value)
+
+#     monitor_widget = vent_gui.monitor[value_name.name]
+
+#     # open the control
+#     assert(monitor_widget.slider_frame.isVisible() == False)
+#     monitor_widget.toggle_button.click()
+#     assert (monitor_widget.slider_frame.isVisible() == True)
+
+#     # set handles to abs_min and max so are on absolute right and left sides
+#     monitor_widget.range_slider.setValue(abs_range)
+#     assert(monitor_widget.range_slider.low == monitor_widget.range_slider.minimum())
+#     assert (monitor_widget.range_slider.high == monitor_widget.range_slider.maximum())
+#     #
+#     # # move left a quarter of the way to the right
+#     # widget_size = monitor_widget.range_slider.size()
+#     #
+#     # # get low box position
+#     # low_pos = monitor_widget.range_slider.get_handle_rect(0)
+#     # click_pos = low_pos.center()
+#     # move_pos = copy(click_pos)
+#     # move_pos.setX(move_pos.x() + (widget_size.width()/4))
+#     #
+#     # qtbot.mouseMove(monitor_widget.range_slider, click_pos, delay=100)
+#     # qtbot.mousePress(monitor_widget.range_slider, QtCore.Qt.LeftButton, delay=200)
+#     # qtbot.mouseMove(monitor_widget.range_slider, move_pos)
+#     # qtbot.mouseRelease(monitor_widget.range_slider, QtCore.Qt.LeftButton, pos=move_pos, delay=200)
+
+
+#     # set with range_slider
+#     # for i in range(n_samples):
+#     #     test_min, test_max = gen_test_values()
+#     #
+#     #
+#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
+#     #         monitor_widget.range_slider.setLow(test_min)
+#     #         sleep(0.01)
+#     #         assert(blocker.args[0][0]==test_min)
+#     #
+#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
+#     #         monitor_widget.range_slider.setHigh(test_max)
+#     #         sleep(0.01)
+#     #         assert(blocker.args[0][1]==test_max)
 
 
 

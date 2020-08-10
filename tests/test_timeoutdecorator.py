@@ -22,7 +22,7 @@ def test_timeout():
         t1 = time.time()
         print( (t1-t0) / dt)
         print(timeout_dur)
-        assert t1-t0 < 3*dt
+        assert t1-t0 < 5*dt
         assert t1-t0 < timeout_dur
         
     for dt in (np.random.rand(5)*timeout_dur)+timeout_dur:        # Should be timeout, no longer than 60ms.
@@ -32,7 +32,7 @@ def test_timeout():
         t1 = time.time()
         # time should be less than dt bc.. timed out..
         print( (t1-t0) / dt)
-        assert t1-t0 < 3*dt
+        assert t1-t0 < 5*dt
 
 def test_timeout_return():
 
@@ -66,7 +66,7 @@ def test_timeout_return():
         t1 = time.time()
         # time should be less than dt, but sometimes is a bit longer. Unclear why. Travis problem?
         print( (t1-t0) / dt)
-        assert t1-t0 < 3*dt
+        assert t1-t0 < 5*dt
         assert ret is None
 
 

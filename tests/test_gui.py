@@ -137,79 +137,79 @@ def test_gui_launch_mp(qtbot):
 ################################
 # test user interaction
 
-# @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.CONTROL.items()])
-# def test_gui_controls(qtbot, spawn_gui, test_value):
-#     """
-#     test setting controls in all the ways available to the GUI
+@pytest.mark.parametrize("test_value", [(k, v) for k, v in values.CONTROL.items()])
+def test_gui_controls(qtbot, spawn_gui, test_value):
+    """
+    test setting controls in all the ways available to the GUI
 
-#     from the :class:`~vent.gui.widgets.control.Control` widget:
+    from the :class:`~vent.gui.widgets.control.Control` widget:
 
-#         * :class:`~vent.gui.widgets.components.EditableLabel` - setting label text
-#         * setting slider value
-#         * using :meth:`~vent.gui.main.Vent_Gui.set_value`
-
-
-#     Args:
-#         qtbot:
-#         spawn_gui:
-#         test_value:
+        * :class:`~vent.gui.widgets.components.EditableLabel` - setting label text
+        * setting slider value
+        * using :meth:`~vent.gui.main.Vent_Gui.set_value`
 
 
-#     """
+    Args:
+        qtbot:
+        spawn_gui:
+        test_value:
 
-#     app, vent_gui = spawn_gui
 
-#     vent_gui.start()
-#     vent_gui.timer.stop()
+    """
 
-#     value_name = test_value[0]
-#     value_params = test_value[1]
-#     abs_range = value_params.abs_range
+    app, vent_gui = spawn_gui
 
-#     # generate target value
-#     def gen_test_value():
-#         test_value = np.random.rand()*(abs_range[1]-abs_range[0]) + abs_range[0]
-#         test_value = np.round(test_value, value_params.decimals)
-#         return test_value
+    vent_gui.start()
+    vent_gui.timer.stop()
 
-#     ####
-#     # test setting controls from control widget
-#     # from editablelabel
+    value_name = test_value[0]
+    value_params = test_value[1]
+    abs_range = value_params.abs_range
 
-#     control_widget = vent_gui.controls[value_name.name]
+    # generate target value
+    def gen_test_value():
+        test_value = np.random.rand()*(abs_range[1]-abs_range[0]) + abs_range[0]
+        test_value = np.round(test_value, value_params.decimals)
+        return test_value
 
-#     for i in range(n_samples):
-#         test_value = gen_test_value()
+    ####
+    # test setting controls from control widget
+    # from editablelabel
 
-#         control_widget.value_label.setLabelEditableAction()
-#         control_widget.value_label.lineEdit.setText(str(test_value))
-#         control_widget.value_label.returnPressedAction()
-#         # should call labelUpdatedAction and send to controller
+    control_widget = vent_gui.controls[value_name.name]
 
-#         control_value = vent_gui.coordinator.get_control(value_name)
+    for i in range(n_samples):
+        test_value = gen_test_value()
 
-#         assert(control_value.value == test_value)
+        control_widget.value_label.setLabelEditableAction()
+        control_widget.value_label.lineEdit.setText(str(test_value))
+        control_widget.value_label.returnPressedAction()
+        # should call labelUpdatedAction and send to controller
 
-#     # from slider
-#     # toggle it open
-#     assert(control_widget.slider_frame.isVisible() == False)
-#     control_widget.toggle_button.click()
-#     assert(control_widget.slider_frame.isVisible() == True)
+        control_value = vent_gui.coordinator.get_control(value_name)
 
-#     for i in range(n_samples):
-#         test_value = gen_test_value()
-#         control_widget.slider.setValue(test_value)
+        assert(control_value.value == test_value)
 
-#         control_value = vent_gui.coordinator.get_control(value_name)
-#         assert(control_value.value == test_value)
+    # from slider
+    # toggle it open
+    assert(control_widget.slider_frame.isVisible() == False)
+    control_widget.toggle_button.click()
+    assert(control_widget.slider_frame.isVisible() == True)
 
-#     # from set_value
-#     for i in range(n_samples):
-#         test_value = gen_test_value()
-#         vent_gui.set_value(test_value, value_name = value_name)
+    for i in range(n_samples):
+        test_value = gen_test_value()
+        control_widget.slider.setValue(test_value)
 
-#         control_value = vent_gui.coordinator.get_control(value_name)
-#         assert(control_value.value == test_value)
+        control_value = vent_gui.coordinator.get_control(value_name)
+        assert(control_value.value == test_value)
+
+    # from set_value
+    for i in range(n_samples):
+        test_value = gen_test_value()
+        vent_gui.set_value(test_value, value_name = value_name)
+
+        control_value = vent_gui.coordinator.get_control(value_name)
+        assert(control_value.value == test_value)
 
 
 # @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.SENSOR.items()])

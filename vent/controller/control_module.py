@@ -7,6 +7,7 @@ import copy
 from collections import deque
 import pdb
 from itertools import count
+import signal
 
 import vent.io as io
 
@@ -56,6 +57,8 @@ class ControlModuleBase:
         self.logger = init_logger(__name__)
         self.logger.info('controller init')
 
+        prefs.set_time()  # Keep track of when the control_module has been started the first time.
+
         #####################  Algorithm/Program parameters  ##################
         # Hyper-Parameters
         # TODO: These should probably all (or whichever make sense) should be args to __init__ -jls
@@ -70,7 +73,7 @@ class ControlModuleBase:
         # This is what the machine has controll over:
         self.__control_signal_in  = 0              # State of a valve on the inspiratory side - could be a proportional valve.
         self.__control_signal_out = 0              # State of a valve on the exspiratory side - this is open/close i.e. value in (0,1)
-        self.__control_signal_helpers = np.array([0,0,0]) # Helper variables for multiple low-pass filters
+        self.__control_signal_helpers = np.array([0., 0., 0.]) # Helper variables for multiple low-pass filters
 
         # Internal Control variables. "SET" indicates that this is set.
         self.__SET_PIP       = CONTROL[ValueName.PIP].default                     # Target PIP pressure
@@ -136,8 +139,10 @@ class ControlModuleBase:
         self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
         self.__DATA_old     = None
         self._last_update   = time.time()
-        self._flow_list = deque(maxlen = 500)          # An archive of past flows, to calculate background flow out
-        self._DATA_PRESSURE_LIST = list()
+        self._BASELINE_ESTIMATOR_LENGTH = 500
+        self._PRESSURE_AVEREAGING_LENGTH = 5
+        self._flow_list = deque(maxlen = self._BASELINE_ESTIMATOR_LENGTH)          # An archive of past flows, to calculate background flow out
+        self._DATA_PRESSURE_LIST = deque(maxlen = self._PRESSURE_AVEREAGING_LENGTH)
 
         ############### Initialize COPY variables for threads  ##############
         # COPY variables that later updated on a regular basis
@@ -510,15 +515,16 @@ class ControlModuleBase:
         Once the cycle is complete, it checks the cycle for any alarms, and starts a new one.
         A record of pressure/volume waveforms is kept and saved
         '''
-        PEEP_VALVE_SET = True
 
         now = time.time()
         cycle_phase = now - self._cycle_start
         next_cycle = False
-
-        self._DATA_VOLUME += dt * self._DATA_Qout  # Integrate what has happened within the last few seconds from flow out
-        self._DATA_PRESSURE = np.mean(self._DATA_PRESSURE_LIST)
-
+        if len(self._flow_list) == self._BASELINE_ESTIMATOR_LENGTH:  # estimate the baseline flow during expiration with a rankfilter
+            Qbaseline = np.percentile(self._flow_list, 5 )
+        else:
+            Qbaseline = 0
+        self._DATA_VOLUME += dt * (self._DATA_Qout - Qbaseline)      # Integrate the flow-out to estimate VTE
+        self._DATA_PRESSURE = np.median(self._DATA_PRESSURE_LIST)    # Catch some of the noise, if any.
 
         if cycle_phase < self.__SET_I_PHASE:
             self.__KP = 2*(self.__SET_PIP_GAIN-0.95)
@@ -531,36 +537,16 @@ class ControlModuleBase:
             self.__control_signal_out = 0 
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
+            self._flow_list.append(self._DATA_Qout )                                                      # Keep a list of the flow out of the lung; for baseline e stimation
+            self.__control_signal_in = 0 
+            self.__control_signal_out = 1
 
-            if PEEP_VALVE_SET:
-                self.__control_signal_in = 0 
-                self.__control_signal_out = 1
-            else:
-                self.__KP = 0.1
-                self.__KI = 2.0
-                self.__KD = 0
-                target_pressure = self.__SET_PIP - (cycle_phase - self.__SET_I_PHASE) * (self.__SET_PIP - self.__SET_PEEP) / self.__SET_PEEP_TIME
-                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = target_pressure, dt = dt)
-                self.__calculate_control_signal_in()
-                self.__control_signal_out =  1
-                if self._DATA_PRESSURE < self.__SET_PEEP:
-                    self.__control_signal_out = 0
 
         elif cycle_phase < self.__SET_CYCLE_DURATION:
+            self._flow_list.append(self._DATA_Qout )
+            self.__control_signal_out = 1
+            self.__control_signal_in = 5 *(1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )  # Make this nice and smooth.
 
-            if PEEP_VALVE_SET:
-                self.__control_signal_out = 1
-                self.__control_signal_in = 5 *(1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )  # Make this nice and smooth.
-            else:
-                self.__KP = 0.1
-                self.__KI = 2.0
-                self.__KD = 0
-                self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PEEP, dt = dt)
-                self.__calculate_control_signal_in()
-                if self._DATA_PRESSURE > self.__SET_PEEP + 0.5:
-                    self.__control_signal_out = 1
-                else:
-                    self.__control_signal_out = 0
 
             if self._DATA_PRESSURE < self.__SET_PEEP - self.breath_pressure_drop:  #breath!
                 print("Autonomous breath detected; starting next cycle.")
@@ -750,10 +736,7 @@ class ControlModuleDevice(ControlModuleBase):
 
         inspiration_phase = (time.time() - self._cycle_start) < self.COPY_SET_I_PHASE
 
-        self._DATA_PRESSURE = self.HAL.pressure                      # Get pressure reading
-        self._DATA_PRESSURE_LIST.append(self._DATA_PRESSURE)         # And append it to list -> is averaged over a couple values
-        if len(self._DATA_PRESSURE_LIST) > 5:
-            self._DATA_PRESSURE_LIST.pop(0)
+        self._DATA_PRESSURE_LIST.append( self.HAL.pressure )             # Append pressure to list -> is averaged over a couple values
                 
         if inspiration_phase:
             self._DATA_Qout         = 0                                  # Flow out and oxygen are not measured
@@ -763,11 +746,7 @@ class ControlModuleDevice(ControlModuleBase):
                 self._DATA_OXYGEN = self.HAL.oxygen
                 self._OXYGEN_LAST_READ = time.time()
 
-            pq = self.HAL.flow_ex/60                                     # Get a flow reading in l/sec
-            self._flow_list.append(pq)
-            Qbaseline = np.percentile(self._flow_list, 5 )               # stimate the baseline flow during expiration with a rankfilter (baseline of air that bypasses patient)
-
-            self._DATA_Qout = pq - Qbaseline                             # This has to be subtracted from flow_ex to integrate VTE
+            self._DATA_Qout = self.HAL.flow_ex/60                                     # Get a flow reading in l/sec
 
 
     def set_valves_standby(self):
@@ -827,7 +806,7 @@ class Balloon_Simulator:
         # Hard parameters for the simulation
         self.max_volume = 6    # Liters  - 6?
         self.min_volume = 1.5  # Liters - baloon starts slightly inflated.
-        self.PC = 40           # Proportionality constant that relates pressure to cm-H2O
+        self.PC = 50           # Proportionality constant that relates pressure to cm-H2O
         self.P0 = 0            # Baseline/Minimum pressure.
         self.leak = True
 
@@ -875,9 +854,9 @@ class Balloon_Simulator:
     def update(self, dt):  # Performs an update of duration dt [seconds]
 
         if dt<1:                                        # This is the simulation, so not quite so important,
-            # self.current_flow = self.Qin - self.Qout     # But no update should take longer than that
-            s = dt / (0.050*np.abs(self.current_flow)  + dt)
-            self.current_flow = self.current_flow + s * ((self.Qin - self.Qout) - self.current_flow)
+            self.current_flow = self.Qin - self.Qout     # But no update should take longer than that
+            # s = dt / (0.050*np.abs(self.current_flow)  + dt)
+            # self.current_flow = self.current_flow + s * ((self.Qin - self.Qout) - self.current_flow)
 
             self.current_volume += self.current_flow * dt
 
@@ -994,7 +973,6 @@ class ControlModuleSimulator(ControlModuleBase):
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
         self.logger.info("MainLoop: start")
         while self._running.is_set():
-            # time.sleep(self._LOOP_UPDATE_TIME)
             self._loop_counter += 1
             now = time.time()
             if self.simulator_dt:
@@ -1009,9 +987,7 @@ class ControlModuleSimulator(ControlModuleBase):
                     dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
-            self._DATA_PRESSURE_LIST.append(self.Balloon.get_pressure())       # Get a pressure measurement from balloon and tell controller             --- SENSOR 1
-            if len(self._DATA_PRESSURE_LIST) > 5:
-                self._DATA_PRESSURE_LIST.pop(0)
+            self._DATA_PRESSURE_LIST.append(self.Balloon.get_pressure()) # Get a pressure measurement from balloon and tell controller
 
             self._PID_update(dt = dt)                               # Update the PID Controller
 
@@ -1024,7 +1000,7 @@ class ControlModuleSimulator(ControlModuleBase):
             self.Balloon.set_flow_in(Qin, dt = dt)                  # Set the flow rates for the Balloon simulator
             self.Balloon.set_flow_out(Qout, dt = dt)
 
-            self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
+            self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout
             self._last_update = now
 
             if update_copies == 0:

@@ -756,7 +756,7 @@ class ControlModuleBase:
 
 class ControlModuleDevice(ControlModuleBase): 
     """
-    Controlling Hardware.
+    Uses ControlModuleBase to control the hardware.
     """
     # Implement ControlModuleBase functions
     def __init__(self, save_logs = True, flush_every = 10, config_file = None):

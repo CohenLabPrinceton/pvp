@@ -19,7 +19,7 @@ from vent.common.values import ValueName, Value
 from vent.common.message import ControlSetting
 from vent.common.loggers import init_logger
 from vent.common import unit_conversion, prefs
-from vent.gui.widgets.components import EditableLabel, DoubleSlider
+from vent.gui.widgets.components import EditableLabel, DoubleSlider, QVLine
 from vent.gui.widgets.dialog import pop_dialog
 
 
@@ -120,29 +120,35 @@ class Display(QtWidgets.QWidget):
         self.layout.setContentsMargins(0,0,0,0)
         self.setLayout(self.layout)
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                           QtWidgets.QSizePolicy.Expanding)
+                           QtWidgets.QSizePolicy.Minimum)
+        self.setMinimumHeight(styles.DISPLAY_MIN_HEIGHT)
 
         # choose stylesheets
         if self._style == "dark":
             self._styles['main'] = styles.DISPLAY_DARK
-            self._styles['label_value'] = styles.DISPLAY_VALUE
+            self._styles['label_value'] = styles.DISPLAY_VALUE_DARK
             self._styles['label_name'] = styles.DISPLAY_NAME
-            self._styles['label_units'] = styles.DISPLAY_UNITS
-            self._styles['set_value_label'] = styles.CONTROL_VALUE
+            self._styles['label_units'] = styles.DISPLAY_UNITS_DARK
+            self._styles['set_value_label'] = styles.CONTROL_VALUE_DARK
             self._styles['slider_label'] = styles.CONTROL_LABEL
+            self._styles['line_color'] = styles.DIVIDER_COLOR
             # self._styles['sensor_frame'] = styles.CONTROL_SENSOR_FRAME
         elif self._style == "light":
             self._styles['main'] = styles.DISPLAY_LIGHT
-            self._styles['label_value'] = styles.CONTROL_VALUE
+            self._styles['label_value'] = styles.DISPLAY_VALUE_LIGHT
             self._styles['label_name'] = styles.CONTROL_NAME
-            self._styles['label_units'] = styles.CONTROL_UNITS
-            self._styles['set_value_label'] = styles.CONTROL_VALUE
+            self._styles['label_units'] = styles.DISPLAY_UNITS_LIGHT
+            self._styles['set_value_label'] = styles.CONTROL_VALUE_LIGHT
             self._styles['slider_label'] = styles.CONTROL_LABEL
+            self._styles['line_color'] = styles.DIVIDER_COLOR_DARK
             # self._styles['sensor_frame'] = styles.CONTROL_SENSOR_FRAME
         else:
             raise NotImplementedError('Need to use "light" or "dark" for _style')
 
+        self.setProperty('widgetClass', 'Display')
         self.setStyleSheet(self._styles['main'])
+
+        # self.setStyleSheet("border: 1px solid black")
         # -----------------------
         # first create all the widgets that we need
         # widgets common to all display objects
@@ -152,8 +158,8 @@ class Display(QtWidgets.QWidget):
         self.init_ui_toggle_button()
 
         # graphical elements true of all controls
-        if self.control:
-            self.init_ui_limits()
+        # if self.control:
+        self.init_ui_limits()
 
         # graphical element specific to control type
         if self.control == "slider":
@@ -228,6 +234,8 @@ class Display(QtWidgets.QWidget):
         #self.sensor_layout = QtWidgets.QHBoxLayout()
         # self.sensor_layout.setContentsMargins(0,0,0,0)
 
+        self.control_vline = QVLine(color=self._styles['line_color'])
+
         # label to display and edit set value
         self.set_value_label = EditableLabel()
         self.set_value_label.setStyleSheet(self._styles['set_value_label'])
@@ -241,6 +249,18 @@ class Display(QtWidgets.QWidget):
 
         # bar graph that indicates current value and limits
         self.sensor_plot = Limits_Plot()
+
+        if self.control is None:
+            label_size_policy = self.set_value_label.sizePolicy()
+            label_size_policy.setRetainSizeWhenHidden(True)
+            self.set_value_label.setSizePolicy(label_size_policy)
+            self.set_value_label.setHidden(True)
+
+            plot_size_policy = self.sensor_plot.sizePolicy()
+            plot_size_policy.setRetainSizeWhenHidden(True)
+            self.sensor_plot.setSizePolicy(plot_size_policy)
+            self.sensor_plot.setHidden(True)
+
 
     def init_ui_slider(self):
         # -------
@@ -304,7 +324,7 @@ class Display(QtWidgets.QWidget):
         self.main_layout = QtWidgets.QHBoxLayout()
         self.label_layout = QtWidgets.QGridLayout()
         self.main_layout.setContentsMargins(0,0,0,0)
-        self.label_layout.setContentsMargins(0,0,0,0)
+        self.label_layout.setContentsMargins(10,0,10,0)
 
 
         if self.orientation == "left":
@@ -315,11 +335,13 @@ class Display(QtWidgets.QWidget):
 
             # control objects
             self.main_layout.addWidget(self.toggle_button)
-            if self.control:
-                self.main_layout.addWidget(self.sensor_plot)
-                self.main_layout.addWidget(self.set_value_label)
-            else:
-                self.main_layout.addStretch()
+            # if self.control:
+
+            self.main_layout.addWidget(self.sensor_plot)
+            self.main_layout.addWidget(self.set_value_label)
+            self.main_layout.addWidget(self.control_vline)
+            # else:
+            #     self.main_layout.addStretch()
 
             self.main_layout.addLayout(self.label_layout)
         elif self.orientation == "right":
@@ -332,11 +354,12 @@ class Display(QtWidgets.QWidget):
             self.main_layout.addLayout(self.label_layout)
 
             # control objects
-            if self.control:
-                self.main_layout.addWidget(self.set_value_label)
-                self.main_layout.addWidget(self.sensor_plot)
-            else:
-                self.main_layout.addStretch()
+            # if self.control:
+            self.main_layout.addWidget(self.control_vline)
+            self.main_layout.addWidget(self.set_value_label)
+            self.main_layout.addWidget(self.sensor_plot)
+            # else:
+            #     self.main_layout.addStretch()
             self.main_layout.addWidget(self.toggle_button)
 
         self.layout.addLayout(self.main_layout)
@@ -393,9 +416,9 @@ class Display(QtWidgets.QWidget):
                 self._value_changed(mean_val)
 
             self.toggle_button.setIcon(self.rec_icon)
-            self.sensor_label.setStyleSheet(styles.CONTROL_VALUE)
-            self.name_label.setStyleSheet(styles.CONTROL_NAME)
-            self.units_label.setStyleSheet(styles.CONTROL_UNITS)
+            self.sensor_label.setStyleSheet(self._styles['label_value'])
+            self.name_label.setStyleSheet(self._styles['label_name'])
+            self.units_label.setStyleSheet(self._styles['label_units'])
 
     def _value_changed(self, new_value: float):
         """
@@ -506,17 +529,17 @@ class Display(QtWidgets.QWidget):
         Args:
             control (:class:`~.ControlSetting`): control setting with min_value or max_value
         """
-        if self.set_value is None or self.control is None:
+        if self.control is None:
             return
 
-        if control.min_value and control.min_value != self.alarm_range[0]:
+        if control.min_value:
             if self._convert_in:
                 self.sensor_plot.update_value(min=self._convert_in(control.min_value))
             else:
                 self.sensor_plot.update_value(min=control.min_value)
             self.alarm_range = (control.min_value, self.alarm_range[1])
 
-        if control.max_value and control.max_value != self.alarm_range[1]:
+        if control.max_value:
             if self._convert_in:
                 self.sensor_plot.update_value(max=self._convert_in(control.max_value))
             else:
@@ -712,8 +735,14 @@ class Limits_Plot(pg.PlotWidget):
         self.addItem(self.bottom_limit)
         self.addItem(self.sensor_set)
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
-                           QtWidgets.QSizePolicy.Maximum)
+                           QtWidgets.QSizePolicy.Minimum)
+        self.plotItem.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
+                      QtWidgets.QSizePolicy.Minimum)
+        # self.set
         self.setFixedWidth(styles.CONTROL_SENSOR_BAR_WIDTH)
+        # self.setFixedHeight(styles.CONTROL_SENSOR_BAR_WIDTH)
+
+        self.enableAutoRange(y=True)
 
     def update_value(self,
                      min: float = None,
@@ -747,38 +776,38 @@ class Limits_Plot(pg.PlotWidget):
             self.set_value = float(set_value)
 
 
-        self.update_yrange()
-
-    def update_yrange(self):
-        """
-        from control.update_yrange
-        Returns:
-
-        """
-        """
-                set y range to include max and min and value
-
-                Returns:
-
-                """
-        if self._minimum and self._maximum and self.sensor_value:
-            y_min = np.min([self.sensor_value, self._minimum])
-            y_max = np.max([self.sensor_value, self._maximum])
-            new_yrange = (y_min, y_max)
-        elif self._minimum and self._maximum:
-            new_yrange = (self._minimum, self._maximum)
-        else:
-            return
-
-
-        if self._convert_in:
-            new_yrange = (self._convert_in(new_yrange[0]),
-                          self._convert_in(new_yrange[1]))
-
-        if self.yrange != new_yrange:
-            self.setRange(yRange=new_yrange)
-            self.yrange = new_yrange
-
+        #self.update_yrange()
+    #
+    # def update_yrange(self):
+    #     """
+    #     from control.update_yrange
+    #     Returns:
+    #
+    #     """
+    #     """
+    #             set y range to include max and min and value
+    #
+    #             Returns:
+    #
+    #             """
+    #     if self._minimum and self._maximum and self.sensor_value:
+    #         y_min = np.min([self.sensor_value, self._minimum])
+    #         y_max = np.max([self.sensor_value, self._maximum])
+    #         new_yrange = (y_min, y_max)
+    #     elif self._minimum and self._maximum:
+    #         new_yrange = (self._minimum, self._maximum)
+    #     else:
+    #         return
+    #
+    #
+    #     if self._convert_in:
+    #         new_yrange = (self._convert_in(new_yrange[0]),
+    #                       self._convert_in(new_yrange[1]))
+    #
+    #     if self.yrange != new_yrange:
+    #         self.setRange(yRange=new_yrange)
+    #         self.yrange = new_yrange
+    #
 
 
 

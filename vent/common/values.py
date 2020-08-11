@@ -30,6 +30,8 @@ class Value(object):
                  control: bool,
                  sensor: bool,
                  display: bool,
+                 plot: bool = False,
+                 plot_limits: typing.Union[None, typing.Tuple[ValueName]] = None,
                  control_type: typing.Union[None, str] = None,
                  group: typing.Union[None, dict] = None,
                  default: (int, float) = None):
@@ -53,6 +55,9 @@ class Value(object):
             decimals (int): the number of decimals of precision used when displaying the value
             display (bool): whether the value should be displayed in the monitor. if ``control == True``,
                 automatically set to ``False`` because all controls have their own numerical displays
+            plot (bool): whether or not the value is plottable int he center plot window
+            plot_limits (None, tuple(ValueName)): If plottable, and the plotted value has some alarm limits for another value,
+                plot those limits as horizontal lines in the plot. eg. the PIP alarm range limits should be plotted on the Pressure plot
         """
 
         self._name = None
@@ -66,6 +71,8 @@ class Value(object):
         self._display = None
         self._control_type = None
         self._group = None
+        self._plot = None
+        self._plot_limits = None
 
         self.name = name
         self.units = units
@@ -77,6 +84,8 @@ class Value(object):
         self.display = display
         self.control_type = control_type
         self.group = group
+        self.plot = plot
+        self.plot_limits = plot_limits
 
         if default is not None:
             self.default = default
@@ -177,6 +186,26 @@ class Value(object):
 
         self._group = group
 
+    @property
+    def plot(self):
+        return self._plot
+
+    @plot.setter
+    def plot(self, plot):
+        assert(isinstance(plot, bool))
+        self._plot = plot
+
+    @property
+    def plot_limits(self):
+        return self._plot_limits
+
+    @plot_limits.setter
+    def plot_limits(self, plot_limits):
+        assert plot_limits is None or isinstance(plot_limits, tuple)
+        if isinstance(plot_limits, tuple):
+            assert all([isinstance(x, ValueName) for x in plot_limits])
+        self._plot_limits = plot_limits
+
 
     def __setitem__(self, key, value):
         self.__setattr__(key, value)
@@ -193,7 +222,11 @@ class Value(object):
             'decimals': self.decimals,
             'default': self.default,
             'control': self.control,
-            'sensor': self.sensor
+            'sensor': self.sensor,
+            'plot': self.plot,
+            'plot_limits': self.plot_limits,
+            'control_type': self.control_type,
+            'group': self.group
                 }
 
 
@@ -293,7 +326,9 @@ VALUES = odict({
         'decimals': 1,
         'control': False,
         'sensor': True,
-        'display': True
+        'display': True,
+        'plot': True,
+        'plot_limits': (ValueName.PIP, ValueName.PEEP)
     }),
     ValueName.VTE: Value(**{
         'name': 'VTE',
@@ -324,7 +359,8 @@ VALUES = odict({
         'decimals': 2,
         'control': False,
         'sensor': True,
-        'display': True
+        'display': True,
+        'plot': True
     }),
 })
 
@@ -379,6 +415,10 @@ DISPLAY_CONTROL = odict({
 Values that should be displayed in the GUI. If a value is also a CONTROL it will always have the measured value displayed,
 these values are those that are sensor values that are uncontrolled and should be displayed.
 """
+
+PLOTS = odict({
+    k: v for k, v in VALUES.items() if v.plot
+})
 
 LIMITS = {
 

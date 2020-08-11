@@ -19,6 +19,9 @@ SUBWAY_COLORS = {
 BACKGROUND_COLOR = "#111111"
 BOX_BACKGROUND = "#333333"
 TEXT_COLOR = "#EEEEEE"
+TEXT_COLOR_DIM = "#BBBBBB"
+TEXT_COLOR_DARK = BACKGROUND_COLOR
+TEXT_COLOR_DARK_DIM = "#555555"
 BORDER_COLOR = "palette(midlight)"
 BOX_BORDERS = f"2px solid palette(midlight);"
 BOX_BORDERS_LOCKED = f"3px solid {SUBWAY_COLORS['lime']}"
@@ -43,14 +46,15 @@ SLIDER_COLOR = TEXT_COLOR
 INDICATOR_COLOR = SUBWAY_COLORS['blue']
 ALARM_COLOR = "#FF0000"
 
-TOGGLE_MAX_WIDTH = 50
+TOGGLE_MAX_WIDTH = 30
+DISPLAY_MIN_HEIGHT = 100
 
 DIVIDER_COLOR = "#FFFFFF"
 DIVIDER_COLOR_DARK = BOX_BACKGROUND
 
 VALUE_SIZE = 72 #30
-VALUE_MINOR_SIZE = 40
-NAME_SIZE = 36 #10
+VALUE_MINOR_SIZE = 32
+NAME_SIZE = 32 #10
 UNIT_SIZE = 18
 TICK_SIZE = 12
 
@@ -77,11 +81,15 @@ QWidget {{
 """
 
 DISPLAY_DARK = f"""
-
+QWidget[widgetClass="Display"] {{
+    border: 1px solid black;
+}}
 """
 
 DISPLAY_LIGHT = f"""
-
+QWidget[widgetClass="Display"] {{
+    border: 1px solid black;
+}}
 """
 
 RANGE_SLIDER = f"""
@@ -127,11 +135,18 @@ QGroupBox::title {{
 }}
 """
 
-DISPLAY_VALUE =  """
+DISPLAY_VALUE_DARK =  """
 QLabel {{ 
     color: {textcolor}; 
     font-size: {value_size}pt;
 }}""".format(textcolor=TEXT_COLOR,
+             value_size=VALUE_SIZE)
+
+DISPLAY_VALUE_LIGHT =  """
+QLabel {{ 
+    color: {textcolor}; 
+    font-size: {value_size}pt;
+}}""".format(textcolor=BACKGROUND_COLOR,
              value_size=VALUE_SIZE)
 
 DISPLAY_VALUE_ALARM =  """
@@ -154,12 +169,17 @@ QLabel {{
     font-size: {name_size}pt;
 }}""".format(name_size=NAME_SIZE)
 
-DISPLAY_UNITS = """
+DISPLAY_UNITS_DARK = f"""
 QLabel {{ 
-    color: {textcolor}; 
-    font-size: {unit_size}pt;
-}}""".format(textcolor=TEXT_COLOR,
-             unit_size=UNIT_SIZE)
+    color: {TEXT_COLOR_DIM}; 
+    font-size: {UNIT_SIZE}pt;
+}}"""
+
+DISPLAY_UNITS_LIGHT = f"""
+QLabel {{ 
+    color: {TEXT_COLOR_DARK_DIM}; 
+    font-size: {UNIT_SIZE}pt;
+}}"""
 
 DISPLAY_UNITS_ALARM = f"""
 QLabel {{ 
@@ -279,14 +299,26 @@ QLabel {{
 }}
 """
 
-CONTROL_VALUE =  f"""
+CONTROL_VALUE_LIGHT =  f"""
 QLabel {{ 
     color: {BACKGROUND_COLOR}; 
-    font-size: {VALUE_SIZE}pt;
+    font-size: {VALUE_MINOR_SIZE}pt;
 }}
 QLineEdit {{ 
     color: {TEXT_COLOR}; 
-    font-size: {VALUE_SIZE}pt;
+    font-size: {VALUE_MINOR_SIZE}pt;
+}}
+
+"""
+
+CONTROL_VALUE_DARK = f"""
+QLabel {{ 
+    color: {TEXT_COLOR}; 
+    font-size: {VALUE_MINOR_SIZE}pt;
+}}
+QLineEdit {{ 
+    color: {TEXT_COLOR}; 
+    font-size: {VALUE_MINOR_SIZE}pt;
 }}
 
 """
@@ -358,9 +390,11 @@ QGroupBox {{
     border-top: {BOX_BORDERS_LOCKED};
     border-right: {BOX_BORDERS_LOCKED};
     border-bottom: {BOX_BORDERS_LOCKED};
+    border-left: {BOX_BORDERS_LOCKED};
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
     margin-top: {MIDLINE_MARGIN}px;
 }}
 
@@ -380,7 +414,9 @@ QGroupBox {{
     border-top: {BOX_BORDERS_UNLOCKED};
     border-right: {BOX_BORDERS_UNLOCKED};
     border-bottom: {BOX_BORDERS_UNLOCKED};
+    border-left: {BOX_BORDERS_UNLOCKED};
     border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
     margin-top: {MIDLINE_MARGIN}px;
@@ -459,11 +495,7 @@ QLabel {{
     font-size: {NAME_SIZE}pt;
 }}"""
 
-CONTROL_UNITS = f"""
-QLabel {{ 
-    color: {BACKGROUND_COLOR}; 
-    font-size: {UNIT_SIZE}pt;
-}}"""
+
 
 CONTROL_NAME_REC = f"""
 QLabel {{ 

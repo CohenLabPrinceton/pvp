@@ -17,7 +17,7 @@ from vent.common.loggers import init_logger
 from vent.common.message import ControlSetting, SensorValues
 from vent.coordinator import coordinator
 from vent import gui
-from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, PLOTS, mono_font
+from vent.gui import widgets, set_gui_instance, get_gui_instance, styles, mono_font
 from vent.alarm import Alarm_Manager
 
 
@@ -54,12 +54,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
     see :data:`.gui.defaults.CONTROL`
     """
 
-    PLOTS = PLOTS
+    PLOTS = values.PLOTS
     """
     see :data:`.gui.defaults.PLOTS`
     """
 
-    monitor_width = 2
+    monitor_width = 3
     plot_width = 4
     control_width = 3
     total_width = monitor_width + plot_width + control_width
@@ -432,12 +432,17 @@ class Vent_Gui(QtWidgets.QMainWindow):
             # except Exception as e:
             #     self.logger.exception(f'Couldnt draw ideal waveform, got error {e}')
 
-            for plot_key, plot_obj in self.plots.items():
-                if hasattr(vals, plot_key):
-                    try:
-                        plot_obj.update_value((time.time(), getattr(vals, plot_key)))
-                    except Exception as e:
-                        self.logger.exception(f'Couldnt update plot with {plot_key}, got error {e}')
+            try:
+                self.plot_box.update_value(vals)
+            except Exception as e:
+                self.logger.exception(f"couldnt update plot box with {vals}, got {e}")
+            # for plot_key, plot_obj in self.plots.items():
+            #     self.plot_box.update_value(vals)
+            #     if hasattr(vals, plot_key):
+            #         try:
+            #             plot_obj.update_value((time.time(), getattr(vals, plot_key)))
+            #         except Exception as e:
+            #             self.logger.exception(f'Couldnt update plot with {plot_key}, got error {e}')
 
             for monitor_key, monitor_obj in self.monitor.items():
                 if hasattr(vals, monitor_key):
@@ -548,10 +553,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
             # if display_key in (ValueName.VTE, ValueName.FIO2):
             #     self.monitor[display_key.name].set_value_changed.connect(self.set_value)
 
-            self.display_layout.addWidget(self.monitor[display_key.name])
-            self.display_layout.addWidget(widgets.components.QHLine())
+            self.display_layout.addWidget(self.monitor[display_key.name], 1)
+            # self.display_layout.addWidget(widgets.components.QHLine())
 
         self.display_layout.addStretch(10)
+
+        # print([self.display_layout.stretch(i) for i in range(len(self.MONITOR))])
+        # split all sizes good
+        # pdb.set_trace()
+        # self.display_layout.geometry()
 
         # self.monitor_layout.addLayout(self.display_layout, self.monitor_width)
 
@@ -581,24 +591,27 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
 
         # the plot widgets themselves
-        self.plot_box = QtWidgets.QGroupBox('Monitored Waveforms')
-        self.plot_box.setStyleSheet(styles.PLOT_BOX)
-        self.plot_box.setContentsMargins(0,0,0,0)
-        self.plot_box_layout = QtWidgets.QVBoxLayout()
-        for plot_key, plot_params in self.PLOTS.items():
-            self.plots[plot_key.name] = widgets.Plot(**plot_params)
-            self.plot_box_layout.addWidget(self.plots[plot_key.name], 1)
-        self.plot_box.setLayout(self.plot_box_layout)
-        self.plot_layout.addWidget(self.plot_box, len(self.plots))
+
+        self.plot_box = widgets.plot.Plot_Container(self.PLOTS)
+        # self.plot_box = QtWidgets.QGroupBox('Monitored Waveforms')
+        # self.plot_box.setStyleSheet(styles.PLOT_BOX)
+        # self.plot_box.setContentsMargins(0,0,0,0)
+        # self.plot_box_layout = QtWidgets.QVBoxLayout()
+        # for plot_key, plot_params in self.PLOTS.items():
+        #     self.plots[plot_key.name] = widgets.Plot(**plot_params)
+        #     self.plot_box_layout.addWidget(self.plots[plot_key.name], 1)
+        # self.plot_box.setLayout(self.plot_box_layout)
+        # self.plot_layout.addWidget(self.plot_box, len(self.plots))
 
         # self.main_layout.addLayout(self.plot_layout,5)
         # self.monitor_layout.addLayout(self.plot_layout, self.plot_width)
 
-        self.layout.addLayout(self.plot_layout, 1,1,3,1)
+        # self.layout.addLayout(self.plot_layout, 1,1,3,1)
+        self.layout.addWidget(self.plot_box, 1, 1, 3, 1)
         ######################
         # set the default view as 30s
         #self.time_buttons[times[2][0]].click()
-        self.set_plot_duration(60)
+        # self.set_plot_duration(60)
 
     def init_ui_controls(self):
         # FIXME: Jonny this is shameful comment your work
@@ -619,13 +632,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
         for control_name, control in self.CONTROL.items():
             self.controls[control_name.name] = widgets.Display(value=control, button_orientation="right", style="light",
                                                                enum_name=control_name,
-                                                               control_type=control.control_type)
+                                                               control_type=control.control_type,
+                                                               parent=self.controls_box)
             self.controls[control_name.name].setObjectName(control_name.name)
             self.controls_layout.addWidget(self.controls[control_name.name])
-            self.controls_layout.addWidget(widgets.components.QHLine(color=styles.BACKGROUND_COLOR))
+            # self.controls_layout.addWidget(widgets.components.QHLine(color=styles.BACKGROUND_COLOR))
 
         # TODO: Jonny implement groups (maybe?) and move the automatic calculation to the control panel
         self.controls_box.setStyleSheet(styles.CONTROL_BOX)
+        self.controls_layout.addStretch(10)
         #
         # # self.controls_box_pressure = QtWidgets.QGroupBox("Pressure Controls")
         # # self.controls_box_pressure.setStyleSheet(styles.CONTROL_SUBBOX)
@@ -830,11 +845,12 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def limits_updated(self, control:ControlSetting):
         if control.name.name in self.controls.keys():
             self.controls[control.name.name].update_limits(control)
-        if control.name in (ValueName.PIP, ValueName.PEEP):
-            # self.pressure_waveform.update_target(control)
-            # PIP sets high/low limits on pressure plot
-            if ValueName.PRESSURE.name in self.plots.keys():
-                self.plots[ValueName.PRESSURE.name].set_safe_limits(control)
+        self.plot_box.set_safe_limits(control)
+        # if control.name in (ValueName.PIP, ValueName.PEEP):
+        #     # self.pressure_waveform.update_target(control)
+        #     # PIP sets high/low limits on pressure plot
+        #     if ValueName.PRESSURE.name in self.plots.keys():
+        #         self.plots[ValueName.PRESSURE.name].set_safe_limits(control)
 
 
 

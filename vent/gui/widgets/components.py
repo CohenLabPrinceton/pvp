@@ -599,6 +599,25 @@ class QHLine(QtWidgets.QFrame):
         pal.setColor(QtGui.QPalette.WindowText, color)
         self.setPalette(pal)
 
+class QVLine(QtWidgets.QFrame):
+    def __init__(self, parent=None, color=styles.DIVIDER_COLOR):
+        super(QVLine, self).__init__(parent)
+        self.setFrameShape(QtWidgets.QFrame.VLine)
+        self.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.setLineWidth(0)
+        self.setMidLineWidth(3)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        color = QtGui.QColor(color)
+
+        self.setColor(color)
+
+    def setColor(self, color):
+        pal = self.palette()
+        pal.setColor(QtGui.QPalette.WindowText, color)
+        self.setPalette(pal)
+
+
 class OnOffButton(QtWidgets.QPushButton):
     """
     Simple extension of toggle button with styling for clearer 'ON' vs 'OFF'

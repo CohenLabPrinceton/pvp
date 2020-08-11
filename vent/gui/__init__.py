@@ -41,9 +41,9 @@ such that the set limit range is updated when the horizontal bars on the plot ar
     }
 """
 
-PLOTS[ValueName.PRESSURE]['color'] = styles.SUBWAY_COLORS['orange']
-PLOTS[ValueName.FLOWOUT]['color'] = styles.SUBWAY_COLORS['blue']
-PLOTS[ValueName.PRESSURE]['range_limits'] = (ValueName.PIP, ValueName.PEEP)
+# PLOTS[ValueName.PRESSURE]['color'] = styles.SUBWAY_COLORS['orange']
+# PLOTS[ValueName.FLOWOUT]['color'] = styles.SUBWAY_COLORS['blue']
+# PLOTS[ValueName.PRESSURE]['plot_limits'] = (ValueName.PIP, ValueName.PEEP)
 
 
 ########################
@@ -83,8 +83,6 @@ def mono_font():
     """
     if globals()['_MONO_FONT'] is None:
         load_mono_font()
-
-    print(globals()['_MONO_FONT'])
 
     return globals()['_MONO_FONT']
 

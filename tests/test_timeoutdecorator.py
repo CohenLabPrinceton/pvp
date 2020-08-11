@@ -53,7 +53,7 @@ def test_timeout_return():
 
         t1 = time.time()
         assert ret == num + 1
-        assert t1-t0 < dt*2
+        assert t1-t0 < dt*5
         assert t1-t0 < timeout_dur
 
     ret = None

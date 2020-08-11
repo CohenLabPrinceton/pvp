@@ -1,0 +1,84 @@
+
+import pigpio
+import time
+import vent.io.iobase as iobase
+import vent.io.devices as iodev
+import numpy as np
+
+'''
+Saves the valve response (flow versus PWM duty cycle). 
+This will be used to create a lookup table to ease 
+controller implementation. 
+Lookup tables are formed both for ramping up and down. 
+'''
+
+pig = pigpio.pi()
+
+adc = iodev.ADS1115(pig=pig)
+p4v = iodev.P4vMini(adc,MUX=0)
+sfm = iodev.SFM3200(pig=pig)
+
+pValve = iodev.PWMControlValve(pin=12,frequency=1000,pig=pig)
+inlet  = iodev.SolenoidValve(pin=27,pig=pig)
+
+p4v.update()
+sfm.update()
+
+inlet.open()
+pValve.duty=0.0
+    
+print('Do it')
+store_dc_flow = np.zeros((101,3))
+
+n_steps = 100
+for i in range(n_steps+1):
+    dc =1.0 / n_steps * i
+    pValve.duty = dc
+    time.sleep(2)
+    yesyes  = sfm.update()
+    flow = sfm.get()
+    
+    sfm.update()
+    a1 = sfm.get()
+    sfm.update()
+    a2 = sfm.get()
+    sfm.update()
+    a3 = sfm.get()
+    sfm.update()
+    a4 = sfm.get()
+    sfm.update()
+    a5 = sfm.get()
+    avg = (a1 + a2 + a3 + a4 + a5) / 5
+    
+    print(avg)
+    
+    store_dc_flow[i,0] = dc
+    store_dc_flow[i,1] =avg
+    
+time.sleep(5)
+    
+for i in range(n_steps+1):
+    dc = 1.0 - 1.0 / n_steps * i
+    pValve.duty = dc
+    time.sleep(2)
+    yesyes  = sfm.update()
+    flow = sfm.get()
+    
+    sfm.update()
+    a1 = sfm.get()
+    sfm.update()
+    a2 = sfm.get()
+    sfm.update()
+    a3 = sfm.get()
+    sfm.update()
+    a4 = sfm.get()
+    sfm.update()
+    a5 = sfm.get()
+    avg = (a1 + a2 + a3 + a4 + a5) / 5
+    
+    store_dc_flow[100-i,2] =avg
+    
+np.savetxt("valve_response_bidir.csv", store_dc_flow, delimiter=",")
+    
+inlet.close()
+pValve.off()

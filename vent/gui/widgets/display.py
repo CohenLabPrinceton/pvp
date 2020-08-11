@@ -22,8 +22,6 @@ from vent.common import unit_conversion, prefs
 from vent.gui.widgets.components import EditableLabel, DoubleSlider, QVLine
 from vent.gui.widgets.dialog import pop_dialog
 
-
-
 class Display(QtWidgets.QWidget):
     limits_changed = QtCore.Signal(tuple)
     value_changed = QtCore.Signal(float)
@@ -226,13 +224,6 @@ class Display(QtWidgets.QWidget):
         """
         Create widgets to display sensed value alongside set value
         """
-        # frame to enclose all elements
-        # self.sensor_frame = QtWidgets.QFrame()
-        # self.sensor_frame.setStyleSheet(self._styles['sensor_frame'])
-        # self.sensor_frame.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
-        #                                 QtWidgets.QSizePolicy.Maximum)
-        #self.sensor_layout = QtWidgets.QHBoxLayout()
-        # self.sensor_layout.setContentsMargins(0,0,0,0)
 
         self.control_vline = QVLine(color=self._styles['line_color'])
 
@@ -675,13 +666,6 @@ class Display(QtWidgets.QWidget):
             return True
 
 
-
-
-
-
-
-
-
 class Limits_Plot(pg.PlotWidget):
     """
     Widget to display current value in a bar graph along with alarm limits
@@ -777,37 +761,6 @@ class Limits_Plot(pg.PlotWidget):
 
 
         #self.update_yrange()
-    #
-    # def update_yrange(self):
-    #     """
-    #     from control.update_yrange
-    #     Returns:
-    #
-    #     """
-    #     """
-    #             set y range to include max and min and value
-    #
-    #             Returns:
-    #
-    #             """
-    #     if self._minimum and self._maximum and self.sensor_value:
-    #         y_min = np.min([self.sensor_value, self._minimum])
-    #         y_max = np.max([self.sensor_value, self._maximum])
-    #         new_yrange = (y_min, y_max)
-    #     elif self._minimum and self._maximum:
-    #         new_yrange = (self._minimum, self._maximum)
-    #     else:
-    #         return
-    #
-    #
-    #     if self._convert_in:
-    #         new_yrange = (self._convert_in(new_yrange[0]),
-    #                       self._convert_in(new_yrange[1]))
-    #
-    #     if self.yrange != new_yrange:
-    #         self.setRange(yRange=new_yrange)
-    #         self.yrange = new_yrange
-    #
 
 
 

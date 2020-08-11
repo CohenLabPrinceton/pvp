@@ -1,5 +1,3 @@
-from vent.gui.widgets.control import Control
-from vent.gui.widgets.monitor import Monitor
 from vent.gui.widgets.display import Display
 from vent.gui.widgets.plot import Plot, Pressure_Waveform
 from vent.gui.widgets.control_panel import Control_Panel

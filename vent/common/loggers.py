@@ -183,7 +183,12 @@ class DataLogger:
     """
 
     def __init__(self, compression_level : int = 9):
+        """
+        Initialized the coontinuous numerical logger class.
 
+        Args:
+            compression_level (int, optional): Compression level of the hdf5 file. Defaults to 9.
+        """
         # Logging the start of the DataLogger
         self.logger = init_logger(__name__)
         self.logger.info('DataLogger init')
@@ -219,7 +224,7 @@ class DataLogger:
 
     def _open_logfile(self):
         """
-        Opens the hdf5 file.
+        Opens the hdf5 file and generates the file structure.
         """
         if not self.h5file.isopen:
             self.logger.info('Reopening ' + self.file )
@@ -267,8 +272,12 @@ class DataLogger:
 
     def store_waveform_data(self, sensor_values: 'SensorValues', control_values: 'ControlValues'):
         """
-        Appends a datapoint to the file.
+        Appends a datapoint to the file for continuous logging of streaming data.
         NOTE: Not flushed yet.
+
+        Args:
+            sensor_values (SensorValues): SensorValues to be stored in the file.
+            control_values (ControlValues): ControlValues to be stored in the file
         """
         if self._data_save_allowed:
             self._open_logfile()
@@ -284,8 +293,10 @@ class DataLogger:
 
     def store_control_command(self, control_setting: 'ControlSetting'):
         """
-        Appends a control signal to the hdf5 file.
-        NOTE: Also not flushed yet.
+        Appends a datapoint to the event-table, derived from ControlSettings
+
+        Args:
+            control_setting (ControlSetting): ControlSettings object, the content of which should be stored
         """
         if self._data_save_allowed:
             self._open_logfile()
@@ -299,8 +310,10 @@ class DataLogger:
 
     def store_derived_data(self, derived_values: 'DerivedValues'):
         """
-        Appends derived data to the hdf5 file.
-        NOTE: Also not flushed yet.
+        Appends a datapoint to the event-table, derived the continuous data (PIP, PEEP etc.)
+
+        Args:
+            derived_values (DerivedValues): DerivedValues object, the content of which should be stored
         """
         if self._data_save_allowed:
             self._open_logfile()
@@ -355,6 +368,9 @@ class DataLogger:
             return total_size  # size in bytes
 
     def rotation_newfile(self):
+        """
+        This rotates through filenames, similar to a ringbuffer, to make sure that the program does not run of of space/
+        """
         logfile_size = os.path.getsize(self.file)                       # Measure active logfile "..._log.0.h5"
 
         if logfile_size > self._MAX_FILE_SIZE:                          # If too big:
@@ -375,6 +391,13 @@ class DataLogger:
     def load_file(self, filename = None):
         """
         This loads a hdf5 file, and returns data to the user as a dictionary with two keys: waveform_data and control_data
+
+
+        Args:
+            filename (str, optional): Path to a hdf5-file. If none is given, uses currently open file. Defaults to None.
+
+        Returns:
+            dictionary: Containing the data arranged as ` {"waveform_data": waveform_data, "control_data": control_data, "derived_data": derived_data}`
         """
         self.close_logfile()
 
@@ -403,6 +426,10 @@ class DataLogger:
         Use for any file:
             dl = DataLogger()
             dl.log2mat(filename)
+        The file is saved at the same path as `.mat` file, where the content is represented as matlab-structs.
+
+        Args:
+            filename (str, optional): Path to a hdf5-file. If none is given, uses currently open file. Defaults to None.
         """
         if filename == None:
             filename = self.file
@@ -427,13 +454,14 @@ class DataLogger:
             - derived_quantities (PEEP, PIP etc.)
             - control_commands (control commands sent to the controller)
 
-        This is the best proxy for the structure contained in the hdf5 file.
-
+        This approximates the structure contained in the hdf5 file.
         Use for any file:
             dl = DataLogger()
             dl.log2csv(filename)
+
+        Args:
+            filename (str, optional): Path to a hdf5-file. If none is given, uses currently open file. Defaults to None.
         """
-        
         if filename == None:
             filename = self.file
         new_file = filename.split('h5')

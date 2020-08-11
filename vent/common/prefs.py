@@ -67,17 +67,6 @@ def set_pref(key: str, val):
     if globals()['LOADED'].value == True:
         save_prefs()
 
-def set_time():
-    """
-    Checks whether time of first start has been logged in the jason file. 
-    If not, saves the current time.
-    """
-    if globals()['_PREFS']['TIME_FIRST_START'] == None:
-        globals()['_PREFS']['TIME_FIRST_START'] = time.time()
-        save_prefs()
-    else:
-        pass
-
 def get_pref(key: str = None):
     """
     Get global configuration value
@@ -147,6 +136,12 @@ def load_prefs(prefs_fn: str):
 
     # save file
     save_prefs()
+
+    # Make sure startime is set if the program is run for the first time
+    if get_pref('TIME_FIRST_START') is None:
+        set_pref('TIME_FIRST_START', time.time()) 
+        globals()['_LOGGER'].info(f'Starttime set: ' + str(time.time()))
+
 
 def save_prefs(prefs_fn: str = None):
     if prefs_fn is None:

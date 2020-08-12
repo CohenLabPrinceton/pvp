@@ -1,13 +1,13 @@
-vent.common package
+pvp.common package
 ===================
 
 Submodules
 ----------
 
-vent.common.message module
+pvp.common.message module
 --------------------------
 
-.. automodule:: vent.common.message
+.. automodule:: pvp.common.message
    :members:
    :undoc-members:
    :show-inheritance:
@@ -16,7 +16,7 @@ vent.common.message module
 Module contents
 ---------------
 
-.. automodule:: vent.common
+.. automodule:: pvp.common
    :members:
    :undoc-members:
    :show-inheritance:

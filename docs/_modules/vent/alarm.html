@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>vent.alarm &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.alarm &mdash; PVP 0.0.0 documentation</title>
   
 
   
@@ -158,7 +158,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>vent.alarm</li>
+      <li>pvp.alarm</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -173,10 +173,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for vent.alarm</h1><div class="highlight"><pre>
+  <h1>Source code for pvp.alarm</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 
-<div class="viewcode-block" id="AlarmType"><a class="viewcode-back" href="../../vent.alarm.html#vent.alarm.AlarmType">[docs]</a><span class="k">class</span> <span class="nc">AlarmType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="AlarmType"><a class="viewcode-back" href="../../pvp.alarm.html#pvp.alarm.AlarmType">[docs]</a><span class="k">class</span> <span class="nc">AlarmType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">LOW_PRESSURE</span>  <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># low airway pressure alarm</span>
     <span class="n">HIGH_PRESSURE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># high airway pressure alarm</span>
     <span class="n">LOW_VTE</span>       <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># low VTE</span>
@@ -189,18 +189,18 @@
     <span class="n">LEAK</span>          <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="AlarmSeverity"><a class="viewcode-back" href="../../vent.alarm.html#vent.alarm.AlarmSeverity">[docs]</a><span class="k">class</span> <span class="nc">AlarmSeverity</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="AlarmSeverity"><a class="viewcode-back" href="../../pvp.alarm.html#pvp.alarm.AlarmSeverity">[docs]</a><span class="k">class</span> <span class="nc">AlarmSeverity</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">HIGH</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">MEDIUM</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">LOW</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">OFF</span> <span class="o">=</span> <span class="mi">0</span></div>
 
-<span class="kn">from</span> <span class="nn">vent.alarm</span> <span class="kn">import</span> <span class="n">condition</span>
-<span class="kn">from</span> <span class="nn">vent.alarm</span> <span class="kn">import</span> <span class="n">AlarmType</span><span class="p">,</span> <span class="n">AlarmSeverity</span>
-<span class="kn">from</span> <span class="nn">vent.alarm.rule</span> <span class="kn">import</span> <span class="n">Alarm_Rule</span>
-<span class="kn">from</span> <span class="nn">vent.alarm.alarm</span> <span class="kn">import</span> <span class="n">Alarm</span>
-<span class="kn">from</span> <span class="nn">vent.alarm.alarm_manager</span> <span class="kn">import</span> <span class="n">Alarm_Manager</span>
-<span class="kn">from</span> <span class="nn">vent.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span><span class="p">,</span> <span class="n">VALUES</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">condition</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">AlarmType</span><span class="p">,</span> <span class="n">AlarmSeverity</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm.rule</span> <span class="kn">import</span> <span class="n">Alarm_Rule</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm.alarm</span> <span class="kn">import</span> <span class="n">Alarm</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm.alarm_manager</span> <span class="kn">import</span> <span class="n">Alarm_Manager</span>
+<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span><span class="p">,</span> <span class="n">VALUES</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
 
 

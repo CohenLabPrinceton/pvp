@@ -1,7 +1,7 @@
 controls module
 =================
 
-.. automodule:: vent.controls
+.. automodule:: pvp.controls
    :members:
    :undoc-members:
    :show-inheritance:

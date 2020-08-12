@@ -12,9 +12,12 @@
 #
 import os
 import sys
+import mock
 sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../vent'))
+sys.path.insert(0, os.path.abspath('../pvp'))
 sys.path.insert(0, os.path.abspath('.'))
+
+sys.modules['Shiboken'] = mock.Mock()
 
 
 # -- Project information -----------------------------------------------------
@@ -89,7 +92,7 @@ autodoc_default_options = {
 autoclass_content = "both"
 autosummary_generate = True
 
-autodoc_mock_imports = ['pigpio']
+autodoc_mock_imports = ['pigpio', "Shiboken"]
 
 
 ######

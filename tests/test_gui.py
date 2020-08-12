@@ -27,13 +27,13 @@ from pytestqt.qt_compat import qt_api
 # mock before importing
 
 
-from vent import gui
-from vent.gui import styles
-from vent.gui import widgets
-from vent.common import message, values
-from vent.coordinator.coordinator import get_coordinator
+from pvp import gui
+from pvp.gui import styles
+from pvp.gui import widgets
+from pvp.common import message, values
+from pvp.coordinator.coordinator import get_coordinator
 
-# from vent.common import prefs
+# from pvp.common import prefs
 # prefs.set_pref('ENABLE_DIALOGS', False)
 
 
@@ -146,11 +146,11 @@ def test_gui_launch(qtbot, spawn_gui):
 #     """
 #     test setting controls in all the ways available to the GUI
 #
-#     from the :class:`~vent.gui.widgets.control.Control` widget:
+#     from the :class:`~pvp.gui.widgets.control.Control` widget:
 #
-#         * :class:`~vent.gui.widgets.components.EditableLabel` - setting label text
+#         * :class:`~pvp.gui.widgets.components.EditableLabel` - setting label text
 #         * setting slider value
-#         * using :meth:`~vent.gui.main.Vent_Gui.set_value`
+#         * using :meth:`~pvp.gui.main.Vent_Gui.set_value`
 #
 #
 #     Args:

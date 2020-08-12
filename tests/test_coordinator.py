@@ -7,13 +7,13 @@ from unittest.mock import patch, Mock
 
 import pytest
 
-from vent.common import values
-from vent.common.message import ControlSetting, SensorValues
-from vent.alarm import AlarmSeverity, Alarm
-from vent.common.values import ValueName
-from vent.controller.control_module import ControlModuleBase
-from vent.coordinator import rpc
-from vent.coordinator.coordinator import get_coordinator
+from pvp.common import values
+from pvp.common.message import ControlSetting, SensorValues
+from pvp.alarm import AlarmSeverity, Alarm
+from pvp.common.values import ValueName
+from pvp.controller.control_module import ControlModuleBase
+from pvp.coordinator import rpc
+from pvp.coordinator.coordinator import get_coordinator
 
 
 def is_port_in_use(port):
@@ -61,7 +61,7 @@ def mock_get_control_module(sim_mode):
 
 
 @pytest.mark.parametrize("control_setting_name", values.CONTROL.keys())
-@patch('vent.controller.control_module.get_control_module', mock_get_control_module, Mock())
+@patch('pvp.controller.control_module.get_control_module', mock_get_control_module, Mock())
 def test_local_coordinator(control_setting_name):
     coordinator = get_coordinator(single_process=True, sim_mode=True)
     coordinator.start()
@@ -86,7 +86,7 @@ def test_local_coordinator(control_setting_name):
 
 @pytest.mark.timeout(10)
 @pytest.mark.parametrize("control_setting_name", values.CONTROL.keys())
-@patch('vent.controller.control_module.get_control_module', mock_get_control_module, Mock())
+@patch('pvp.controller.control_module.get_control_module', mock_get_control_module, Mock())
 def test_remote_coordinator(control_setting_name):
     # wait before
     #while not is_port_in_use(rpc.default_port):

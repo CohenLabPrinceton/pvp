@@ -1,6 +1,6 @@
 from .pigpio_mocks import patch_pigpio_base, patch_pigpio_i2c, patch_pigpio_gpio, mock_i2c_hardware, patch_bad_socket
 from .pigpio_mocks import MockHardwareDevice
-from vent.io.devices import ADS1115, ADS1015, SPIDevice, PigpioConnection, IODeviceBase, I2CDevice
+from pvp.io.devices import ADS1115, ADS1015, SPIDevice, PigpioConnection, IODeviceBase, I2CDevice
 
 from secrets import token_bytes
 

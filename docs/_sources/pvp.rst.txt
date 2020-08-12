@@ -1,0 +1,34 @@
+pvp package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   pvp.alarm
+   pvp.common
+   pvp.controller
+   pvp.coordinator
+   pvp.gui
+   pvp.io
+
+Submodules
+----------
+
+pvp.main module
+---------------
+
+.. automodule:: pvp.main
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: pvp
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,419 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>prefs &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="unit conversion" href="pvp.common.unit_conversion.html" />
+    <link rel="prev" title="message" href="pvp.common.message.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="common.html">common</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">loggers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">message</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">prefs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">unit conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.fashion.html">fashion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="common.html">common module</a> &raquo;</li>
+        
+      <li>prefs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pvp.common.prefs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-pvp.common.prefs">
+<span id="prefs"></span><h1>prefs<a class="headerlink" href="#module-pvp.common.prefs" title="Permalink to this headline">¶</a></h1>
+<p>System preferences are stored in ~/pvp/prefs.json</p>
+<p><strong>Data</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.prefs.LOADED" title="pvp.common.prefs.LOADED"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LOADED</span></code></a></p></td>
+<td><p>bool: flag to indicate whether prefs have been loaded (and thus <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_pref()</span></code></a> should write to disk.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.prefs._DEFAULTS" title="pvp.common.prefs._DEFAULTS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULTS</span></code></a></p></td>
+<td><p>Declare all available parameters and set default values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.prefs._DIRECTORIES" title="pvp.common.prefs._DIRECTORIES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DIRECTORIES</span></code></a></p></td>
+<td><p>Directories to ensure are created and added to prefs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.prefs._LOCK" title="pvp.common.prefs._LOCK"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_LOCK</span></code></a></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">mp.Lock</span></code> : Locks access to <cite>prefs_fn</cite></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.prefs.get_pref" title="pvp.common.prefs.get_pref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pref</span></code></a>(key)</p></td>
+<td><p>Get global configuration value</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.prefs.init" title="pvp.common.prefs.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>()</p></td>
+<td><p>Initialize prefs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.prefs.load_prefs" title="pvp.common.prefs.load_prefs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_prefs</span></code></a>(prefs_fn)</p></td>
+<td><p>Load prefs from a .json prefs file, combining (and overwriting) any existing prefs, and then saves.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.prefs.make_dirs" title="pvp.common.prefs.make_dirs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_dirs</span></code></a>()</p></td>
+<td><p>ensures _DIRECTORIES are created and added to prefs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.prefs.save_prefs" title="pvp.common.prefs.save_prefs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_prefs</span></code></a>(prefs_fn)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_pref</span></code></a>(key, val)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt id="pvp.common.prefs._LOCK">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_LOCK</code><em class="property"> = &lt;Lock(owner=unknown)&gt;</em><a class="headerlink" href="#pvp.common.prefs._LOCK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Locks access to <cite>prefs_fn</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">mp.Lock</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.prefs._DIRECTORIES">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_DIRECTORIES</code><em class="property"> = {'DATA_DIR': '/Users/jonny/pvp/logs', 'LOG_DIR': '/Users/jonny/pvp/logs', 'VENT_DIR': '/Users/jonny/pvp'}</em><a class="headerlink" href="#pvp.common.prefs._DIRECTORIES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Directories to ensure are created and added to prefs.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">VENT_DIR</span></code>: ~/pvp - base directory for user storage</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LOG_DIR</span></code>: ~/pvp/logs - for storage of event and alarm logs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DATA_DIR</span></code>: ~/pvp/data - for storage of waveform data</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.prefs.LOADED">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">LOADED</code><em class="property"> = &lt;Synchronized wrapper for c_bool(True)&gt;</em><a class="headerlink" href="#pvp.common.prefs.LOADED" title="Permalink to this definition">¶</a></dt>
+<dd><p>flag to indicate whether prefs have been loaded (and thus <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_pref()</span></code></a> should write to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.prefs._DEFAULTS">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_DEFAULTS</code><em class="property"> = {'BREATH_DETECTION': True, 'BREATH_PRESSURE_DROP': 4, 'CONTROLLER_LOOPS_UNTIL_UPDATE': 1, 'CONTROLLER_LOOP_UPDATE_TIME': 0.0, 'CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR': 0.005, 'CONTROLLER_MAX_FLOW': 10, 'CONTROLLER_MAX_PRESSURE': 100, 'CONTROLLER_MAX_STUCK_SENSOR': 0.2, 'CONTROLLER_RINGBUFFER_SIZE': 100, 'COUGH_DURATION': 0.1, 'ENABLE_DIALOGS': True, 'ENABLE_WARNINGS': True, 'GUI_STATE_FN': 'gui_state.json', 'HEARTBEAT_TIMEOUT': 0.02, 'LOGGING_MAX_BYTES': 2147483648, 'LOGGING_MAX_FILES': 5, 'LOGLEVEL': 'WARNING', 'PREFS_FN': None, 'TIMEOUT': 0.05, 'TIME_FIRST_START': None}</em><a class="headerlink" href="#pvp.common.prefs._DEFAULTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Declare all available parameters and set default values. If no default, set as None.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PREFS_FN</span></code> - absolute path to the prefs file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TIME_FIRST_START</span></code> - time when the program has been started for the first time</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VENT_DIR</span></code>: ~/pvp - base directory for user storage</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LOG_DIR</span></code>: ~/pvp/logs - for storage of event and alarm logs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DATA_DIR</span></code>: ~/pvp/data - for storage of waveform data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LOGGING_MAX_BYTES</span></code> : the <strong>total</strong> storage space for all loggers – each logger gets <code class="docutils literal notranslate"><span class="pre">LOGGING_MAX_BYTES/len(loggers)</span></code> space</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LOGGING_MAX_FILES</span></code> : number of files to split each logger’s logs across</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GUI_STATE_FN</span></code>: Filename of gui control state file, relative to <code class="docutils literal notranslate"><span class="pre">VENT_DIR</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BREATH_PRESSURE_DROP</span></code> : pressure drop below peep that is detected as an attempt to breath.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BREATH_DETECTION</span></code>: (bool) whether the controller allows autonomous breaths (measured pressure is <code class="docutils literal notranslate"><span class="pre">BREATH_PRESSURE_DROP</span></code> below set PEEP)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_MAX_FLOW</span></code>: If flows above that, hardware cannot be correct.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_MAX_PRESSURE</span></code>: If pressure above that, hardware cannot be correct.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_MAX_STUCK_SENSOR</span></code>: Max amount of time (in s) before considering a sensor stuck</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pvp.common.prefs.set_pref">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">set_pref</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/prefs.html#set_pref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.prefs.set_pref" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="pvp.common.prefs.get_pref">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">get_pref</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/prefs.html#get_pref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.prefs.get_pref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get global configuration value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – get configuration value with specific <code class="docutils literal notranslate"><span class="pre">key</span></code> .
+if <code class="docutils literal notranslate"><span class="pre">None</span></code> , return all config values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pvp.common.prefs.load_prefs">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">load_prefs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prefs_fn</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/prefs.html#load_prefs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.prefs.load_prefs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load prefs from a .json prefs file, combining (and overwriting) any existing prefs, and then saves.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>once this function is called, <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_pref()</span></code></a> will update the prefs file on disk.
+So if <a class="reference internal" href="#pvp.common.prefs.load_prefs" title="pvp.common.prefs.load_prefs"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_prefs()</span></code></a> is called again at any point it should not change prefs.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prefs_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – path of prefs.json</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pvp.common.prefs.save_prefs">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">save_prefs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prefs_fn</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/prefs.html#save_prefs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.prefs.save_prefs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="pvp.common.prefs.make_dirs">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">make_dirs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/prefs.html#make_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.prefs.make_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>ensures _DIRECTORIES are created and added to prefs.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pvp.common.prefs.init">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/prefs.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.prefs.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize prefs. Called in <code class="docutils literal notranslate"><span class="pre">pvp.__init__.py</span></code> to ensure prefs are initialized before anything else.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pvp.common.unit_conversion.html" class="btn btn-neutral float-right" title="unit conversion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pvp.common.message.html" class="btn btn-neutral float-left" title="message" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

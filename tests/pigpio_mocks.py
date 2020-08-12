@@ -1,4 +1,4 @@
-from vent.io.devices.pins import Pin
+from pvp.io.devices.pins import Pin
 from collections import deque
 from functools import wraps
 from random import getrandbits, choice
@@ -249,7 +249,7 @@ def patch_pigpio_gpio(patch_pigpio_base, monkeypatch):
     def mock_pigpio_get_mode(self, gpio):
         """ Returns the mode if arg gpio is valid, otherwise mocks the pigpio errnum for PI_BAD_GPIO
         Args:
-            self (pigpio.pi): A pigpio.pi or vent.io.devices.PigpioConnection instance
+            self (pigpio.pi): A pigpio.pi or pvp.io.devices.PigpioConnection instance
             gpio (int): A number between 0 and 53
 
         Returns:
@@ -262,7 +262,7 @@ def patch_pigpio_gpio(patch_pigpio_base, monkeypatch):
     def mock_pigpio_set_mode(self, gpio, mode):
         """ Will stop a PWM if new mode != mode (via property setter), but not if new mode is the same as set mode
         Args:
-            mode (int): A number between 0 and 7 (See: vent.io.devices.pins.Pin._PIGPIO_MODES)
+            mode (int): A number between 0 and 7 (See: pvp.io.devices.pins.Pin._PIGPIO_MODES)
 
         Returns:
             int: 0 if successful

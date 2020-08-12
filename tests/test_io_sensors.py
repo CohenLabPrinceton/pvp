@@ -1,6 +1,6 @@
 from .pigpio_mocks import patch_pigpio_base, patch_pigpio_i2c, patch_pigpio_gpio, mock_i2c_hardware
-from vent.io.devices import ADS1015, ADS1115, PigpioConnection
-from vent.io.devices.sensors import Sensor, AnalogSensor, SFM3200, SimSensor
+from pvp.io.devices import ADS1015, ADS1115, PigpioConnection
+from pvp.io.devices.sensors import Sensor, AnalogSensor, SFM3200, SimSensor
 from secrets import token_bytes
 
 import numpy as np

@@ -7,7 +7,7 @@ Submodules
 coordinator
 -----------------------------------
 
-.. automodule:: vent.coordinator.coordinator
+.. automodule:: pvp.coordinator.coordinator
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ coordinator
 ipc
 ---------------------------
 
-.. automodule:: vent.coordinator.ipc
+.. automodule:: pvp.coordinator.rpc
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ ipc
 process\_manager
 ----------------------------------------
 
-.. automodule:: vent.coordinator.process_manager
+.. automodule:: pvp.coordinator.process_manager
    :members:
    :undoc-members:
    :show-inheritance:

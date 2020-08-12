@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>vent.io.devices.base &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.io.devices.base &mdash; PVP 0.0.0 documentation</title>
   
 
   
@@ -158,7 +158,7 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-      <li>vent.io.devices.base</li>
+      <li>pvp.io.devices.base</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -173,11 +173,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for vent.io.devices.base</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; Base classes &amp; functions used throughout vent.io.devices</span>
+  <h1>Source code for pvp.io.devices.base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; Base classes &amp; functions used throughout pvp.io.devices</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">vent.common.fashion</span> <span class="kn">import</span> <span class="n">pigpio_command</span>
+<span class="kn">from</span> <span class="nn">pvp.common.fashion</span> <span class="kn">import</span> <span class="n">pigpio_command</span>
 
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pigpio</span>
@@ -197,7 +197,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not establish connection with pigpio daemon&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="IODeviceBase"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.base.IODeviceBase">[docs]</a><span class="k">class</span> <span class="nc">IODeviceBase</span><span class="p">:</span>
+<div class="viewcode-block" id="IODeviceBase"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.IODeviceBase">[docs]</a><span class="k">class</span> <span class="nc">IODeviceBase</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Abstract base Class for pigpio handles (or whatever other GPIO library</span>
 <span class="sd">    we end up using)</span>
 
@@ -207,7 +207,7 @@
 <span class="sd">    restart it, and reopen the python interface(s)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="IODeviceBase.__init__"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.base.IODeviceBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pig</span><span class="p">:</span> <span class="n">PigpioConnection</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="IODeviceBase.__init__"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.IODeviceBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pig</span><span class="p">:</span> <span class="n">PigpioConnection</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Initializes the pigpio python bindings object if necessary,</span>
 <span class="sd">        and checks that it is actually running.</span>
 
@@ -232,13 +232,13 @@
         <span class="sd">&quot;&quot;&quot; Returns True if pigpiod is running and False if not&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">connected</span>
 
-<div class="viewcode-block" id="IODeviceBase._close"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.base.IODeviceBase._close">[docs]</a>    <span class="k">def</span> <span class="nf">_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IODeviceBase._close"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.IODeviceBase._close">[docs]</a>    <span class="k">def</span> <span class="nf">_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Closes an I2C/SPI (or potentially Serial) connection&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pigpiod_ok</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span></div></div>
 
 
-<div class="viewcode-block" id="I2CDevice"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.base.I2CDevice">[docs]</a><span class="k">class</span> <span class="nc">I2CDevice</span><span class="p">(</span><span class="n">IODeviceBase</span><span class="p">):</span>
+<div class="viewcode-block" id="I2CDevice"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice">[docs]</a><span class="k">class</span> <span class="nc">I2CDevice</span><span class="p">(</span><span class="n">IODeviceBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A class wrapper for pigpio I2C handles. Defines several methods</span>
 <span class="sd">    used for reading from and writing to device registers. Defines</span>
 <span class="sd">    helper classes Register and ValueField for handling the</span>
@@ -254,7 +254,7 @@
 <span class="sd">    the unsigned 16-bit int used by the other read/write methods.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="I2CDevice.__init__"><a class="viewcode-back" href="../../../../vent.io.devices.html#vent.io.devices.base.I2CDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i2c_address</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="p">,</span> <span class="n">pig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="I2CDevice.__init__"><a class="viewcode-back" href="../../../../pvp.io.devices.html#vent.io.devices.base.I2CDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i2c_address</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="p">,</span> <span class="n">pig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Initializes pigpio bindings and opens i2c connection.</span>
 
 <span class="sd">        Args:</span>

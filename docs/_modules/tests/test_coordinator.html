@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,19 @@
   
 
   
+  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/_static/pvp_theme.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -29,11 +35,6 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -49,7 +50,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> PVP
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> PVP
           
 
           
@@ -76,6 +77,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,7 +91,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../hardware.html">Hardware Placeholder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware.html">Hardware Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
@@ -116,6 +118,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -154,7 +157,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -183,13 +186,13 @@
 
 <span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">from</span> <span class="nn">vent.common</span> <span class="kn">import</span> <span class="n">values</span>
-<span class="kn">from</span> <span class="nn">vent.common.message</span> <span class="kn">import</span> <span class="n">ControlSetting</span><span class="p">,</span> <span class="n">SensorValues</span>
-<span class="kn">from</span> <span class="nn">vent.alarm</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span>
-<span class="kn">from</span> <span class="nn">vent.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span>
-<span class="kn">from</span> <span class="nn">vent.controller.control_module</span> <span class="kn">import</span> <span class="n">ControlModuleBase</span>
-<span class="kn">from</span> <span class="nn">vent.coordinator</span> <span class="kn">import</span> <span class="n">rpc</span>
-<span class="kn">from</span> <span class="nn">vent.coordinator.coordinator</span> <span class="kn">import</span> <span class="n">get_coordinator</span>
+<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="kn">import</span> <span class="n">values</span>
+<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="kn">import</span> <span class="n">ControlSetting</span><span class="p">,</span> <span class="n">SensorValues</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span>
+<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span>
+<span class="kn">from</span> <span class="nn">pvp.controller.control_module</span> <span class="kn">import</span> <span class="n">ControlModuleBase</span>
+<span class="kn">from</span> <span class="nn">pvp.coordinator</span> <span class="kn">import</span> <span class="n">rpc</span>
+<span class="kn">from</span> <span class="nn">pvp.coordinator.coordinator</span> <span class="kn">import</span> <span class="n">get_coordinator</span>
 
 
 <div class="viewcode-block" id="is_port_in_use"><a class="viewcode-back" href="../../tests.html#tests.test_coordinator.is_port_in_use">[docs]</a><span class="k">def</span> <span class="nf">is_port_in_use</span><span class="p">(</span><span class="n">port</span><span class="p">):</span>
@@ -237,7 +240,7 @@
 
 
 <div class="viewcode-block" id="test_local_coordinator"><a class="viewcode-back" href="../../tests.html#tests.test_coordinator.test_local_coordinator">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;control_setting_name&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">CONTROL</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-<span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;vent.controller.control_module.get_control_module&#39;</span><span class="p">,</span> <span class="n">mock_get_control_module</span><span class="p">,</span> <span class="n">Mock</span><span class="p">())</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;pvp.controller.control_module.get_control_module&#39;</span><span class="p">,</span> <span class="n">mock_get_control_module</span><span class="p">,</span> <span class="n">Mock</span><span class="p">())</span>
 <span class="k">def</span> <span class="nf">test_local_coordinator</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">):</span>
     <span class="n">coordinator</span> <span class="o">=</span> <span class="n">get_coordinator</span><span class="p">(</span><span class="n">single_process</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sim_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">coordinator</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -262,7 +265,7 @@
 
 <div class="viewcode-block" id="test_remote_coordinator"><a class="viewcode-back" href="../../tests.html#tests.test_coordinator.test_remote_coordinator">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;control_setting_name&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">CONTROL</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-<span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;vent.controller.control_module.get_control_module&#39;</span><span class="p">,</span> <span class="n">mock_get_control_module</span><span class="p">,</span> <span class="n">Mock</span><span class="p">())</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;pvp.controller.control_module.get_control_module&#39;</span><span class="p">,</span> <span class="n">mock_get_control_module</span><span class="p">,</span> <span class="n">Mock</span><span class="p">())</span>
 <span class="k">def</span> <span class="nf">test_remote_coordinator</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">):</span>
     <span class="c1"># wait before</span>
     <span class="c1">#while not is_port_in_use(rpc.default_port):</span>
@@ -418,11 +421,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, jonny saunders et al
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -433,7 +444,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

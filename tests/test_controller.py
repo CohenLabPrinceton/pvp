@@ -3,12 +3,12 @@ import numpy as np
 import pytest
 import random
 
-from vent.common.message import SensorValues, ControlSetting
-from vent.alarm import AlarmSeverity, Alarm
-from vent.common.values import ValueName
-from vent.coordinator.coordinator import get_coordinator
-from vent.controller.control_module import get_control_module
-from vent import prefs
+from pvp.common.message import SensorValues, ControlSetting
+from pvp.alarm import AlarmSeverity, Alarm
+from pvp.common.values import ValueName
+from pvp.coordinator.coordinator import get_coordinator
+from pvp.controller.control_module import get_control_module
+from pvp import prefs
 prefs.init()
 
 ######################################################################

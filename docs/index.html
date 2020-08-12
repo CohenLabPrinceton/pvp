@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,19 @@
   
 
   
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,14 +35,9 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Vent control pseudocode" href="control_overview.html" /> 
+    <link rel="next" title="pvp control pseudocode" href="control_overview.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -50,7 +51,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> PVP
+            <a href="#" class="icon icon-home" alt="Documentation Home"> PVP
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -90,7 +92,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
@@ -117,6 +119,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -155,7 +158,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
       <li>The People’s Ventilator Project</li>
     
@@ -192,23 +195,46 @@
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#mechanical-diagram">Mechanical Diagram</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hardware.sensors.html">Sensors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#sensor-pcb">Sensor PCB</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#flow-sensor">Flow sensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#pressure-sensors">Pressure sensors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#oxygen-sensor">Oxygen sensor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#flow-actuators">Flow actuators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#safety-components">Safety Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#tubing-and-adapters">Tubing and Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.html#bill-of-materials-need-to-think-about-what-goes-in-this-table-probably-separate-boms-into-tables-by-category-but-here-s-a-sample-table">Bill of Materials (need to think about what goes in this table, probably separate BoMs into tables by category, but here’s a sample table)</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="common.html">common</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="common.html#module-vent.common.message">message</a></li>
-<li class="toctree-l2"><a class="reference internal" href="common.html#values">values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">loggers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.prefs.html">prefs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">unit conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.fashion.html">fashion</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="coordinator.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="coordinator.html#module-vent.coordinator.coordinator">coordinator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="coordinator.html#ipc">ipc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="coordinator.html#module-vent.coordinator.process_manager">process_manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinator.html#module-pvp.coordinator.coordinator">coordinator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinator.html#module-pvp.coordinator.rpc">ipc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinator.html#module-pvp.coordinator.process_manager">process_manager</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a><ul>
@@ -220,13 +246,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="gui.html#gui-object-documentation">GUI Object Documentation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-vent.gui.widgets.control">Control</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-vent.gui.widgets.monitor">Monitor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-vent.gui.widgets.plot">Plot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-vent.gui.widgets.status_bar">Status Bar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-vent.gui.widgets.components">Components</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="gui.html#module-vent.gui.styles">GUI Stylesheets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gui.html#module-vent.gui.alarm_manager">GUI Alarm Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.display">Display</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.control_panel">Control Panel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.plot">Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.alarm_bar">Alarm Bar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.components">Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.dialog">Dialog</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gui.html#module-pvp.gui.styles">GUI Stylesheets</a></li>
 </ul>
 </li>
 </ul>
@@ -235,28 +261,28 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">io</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="io.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="vent.io.devices.html">vent.io.devices package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="vent.io.devices.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="vent.io.devices.html#module-vent.io.devices.base">vent.io.devices.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="vent.io.devices.html#module-vent.io.devices.pins">vent.io.devices.pins module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="vent.io.devices.html#module-vent.io.devices.sensors">vent.io.devices.sensors module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="vent.io.devices.html#module-vent.io.devices.valves">vent.io.devices.valves module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="vent.io.devices.html#module-vent.io.devices">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pvp.io.devices.html">pvp.io.devices package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.base">pvp.io.devices.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.pins">pvp.io.devices.pins module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.sensors">pvp.io.devices.sensors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.valves">pvp.io.devices.valves module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="io.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="io.html#module-vent.io.hal">vent.io.hal module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="io.html#module-vent.io">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#module-pvp.io.hal">pvp.io.hal module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#module-pvp.io">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-vent.alarm">Main Alarm Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-vent.alarm.alarm_manager">Alarm Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-pvp.alarm">Main Alarm Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-pvp.alarm.alarm_manager">Alarm Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="alarm.html#id5">Alarm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-vent.alarm.condition">Condition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-vent.alarm.rule">Alarm Rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-pvp.alarm.condition">Condition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-pvp.alarm.rule">Alarm Rule</a></li>
 </ul>
 </li>
 </ul>
@@ -326,7 +352,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="control_overview.html" class="btn btn-neutral float-right" title="Vent control pseudocode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="control_overview.html" class="btn btn-neutral float-right" title="pvp control pseudocode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -336,11 +362,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, jonny saunders et al
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -351,7 +385,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

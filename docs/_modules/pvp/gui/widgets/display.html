@@ -1,0 +1,1010 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pvp.gui.widgets.display &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/_static/pvp_theme.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware.html">Hardware Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../../gui.html">pvp.gui</a> &raquo;</li>
+        
+      <li>pvp.gui.widgets.display</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pvp.gui.widgets.display</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Unified monitor &amp; control widgets</span>
+
+<span class="sd">Display sensor values, control control values, turns out it&#39;s all the same</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">import</span> <span class="nn">PySide2</span>
+<span class="kn">import</span> <span class="nn">pyqtgraph</span> <span class="k">as</span> <span class="nn">pg</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">styles</span><span class="p">,</span> <span class="n">mono_font</span>
+<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="kn">import</span> <span class="n">message</span><span class="p">,</span> <span class="n">unit_conversion</span>
+<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span><span class="p">,</span> <span class="n">Value</span>
+<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="kn">import</span> <span class="n">ControlSetting</span>
+<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="kn">import</span> <span class="n">init_logger</span>
+<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="kn">import</span> <span class="n">unit_conversion</span><span class="p">,</span> <span class="n">prefs</span>
+<span class="kn">from</span> <span class="nn">pvp.gui.widgets.components</span> <span class="kn">import</span> <span class="n">EditableLabel</span><span class="p">,</span> <span class="n">DoubleSlider</span><span class="p">,</span> <span class="n">QVLine</span>
+<span class="kn">from</span> <span class="nn">pvp.gui.widgets.dialog</span> <span class="kn">import</span> <span class="n">pop_dialog</span>
+
+<div class="viewcode-block" id="Display"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display">[docs]</a><span class="k">class</span> <span class="nc">Display</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="n">limits_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+    <span class="n">value_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Display.__init__"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">value</span><span class="p">:</span> <span class="n">Value</span><span class="p">,</span>
+                 <span class="n">update_period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">MONITOR_UPDATE_INTERVAL</span><span class="p">,</span>
+                 <span class="n">enum_name</span><span class="p">:</span> <span class="n">ValueName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">button_orientation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span>
+                 <span class="n">control_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;dark&quot;</span><span class="p">,</span>
+                 <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (:class:`.Value`): Value Object to display</span>
+<span class="sd">            update_period (float): time to wait in between updating displayed value</span>
+<span class="sd">            enum_name (:class:`.ValueName`): Value name (not in Value objects)</span>
+<span class="sd">            button_orientation (str: &#39;left&#39; or &#39;right&#39;): whether the button should be on the left or right</span>
+<span class="sd">            control_type (None, str: &#39;slider&#39;, &#39;record&#39;): whether a slider, a button to record recent values, or ``None`` control should be used with this object</span>
+<span class="sd">            style (str: &#39;light&#39;, &#39;dark&#39;, or a QtStylesheet string): _style for the display</span>
+<span class="sd">            *args, **kwargs: passed to :class:`PySide2.QtWidgets.QWidget`</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            self.name:</span>
+<span class="sd">            self.units:</span>
+<span class="sd">            self.abs_range:</span>
+<span class="sd">            self.safe_range:</span>
+<span class="sd">            self.decimals:</span>
+<span class="sd">            self.update_period:</span>
+<span class="sd">            self.enum_name:</span>
+<span class="sd">            self.orientation:</span>
+<span class="sd">            self.control:</span>
+<span class="sd">            self._style:</span>
+<span class="sd">            self.set_value:</span>
+<span class="sd">            self.sensor_value:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Display</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># unpack value object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">abs_range</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">safe_range</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">safe_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">decimals</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="c1"># store parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_period</span> <span class="o">=</span> <span class="n">update_period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enum_name</span> <span class="o">=</span> <span class="n">enum_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="n">button_orientation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">=</span> <span class="n">control_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="n">style</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1">## initialize stateful attributes</span>
+        <span class="c1"># re: unit conversion for Pressure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># for drawing alarm state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># for setting control values by recording recent values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_values</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logged_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># for storing set and sensed values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_firstset</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># don&#39;t pop dialog boxes until the control is brought within the safe range one time</span>
+        <span class="c1"># for sensor value display</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_yrange</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="c1"># for confirming dangerous values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dialog_open</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_confirmed_unsafe</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># for locking controls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_locked</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># become identifiable</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enum_name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enum_name</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># create graphical objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timed_update</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Display.init_ui"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span>
+                           <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Minimum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">DISPLAY_MIN_HEIGHT</span><span class="p">)</span>
+
+        <span class="c1"># choose stylesheets</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">==</span> <span class="s2">&quot;dark&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">DISPLAY_DARK</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">DISPLAY_VALUE_DARK</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">DISPLAY_NAME</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">DISPLAY_UNITS_DARK</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;set_value_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_VALUE_DARK</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;slider_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_LABEL</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;line_color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">DIVIDER_COLOR</span>
+            <span class="c1"># self._styles[&#39;sensor_frame&#39;] = styles.CONTROL_SENSOR_FRAME</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">==</span> <span class="s2">&quot;light&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">DISPLAY_LIGHT</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">DISPLAY_VALUE_LIGHT</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_NAME</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">DISPLAY_UNITS_LIGHT</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;set_value_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_VALUE_LIGHT</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;slider_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_LABEL</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;line_color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">DIVIDER_COLOR_DARK</span>
+            <span class="c1"># self._styles[&#39;sensor_frame&#39;] = styles.CONTROL_SENSOR_FRAME</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Need to use &quot;light&quot; or &quot;dark&quot; for _style&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setProperty</span><span class="p">(</span><span class="s1">&#39;widgetClass&#39;</span><span class="p">,</span> <span class="s1">&#39;Display&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">])</span>
+
+        <span class="c1"># self.setStyleSheet(&quot;border: 1px solid black&quot;)</span>
+        <span class="c1"># -----------------------</span>
+        <span class="c1"># first create all the widgets that we need</span>
+        <span class="c1"># widgets common to all display objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_labels</span><span class="p">()</span>
+        <span class="c1"># a toggle button for controls is created whether we control or not</span>
+        <span class="c1"># (if self.control == None, button is invisible but keeps space for alignment purposes)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_toggle_button</span><span class="p">()</span>
+
+        <span class="c1"># graphical elements true of all controls</span>
+        <span class="c1"># if self.control:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_limits</span><span class="p">()</span>
+
+        <span class="c1"># graphical element specific to control type</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">==</span> <span class="s2">&quot;slider&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_slider</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">==</span> <span class="s2">&quot;record&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_record</span><span class="p">()</span>
+
+        <span class="c1">#----------------</span>
+        <span class="c1"># then lay them out and connect signals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_layout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui_signals</span><span class="p">()</span></div>
+
+        <span class="c1">#--------------</span>
+        <span class="c1"># and then connect internal signals</span>
+
+<div class="viewcode-block" id="Display.init_ui_labels"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.init_ui_labels">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># label to display measured/sensed values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_value&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setMargin</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># at minimum make space for 4 digits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">styles</span><span class="o">.</span><span class="n">VALUE_SIZE</span> <span class="o">*</span> <span class="o">.</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span>
+                                        <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Minimum</span><span class="p">)</span>
+
+        <span class="c1"># label display value name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_name&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignBottom</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span>
+                                      <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">)</span>
+
+        <span class="c1"># label to display units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_units&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignTop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span>
+                                         <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display.init_ui_toggle_button"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.init_ui_toggle_button">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_toggle_button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QToolButton</span><span class="p">(</span><span class="n">checkable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">checked</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_name&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span>
+            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span>
+            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setMaximumWidth</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">TOGGLE_MAX_WIDTH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setToolButtonStyle</span><span class="p">(</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ToolButtonIconOnly</span>
+        <span class="p">)</span>
+
+        <span class="c1"># make button invisible if no control is set</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">button_size_policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">sizePolicy</span><span class="p">()</span>
+            <span class="n">button_size_policy</span><span class="o">.</span><span class="n">setRetainSizeWhenHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">button_size_policy</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display.init_ui_limits"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.init_ui_limits">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create widgets to display sensed value alongside set value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_vline</span> <span class="o">=</span> <span class="n">QVLine</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;line_color&#39;</span><span class="p">])</span>
+
+        <span class="c1"># label to display and edit set value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span> <span class="o">=</span> <span class="n">EditableLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;set_value_label&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">lineEdit</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignBottom</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">styles</span><span class="o">.</span><span class="n">VALUE_MINOR_SIZE</span> <span class="o">*</span> <span class="o">.</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span>
+                                      <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span>
+
+        <span class="c1"># bar graph that indicates current value and limits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span> <span class="o">=</span> <span class="n">Limits_Plot</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">label_size_policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">sizePolicy</span><span class="p">()</span>
+            <span class="n">label_size_policy</span><span class="o">.</span><span class="n">setRetainSizeWhenHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">label_size_policy</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">plot_size_policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">sizePolicy</span><span class="p">()</span>
+            <span class="n">plot_size_policy</span><span class="o">.</span><span class="n">setRetainSizeWhenHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">plot_size_policy</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Display.init_ui_slider"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.init_ui_slider">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_slider</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># -------</span>
+        <span class="c1"># create toggle button</span>
+        <span class="c1"># ------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setArrowType</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftArrow</span><span class="p">)</span>
+
+        <span class="c1"># --------</span>
+        <span class="c1"># create (initially hidden) slider objects)</span>
+        <span class="c1"># ---------</span>
+        <span class="c1"># Min value - slider - max value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_min</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_min</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">unit_conversion</span><span class="o">.</span><span class="n">rounded_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_min</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignLeft</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_min</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_min</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;slider_label&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_min</span><span class="o">.</span><span class="n">setMargin</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_min</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span>
+                                      <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_max</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_max</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">unit_conversion</span><span class="o">.</span><span class="n">rounded_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_max</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_max</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_max</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;slider_label&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_max</span><span class="o">.</span><span class="n">setMargin</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_max</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span>
+                                      <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span> <span class="o">=</span> <span class="n">DoubleSlider</span><span class="p">(</span><span class="n">decimals</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="c1"># self.slider.setContentsMargins(0,0,0,0)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span>
+                                  <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider_min</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider_max</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_frame</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_frame</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_frame</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display.init_ui_record"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.init_ui_record">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_record</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># load record icon</span>
+        <span class="n">gui_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+        <span class="n">rec_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gui_dir</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="s1">&#39;record.png&#39;</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">rec_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rec_icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rec_icon</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display.init_ui_layout"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.init_ui_layout">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Basically two methods... lay objects out depending on whether we&#39;re oriented with our button to the left or right</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># main layout is the visible part -- widgets laid out horizontally</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="o">==</span> <span class="s2">&quot;left&quot;</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+
+            <span class="c1"># control objects</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="p">)</span>
+            <span class="c1"># if self.control:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control_vline</span><span class="p">)</span>
+            <span class="c1"># else:</span>
+            <span class="c1">#     self.main_layout.addStretch()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="o">==</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span>
+
+            <span class="c1"># labels are always laid out the same becuse numbers have to be aligned right...</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignLeft</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignLeft</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_layout</span><span class="p">)</span>
+
+            <span class="c1"># control objects</span>
+            <span class="c1"># if self.control:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control_vline</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="p">)</span>
+            <span class="c1"># else:</span>
+            <span class="c1">#     self.main_layout.addStretch()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Display.init_ui_signals"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.init_ui_signals">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">textChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value_changed</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">==</span> <span class="s2">&quot;slider&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_control</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">doubleValueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value_changed</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">==</span> <span class="s2">&quot;record&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_record</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display.toggle_control"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.toggle_control">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">toggle_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">!=</span> <span class="s1">&#39;slider&#39;</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setArrowType</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DownArrow</span><span class="p">)</span>
+            <span class="c1"># self.layout.addWidget(self.slider_frame, 3, 0, 1, 3)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider_frame</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slider_frame</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># self.adjustSize()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setArrowType</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftArrow</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">removeWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider_frame</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slider_frame</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adjustSize</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Display.toggle_record"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.toggle_record">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">!=</span> <span class="s1">&#39;record&#39;</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">state</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_values</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logged_values</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_DialogApplyButton</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_VALUE_REC</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_NAME_REC</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_UNITS_REC</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logged_values</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># get the mean logged value</span>
+                <span class="n">mean_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logged_values</span><span class="p">)</span>
+                <span class="c1"># convert to displayed range if necessary (_value_changed) expects it</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+                    <span class="n">mean_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">mean_val</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_value_changed</span><span class="p">(</span><span class="n">mean_val</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rec_icon</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_value&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_name&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">[</span><span class="s1">&#39;label_units&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Display._value_changed"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display._value_changed">[docs]</a>    <span class="k">def</span> <span class="nf">_value_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;outward-directed&quot; Control value changed by components</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_value (float):</span>
+<span class="sd">            emit (bool): whether to emit the `value_changed` signal (default True) -- in the case that our value is being changed by someone other than us</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pdb.set_trace()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">new_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+        <span class="c1"># stash unconverted value for use in dialog messages</span>
+        <span class="n">orig_value</span> <span class="o">=</span> <span class="n">new_value</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span><span class="p">:</span>
+            <span class="c1"># convert from display value to internal value</span>
+            <span class="n">new_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">new_value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">new_value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dialog_open</span><span class="p">:</span>
+                <span class="c1"># if we&#39;re already opening a dialogue, don&#39;t try to set value or emit</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_confirmed_unsafe</span><span class="p">)</span> <span class="ow">and</span> \
+               <span class="p">(</span><span class="s1">&#39;pytest&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="n">prefs</span><span class="o">.</span><span class="n">get_pref</span><span class="p">(</span><span class="s1">&#39;ENABLE_WARNINGS&#39;</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_firstset</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dialog_open</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">safe_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+                    <span class="n">safe_range</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+                <span class="n">dialog</span> <span class="o">=</span> <span class="n">pop_dialog</span><span class="p">(</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Confirm setting potentially unsafe </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> value&#39;</span><span class="p">,</span>
+                    <span class="n">sub_message</span><span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Values of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> outside of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">safe_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1"> are usually unsafe.</span><span class="se">\n\n</span><span class="s1">Are you sure you want to set </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">orig_value</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                    <span class="n">buttons</span> <span class="o">=</span>  <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Cancel</span> <span class="o">|</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Ok</span><span class="p">,</span>
+                    <span class="n">default_button</span> <span class="o">=</span>  <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Cancel</span>
+                <span class="p">)</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dialog_open</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">ret</span> <span class="o">!=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Ok</span><span class="p">:</span>
+                    <span class="c1"># if canceled, set value to current value</span>
+                    <span class="n">new_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># don&#39;t prompt again</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_confirmed_unsafe</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># reset _confirmed_unsafe if back in range</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_confirmed_unsafe</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_confirmed_unsafe</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># set firstset flag if we&#39;re going in safe range for the first time</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_firstset</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_firstset</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">changed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_set_value</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">changed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display.update_set_value"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.update_set_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;inward value setting (set from elsewhere)&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">new_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+        <span class="c1"># don&#39;t convert value here,</span>
+        <span class="c1"># assume the only hPa values would come from the widget itself since it&#39;s display only</span>
+
+        <span class="n">changed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">new_value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">new_value</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">new_value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span> <span class="o">=</span> <span class="n">new_value</span>
+                <span class="n">changed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Attempted to set </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> out of range (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span><span class="si">}</span><span class="s1">) with value </span><span class="si">{</span><span class="n">new_value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">changed</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">redraw</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">changed</span></div>
+
+<div class="viewcode-block" id="Display.update_sensor_value"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.update_sensor_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_sensor_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">new_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_value</span> <span class="o">=</span> <span class="n">new_value</span>
+
+        <span class="c1"># store values to set value by averaging sensor values</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_values</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logged_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+            <span class="n">new_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+
+        <span class="n">value_str</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="o">.</span><span class="n">rounded_string</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">)</span>
+        <span class="c1"># self.sensor_label.setText(value_str)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">sensor_value</span> <span class="o">=</span> <span class="n">new_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display.update_limits"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.update_limits">[docs]</a>    <span class="k">def</span> <span class="nf">update_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the alarm range and the GUI elements corresponding to it</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            control (:class:`~.ControlSetting`): control setting with min_value or max_value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">control</span><span class="o">.</span><span class="n">min_value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">min_value</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="n">control</span><span class="o">.</span><span class="n">min_value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alarm_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">min_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">control</span><span class="o">.</span><span class="n">max_value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">max_value</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="n">control</span><span class="o">.</span><span class="n">max_value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alarm_range</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarm_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">control</span><span class="o">.</span><span class="n">max_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Display.redraw"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.redraw">[docs]</a>    <span class="k">def</span> <span class="nf">redraw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Redraw all graphical elements to ensure internal model matches view</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># convert some guaranteed values</span>
+        <span class="n">abs_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+            <span class="n">abs_range</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">abs_range</span><span class="p">)</span>
+
+        <span class="c1"># sensor value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor_value</span><span class="p">:</span>
+            <span class="n">sensor_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor_value</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+                <span class="n">sensor_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">sensor_value</span><span class="p">)</span>
+
+            <span class="c1"># don&#39;t update sensor value label, it should be on timed update</span>
+            <span class="c1"># just make sure the sensor bar is correct</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">sensor_value</span><span class="o">=</span><span class="n">sensor_value</span><span class="p">)</span>
+
+        <span class="c1"># set value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">:</span>
+            <span class="n">set_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+                <span class="n">set_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">set_value</span><span class="p">)</span>
+
+            <span class="c1"># update label and plot</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">:</span>
+                <span class="n">set_value_str</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="o">.</span><span class="n">rounded_string</span><span class="p">(</span><span class="n">set_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">set_value_str</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">set_value</span><span class="o">=</span><span class="n">set_value</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">==</span> <span class="s2">&quot;slider&quot;</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">set_value</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setDecimals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">slider_min</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">unit_conversion</span><span class="o">.</span><span class="n">rounded_string</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">slider_max</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">unit_conversion</span><span class="o">.</span><span class="n">rounded_string</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">))</span>
+                    <span class="k">finally</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># alarm limits</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm_range</span><span class="p">:</span>
+            <span class="n">alarm_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm_range</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+                <span class="n">alarm_range</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">alarm_range</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="n">alarm_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">max</span><span class="o">=</span><span class="n">alarm_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Display.timed_update"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.timed_update">[docs]</a>    <span class="k">def</span> <span class="nf">timed_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># format value based on decimals</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor_value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
+                    <span class="n">sensor_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensor_value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sensor_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor_value</span>
+                <span class="n">value_str</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="o">.</span><span class="n">rounded_string</span><span class="p">(</span><span class="n">sensor_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">value_str</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - error in timed update - </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_period</span><span class="o">*</span><span class="mi">1000</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">timed_update</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Display.set_units"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.set_units">[docs]</a>    <span class="k">def</span> <span class="nf">set_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set pressure units to display as cmH2O or hPa</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            units (&#39;cmH2O&#39;, &#39;hPa&#39;):</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;cmH2O&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">_convert_in</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">_convert_out</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;hPa&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="o">.</span><span class="n">cmH2O_to_hPa</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="o">.</span><span class="n">hPa_to_cmH2O</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">_convert_in</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="o">.</span><span class="n">cmH2O_to_hPa</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_plot</span><span class="o">.</span><span class="n">_convert_out</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="o">.</span><span class="n">hPa_to_cmH2O</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;couldnt set units </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">units_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">redraw</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error setting units </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Display.set_locked"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Display.set_locked">[docs]</a>    <span class="k">def</span> <span class="nf">set_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">locked</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="o">==</span> <span class="s2">&quot;slider&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">toggle_control</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">setEditable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="c1"># self.setStyleSheet()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_value_label</span><span class="o">.</span><span class="n">setEditable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+    <span class="c1"># ---------------------------------</span>
+    <span class="c1"># Properties</span>
+    <span class="c1"># ---------------------------------</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Limits_Plot"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Limits_Plot">[docs]</a><span class="k">class</span> <span class="nc">Limits_Plot</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Widget to display current value in a bar graph along with alarm limits</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">background</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_SENSOR_BACKGROUND</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_minimum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maximum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yrange</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Limits_Plot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="n">background</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Limits_Plot.init_ui"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Limits_Plot.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># bar graph that&#39;s an indicator of current value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">hideAxis</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">hideAxis</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">xRange</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="c1"># bar itself</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_bar</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">BarGraphItem</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span> <span class="n">y1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span> <span class="n">width</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>
+                                          <span class="n">brush</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">GRAY_TEXT</span><span class="p">)</span>
+
+        <span class="c1"># error bars for limit indicators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_limit</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                         <span class="n">pen</span><span class="o">=</span><span class="p">{</span>
+                                                 <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">],</span>
+                                                 <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">2</span>
+                                             <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bottom_limit</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                            <span class="n">pen</span><span class="o">=</span><span class="p">{</span>
+                                                 <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">],</span>
+                                                 <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">2</span>
+                                             <span class="p">})</span>
+
+        <span class="c1"># the set value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_set</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                                          <span class="n">pen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensor_bar</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_limit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom_limit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensor_set</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span>
+                           <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Minimum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotItem</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span>
+                      <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Minimum</span><span class="p">)</span>
+        <span class="c1"># self.set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_SENSOR_BAR_WIDTH</span><span class="p">)</span>
+        <span class="c1"># self.setFixedHeight(styles.CONTROL_SENSOR_BAR_WIDTH)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">enableAutoRange</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Limits_Plot.update_value"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.display.Limits_Plot.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="nb">min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="nb">max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">sensor_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">set_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Move the lines! Pass any of the represented values</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            min (float): new alarm minimum</span>
+<span class="sd">            max (float): new alarm _maximum</span>
+<span class="sd">            sensor_value (float): new value for the sensor bar plot</span>
+<span class="sd">            set_value (float): new value for the set value line</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">min</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bottom_limit</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_minimum</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">max</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bottom_limit</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_maximum</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sensor_value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensor_bar</span><span class="o">.</span><span class="n">setOpts</span><span class="p">(</span><span class="n">y1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">sensor_value</span><span class="p">)]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensor_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sensor_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">set_value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensor_set</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">set_value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">set_value</span><span class="p">)</span></div></div>
+
+
+        <span class="c1">#self.update_yrange()</span>
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

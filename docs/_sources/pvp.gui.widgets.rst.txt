@@ -1,0 +1,61 @@
+pvp.gui.widgets package
+=======================
+
+Submodules
+----------
+
+pvp.gui.widgets.alarm\_bar module
+---------------------------------
+
+.. automodule:: pvp.gui.widgets.alarm_bar
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pvp.gui.widgets.components module
+---------------------------------
+
+.. automodule:: pvp.gui.widgets.components
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pvp.gui.widgets.control\_panel module
+-------------------------------------
+
+.. automodule:: pvp.gui.widgets.control_panel
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pvp.gui.widgets.dialog module
+-----------------------------
+
+.. automodule:: pvp.gui.widgets.dialog
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pvp.gui.widgets.display module
+------------------------------
+
+.. automodule:: pvp.gui.widgets.display
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pvp.gui.widgets.plot module
+---------------------------
+
+.. automodule:: pvp.gui.widgets.plot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: pvp.gui.widgets
+   :members:
+   :undoc-members:
+   :show-inheritance:

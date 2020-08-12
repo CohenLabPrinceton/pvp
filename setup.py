@@ -27,8 +27,8 @@ except:
 
 setup(
     name="pvp",
-    author="vent team",
-    author_email="vent@vents.com",
+    author="pvp team",
+    author_email="pvp@vents.com",
     description="some description of how we made a ventilator",
     keywords="vents ventilators etc",
     url="https://ventilator.readthedocs.io",

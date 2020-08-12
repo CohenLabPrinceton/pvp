@@ -1,15 +1,19 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>vent package &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp package &mdash; PVP 0.0.0 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
 
   
   
@@ -17,7 +21,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,11 +35,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -49,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> PVP
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PVP
           
 
           
@@ -76,6 +77,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,7 +91,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
@@ -116,6 +118,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -154,9 +157,9 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>vent package</li>
+      <li>pvp package</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -175,18 +178,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="vent-package">
-<h1>vent package<a class="headerlink" href="#vent-package" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="pvp-package">
+<h1>pvp package<a class="headerlink" href="#pvp-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="vent.gui.html">vent.gui package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#vent-gui-defaults-module">vent.gui.defaults module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#module-vent.gui.styles">vent.gui.styles module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#module-vent.gui.widgets">vent.gui.widgets module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vent.gui.html#module-vent.gui">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvp.gui.html">pvp.gui package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pvp.gui.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pvp.gui.widgets.html">pvp.gui.widgets package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pvp.gui.widgets.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.gui.widgets.html#pvp-gui-widgets-alarm-bar-module">pvp.gui.widgets.alarm_bar module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.gui.widgets.html#pvp-gui-widgets-components-module">pvp.gui.widgets.components module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.gui.widgets.html#pvp-gui-widgets-control-panel-module">pvp.gui.widgets.control_panel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.gui.widgets.html#pvp-gui-widgets-dialog-module">pvp.gui.widgets.dialog module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.gui.widgets.html#pvp-gui-widgets-display-module">pvp.gui.widgets.display module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.gui.widgets.html#pvp-gui-widgets-plot-module">pvp.gui.widgets.plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pvp.gui.widgets.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.gui.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.gui.html#pvp-gui-constraints-module">pvp.gui.constraints module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.gui.html#pvp-gui-main-module">pvp.gui.main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.gui.html#pvp-gui-menus-module">pvp.gui.menus module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.gui.html#pvp-gui-styles-module">pvp.gui.styles module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.gui.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -195,57 +213,32 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="vent-alarms-module">
-<h2>vent.alarms module<a class="headerlink" href="#vent-alarms-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pvp-alarms-module">
+<h2>pvp.alarms module<a class="headerlink" href="#pvp-alarms-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-vent.controller">
-<span id="vent-controller-module"></span><h2>vent.controller module<a class="headerlink" href="#module-vent.controller" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pvp-controller-module">
+<h2>pvp.controller module<a class="headerlink" href="#pvp-controller-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="vent-controls-module">
-<h2>vent.controls module<a class="headerlink" href="#vent-controls-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pvp-controls-module">
+<h2>pvp.controls module<a class="headerlink" href="#pvp-controls-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="vent-gui-styles-module">
-<h2>vent.gui_styles module<a class="headerlink" href="#vent-gui-styles-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pvp-gui-styles-module">
+<h2>pvp.gui_styles module<a class="headerlink" href="#pvp-gui-styles-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="vent-helper-module">
-<h2>vent.helper module<a class="headerlink" href="#vent-helper-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pvp-helper-module">
+<h2>pvp.helper module<a class="headerlink" href="#pvp-helper-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-vent.main">
-<span id="vent-main-module"></span><h2>vent.main module<a class="headerlink" href="#module-vent.main" title="Permalink to this headline">¶</a></h2>
-<p><strong>Functions</strong></p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#vent.main.main" title="vent.main.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#vent.main.parse_cmd_args" title="vent.main.parse_cmd_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_cmd_args</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py function">
-<dt id="vent.main.parse_cmd_args">
-<code class="sig-prename descclassname">vent.main.</code><code class="sig-name descname">parse_cmd_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/main.html#parse_cmd_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.main.parse_cmd_args" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="vent.main.main">
-<code class="sig-prename descclassname">vent.main.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/vent/main.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vent.main.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="pvp-main-module">
+<h2>pvp.main module<a class="headerlink" href="#pvp-main-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="vent-main-control-module">
-<h2>vent.main_control module<a class="headerlink" href="#vent-main-control-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pvp-main-control-module">
+<h2>pvp.main_control module<a class="headerlink" href="#pvp-main-control-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="vent-sensors-module">
-<h2>vent.sensors module<a class="headerlink" href="#vent-sensors-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pvp-sensors-module">
+<h2>pvp.sensors module<a class="headerlink" href="#pvp-sensors-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-vent">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-vent" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -260,11 +253,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, jonny saunders et al
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -275,7 +276,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

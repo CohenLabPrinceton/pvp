@@ -60,7 +60,7 @@ UX stuff
 
 - protection against acidental change
 	* confirm settings on startup
-	* must not be able to turn vent off
+	* must not be able to turn pvp off
 	* show confirmation on start with set values.
 
 

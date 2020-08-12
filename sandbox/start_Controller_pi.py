@@ -6,9 +6,9 @@ import tables as pytb
 import os
 sys.path.append('../')
 
-from vent.controller.control_module import get_control_module, Balloon_Simulator
-from vent.common.message import SensorValues, ControlSetting
-from vent.common.values import ValueName, CONTROL
+from pvp.controller.control_module import get_control_module, Balloon_Simulator
+from pvp.common.message import SensorValues, ControlSetting
+from pvp.common.values import ValueName, CONTROL
 
 Controller = get_control_module(sim_mode=False)
 
@@ -87,6 +87,6 @@ except KeyboardInterrupt:
     Controller.HAL._inlet_valve.close()
     Controller.HAL._control_valve.close()
     if Controller.HAL.setpoint_in is not 0:
-        print("Cannot close vent-in:")
+        print("Cannot close pvp-in:")
         print("Ex: " + str(Controller.HAL.setpoint_ex ))
         print("In: " + str(Controller.HAL.setpoint_in ))

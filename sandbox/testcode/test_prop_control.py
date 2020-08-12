@@ -1,11 +1,11 @@
 import pigpio
 import time
-import vent.io as io
+import pvp.io as io
 from random import random
 import numpy as np
 import matplotlib.pyplot as plt 
 
-hal = io.Hal(config_file='vent/io/config/devices.ini')
+hal = io.Hal(config_file='pvp/io/config/devices.ini')
 
 print('PWM Frequency: ', hal._control_valve.frequency)
 

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,19 @@
   
 
   
+  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/_static/pvp_theme.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -29,11 +35,6 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -49,7 +50,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> PVP
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> PVP
           
 
           
@@ -76,6 +77,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,7 +91,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../hardware.html">Hardware Placeholder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware.html">Hardware Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
@@ -116,6 +118,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -154,7 +157,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -179,11 +182,13 @@
 <span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
-<span class="kn">from</span> <span class="nn">vent.common.message</span> <span class="kn">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
-<span class="kn">from</span> <span class="nn">vent.alarm</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span>
-<span class="kn">from</span> <span class="nn">vent.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span>
-<span class="kn">from</span> <span class="nn">vent.coordinator.coordinator</span> <span class="kn">import</span> <span class="n">get_coordinator</span>
-<span class="kn">from</span> <span class="nn">vent.controller.control_module</span> <span class="kn">import</span> <span class="n">get_control_module</span>
+<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="kn">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span>
+<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span>
+<span class="kn">from</span> <span class="nn">pvp.coordinator.coordinator</span> <span class="kn">import</span> <span class="n">get_coordinator</span>
+<span class="kn">from</span> <span class="nn">pvp.controller.control_module</span> <span class="kn">import</span> <span class="n">get_control_module</span>
+<span class="kn">from</span> <span class="nn">pvp</span> <span class="kn">import</span> <span class="n">prefs</span>
+<span class="n">prefs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1">#########################   TEST 1  ##################################</span>
@@ -213,19 +218,13 @@
     <span class="n">v_max</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-    <span class="n">c_set</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">control_setting_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="n">v_min</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">v_max</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">c_set</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">control_setting_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
     <span class="n">Controller</span><span class="o">.</span><span class="n">set_control</span><span class="p">(</span><span class="n">c_set</span><span class="p">)</span>
 
     <span class="n">c_get</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">get_control</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">c_get</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">c_set</span><span class="o">.</span><span class="n">name</span>
-    <span class="k">assert</span> <span class="n">c_get</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">c_set</span><span class="o">.</span><span class="n">value</span>
-    <span class="k">assert</span> <span class="n">c_get</span><span class="o">.</span><span class="n">min_value</span> <span class="o">==</span> <span class="n">c_set</span><span class="o">.</span><span class="n">min_value</span>
-    <span class="k">assert</span> <span class="n">c_get</span><span class="o">.</span><span class="n">max_value</span> <span class="o">==</span> <span class="n">c_set</span><span class="o">.</span><span class="n">max_value</span>
-    <span class="k">assert</span> <span class="n">c_get</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">c_set</span><span class="o">.</span><span class="n">timestamp</span>
-
-    <span class="n">wv</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">get_target_waveform</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">wv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span></div>
+    <span class="k">assert</span> <span class="n">c_get</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">c_set</span><span class="o">.</span><span class="n">value</span></div>
 
 <div class="viewcode-block" id="test_restart_controller"><a class="viewcode-back" href="../../tests.html#tests.test_controller.test_restart_controller">[docs]</a><span class="k">def</span> <span class="nf">test_restart_controller</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -237,7 +236,7 @@
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="n">Controller</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="n">vals_start</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">get_sensors</span><span class="p">()</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
         <span class="n">Controller</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span> 
         <span class="n">vals_stop</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">get_sensors</span><span class="p">()</span>
         <span class="k">assert</span> <span class="n">vals_stop</span><span class="o">.</span><span class="n">loop_counter</span> <span class="o">&gt;</span> <span class="n">vals_start</span><span class="o">.</span><span class="n">loop_counter</span></div>
@@ -257,43 +256,31 @@
 <span class="c1">#   good. (i.e. close to target within narrow margins).</span>
 <span class="c1">#</span>
 
-<div class="viewcode-block" id="test_control_dynamical"><a class="viewcode-back" href="../../tests.html#tests.test_controller.test_control_dynamical">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;control_type&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;PID&quot;</span><span class="p">,</span> <span class="s2">&quot;STATE&quot;</span><span class="p">])</span>
-
-<span class="k">def</span> <span class="nf">test_control_dynamical</span><span class="p">(</span><span class="n">control_type</span><span class="p">):</span>
+<div class="viewcode-block" id="test_control_dynamical"><a class="viewcode-back" href="../../tests.html#tests.test_controller.test_control_dynamical">[docs]</a><span class="k">def</span> <span class="nf">test_control_dynamical</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39; </span>
 <span class="sd">    This tests whether the controller is controlling pressure as intended.</span>
 <span class="sd">    Start controller, set control values, measure whether actually there.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">Controller</span> <span class="o">=</span> <span class="n">get_control_module</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simulator_dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
-    <span class="n">Controller</span><span class="o">.</span><span class="n">_LOOP_UPDATE_TIME</span> <span class="o">=</span> <span class="mi">0</span>
-
-
-    <span class="k">if</span> <span class="n">control_type</span> <span class="o">==</span> <span class="s2">&quot;PID&quot;</span><span class="p">:</span>
-        <span class="n">Controller</span><span class="o">.</span><span class="n">do_pid_control</span><span class="p">()</span>
-        <span class="n">Controller</span><span class="o">.</span><span class="n">do_pid_control</span><span class="p">()</span>
-        <span class="n">Inspiration_CI</span> <span class="o">=</span> <span class="mf">0.2</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">Controller</span><span class="o">.</span><span class="n">do_state_control</span><span class="p">()</span>
-        <span class="n">Controller</span><span class="o">.</span><span class="n">do_state_control</span><span class="p">()</span>
-        <span class="n">Inspiration_CI</span> <span class="o">=</span> <span class="mf">0.4</span>    <span class="c1"># State control is not that precise, slightly wider confidence regions.</span>
+    <span class="n">Controller</span><span class="o">.</span><span class="n">_LOOP_UPDATE_TIME</span> <span class="o">=</span> <span class="mf">0.01</span>
 
     <span class="n">vals_start</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">get_sensors</span><span class="p">()</span>
 
-    <span class="n">v_peep</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-    <span class="n">command</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v_peep</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="n">v_peep</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">v_peep</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">v_peep</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v_peep</span><span class="p">)</span>
     <span class="n">Controller</span><span class="o">.</span><span class="n">set_control</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 
     <span class="n">v_pip</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
-    <span class="n">command</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v_pip</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="n">v_pip</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">v_pip</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v_pip</span><span class="p">)</span>
     <span class="n">Controller</span><span class="o">.</span><span class="n">set_control</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 
     <span class="n">v_bpm</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-    <span class="n">command</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v_bpm</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="n">v_bpm</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">v_bpm</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span> 
+    <span class="n">command</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v_bpm</span><span class="p">)</span>
 
     <span class="n">Controller</span><span class="o">.</span><span class="n">set_control</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 
     <span class="n">v_iphase</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.3</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span><span class="o">/</span><span class="n">v_bpm</span>
-    <span class="n">command</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v_iphase</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="n">v_iphase</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">v_iphase</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v_iphase</span><span class="p">)</span>
     <span class="n">Controller</span><span class="o">.</span><span class="n">set_control</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 
 
@@ -332,15 +319,20 @@
     <span class="k">assert</span> <span class="n">COPY_tt</span>       <span class="o">==</span> <span class="n">vals_stop</span><span class="o">.</span><span class="n">timestamp</span>
     <span class="k">assert</span> <span class="n">COPY_lc</span>       <span class="o">==</span> <span class="n">vals_stop</span><span class="o">.</span><span class="n">loop_counter</span>
 
-    <span class="k">assert</span> <span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">loop_counter</span> <span class="o">-</span> <span class="n">vals_start</span><span class="o">.</span><span class="n">loop_counter</span><span class="p">)</span>  <span class="o">&gt;</span> <span class="mi">100</span> <span class="c1"># In 20s, this program should go through a good couple of loops</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">PEEP</span> <span class="o">-</span> <span class="n">v_peep</span><span class="p">)</span>                     <span class="o">&lt;</span> <span class="mi">2</span>   <span class="c1"># PEEP error correct within 2 cmH2O  - as per document</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">PIP</span> <span class="o">-</span> <span class="n">v_pip</span><span class="p">)</span>                       <span class="o">&lt;</span> <span class="mi">2</span>   <span class="c1"># PIP  error correct within 2 cmH2O</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span> <span class="o">-</span> <span class="n">v_bpm</span><span class="p">)</span>        <span class="o">&lt;</span> <span class="mi">2</span>   <span class="c1"># Breaths per minute correct within 2 bpm</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span> <span class="o">-</span> <span class="n">v_iphase</span><span class="p">)</span>   <span class="o">&lt;</span> <span class="mf">0.2</span><span class="o">*</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span> <span class="c1"># Inspiration time, correct within 20%</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">v_peep</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">v_pip</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">v_bpm</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">v_iphase</span><span class="p">)</span>
 
-    <span class="n">hb1</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">_loop_counter</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">loop_counter</span> <span class="o">-</span> <span class="n">vals_start</span><span class="o">.</span><span class="n">loop_counter</span><span class="p">)</span>  <span class="o">&gt;</span> <span class="mi">100</span> <span class="c1"># In 20s, this program should go through a good couple of loops</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">PEEP</span> <span class="o">-</span> <span class="n">v_peep</span><span class="p">)</span>                     <span class="o">&lt;</span> <span class="mi">2</span>   <span class="c1"># PEEP error correct within 5 cmH2O</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">PIP</span> <span class="o">-</span> <span class="n">v_pip</span><span class="p">)</span>                       <span class="o">&lt;</span> <span class="mi">5</span>   <span class="c1"># PIP  error correct within 5 cmH2O</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span> <span class="o">-</span> <span class="n">v_bpm</span><span class="p">)</span>        <span class="o">&lt;</span> <span class="mi">1</span>   <span class="c1"># Breaths per minute correct within 5 bpm</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vals_stop</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span> <span class="o">-</span> <span class="n">v_iphase</span><span class="p">)</span>   <span class="o">&lt;</span> <span class="mf">0.2</span> <span class="c1"># Inspiration time, correct within 20%</span>
+
+    <span class="n">hb1</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">get_heartbeat</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">hb1</span> <span class="o">&gt;</span> <span class="mi">0</span>                                 <span class="c1"># Test the heartbeat</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">hb1</span> <span class="o">-</span> <span class="n">COPY_lc</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">_NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE</span>  <span class="c1"># true heart-beat should be close to the sensor loop counter</span></div>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">hb1</span> <span class="o">-</span> <span class="n">COPY_lc</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">Controller</span><span class="o">.</span><span class="n">_NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE</span> <span class="o">+</span> <span class="mi">2</span>  <span class="c1"># true heart-beat should be close to the sensor loop counter</span></div>
 
 
 
@@ -351,113 +343,6 @@
 <span class="c1">######################################################################</span>
 <span class="c1">#########################   TEST 3  ##################################</span>
 <span class="c1">######################################################################</span>
-<span class="c1">#</span>
-<span class="c1">#   More involved test, triggers a series of alarms and makes sure they</span>
-<span class="c1">#   are raised correctly.</span>
-<span class="c1">#</span>
-<span class="c1"># def test_alarm():</span>
-<span class="c1">#     &#39;&#39;&#39;</span>
-<span class="c1">#         This is a function to test the alarm functions. It triggers a series of alarms, that remain active for a while, and then are deactivated.</span>
-<span class="c1">#     &#39;&#39;&#39;</span>
-<span class="c1">#     Controller = get_control_module(sim_mode=True)</span>
-<span class="c1">#     Controller.start()</span>
-<span class="c1">#     time.sleep(1)</span>
-<span class="c1">#</span>
-<span class="c1">#     for t in np.arange(0, 30, 0.05):</span>
-<span class="c1">#</span>
-<span class="c1">#         ### Make a cascade of changes that will not trigger alarms</span>
-<span class="c1">#         if t == 0:</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=30, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=2, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if t == 3:</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if t == 6:</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#</span>
-<span class="c1">#         ### Make a cascade of changes to trigger four alarms</span>
-<span class="c1">#         if t == 8:    # trigger a PIP alarm</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=5, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if t == 23:    #resolve the PIP alarm</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.PIP, value=25, min_value=0, max_value=30, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if (t &gt; 8+(60/17)) and (t&lt;23):  #Test whether it is active</span>
-<span class="c1">#             activealarms = Controller.get_active_alarms()</span>
-<span class="c1">#             assert len(activealarms.keys()) &gt;= 1</span>
-<span class="c1">#             assert ValueName.PIP in activealarms.keys()</span>
-<span class="c1">#</span>
-<span class="c1">#         if t == 12:    # trigger a PEEP alarm</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=5, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if t == 23:    # resolve it</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.PEEP, value=10, min_value=0, max_value=20, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if (t &gt; 12+(60/17)) and (t&lt;23):</span>
-<span class="c1">#             activealarms = Controller.get_active_alarms()</span>
-<span class="c1">#             assert len(activealarms.keys()) &gt;= 1</span>
-<span class="c1">#             assert ValueName.PEEP in activealarms.keys()</span>
-<span class="c1">#</span>
-<span class="c1">#         if t == 15:    # trigger a BPM alarm</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=5, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if t == 20:    # resolve it</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=17, min_value=0, max_value=20, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if (t &gt; 15+(60/17)) and (t&lt;20):</span>
-<span class="c1">#             activealarms = Controller.get_active_alarms()</span>
-<span class="c1">#             assert len(activealarms.keys()) &gt;= 1</span>
-<span class="c1">#             assert ValueName.BREATHS_PER_MINUTE in activealarms.keys()</span>
-<span class="c1">#</span>
-<span class="c1">#         if t == 17:    # Trigger a INSPIRATION_TIME_SEC alarm</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=1, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if t == 22:    # resolve it</span>
-<span class="c1">#             command = ControlSetting(name=ValueName.INSPIRATION_TIME_SEC, value=1.5, min_value=0, max_value=3, timestamp=time.time())</span>
-<span class="c1">#             Controller.set_control(command)</span>
-<span class="c1">#         if (t &gt; 17+(60/17)) and (t&lt;22):</span>
-<span class="c1">#             activealarms = Controller.get_active_alarms()</span>
-<span class="c1">#             assert len(activealarms.keys()) &gt;= 1</span>
-<span class="c1">#             assert ValueName.INSPIRATION_TIME_SEC in activealarms.keys()</span>
-<span class="c1">#</span>
-<span class="c1">#</span>
-<span class="c1">#         time.sleep(0.05)</span>
-<span class="c1">#</span>
-<span class="c1">#     Controller.stop()</span>
-<span class="c1">#</span>
-<span class="c1">#</span>
-<span class="c1">#     #Check that the duration of the four alarms was correct</span>
-<span class="c1">#     sv = Controller.get_sensors()</span>
-<span class="c1">#     logged_alarms = Controller.get_logged_alarms()</span>
-<span class="c1">#</span>
-<span class="c1">#     for a in logged_alarms:</span>
-<span class="c1">#         print(a.alarm_name)</span>
-<span class="c1">#         assert not a.active</span>
-<span class="c1">#</span>
-<span class="c1">#         alarm_duration = a.alarm_end_time - a.start_time</span>
-<span class="c1">#         if a.alarm_name == &#39;PEEP&#39;:</span>
-<span class="c1">#             assert alarm_duration &lt; (1+np.ceil(sv.breaths_per_minute * 11/60)) * 60/sv.breaths_per_minute</span>
-<span class="c1">#         if a.alarm_name == &#39;BREATHS_PER_MINUTE&#39;:</span>
-<span class="c1">#             assert alarm_duration &lt; (1+np.ceil(sv.breaths_per_minute * 5/60)) * 60/sv.breaths_per_minute</span>
-<span class="c1">#         if a.alarm_name == &#39;I_PHASE&#39;:</span>
-<span class="c1">#             assert alarm_duration &lt; (1+np.ceil(sv.breaths_per_minute * 5/60)) * 60/sv.breaths_per_minute</span>
-<span class="c1">#         if a.alarm_name == &quot;PIP&quot;:</span>
-<span class="c1">#             assert alarm_duration &lt; (1+np.ceil(sv.breaths_per_minute * 15/60)) * 60/sv.breaths_per_minute</span>
-<span class="c1">#</span>
-<span class="c1">#     # And that they have been resolved/logged correctly</span>
-<span class="c1">#     assert len(Controller.get_active_alarms()) == 0</span>
-<span class="c1">#     assert len(Controller.get_logged_alarms()) &gt;= 4</span>
-<span class="c1">#     assert len(Controller.get_alarms()) &gt;= 4</span>
-<span class="c1">#</span>
-<span class="c1">#     waveformlist_1 = Controller.get_past_waveforms() #This also should work fine</span>
-<span class="c1">#     waveformlist_2 = Controller.get_past_waveforms()</span>
-<span class="c1">#</span>
-<span class="c1">#     assert len([s for s in waveformlist_1 if s is not None]) &gt; len([s for s in waveformlist_2 if s is not None])   #Test: calling the past_waveforms clears ring buffer.</span>
-<span class="c1">#</span>
-
 
 
 
@@ -465,20 +350,18 @@
 <span class="c1">#########################   TEST 4  ##################################</span>
 <span class="c1">######################################################################</span>
 <span class="c1">#</span>
-<span class="c1">#   More involved test, triggers a series of alarms and makes sure they</span>
-<span class="c1">#   are raised correctly.</span>
+<span class="c1">#   More involved test, randomized waittimes and make sure the system works</span>
 <span class="c1">#</span>
 <div class="viewcode-block" id="test_erratic_dt"><a class="viewcode-back" href="../../tests.html#tests.test_controller.test_erratic_dt">[docs]</a><span class="k">def</span> <span class="nf">test_erratic_dt</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        This is a function to test whether the controller works with random update times</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">Controller</span> <span class="o">=</span> <span class="n">get_control_module</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simulator_dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
-    <span class="n">Controller</span><span class="o">.</span><span class="n">_LOOP_UPDATE_TIME</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">Controller</span> <span class="o">=</span> <span class="n">get_control_module</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">Controller</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
     <span class="n">ls</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span><span class="mf">0.05</span><span class="p">):</span>
-        <span class="n">Controller</span><span class="o">.</span><span class="n">_simulator_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span>  <span class="c1"># updates anywhere between 0ms and 100ms</span>
+        <span class="n">Controller</span><span class="o">.</span><span class="n">_LOOP_UPDATE_TIME</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span>  <span class="c1"># updates anywhere between 0ms and 100ms</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">get_sensors</span><span class="p">()</span>
         <span class="n">ls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
@@ -492,8 +375,8 @@
     <span class="n">peeps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">PEEP</span> <span class="o">-</span> <span class="n">target_peep</span><span class="p">)</span>  <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ls</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">PEEP</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
     <span class="n">pips</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">PIP</span> <span class="o">-</span> <span class="n">target_pip</span><span class="p">)</span>  <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ls</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">PIP</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
 
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">peeps</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pips</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span></div>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">peeps</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">8</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pips</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">8</span></div>
 
 </pre></div>
 
@@ -507,11 +390,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, jonny saunders et al
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -522,7 +413,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

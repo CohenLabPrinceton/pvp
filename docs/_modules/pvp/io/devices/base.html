@@ -1,0 +1,812 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pvp.io.devices.base &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/_static/pvp_theme.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware.html">Hardware Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pvp.io.devices.base</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pvp.io.devices.base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; Base classes &amp; functions used throughout pvp.io.devices</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">pvp.common.fashion</span> <span class="kn">import</span> <span class="n">pigpio_command</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">pigpio</span>
+
+<span class="k">class</span> <span class="nc">PigpioConnection</span><span class="p">(</span><span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Subclass that extends pigpio.pi to throw an exception if there are issues connecting to the pigpio daemon.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Calls superclass init and checks if a connection was established; throws a RuntimeError if not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args: parameters to pass through like: pigpio.pi().__init__(*args)</span>
+<span class="sd">            **kwargs: parameters to pass through like: pigpio.pi().__init__(**kwargs)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not establish connection with pigpio daemon&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="IODeviceBase"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.IODeviceBase">[docs]</a><span class="k">class</span> <span class="nc">IODeviceBase</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Abstract base Class for pigpio handles (or whatever other GPIO library</span>
+<span class="sd">    we end up using)</span>
+
+<span class="sd">    Note: pigpio commands return -144 if an error is encountered while</span>
+<span class="sd">    attempting to communicate with the demon. TODO would be to recognize</span>
+<span class="sd">    when that occurs and handle it gracefully, i.e. kill the daemon,</span>
+<span class="sd">    restart it, and reopen the python interface(s)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IODeviceBase.__init__"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.IODeviceBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pig</span><span class="p">:</span> <span class="n">PigpioConnection</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initializes the pigpio python bindings object if necessary,</span>
+<span class="sd">        and checks that it is actually running.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pig</span> <span class="o">=</span> <span class="n">pig</span> <span class="k">if</span> <span class="n">pig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">PigpioConnection</span><span class="p">(</span><span class="n">show_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pig</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PigpioConnection</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; The pigpio python bindings object&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pig</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Pigpiod handle associated with device (only for i2c/spi)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pigpiod_ok</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns True if pigpiod is running and False if not&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">connected</span>
+
+<div class="viewcode-block" id="IODeviceBase._close"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.IODeviceBase._close">[docs]</a>    <span class="k">def</span> <span class="nf">_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Closes an I2C/SPI (or potentially Serial) connection&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pigpiod_ok</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span></div></div>
+
+
+<div class="viewcode-block" id="I2CDevice"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice">[docs]</a><span class="k">class</span> <span class="nc">I2CDevice</span><span class="p">(</span><span class="n">IODeviceBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A class wrapper for pigpio I2C handles. Defines several methods</span>
+<span class="sd">    used for reading from and writing to device registers. Defines</span>
+<span class="sd">    helper classes Register and ValueField for handling the</span>
+<span class="sd">    manipulation of arbitrary registers.</span>
+
+<span class="sd">    Note: The Raspberry Pi uses LE byte-ordering, while the outside</span>
+<span class="sd">    world tends to use BE (at least, the sensors in use so far all do).</span>
+<span class="sd">    Thus, bytes need to be swapped from native (LE) ordering to BE</span>
+<span class="sd">    prior to being written to an i2c device, and bytes recieved need to</span>
+<span class="sd">    be swapped from BE into native (LE). All methods except read_device</span>
+<span class="sd">    and write_device perform this automatically. The methods read_device</span>
+<span class="sd">    and write_device do NOT byteswap and return bytearrays rather than</span>
+<span class="sd">    the unsigned 16-bit int used by the other read/write methods.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="I2CDevice.__init__"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i2c_address</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="p">,</span> <span class="n">pig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initializes pigpio bindings and opens i2c connection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            i2c_address (int): I2C address of the device. (e.g., `i2c_address=0x50`)</span>
+<span class="sd">            i2c_bus (int): The I2C bus to use. Should probably be set to 1 on Raspberry Pi.</span>
+<span class="sd">            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i2c_bus</span> <span class="o">=</span> <span class="n">i2c_bus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">(</span><span class="n">i2c_bus</span><span class="p">,</span> <span class="n">i2c_address</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="I2CDevice._open"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice._open">[docs]</a>    <span class="nd">@pigpio_command</span>
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="p">,</span> <span class="n">i2c_address</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Opens i2c connection given i2c bus and address.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">i2c_open</span><span class="p">(</span><span class="n">i2c_bus</span><span class="p">,</span> <span class="n">i2c_address</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="I2CDevice._close"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice._close">[docs]</a>    <span class="nd">@pigpio_command</span>
+    <span class="k">def</span> <span class="nf">_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extends superclass method. Checks that pigpiod is connected</span>
+<span class="sd">        and if a handle has been set - if so, closes an i2c connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">i2c_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="I2CDevice.read_device"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.read_device">[docs]</a>    <span class="nd">@pigpio_command</span>
+    <span class="k">def</span> <span class="nf">read_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Read a specified number of bytes directly from the the device without specifying or changing the register.</span>
+<span class="sd">        Does NOT perform LE/BE conversion.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            count (int): The number of bytes to read from the device.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: a tuple of the number of bytes read and a bytearray containing the bytes. If there was an error the</span>
+<span class="sd">            number of bytes read will be less than zero (and will contain the error code).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">i2c_read_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="I2CDevice.write_device"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.write_device">[docs]</a>    <span class="nd">@pigpio_command</span>
+    <span class="k">def</span> <span class="nf">write_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Write 2 bytes to the device without specifying register. DOES perform LE/BE conversion.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            word (int): The integer representation of the data to write.</span>
+<span class="sd">            signed (bool): Whether or not `word` is signed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">i2c_write_device</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">,</span>
+            <span class="n">native16_to_be</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="n">signed</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="I2CDevice.read_register"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.read_register">[docs]</a>    <span class="nd">@pigpio_command</span>
+    <span class="k">def</span> <span class="nf">read_register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">register</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Read 2 bytes from the specified register and byteswap the result.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            register (int): The index of the register to read.</span>
+<span class="sd">            signed (bool): Whether or not the data to read is expected to be signed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: integer representation of 16 bit register contents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">be16_to_native</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">i2c_read_i2c_block_data</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">,</span>
+            <span class="n">register</span><span class="p">,</span>
+            <span class="n">count</span><span class="o">=</span><span class="mi">2</span>
+        <span class="p">),</span> <span class="n">signed</span><span class="o">=</span><span class="n">signed</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="I2CDevice.write_register"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.write_register">[docs]</a>    <span class="nd">@pigpio_command</span>
+    <span class="k">def</span> <span class="nf">write_register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">register</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Write 2 bytes to the specified register. Byteswaps.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            register (int): The index of the register to write to</span>
+<span class="sd">            word (int): The unsigned 16 bit integer to write to the register (must be consistent with &#39;signed&#39;)</span>
+<span class="sd">            signed (bool): Whether or not &#39;word&#39; is signed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">i2c_write_i2c_block_data</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">,</span>
+            <span class="n">register</span><span class="p">,</span>
+            <span class="n">native16_to_be</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="n">signed</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="I2CDevice.Register"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register">[docs]</a>    <span class="k">class</span> <span class="nc">Register</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Describes a writable configuration register. Has dynamically</span>
+<span class="sd">        defined attributes corresponding to the fields described by the</span>
+<span class="sd">        passed arguments. Takes as arguments two tuples of equal length,</span>
+<span class="sd">        the first of which names each field and the second being a tuple</span>
+<span class="sd">        of tuples containing the (human readable) possible settings &amp;</span>
+<span class="sd">        values for each field.</span>
+
+<span class="sd">        Note: The initializer reverses the fields &amp; their values because</span>
+<span class="sd">        a human reads the register, as drawn in the datasheet, from left</span>
+<span class="sd">        to right - however, the fields furthest to the left are the most</span>
+<span class="sd">        significant bits of the register.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="I2CDevice.Register.__init__"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register.__init__">[docs]</a>        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Initializer which loads (dynamically defined) attributes from tuples.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                fields (tuple): A tuple containing the names of the register&#39;s value fields</span>
+<span class="sd">                values (tuple): A tuple of tuples containing the possible values for each value field. Length must match</span>
+<span class="sd">                    the length of fields. If there are redundant values for a field specified in the datasheet, be sure</span>
+<span class="sd">                    to include them. (e.g., a field takes values `A: 0b00`, `B: 0b01`, and `C: 0b10`; but the value for</span>
+<span class="sd">                    `0b11` is either not specified by the datasheet or is listed redundantly as `C: 0b11` -&gt; `values`</span>
+<span class="sd">                    should list both the 3rd and 4th possible values as &#39;C&#39; like so: (&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;C&#39;)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;fields and values must contain the same number of elements&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">fld</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">fields</span><span class="p">),</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">values</span><span class="p">)):</span>
+                <span class="nb">setattr</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span>
+                    <span class="n">fld</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ValueField</span><span class="p">(</span>
+                        <span class="n">offset</span><span class="p">,</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">))))</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">offset</span> <span class="o">+=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="I2CDevice.Register.unpack"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register.unpack">[docs]</a>        <span class="k">def</span> <span class="nf">unpack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot; Given the contents of a register in integer form, returns a dict of fields and their current settings.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                cfg (int): An integer representing a possible configuration value for the register</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
+                <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">),</span>
+                    <span class="s1">&#39;unpack&#39;</span><span class="p">)(</span><span class="n">cfg</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+            <span class="p">))</span></div>
+
+<div class="viewcode-block" id="I2CDevice.Register.pack"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register.pack">[docs]</a>        <span class="k">def</span> <span class="nf">pack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot; Given an initial integer representation of a register and an arbitrary number of field=value settings,</span>
+<span class="sd">            returns an integer representation of the register incorporating the new settings.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                cfg (int): An integer representing a possible configuration value for the register</span>
+<span class="sd">                **kwargs: The register fields &amp; values to patch into cfg. Takes keyword arguments of the form:</span>
+<span class="sd">                    `field=value`</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">cfg</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">),</span> <span class="s1">&#39;insert&#39;</span><span class="p">)(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cfg</span></div>
+
+<div class="viewcode-block" id="I2CDevice.Register.ValueField"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register.ValueField">[docs]</a>        <span class="k">class</span> <span class="nc">ValueField</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot; Describes a configurable value field in a writable register.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="I2CDevice.Register.ValueField.__init__"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register.ValueField.__init__">[docs]</a>            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot; Instantiates a value field of a register given the bit offset, mask, and list of possible values.</span>
+
+<span class="sd">                Args:</span>
+<span class="sd">                    offset (int): The offset bits of the value field in the register, i.e. the distance from LSB</span>
+<span class="sd">                    mask (int): integer representation of the value field mask (w/o offset)</span>
+<span class="sd">                    values (OrderedDict): The possible values that the field can take.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span> <span class="o">=</span> <span class="n">offset</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">mask</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">values</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reversed_values</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">reversed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="I2CDevice.Register.ValueField.unpack"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register.ValueField.unpack">[docs]</a>            <span class="k">def</span> <span class="nf">unpack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot; Extracts the ValueField&#39;s setting from cfg &amp; returns the result in a human readable form.</span>
+
+<span class="sd">                Args:</span>
+<span class="sd">                    cfg (int): An integer representing a possible configuration value for the register</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reversed_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">cfg</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="I2CDevice.Register.ValueField.extract"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register.ValueField.extract">[docs]</a>            <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="sd">&quot;&quot;&quot; Extracts setting from passed 16-bit config &amp; returns integer representation.</span>
+
+<span class="sd">                Args:</span>
+<span class="sd">                    cfg (int): An integer representing a possible configuration value for the register</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">cfg</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">&lt;&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span><span class="p">))</span> <span class="o">&gt;&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span></div>
+
+<div class="viewcode-block" id="I2CDevice.Register.ValueField.pack"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register.ValueField.pack">[docs]</a>            <span class="k">def</span> <span class="nf">pack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="sd">&quot;&quot;&quot; Takes a human-readable ValueField setting and returns the corresponding bit-shifted integer.</span>
+
+<span class="sd">                Args:</span>
+<span class="sd">                    value (int): The integer representation of `value` bit-shifted by the ValueField&#39;s offset</span>
+
+<span class="sd">                Returns:</span>
+<span class="sd">                    int: The integer representation of the ValueField setting according to `value`</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ValueField must be one of: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span></div>
+
+<div class="viewcode-block" id="I2CDevice.Register.ValueField.insert"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.I2CDevice.Register.ValueField.insert">[docs]</a>            <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="sd">&quot;&quot;&quot; Validates and performs bitwise replacement with the human-readable ValueField setting and integer</span>
+<span class="sd">                representation of the register configuration.</span>
+
+<span class="sd">                Args:</span>
+<span class="sd">                    cfg (int): An integer representing a possible configuration value for the register</span>
+<span class="sd">                    value (object): The human readable representation of the desired ValueField setting. Must match a</span>
+<span class="sd">                        value in ValueField._values; if not, throws a ValueError</span>
+
+<span class="sd">                Returns:</span>
+<span class="sd">                    int: The integer representation of the Register&#39;s configuration with the value of ValueField patched</span>
+<span class="sd">                        according the `value`</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ValueField must be one of: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">cfg</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">&lt;&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span><span class="p">))</span> <span class="o">|</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span><span class="p">)</span></div></div></div></div>
+
+
+<div class="viewcode-block" id="SPIDevice"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.SPIDevice">[docs]</a><span class="k">class</span> <span class="nc">SPIDevice</span><span class="p">(</span><span class="n">IODeviceBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A class wrapper for pigpio SPI handles. Not really implemented. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SPIDevice.__init__"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.SPIDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">,</span> <span class="n">pig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Instantiates an SPIDevice on SPI `channel` with `baudrate` and, optionally, `pigpio.pi = pig`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            channel (int): The SPI channel</span>
+<span class="sd">            baudrate (int): SPI baudrate</span>
+<span class="sd">            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pig</span><span class="o">=</span><span class="n">pig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SPIDevice._open"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.SPIDevice._open">[docs]</a>    <span class="nd">@pigpio_command</span>
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Opens an SPI connection and sets the pigpiod handle.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            channel (int): The SPI channel</span>
+<span class="sd">            baudrate (int): SPI baudrate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">spi_open</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SPIDevice._close"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.SPIDevice._close">[docs]</a>    <span class="nd">@pigpio_command</span>
+    <span class="k">def</span> <span class="nf">_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extends superclass method. Checks that pigpiod is connected and if a handle has been set - if so, closes an</span>
+<span class="sd">        SPI connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ADS1115"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.ADS1115">[docs]</a><span class="k">class</span> <span class="nc">ADS1115</span><span class="p">(</span><span class="n">I2CDevice</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ADS1115 16 bit, 4 Channel Analog to Digital Converter.</span>
+<span class="sd">    Datasheet:</span>
+<span class="sd">     http://www.ti.com/lit/ds/symlink/ads1114.pdf?ts=1587872241912</span>
+
+<span class="sd">    Default Values:</span>
+<span class="sd">     Default configuration for pvp:     0xC3E3</span>
+<span class="sd">     Default configuration on power-up:  0x8583</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_DEFAULT_ADDRESS</span> <span class="o">=</span> <span class="mh">0x48</span>
+    <span class="n">_DEFAULT_VALUES</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MUX&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;PGA&#39;</span><span class="p">:</span> <span class="mf">4.096</span><span class="p">,</span> <span class="s1">&#39;MODE&#39;</span><span class="p">:</span> <span class="s1">&#39;SINGLE&#39;</span><span class="p">,</span> <span class="s1">&#39;DR&#39;</span><span class="p">:</span> <span class="mi">860</span><span class="p">}</span>
+    <span class="n">_TIMEOUT</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="sd">&quot;&quot;&quot; Address Pointer Register (write-only) &quot;&quot;&quot;</span>
+    <span class="n">_POINTER_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">,)</span>
+    <span class="n">_POINTER_VALUES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="s1">&#39;CONVERSION&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;CONFIG&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;LO_THRESH&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;HIGH_THRESH&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot; Config Register (R/W) &quot;&quot;&quot;</span>
+    <span class="n">_CONFIG_FIELDS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;OS&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;MUX&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PGA&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;MODE&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;DR&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;COMP_MODE&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;COMP_POL&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;COMP_LAT&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;COMP_QUE&#39;</span>
+    <span class="p">)</span>
+    <span class="n">_CONFIG_VALUES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;NO_EFFECT&#39;</span><span class="p">,</span> <span class="s1">&#39;START_CONVERSION&#39;</span><span class="p">),</span>
+        <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="p">(</span><span class="mf">6.144</span><span class="p">,</span> <span class="mf">4.096</span><span class="p">,</span> <span class="mf">2.048</span><span class="p">,</span> <span class="mf">1.024</span><span class="p">,</span> <span class="mf">0.512</span><span class="p">,</span> <span class="mf">0.256</span><span class="p">,</span> <span class="mf">0.256</span><span class="p">,</span> <span class="mf">0.256</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;CONTINUOUS&#39;</span><span class="p">,</span> <span class="s1">&#39;SINGLE&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">475</span><span class="p">,</span> <span class="mi">860</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;TRADIONAL&#39;</span><span class="p">,</span> <span class="s1">&#39;WINDOW&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;ACTIVE_LOW&#39;</span><span class="p">,</span> <span class="s1">&#39;ACTIVE_HIGH&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;NONLATCHING&#39;</span><span class="p">,</span> <span class="s1">&#39;LATCHING&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;DISABLE&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">USER_CONFIGURABLE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;MUX&#39;</span><span class="p">,</span> <span class="s1">&#39;PGA&#39;</span><span class="p">,</span> <span class="s1">&#39;MODE&#39;</span><span class="p">,</span> <span class="s1">&#39;DR&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot; Note:</span>
+<span class="sd">    The Conversion Register is read-only and contains a 16bit</span>
+<span class="sd">    representation of the requested value (provided the conversion is</span>
+<span class="sd">    ready).</span>
+
+<span class="sd">    The Lo-thresh &amp; Hi-thresh Registers are not Utilized here. However,</span>
+<span class="sd">    their function and usage are described in the datasheet. Should you</span>
+<span class="sd">    want to extend the functionality implemented here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ADS1115.__init__"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.ADS1115.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">_DEFAULT_ADDRESS</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initializes registers: Pointer register is write only,</span>
+<span class="sd">        config is R/W. Sets initial value of _last_cfg to what is</span>
+<span class="sd">        actually on the ADS.Packs default settings into _cfg, but does</span>
+<span class="sd">        not actually write to ADC - that occurs when read_conversion()</span>
+<span class="sd">        is called.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address (int): I2C address of the device. (e.g., `i2c_address=0x48`)</span>
+<span class="sd">            i2c_bus (int): The I2C bus to use. Should probably be set to 1 on Raspberry Pi.</span>
+<span class="sd">            pig (PigpioConnection): pigpiod connection to use; if not specified, a new one is established</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="p">,</span> <span class="n">pig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_POINTER_FIELDS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_POINTER_VALUES</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_CONFIG_FIELDS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_CONFIG_VALUES</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_last_cfg</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_cfg</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_DEFAULT_VALUES</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ADS1115.read_conversion"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.ADS1115.read_conversion">[docs]</a>    <span class="k">def</span> <span class="nf">read_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns a voltage (expressed as a float) corresponding to a channel on the ADC.</span>
+<span class="sd">        The channel to read from, along with the gain, mode, and sample rate of the conversion may be may be  specified</span>
+<span class="sd">        as optional parameters. If read_conversion() is called with no parameters, the resulting voltage corresponds to</span>
+<span class="sd">        the channel last read from and the same conversion settings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            MUX: The pin to read from in single channel mode: e.g., `0, 1, 2, 3`</span>
+<span class="sd">                or, a tuple of pins over which to make a differential reading.</span>
+<span class="sd">                e.g., `(0, 1), (0, 3), (1, 3), (2, 3)`</span>
+<span class="sd">            PGA: The full scale voltage (FSV) corresponding to a programmable gain setting.</span>
+<span class="sd">                e.g., `(6.144, 4.096, 2.048, 1.024, 0.512, 0.256, 0.256, 0.256)`</span>
+<span class="sd">            MODE: Whether to set the ADC to continuous conversion mode, or operate in single-shot mode.</span>
+<span class="sd">                e.g., `&#39;CONTINUOUS&#39;, &#39;SINGLE&#39;`</span>
+<span class="sd">            DR: The data rate to make the conversion at; units: samples per second.</span>
+<span class="sd">                e.g., `8, 16, 32, 64, 128, 250, 475, 860`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_read_conversion</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">PGA</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span> <span class="o">/</span> <span class="mi">32767</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ADS1115.print_config"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.ADS1115.print_config">[docs]</a>    <span class="k">def</span> <span class="nf">print_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the human-readable configuration for the next read.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            OrderedDict: an ordered dictionary of the form {field: value}, ordered from MSB -&gt; LSB</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the Register object of the config register.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pvp.io.devices.I2CDevice.Register: The Register object initialized for the ADS1115.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the contents (as a 16-bit unsigned integer) of the configuration that will be written to the config</span>
+<span class="sd">        register when read_conversion() is next called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span>
+
+<div class="viewcode-block" id="ADS1115._read_conversion"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.ADS1115._read_conversion">[docs]</a>    <span class="k">def</span> <span class="nf">_read_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Backend for read_conversion. Returns the contents of the 16-bit conversion register as an unsigned integer.</span>
+
+<span class="sd">        If no parameters are passed, one of two things can happen:</span>
+
+<span class="sd">            1)  If the ADC is in single-shot (mode=&#39;SINGLE&#39;) conversion</span>
+<span class="sd">                mode, _last_cfg is written to the config register; once</span>
+<span class="sd">                the ADC indicates it is ready, the contents of the</span>
+<span class="sd">                conversion register are read and the result is returned.</span>
+<span class="sd">            2)  If the ADC is in CONTINUOUS mode, the contents of the</span>
+<span class="sd">                conversion register are read immediately and returned.</span>
+
+<span class="sd">        If any of channel, gain, mode, or data_rate are specified as</span>
+<span class="sd">        parameters, a new _cfg is packed and written to the config</span>
+<span class="sd">        register; once the ADC indicates it is ready, the contents of</span>
+<span class="sd">        the conversion register are read and the result is returned.</span>
+
+<span class="sd">        Note: In continuous mode, data can be read from the conversion</span>
+<span class="sd">        register of the ADS1115 at any time and always reflects the</span>
+<span class="sd">        most recently completed conversion. So says the datasheet.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: see documentation of pvp.io.devices.ADS1115.read_conversion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_config</span><span class="p">()[</span><span class="s1">&#39;MODE&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_cfg</span> <span class="ow">or</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;SINGLE&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;CONFIG&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span>
+            <span class="n">data_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">DR</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+            <span class="sd">&#39;&#39;&#39;while not (self._ready() or mode == &#39;CONTINUOUS&#39;):</span>
+<span class="sd">                # TODO: Needs timout</span>
+<span class="sd">                tick = time.time()</span>
+<span class="sd">                while (time.time() - tick) &lt; (1 / data_rate):</span>
+<span class="sd">                    pass  # TODO: implement asyncio.sleep()&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;CONVERSION&#39;</span><span class="p">),</span> <span class="n">signed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ADS1115._read_last_cfg"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.ADS1115._read_last_cfg">[docs]</a>    <span class="k">def</span> <span class="nf">_read_last_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Reads the config register and returns the contents as a 16-bit unsigned integer;</span>
+<span class="sd">        updates internal record _last_cfg.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;CONFIG&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_cfg</span></div>
+
+<div class="viewcode-block" id="ADS1115._ready"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.ADS1115._ready">[docs]</a>    <span class="k">def</span> <span class="nf">_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Return status of ADC conversion; True indicates the conversion is complete and the results ready to be read.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;CONFIG&#39;</span><span class="p">))</span> <span class="o">&gt;&gt;</span> <span class="mi">15</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ADS1015"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.ADS1015">[docs]</a><span class="k">class</span> <span class="nc">ADS1015</span><span class="p">(</span><span class="n">ADS1115</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ADS1015 16 bit, 4 Channel Analog to Digital Converter.</span>
+<span class="sd">    Datasheet:</span>
+<span class="sd">      http://www.ti.com/lit/ds/symlink/ads1015.pdf?&amp;ts=1589228228921</span>
+
+<span class="sd">    Basically the same device as the ADS1115, except has 12 bit resolution instead of 16, and has different (faster)</span>
+<span class="sd">    data rates. The difference in data rates is handled by overloading _CONFIG_VALUES. The difference in resolution is</span>
+<span class="sd">    irrelevant for implementation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_DEFAULT_ADDRESS</span> <span class="o">=</span> <span class="mh">0x48</span>
+    <span class="n">_DEFAULT_VALUES</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MUX&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;PGA&#39;</span><span class="p">:</span> <span class="mf">4.096</span><span class="p">,</span> <span class="s1">&#39;MODE&#39;</span><span class="p">:</span> <span class="s1">&#39;SINGLE&#39;</span><span class="p">,</span> <span class="s1">&#39;DR&#39;</span><span class="p">:</span> <span class="mi">3300</span><span class="p">}</span>
+
+    <span class="sd">&quot;&quot;&quot; Address Pointer Register (write-only) &quot;&quot;&quot;</span>
+    <span class="n">_POINTER_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">,)</span>
+    <span class="n">_POINTER_VALUES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="s1">&#39;CONVERSION&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;CONFIG&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;LO_THRESH&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;HIGH_THRESH&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot; Config Register (R/W) &quot;&quot;&quot;</span>
+    <span class="n">_CONFIG_FIELDS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;OS&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;MUX&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PGA&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;MODE&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;DR&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;COMP_MODE&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;COMP_POL&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;COMP_LAT&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;COMP_QUE&#39;</span>
+    <span class="p">)</span>
+    <span class="n">_CONFIG_VALUES</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;NO_EFFECT&#39;</span><span class="p">,</span> <span class="s1">&#39;START_CONVERSION&#39;</span><span class="p">),</span>
+        <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="p">(</span><span class="mf">6.144</span><span class="p">,</span> <span class="mf">4.096</span><span class="p">,</span> <span class="mf">2.048</span><span class="p">,</span> <span class="mf">1.024</span><span class="p">,</span> <span class="mf">0.512</span><span class="p">,</span> <span class="mf">0.256</span><span class="p">,</span> <span class="mf">0.256</span><span class="p">,</span> <span class="mf">0.256</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;CONTINUOUS&#39;</span><span class="p">,</span> <span class="s1">&#39;SINGLE&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">490</span><span class="p">,</span> <span class="mi">920</span><span class="p">,</span> <span class="mi">1600</span><span class="p">,</span> <span class="mi">2400</span><span class="p">,</span> <span class="mi">3300</span><span class="p">,</span> <span class="mi">3300</span><span class="p">),</span>  <span class="c1"># This one is different</span>
+        <span class="p">(</span><span class="s1">&#39;TRADIONAL&#39;</span><span class="p">,</span> <span class="s1">&#39;WINDOW&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;ACTIVE_LOW&#39;</span><span class="p">,</span> <span class="s1">&#39;ACTIVE_HIGH&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;NONLATCHING&#39;</span><span class="p">,</span> <span class="s1">&#39;LATCHING&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;DISABLE&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">USER_CONFIGURABLE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;MUX&#39;</span><span class="p">,</span> <span class="s1">&#39;PGA&#39;</span><span class="p">,</span> <span class="s1">&#39;MODE&#39;</span><span class="p">,</span> <span class="s1">&#39;DR&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ADS1015.__init__"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.ADS1015.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">_DEFAULT_ADDRESS</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; See: pvp.io.devices.ADS1115.__init__</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="o">=</span><span class="n">i2c_bus</span><span class="p">,</span> <span class="n">pig</span><span class="o">=</span><span class="n">pig</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="be16_to_native"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.be16_to_native">[docs]</a><span class="k">def</span> <span class="nf">be16_to_native</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Unpacks a bytes-like object respecting big-endianness of outside world and returns an int according to signed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: bytes-like object. The data to be unpacked &amp; converted</span>
+<span class="sd">        signed (bool): Whether or not `data` is signed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;big&#39;</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="n">signed</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="native16_to_be"><a class="viewcode-back" href="../../../../pvp.io.devices.html#pvp.io.devices.base.native16_to_be">[docs]</a><span class="k">def</span> <span class="nf">native16_to_be</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Packs an int into bytes after swapping endianness.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        signed (bool): Whether or not `data` is signed</span>
+<span class="sd">        word (int): The integer representation to converted and packed into bytes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">word</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;big&#39;</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="n">signed</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

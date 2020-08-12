@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,19 @@
   
 
   
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,15 +35,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="common module" href="common.html" />
-    <link rel="prev" title="Vent control pseudocode" href="control_overview.html" /> 
+    <link rel="next" title="Sensors | Hardware" href="hardware.sensors.html" />
+    <link rel="prev" title="pvp control pseudocode" href="control_overview.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +52,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> PVP
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PVP
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -91,7 +93,18 @@
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Hardware Placeholder</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hardware Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mechanical-diagram">Mechanical Diagram</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hardware.sensors.html">Sensors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#flow-actuators">Flow actuators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#safety-components">Safety Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tubing-and-adapters">Tubing and Adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bill-of-materials-need-to-think-about-what-goes-in-this-table-probably-separate-boms-into-tables-by-category-but-here-s-a-sample-table">Bill of Materials (need to think about what goes in this table, probably separate BoMs into tables by category, but here’s a sample table)</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
@@ -118,6 +131,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -156,7 +170,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Hardware</li>
     
@@ -179,6 +193,141 @@
             
   <div class="section" id="hardware">
 <h1>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mechanical-diagram">
+<h2>Mechanical Diagram<a class="headerlink" href="#mechanical-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id1" style="width: 100%">
+<a class="reference internal image-reference" href="images/mechanical_diagram.png"><img alt="images/mechanical_diagram.png" src="images/mechanical_diagram.png" style="width: 100%;" /></a>
+<p class="caption"><span class="caption-text">Schematic diagram of main mechanical components</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.sensors.html">Sensors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hardware.sensors.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.sensors.html#sensor-pcb">Sensor PCB</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hardware.sensors.html#schematic">Schematic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hardware.sensors.html#bill-of-materials">Bill of Materials</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.sensors.html#flow-sensor">Flow sensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.sensors.html#pressure-sensors">Pressure sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware.sensors.html#oxygen-sensor">Oxygen sensor</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="flow-actuators">
+<h2>Flow actuators<a class="headerlink" href="#flow-actuators" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Actuator PCB/overview (link to PCB with BoM, schematic, layout, etc.)</p></li>
+<li><p>Proportional solenoid valve (V1) (link to doc with crit specs, driving circuit, part spec, datasheet, alternatives, etc.)</p></li>
+<li><p>Expiratory valve (V2) (link to doc with crit specs, driving circuit, part spec, datasheet, etc.)</p></li>
+</ul>
+</div>
+<div class="section" id="sensors">
+<h2>Sensors<a class="headerlink" href="#sensors" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Sensor PCB/overview (link to PCB with BoM, schematic, layout, etc.)</p></li>
+<li><p>Oxygen sensor (O2S) (link to doc with crit specs, interface circuit, part spec, datasheet, alternatives, etc.)</p></li>
+<li><p>Proximal pressure sensor (PS1)</p></li>
+<li><p>Expiratory pressure sensor (PS2)</p></li>
+<li><p>Expiratory flow sensor (FS1)</p></li>
+</ul>
+</div>
+<div class="section" id="safety-components">
+<h2>Safety Components<a class="headerlink" href="#safety-components" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>50 psi, high pressure relief valve (PRV1)</p></li>
+<li><p>Safety check valve (CV)</p></li>
+<li><p>70 cmH2O patient-side pressure relief valve (PRV2)</p></li>
+<li><p>Filters (F1, F2)</p></li>
+<li><p>PEEP valve (PEEP) (include the design bifurcation in this module description)</p></li>
+</ul>
+</div>
+<div class="section" id="tubing-and-adapters">
+<h2>Tubing and Adapters<a class="headerlink" href="#tubing-and-adapters" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Manifold 1</p></li>
+<li><p>Manifold 2</p></li>
+<li><p>Mounting Bracket 1… etc.</p></li>
+</ul>
+</div>
+<div class="section" id="bill-of-materials-need-to-think-about-what-goes-in-this-table-probably-separate-boms-into-tables-by-category-but-here-s-a-sample-table">
+<h2>Bill of Materials (need to think about what goes in this table, probably separate BoMs into tables by category, but here’s a sample table)<a class="headerlink" href="#bill-of-materials-need-to-think-about-what-goes-in-this-table-probably-separate-boms-into-tables-by-category-but-here-s-a-sample-table" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Ref</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Part</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>V1</p></td>
+<td><p>Inspiratory on/off valve</p></td>
+<td><p>red hat process valve</p></td>
+<td><p>completely cut off flow if required</p></td>
+</tr>
+<tr class="row-odd"><td><p>PRV1</p></td>
+<td><p>High pressure relief valve</p></td>
+<td><p>Sets to 50 psi</p></td>
+<td><p>regulates upstream pressure to 50 psi</p></td>
+</tr>
+<tr class="row-even"><td><p>CV</p></td>
+<td><p>Inspiratory check valve</p></td>
+<td><p>valve stat here</p></td>
+<td><p>In case of emergency power loss, allows patient to continue taking breaths from air</p></td>
+</tr>
+<tr class="row-odd"><td><p>PRV2</p></td>
+<td><p>Maximum pressure valve</p></td>
+<td><p>…</p></td>
+<td><p>Sets absolute maximum pressure at patient side to 53 cm H2O</p></td>
+</tr>
+<tr class="row-even"><td><p>F1/F2</p></td>
+<td><p>Filters</p></td>
+<td><p>HEPA filters?</p></td>
+<td><p>Keeps the system’s sensors from becoming contaminated</p></td>
+</tr>
+<tr class="row-odd"><td><p>O2S</p></td>
+<td><p>Oxygen sensor</p></td>
+<td><p>Sensiron …</p></td>
+<td><p>Checks FiO2 level</p></td>
+</tr>
+<tr class="row-even"><td><p>PS1/PS2</p></td>
+<td><p>Pressure sensors</p></td>
+<td><p>mini4v</p></td>
+<td><p>Uses gas takeoffs to measure pressure at each desired point</p></td>
+</tr>
+<tr class="row-odd"><td><p>FS1</p></td>
+<td><p>Flow sensor</p></td>
+<td><p>Sensiron flow sensor</p></td>
+<td><p>Measures expiratory flow to calculate tidal volume</p></td>
+</tr>
+<tr class="row-even"><td><p>M1/M2</p></td>
+<td><p>Manifolds</p></td>
+<td><p>3D printed parts</p></td>
+<td><p>Hubs to connect multiple components in one place</p></td>
+</tr>
+<tr class="row-odd"><td><p>V3</p></td>
+<td><p>Expiratory on/off valve</p></td>
+<td><p>Festo Electrical Air Directional Control Valve, 3/2 flow, Normally Closed, 8 mm Push-to-Connect</p></td>
+<td><p>Opens to initiation the expiratory cycle</p></td>
+</tr>
+<tr class="row-even"><td><p>PEEP</p></td>
+<td><p>PEEP backpressure valve</p></td>
+<td><p>PEEP valve</p></td>
+<td><p>Sets PEEP on expiratory cycle!</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
@@ -189,10 +338,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="common.html" class="btn btn-neutral float-right" title="common module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="hardware.sensors.html" class="btn btn-neutral float-right" title="Sensors | Hardware" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="control_overview.html" class="btn btn-neutral float-left" title="Vent control pseudocode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="control_overview.html" class="btn btn-neutral float-left" title="pvp control pseudocode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -201,11 +350,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, jonny saunders et al
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -216,7 +373,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

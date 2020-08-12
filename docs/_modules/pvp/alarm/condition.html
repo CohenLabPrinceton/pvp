@@ -1,0 +1,616 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pvp.alarm.condition &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/_static/pvp_theme.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../alarm.html">pvp.alarm</a> &raquo;</li>
+        
+      <li>pvp.alarm.condition</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pvp.alarm.condition</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">AlarmType</span><span class="p">,</span> <span class="n">AlarmSeverity</span>
+<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="kn">import</span> <span class="n">SensorValues</span>
+<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span>
+
+<div class="viewcode-block" id="get_alarm_manager"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.get_alarm_manager">[docs]</a><span class="k">def</span> <span class="nf">get_alarm_manager</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Alarm_Manager</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">manager_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;pvp.alarm.alarm_manager&#39;</span><span class="p">)</span>
+        <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;Alarm_Manager&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">manager_module</span><span class="p">,</span> <span class="s1">&#39;Alarm_Manager&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Alarm_Manager</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Condition"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.Condition">[docs]</a><span class="k">class</span> <span class="nc">Condition</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for specifying alarm test conditions</span>
+
+<span class="sd">    Need to be able to condition alarms based on</span>
+<span class="sd">    * value ranges</span>
+<span class="sd">    * value ranges &amp; durations</span>
+<span class="sd">    * levels of other alarms</span>
+
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        manager (:class:`pvp.alarm.alarm_manager.Alarm_Manager`): alarm manager, used to get status of alarms</span>
+<span class="sd">        _child (:class:`Condition`): if another condition is added to this one, store a reference to it</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Condition.__init__"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.Condition.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depends</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            depends (list, dict): a list of, or a single dict::</span>
+
+<span class="sd">                {&#39;value_name&#39;:ValueName,</span>
+<span class="sd">                &#39;value_attr&#39;: attr in ControlMessage,</span>
+<span class="sd">                 &#39;condition_attr&#39;,</span>
+<span class="sd">                 optional: transformation: callable)</span>
+<span class="sd">                that declare what values are needed to update</span>
+<span class="sd">            *args:</span>
+<span class="sd">            **kwargs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_child</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depends</span> <span class="o">=</span> <span class="n">depends</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span> <span class="o">=</span> <span class="n">get_alarm_manager</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span>
+
+<div class="viewcode-block" id="Condition.check"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.Condition.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Every condition needs to override check!!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Condition.reset"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.Condition.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If a condition is stateful, need to provide some method of resetting the state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;every condition needs to override reset!&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add another :class:`Condition` object to check in series.</span>
+
+<span class="sd">        Conditions are evaluated left-to-right, and return if any along the sequence is False</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other (:class:`Condition`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># can&#39;t just add any ole apples n oranges</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="n">Condition</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_child</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if something hasn&#39;t been added to us yet...</span>
+            <span class="c1"># claim our child</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_child</span> <span class="o">=</span> <span class="n">other</span>
+
+            <span class="c1"># override our check method so we check recursively</span>
+            <span class="c1"># make a quick backup first tho yno</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span>
+
+            <span class="k">def</span> <span class="nf">new_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">(</span><span class="n">sensor_values</span><span class="p">):</span>
+                    <span class="c1"># if our stashed condition check is false,</span>
+                    <span class="c1"># return immediately</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># otherwise call check (potentially recursively)</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_child</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">sensor_values</span><span class="p">)</span>
+
+            <span class="c1"># use python types to programmatically reassign method</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">new_check</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if we have already had something added to us,</span>
+            <span class="c1"># add it to our child instead, (also potentially recursively)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_child</span> <span class="o">+</span> <span class="n">other</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ValueCondition"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.ValueCondition">[docs]</a><span class="k">class</span> <span class="nc">ValueCondition</span><span class="p">(</span><span class="n">Condition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    value is greater or lesser than some max/min</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ValueCondition.__init__"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.ValueCondition.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">value_name</span><span class="p">:</span> <span class="n">ValueName</span><span class="p">,</span>
+                 <span class="n">limit</span><span class="p">:</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                 <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value_name (ValueName): Which value to check</span>
+<span class="sd">            limit (int, float): value to check against</span>
+<span class="sd">            mode (&#39;min&#39;, &#39;max&#39;): whether the limit is a minimum or maximum</span>
+<span class="sd">            *args:</span>
+<span class="sd">            **kwargs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ValueCondition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># self.arguments = [value_name]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_name</span> <span class="o">=</span> <span class="n">value_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
+
+    <span class="nd">@mode</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span>
+            <span class="c1"># if we&#39;re a minimum, True (raise alarm) if value is less than limit</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">lt</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">gt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;needs to be max or min&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+
+<div class="viewcode-block" id="ValueCondition.check"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.ValueCondition.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">):</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">sensor_values</span><span class="p">,</span> <span class="n">SensorValues</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">(</span><span class="n">sensor_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">value_name</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ValueCondition.reset"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.ValueCondition.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        not stateful, do nothing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="CycleValueCondition"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.CycleValueCondition">[docs]</a><span class="k">class</span> <span class="nc">CycleValueCondition</span><span class="p">(</span><span class="n">ValueCondition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    value goes out of range for a specific number of breath cycles</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _start_cycle (int): The breath cycle where the</span>
+<span class="sd">        _mid_check (bool): whether a value has left the acceptable range and we are counting consecutive breath cycles</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_cycles</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CycleValueCondition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_cycles</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_cycles</span> <span class="o">=</span> <span class="n">n_cycles</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_cycle</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_cycles</span>
+
+    <span class="nd">@n_cycles</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">n_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_cycles</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">n_cycles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">n_cycles</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_cycles</span> <span class="o">=</span> <span class="n">n_cycles</span>
+
+<div class="viewcode-block" id="CycleValueCondition.check"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.CycleValueCondition.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">):</span>
+        <span class="c1"># first check if we are outside of the range</span>
+        <span class="k">if</span> <span class="nb">super</span><span class="p">(</span><span class="n">CycleValueCondition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">sensor_values</span><span class="p">):</span>
+
+            <span class="n">breath_cycle</span> <span class="o">=</span> <span class="n">sensor_values</span><span class="o">.</span><span class="n">breath_count</span>
+            <span class="c1"># if we&#39;re currently in a consecutive set of out-of-range alarms..</span>
+            <span class="c1"># note: doing it this way because we *dont* want to alarm if there are</span>
+            <span class="c1"># in-range values seen in the waiting period, but we *do* want to</span>
+            <span class="c1"># alarm if we miss a value from a breath cycle but haven&#39;t seen any</span>
+            <span class="c1"># in-range values.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span><span class="p">:</span>
+                <span class="c1"># if we have progressed the required number of cycles...</span>
+                <span class="k">if</span> <span class="n">breath_cycle</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_cycle</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cycles</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># otherwise, this is the first time we&#39;ve gone out of bounds</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_start_cycle</span> <span class="o">=</span> <span class="n">breath_cycle</span>
+                <span class="c1"># don&#39;t check yet, n_cycles must &gt; 0</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if we&#39;re not outside the range, false.</span>
+            <span class="c1"># reset the flag that says we&#39;re inside a check</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="CycleValueCondition.reset"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.CycleValueCondition.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_cycle</span> <span class="o">=</span> <span class="mi">0</span></div></div>
+
+
+<div class="viewcode-block" id="TimeValueCondition"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.TimeValueCondition">[docs]</a><span class="k">class</span> <span class="nc">TimeValueCondition</span><span class="p">(</span><span class="n">ValueCondition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    value goes out of range for specific amount of time</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TimeValueCondition.__init__"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.TimeValueCondition.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (float): number of seconds value must be out of range</span>
+<span class="sd">            *args:</span>
+<span class="sd">            **kwargs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TimeValueCondition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span></div>
+
+<div class="viewcode-block" id="TimeValueCondition.check"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.TimeValueCondition.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TimeValueCondition.reset"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.TimeValueCondition.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+<div class="viewcode-block" id="AlarmSeverityCondition"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.AlarmSeverityCondition">[docs]</a><span class="k">class</span> <span class="nc">AlarmSeverityCondition</span><span class="p">(</span><span class="n">Condition</span><span class="p">):</span>
+
+<div class="viewcode-block" id="AlarmSeverityCondition.__init__"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.AlarmSeverityCondition.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">alarm_type</span><span class="p">:</span> <span class="n">AlarmType</span><span class="p">,</span>
+                 <span class="n">severity</span><span class="p">:</span> <span class="n">AlarmSeverity</span><span class="p">,</span>
+                 <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span>
+                 <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            alarm_type:</span>
+<span class="sd">            severity:</span>
+<span class="sd">            mode (str): one of &#39;min&#39;, &#39;equals&#39;,  or &#39;max&#39;.</span>
+<span class="sd">                &#39;min&#39; returns true if the alarm is at least this value</span>
+<span class="sd">                (note the difference from ValueCondition which returns true if the alarm is less than..)</span>
+<span class="sd">                and vice versa for &#39;max&#39;.</span>
+
+<span class="sd">                .. note::</span>
+
+<span class="sd">                    &#39;min&#39; and &#39;max&#39; use &gt;= and &lt;= rather than &gt; and &lt;</span>
+
+<span class="sd">            *args:</span>
+<span class="sd">            **kwargs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AlarmSeverityCondition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_type</span> <span class="o">=</span> <span class="n">alarm_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">severity</span> <span class="o">=</span> <span class="n">severity</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
+
+    <span class="nd">@mode</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span>
+            <span class="c1"># if we&#39;re a minimum, True (raise alarm) if value is less than limit</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">ge</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;eq&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">eq</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">le</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;needs to be max or min, got </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+
+<div class="viewcode-block" id="AlarmSeverityCondition.check"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.AlarmSeverityCondition.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">):</span>
+        <span class="n">alarm_severity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">get_alarm_severity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarm_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">(</span><span class="n">alarm_severity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AlarmSeverityCondition.reset"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.AlarmSeverityCondition.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="CycleAlarmSeverityCondition"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.CycleAlarmSeverityCondition">[docs]</a><span class="k">class</span> <span class="nc">CycleAlarmSeverityCondition</span><span class="p">(</span><span class="n">AlarmSeverityCondition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    alarm goes out of range for a specific number of breath cycles</span>
+
+<span class="sd">    .. todo::</span>
+
+<span class="sd">        note that this is exactly the same as CycleValueCondition. Need to do the multiple inheritance thing</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _start_cycle (int): The breath cycle where the</span>
+<span class="sd">        _mid_check (bool): whether a value has left the acceptable range and we are counting consecutive breath cycles</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_cycles</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CycleAlarmSeverityCondition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_cycles</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_cycles</span> <span class="o">=</span> <span class="n">n_cycles</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_cycle</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_cycles</span>
+
+    <span class="nd">@n_cycles</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">n_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_cycles</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">n_cycles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">n_cycles</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_cycles</span> <span class="o">=</span> <span class="n">n_cycles</span>
+
+<div class="viewcode-block" id="CycleAlarmSeverityCondition.check"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.CycleAlarmSeverityCondition.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">):</span>
+        <span class="c1"># first check if we are outside of the range</span>
+        <span class="k">if</span> <span class="nb">super</span><span class="p">(</span><span class="n">CycleAlarmSeverityCondition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">sensor_values</span><span class="p">):</span>
+
+            <span class="n">breath_cycle</span> <span class="o">=</span> <span class="n">sensor_values</span><span class="o">.</span><span class="n">breath_count</span>
+            <span class="c1"># if we&#39;re currently in a consecutive set of out-of-range alarms..</span>
+            <span class="c1"># note: doing it this way because we *dont* want to alarm if there are</span>
+            <span class="c1"># in-range values seen in the waiting period, but we *do* want to</span>
+            <span class="c1"># alarm if we miss a value from a breath cycle but haven&#39;t seen any</span>
+            <span class="c1"># in-range values.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span><span class="p">:</span>
+                <span class="c1"># if we have progressed the required number of cycles...</span>
+                <span class="k">if</span> <span class="n">breath_cycle</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_cycle</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cycles</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># otherwise, this is the first time we&#39;ve gone out of bounds</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_start_cycle</span> <span class="o">=</span> <span class="n">breath_cycle</span>
+                <span class="c1"># don&#39;t check yet, n_cycles must &gt; 0</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if we&#39;re not outside the range, false.</span>
+            <span class="c1"># reset the flag that says we&#39;re inside a check</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="CycleAlarmSeverityCondition.reset"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.condition.CycleAlarmSeverityCondition.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mid_check</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_cycle</span> <span class="o">=</span> <span class="mi">0</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

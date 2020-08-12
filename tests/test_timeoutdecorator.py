@@ -1,6 +1,6 @@
 import time
-from vent.common.utils import timeout, TimeoutException
-from vent import prefs
+from pvp.common.utils import timeout, TimeoutException
+from pvp import prefs
 import numpy as np
 import pytest
 

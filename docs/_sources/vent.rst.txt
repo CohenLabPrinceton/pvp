@@ -1,4 +1,4 @@
-vent package
+pvp package
 ============
 
 Subpackages
@@ -6,71 +6,71 @@ Subpackages
 
 .. toctree::
 
-   vent.gui
+   pvp.gui
 
 Submodules
 ----------
 
-vent.alarms module
+pvp.alarms module
 ------------------
 
-.. automodule:: vent.alarms
+.. automodule:: pvp.alarms
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.controller module
+pvp.controller module
 ----------------------
 
-.. automodule:: vent.controller
+.. automodule:: pvp.controller
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.controls module
+pvp.controls module
 --------------------
 
-.. automodule:: vent.controls
+.. automodule:: pvp.controls
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.gui\_styles module
+pvp.gui\_styles module
 -----------------------
 
-.. automodule:: vent.gui_styles
+.. automodule:: pvp.gui_styles
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.helper module
+pvp.helper module
 ------------------
 
-.. automodule:: vent.helper
+.. automodule:: pvp.helper
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.main module
+pvp.main module
 ----------------
 
-.. automodule:: vent.main
+.. automodule:: pvp.main
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.main\_control module
+pvp.main\_control module
 -------------------------
 
-.. automodule:: vent.main_control
+.. automodule:: pvp.main_control
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.sensors module
+pvp.sensors module
 -------------------
 
-.. automodule:: vent.sensors
+.. automodule:: pvp.sensors
    :members:
    :undoc-members:
    :show-inheritance:
@@ -79,7 +79,7 @@ vent.sensors module
 Module contents
 ---------------
 
-.. automodule:: vent
+.. automodule:: pvp
    :members:
    :undoc-members:
    :show-inheritance:

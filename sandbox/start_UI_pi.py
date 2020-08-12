@@ -1,11 +1,11 @@
 import argparse
 import sys
 import os
-from vent import prefs
-from vent.gui.main import launch_gui
-from vent.coordinator.coordinator import get_coordinator
+from pvp import prefs
+from pvp.gui.main import launch_gui
+from pvp.coordinator.coordinator import get_coordinator
 
-import vent.io as io
+import pvp.io as io
 import time
 
 sim_mode = True
@@ -20,7 +20,7 @@ def main():
         print("...ending program & closing valves")
         if not sim_mode:
             time.sleep(0.01)
-            HAL = io.Hal( config_file = 'vent/io/config/devices.ini')
+            HAL = io.Hal( config_file = 'pvp/io/config/devices.ini')
             for i in range(10):
                 HAL.setpoint_in = 0
                 HAL.setpoint_ex = 1 

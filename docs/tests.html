@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,19 @@
   
 
   
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,11 +35,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -49,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> PVP
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PVP
           
 
           
@@ -76,6 +77,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,7 +91,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Placeholder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
@@ -116,6 +118,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -154,7 +157,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>tests package</li>
     
@@ -584,7 +587,7 @@ values upon writing to a register for logging/assertion convenience.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_controller.test_control_dynamical" title="tests.test_controller.test_control_dynamical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_control_dynamical</span></code></a>(control_type)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_controller.test_control_dynamical" title="tests.test_controller.test_control_dynamical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_control_dynamical</span></code></a>()</p></td>
 <td><p>This tests whether the controller is controlling pressure as intended.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#tests.test_controller.test_control_settings" title="tests.test_controller.test_control_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_control_settings</span></code></a>(control_setting_name)</p></td>
@@ -613,7 +616,7 @@ Set and read a all five variables, make sure that they are identical.</p>
 
 <dl class="py function">
 <dt id="tests.test_controller.test_control_dynamical">
-<code class="sig-prename descclassname">tests.test_controller.</code><code class="sig-name descname">test_control_dynamical</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_controller.html#test_control_dynamical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_controller.test_control_dynamical" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">tests.test_controller.</code><code class="sig-name descname">test_control_dynamical</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_controller.html#test_control_dynamical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_controller.test_control_dynamical" title="Permalink to this definition">¶</a></dt>
 <dd><p>This tests whether the controller is controlling pressure as intended.
 Start controller, set control values, measure whether actually there.</p>
 </dd></dl>
@@ -635,7 +638,7 @@ Start controller, set control values, measure whether actually there.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_coordinator.ControlModuleMock" title="tests.test_coordinator.ControlModuleMock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ControlModuleMock</span></code></a>()</p></td>
-<td><p>Args:</p></td>
+<td><p>Initializes the ControlModuleBase class.</p></td>
 </tr>
 </tbody>
 </table>
@@ -677,10 +680,19 @@ Start controller, set control values, measure whether actually there.</p>
 <dl class="py class">
 <dt id="tests.test_coordinator.ControlModuleMock">
 <em class="property">class </em><code class="sig-prename descclassname">tests.test_coordinator.</code><code class="sig-name descname">ControlModuleMock</code><a class="reference internal" href="_modules/tests/test_coordinator.html#ControlModuleMock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_coordinator.ControlModuleMock" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="vent.controller.html#vent.controller.control_module.ControlModuleBase" title="vent.controller.control_module.ControlModuleBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">vent.controller.control_module.ControlModuleBase</span></code></a></p>
-<p>Args:
-save_logs (bool): whether sensor data and controls should be saved with the <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLogger</span></code>
-flush_every (int): flush and rotate logs every n breath cycles</p>
+<dd><p>Bases: <a class="reference internal" href="pvp.controller.html#pvp.controller.control_module.ControlModuleBase" title="pvp.controller.control_module.ControlModuleBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">pvp.controller.control_module.ControlModuleBase</span></code></a></p>
+<p>Initializes the ControlModuleBase class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_logs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em>) – Should sensor data and controls should be saved with the <a class="reference internal" href="pvp.common.loggers.html#pvp.common.loggers.DataLogger" title="pvp.common.loggers.DataLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLogger</span></code></a>? Defaults to False.</p></li>
+<li><p><strong>flush_every</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><em>optional</em>) – Flush and rotate logs every n breath cycles. Defaults to 10.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>alert</strong> – [description]</p>
+</dd>
+</dl>
 <p><strong>Methods</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -692,50 +704,87 @@ flush_every (int): flush and rotate logs every n breath cycles</p>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#tests.test_coordinator.ControlModuleMock.get_control" title="tests.test_coordinator.ControlModuleMock.get_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_control</span></code></a>(control_setting_name)</p></td>
-<td><p>Gets values of the COPY of the control settings.</p></td>
+<td><p>A method callable from the outside to get current control settings.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_coordinator.ControlModuleMock.get_logged_alarms" title="tests.test_coordinator.ControlModuleMock.get_logged_alarms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logged_alarms</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#tests.test_coordinator.ControlModuleMock.get_sensors" title="tests.test_coordinator.ControlModuleMock.get_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sensors</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>A method callable from the outside to get a copy of sensorValues</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_coordinator.ControlModuleMock.is_running" title="tests.test_coordinator.ControlModuleMock.is_running"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_running</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Public Method to assess whether the main loop thread is running.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#tests.test_coordinator.ControlModuleMock.set_control" title="tests.test_coordinator.ControlModuleMock.set_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_control</span></code></a>(control_setting)</p></td>
-<td><p>Updates the entry of COPY contained in the control settings</p></td>
+<td><p>A method callable from the outside to set alarms.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_coordinator.ControlModuleMock.start" title="tests.test_coordinator.ControlModuleMock.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Method to start <cite>_start_mainloop</cite> as a thread.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt id="tests.test_coordinator.ControlModuleMock.is_running">
 <code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_coordinator.html#ControlModuleMock.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_coordinator.ControlModuleMock.is_running" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Public Method to assess whether the main loop thread is running.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Return true if and only if the main thread of controller is running.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="tests.test_coordinator.ControlModuleMock.start">
 <code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_coordinator.html#ControlModuleMock.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_coordinator.ControlModuleMock.start" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method to start <cite>_start_mainloop</cite> as a thread.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="tests.test_coordinator.ControlModuleMock.get_sensors">
 <code class="sig-name descname">get_sensors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_coordinator.html#ControlModuleMock.get_sensors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_coordinator.ControlModuleMock.get_sensors" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A method callable from the outside to get a copy of sensorValues</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A set of current sensorvalues, handeled by the controller.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="pvp.common.message.html#pvp.common.message.SensorValues" title="pvp.common.message.SensorValues">SensorValues</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="tests.test_coordinator.ControlModuleMock.get_control">
-<code class="sig-name descname">get_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting_name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="common.html#vent.common.values.ValueName" title="vent.common.values.ValueName">vent.common.values.ValueName</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a><a class="reference internal" href="_modules/tests/test_coordinator.html#ControlModuleMock.get_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_coordinator.ControlModuleMock.get_control" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets values of the COPY of the control settings.</p>
+<code class="sig-name descname">get_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting_name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="pvp.common.values.html#pvp.common.values.ValueName" title="pvp.common.values.ValueName">pvp.common.values.ValueName</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="pvp.common.message.html#pvp.common.message.ControlSetting" title="pvp.common.message.ControlSetting">pvp.common.message.ControlSetting</a><a class="reference internal" href="_modules/tests/test_coordinator.html#ControlModuleMock.get_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_coordinator.ControlModuleMock.get_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>A method callable from the outside to get current control settings.
+This returns values of COPY to the outside world.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>control_setting_name</strong> (<a class="reference internal" href="pvp.common.values.html#pvp.common.values.ValueName" title="pvp.common.values.ValueName"><em>ValueName</em></a>) – The specific control asked for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ControlSettings-Object that contains relevant data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pvp.common.message.html#pvp.common.message.ControlSetting" title="pvp.common.message.ControlSetting">ControlSetting</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="tests.test_coordinator.ControlModuleMock.set_control">
-<code class="sig-name descname">set_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span><span class="p">:</span> <span class="n"><a class="reference internal" href="vent.common.html#vent.common.message.ControlSetting" title="vent.common.message.ControlSetting">vent.common.message.ControlSetting</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_coordinator.html#ControlModuleMock.set_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_coordinator.ControlModuleMock.set_control" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the entry of COPY contained in the control settings</p>
+<code class="sig-name descname">set_control</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">control_setting</span><span class="p">:</span> <span class="n"><a class="reference internal" href="pvp.common.message.html#pvp.common.message.ControlSetting" title="pvp.common.message.ControlSetting">pvp.common.message.ControlSetting</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_coordinator.html#ControlModuleMock.set_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_coordinator.ControlModuleMock.set_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>A method callable from the outside to set alarms.
+This updates the entries of COPY with new control values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>control_setting</strong> (<a class="reference internal" href="pvp.common.message.html#pvp.common.message.ControlSetting" title="pvp.common.message.ControlSetting"><em>ControlSetting</em></a>) – [description]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -789,7 +838,7 @@ flush_every (int): flush and rotate logs every n breath cycles</p>
 * control
 * monitor
 * plot
-* status_bar</p>
+* control_panel</p>
 <p>test types
 * user interaction
 * flooding</p>
@@ -806,31 +855,16 @@ flush_every (int): flush and rotate logs every n breath cycles</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#tests.test_gui.generic_saferange" title="tests.test_gui.generic_saferange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_saferange</span></code></a>()</p></td>
 <td><p>Make a (min, max) range of values that has some safe space in between.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_gui.spawn_gui" title="tests.test_gui.spawn_gui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spawn_gui</span></code></a>(qtbot, request)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_gui.spawn_gui" title="tests.test_gui.spawn_gui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spawn_gui</span></code></a>(qtbot)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#tests.test_gui.test_doubleslider" title="tests.test_gui.test_doubleslider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_doubleslider</span></code></a>(qtbot)</p></td>
-<td><p>test that the doubleslider accurately represents floats</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_gui.test_doubleslider_minmax" title="tests.test_gui.test_doubleslider_minmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_doubleslider_minmax</span></code></a>(qtbot, generic_minmax)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#tests.test_gui.test_gui_launch" title="tests.test_gui.test_gui_launch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_gui_launch</span></code></a>(qtbot, spawn_gui)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#tests.test_gui.test_gui_controls" title="tests.test_gui.test_gui_controls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_gui_controls</span></code></a>(qtbot, spawn_gui, test_value)</p></td>
-<td><p>test setting controls in all the ways available to the GUI</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_gui.test_gui_launch" title="tests.test_gui.test_gui_launch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_gui_launch</span></code></a>(qtbot, spawn_gui)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_gui.test_pressure_unit_conversion" title="tests.test_gui.test_pressure_unit_conversion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_pressure_unit_conversion</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#tests.test_gui.test_gui_launch_mp" title="tests.test_gui.test_gui_launch_mp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_gui_launch_mp</span></code></a>(qtbot)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_gui.test_gui_monitor" title="tests.test_gui.test_gui_monitor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_gui_monitor</span></code></a>(qtbot, spawn_gui, test_value)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#tests.test_gui.test_rangeslider" title="tests.test_gui.test_rangeslider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_rangeslider</span></code></a>(qtbot, generic_minmax, …)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#tests.test_gui.test_rangeslider_minmax" title="tests.test_gui.test_rangeslider_minmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_rangeslider_minmax</span></code></a>(qtbot, …)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#tests.test_gui.test_sliders_during_unit_convertion" title="tests.test_gui.test_sliders_during_unit_convertion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_sliders_during_unit_convertion</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -855,7 +889,7 @@ Returns:</p>
 
 <dl class="py function">
 <dt id="tests.test_gui.spawn_gui">
-<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">spawn_gui</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qtbot</span></em>, <em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#spawn_gui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.spawn_gui" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">spawn_gui</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qtbot</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#spawn_gui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.spawn_gui" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -864,57 +898,13 @@ Returns:</p>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="tests.test_gui.test_gui_launch_mp">
-<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">test_gui_launch_mp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qtbot</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#test_gui_launch_mp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.test_gui_launch_mp" title="Permalink to this definition">¶</a></dt>
+<dt id="tests.test_gui.test_pressure_unit_conversion">
+<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">test_pressure_unit_conversion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#test_pressure_unit_conversion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.test_pressure_unit_conversion" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="tests.test_gui.test_gui_controls">
-<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">test_gui_controls</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qtbot</span></em>, <em class="sig-param"><span class="n">spawn_gui</span></em>, <em class="sig-param"><span class="n">test_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#test_gui_controls"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.test_gui_controls" title="Permalink to this definition">¶</a></dt>
-<dd><p>test setting controls in all the ways available to the GUI</p>
-<p>from the <a class="reference internal" href="vent.gui.widgets.html#vent.gui.widgets.control.Control" title="vent.gui.widgets.control.Control"><code class="xref py py-class docutils literal notranslate"><span class="pre">Control</span></code></a> widget:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><a class="reference internal" href="vent.gui.widgets.html#vent.gui.widgets.components.EditableLabel" title="vent.gui.widgets.components.EditableLabel"><code class="xref py py-class docutils literal notranslate"><span class="pre">EditableLabel</span></code></a> - setting label text</p></li>
-<li><p>setting slider value</p></li>
-<li><p>using <a class="reference internal" href="gui.html#vent.gui.main.Vent_Gui.set_value" title="vent.gui.main.Vent_Gui.set_value"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_value()</span></code></a></p></li>
-</ul>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>qtbot</strong> – </p></li>
-<li><p><strong>spawn_gui</strong> – </p></li>
-<li><p><strong>test_value</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="tests.test_gui.test_gui_monitor">
-<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">test_gui_monitor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qtbot</span></em>, <em class="sig-param"><span class="n">spawn_gui</span></em>, <em class="sig-param"><span class="n">test_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#test_gui_monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.test_gui_monitor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="tests.test_gui.test_doubleslider">
-<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">test_doubleslider</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qtbot</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#test_doubleslider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.test_doubleslider" title="Permalink to this definition">¶</a></dt>
-<dd><p>test that the doubleslider accurately represents floats</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="tests.test_gui.test_doubleslider_minmax">
-<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">test_doubleslider_minmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qtbot</span></em>, <em class="sig-param"><span class="n">generic_minmax</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#test_doubleslider_minmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.test_doubleslider_minmax" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="tests.test_gui.test_rangeslider">
-<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">test_rangeslider</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qtbot</span></em>, <em class="sig-param"><span class="n">generic_minmax</span></em>, <em class="sig-param"><span class="n">generic_saferange</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#test_rangeslider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.test_rangeslider" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="tests.test_gui.test_rangeslider_minmax">
-<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">test_rangeslider_minmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qtbot</span></em>, <em class="sig-param"><span class="n">generic_minmax</span></em>, <em class="sig-param"><span class="n">generic_saferange</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#test_rangeslider_minmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.test_rangeslider_minmax" title="Permalink to this definition">¶</a></dt>
+<dt id="tests.test_gui.test_sliders_during_unit_convertion">
+<code class="sig-prename descclassname">tests.test_gui.</code><code class="sig-name descname">test_sliders_during_unit_convertion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_gui.html#test_sliders_during_unit_convertion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests.test_gui.test_sliders_during_unit_convertion" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -1479,11 +1469,19 @@ Tests SimControlValve in much the same way as PWMControlValve.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, jonny saunders et al
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1494,7 +1492,6 @@ Tests SimControlValve in much the same way as PWMControlValve.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

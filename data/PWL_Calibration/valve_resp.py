@@ -1,11 +1,11 @@
 import time
-import vent.io as io
+import pvp.io as io
 import numpy as np
 import matplotlib.pyplot as plt
 import random
 import pandas as pd
 
-hal = io.Hal(config_file='vent/io/config/devices.ini')
+hal = io.Hal(config_file='pvp/io/config/devices.ini')
 hal._flow_sensor_in.maxlen_data = 1024 
 SAMPLE_TIME = 0.003
 

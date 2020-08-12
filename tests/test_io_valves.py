@@ -1,5 +1,5 @@
 from .pigpio_mocks import patch_pigpio_base, patch_pigpio_gpio, soft_frequencies
-from vent.io.devices.valves import OnOffValve, PWMControlValve, SimOnOffValve, SimControlValve
+from pvp.io.devices.valves import OnOffValve, PWMControlValve, SimOnOffValve, SimControlValve
 from secrets import token_bytes
 
 import pytest
@@ -70,7 +70,7 @@ def test_pwm_control_valve(patch_pigpio_gpio, seed):
     if random.getrandbits(1):
         valve = PWMControlValve(gpio, form)
     else:
-        valve = PWMControlValve(gpio, form, response="vent/io/config/calibration/SMC_PVQ31_5G_23_01N_response")
+        valve = PWMControlValve(gpio, form, response="pvp/io/config/calibration/SMC_PVQ31_5G_23_01N_response")
     # Using standard On/Off commands:
     assert not valve.is_open
     valve.open()

@@ -590,6 +590,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
 
         self.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
+        self.alarm_bar.alarm_dismissed.connect(self.alarm_manager.dismiss_alarm)
 
         # connect controls
         for control in self.controls.values():
@@ -672,6 +673,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if control.name.name in self.monitor.keys():
             self.monitor[control.name.name].update_limits(control)
         self.plot_box.set_safe_limits(control)
+        if control.name == ValueName.PIP:
+            self.coordinator.set_control(control)
 
     @QtCore.Slot(Alarm)
     def handle_cleared_alarm(self, alarm):

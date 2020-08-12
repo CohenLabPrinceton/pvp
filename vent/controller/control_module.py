@@ -453,10 +453,11 @@ class ControlModuleBase:
                                       time.time(),
                                       value=self._DATA_PRESSURE)
 
-                self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
-            else:
-                self.logger.debug("Transient high pressure; probably a cough.")
+                    self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
+
         else:
+            if self.hapa_crossing_time is not None and self.HAPA is None:
+                self.logger.warning('Transient high pressure that did not trigger HAPA, probably a cough')
             self.HAPA = None
             self.hapa_crossing_time = None
 
@@ -812,36 +813,40 @@ class ControlModuleDevice(ControlModuleBase):
 
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
-        while self._running.is_set():
-            self._loop_counter += 1
-            now = time.time()
-            dt = now - self._last_update                            # Time sincle last cycle of main-loop
+        try:
+            while self._running.is_set():
+                self._loop_counter += 1
+                now = time.time()
+                dt = now - self._last_update                            # Time sincle last cycle of main-loop
 
-            if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
-                self.logger.warning("MainLoop: Update too long: " + str(dt))
-                print("Restarted cycle.")
-                self._control_reset()
-                dt = self._LOOP_UPDATE_TIME
-            
-            self._get_HAL()                                          # Update pressure and flow measurement
-            self._PID_update(dt = dt)                            # With that, calculate controls
-            valve_open_in  = self._get_control_signal_in()           #    -> Inspiratory side: get control signal for PropValve
-            valve_open_out = self._get_control_signal_out()          #    -> Expiratory side: get control signal for Solenoid
-            self._set_HAL(valve_open_in, valve_open_out)             # And set values.
+                if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
+                    self.logger.warning("MainLoop: Update too long: " + str(dt))
+                    print("Restarted cycle.")
+                    self._control_reset()
+                    dt = self._LOOP_UPDATE_TIME
 
-            self._last_update = now
+                self._get_HAL()                                          # Update pressure and flow measurement
+                self._PID_update(dt = dt)                            # With that, calculate controls
+                valve_open_in  = self._get_control_signal_in()           #    -> Inspiratory side: get control signal for PropValve
+                valve_open_out = self._get_control_signal_out()          #    -> Expiratory side: get control signal for Solenoid
+                self._set_HAL(valve_open_in, valve_open_out)             # And set values.
 
-            if update_copies == 0:
-                self._controls_from_COPY()     # Update controls from possibly updated values as a chunk
-                self._sensor_to_COPY()         # Copy sensor values to COPY
-                update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
-            else:
-                update_copies -= 1
+                self._last_update = now
+
+                if update_copies == 0:
+                    self._controls_from_COPY()     # Update controls from possibly updated values as a chunk
+                    self._sensor_to_COPY()         # Copy sensor values to COPY
+                    update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
+                else:
+                    update_copies -= 1
+
+                time.sleep(self._LOOP_UPDATE_TIME)
 
         # # get final values on stop
-        self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
-        self._sensor_to_COPY()  # Copy sensor values to COPY
-        self.set_valves_standby()
+        finally:
+            self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
+            self._sensor_to_COPY()  # Copy sensor values to COPY
+            self.set_valves_standby()
 
 
 class Balloon_Simulator:
@@ -1060,6 +1065,8 @@ class ControlModuleSimulator(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
+
+            time.sleep(self._LOOP_UPDATE_TIME)
 
         # # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk

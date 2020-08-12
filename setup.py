@@ -44,6 +44,9 @@ setup(
         'tables',
         'scipy'
     ],
+    package_data={
+        "vent": "external/*"
+    },
     dependency_links=depend_links,
     python_requires='==3.7.*'
 )

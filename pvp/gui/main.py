@@ -75,7 +75,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     """
 
     def __init__(self,
-                 coordinator: typing.Type[coordinator.CoordinatorBase],
+                 coordinator: coordinator.CoordinatorBase,
                  set_defaults: bool = False,
                  update_period: float = 0.05):
         """
@@ -132,9 +132,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.alarm_manager.add_dependency_callback(self.limits_updated)
         self.logger.debug('Alarm Manager instantiated')
 
-        self.monitor = {} # --type: typing.Dict[ValueName: widgets.Display]
-        self.plots = {} # --type: typing.Dict[ValueName: widgets.Plot]
-        self.controls = {} # --type: typing.Dict[ValueName.name: widgets.Display]
+        self.monitor = {} # type: typing.Dict[ValueName, widgets.Display]
+        self.plots = {} # type: typing.Dict[ValueName, widgets.Plot]
+        self.controls = {} # type: typing.Dict[ValueName.name, widgets.Display]
 
         self.coordinator = coordinator
 
@@ -420,24 +420,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
             except Exception as e:
                 self.logger.exception(f'Couldnt get alarms from controller, got error {e}')
 
-            #
-            # try:
-            # #     self.pressure_waveform.update_target_array(self.coordinator.get_target_waveform())
-            # #     self.pressure_waveform.update_waveform(vals)
-            # except Exception as e:
-            #     self.logger.exception(f'Couldnt draw ideal waveform, got error {e}')
-
             try:
                 self.plot_box.update_value(vals)
             except Exception as e:
                 self.logger.exception(f"couldnt update plot box with {vals}, got {e}")
-            # for plot_key, plot_obj in self.plots.items():
-            #     self.plot_box.update_value(vals)
-            #     if hasattr(vals, plot_key):
-            #         try:
-            #             plot_obj.update_value((time.time(), getattr(vals, plot_key)))
-            #         except Exception as e:
-            #             self.logger.exception(f'Couldnt update plot with {plot_key}, got error {e}')
 
             for monitor_key, monitor_obj in self.monitor.items():
                 if hasattr(vals, monitor_key):

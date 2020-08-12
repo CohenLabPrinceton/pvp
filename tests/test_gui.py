@@ -25,8 +25,6 @@ from pytestqt import qt_compat
 from pytestqt.qt_compat import qt_api
 
 # mock before importing
-
-
 from pvp import gui
 from pvp.gui import styles
 from pvp.gui import widgets
@@ -46,7 +44,7 @@ import numpy as np
 # turn off gui limiting
 gui.limit_gui(False)
 
-n_samples = 10
+n_samples = 100
 decimals = 5
 global_minmax_range = (0, 100)
 global_safe_range = (25, 75)
@@ -119,213 +117,123 @@ def test_gui_launch(qtbot, spawn_gui):
     qtbot.wait(2000)
 
     assert vent_gui.isVisible()
-
-# @pytest.mark.timeout(15)
-# def test_gui_launch_mp(qtbot):
-#     assert qt_api.QApplication.instance() is not None
-#
-#     # coordinator = get_coordinator(sim_mode=True, single_process=False)
-#     # coordinator.start()
-#     #
-#     # vent_gui = gui.Vent_Gui(coordinator)
-#     # qtbot.addWidget(vent_gui)
-#     # vent_gui.control_panel.start_button.click()
-#
-#     # wait for a second to let the simulation spin up and start spitting values
-#     qtbot.wait(5000)
-#
-#     assert vent_gui.isVisible()
+    assert vent_gui.coordinator.is_running()
 
 
 ################################
 # test user interaction
 #
 # @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.CONTROL.items() if k == values.ValueName.PIP] )
-# # @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.CONTROL.items() if k==values.ValueName.PIP])
-# def test_gui_controls(qtbot, spawn_gui, test_value):
-#     """
-#     test setting controls in all the ways available to the GUI
-#
-#     from the :class:`~pvp.gui.widgets.control.Control` widget:
-#
-#         * :class:`~pvp.gui.widgets.components.EditableLabel` - setting label text
-#         * setting slider value
-#         * using :meth:`~pvp.gui.main.Vent_Gui.set_value`
-#
-#
-#     Args:
-#         qtbot:
-#         spawn_gui:
-#         test_value:
-#
-#
-#     """
-#
-#     app, vent_gui = spawn_gui
-#
-#     vent_gui.start()
-#     vent_gui.timer.stop()
-#     vent_gui.control_panel.lock_button.click()
-#
-#     value_name = test_value[0]
-#     value_params = test_value[1]
-#     abs_range = value_params.abs_range
-#     safe_range = value_params.safe_range
-#
-#     # generate target value
-#     def gen_test_value():
-#         test_value = np.random.rand()*(safe_range[1]-safe_range[0]) + safe_range[0]
-#         test_value = np.round(test_value, value_params.decimals)
-#         return test_value
-#
-#     ####
-#     # test setting controls from control widget
-#     # from editablelabel
-#
-#     control_widget = vent_gui.controls[value_name.name]
-#
-#     for i in range(n_samples):
-#         test_value = gen_test_value()
-#
-#         control_widget.value_label.setLabelEditableAction()
-#         control_widget.value_label.lineEdit.setText(str(test_value))
-#         control_widget.value_label.returnPressedAction()
-#         # should call labelUpdatedAction and send to controller
-#
-#         control_value = vent_gui.coordinator.get_control(value_name)
-#
-#         assert(control_value.value == test_value)
-#
-#     # from slider
-#     # toggle it open
-#     if not value_name in (values.ValueName.PEEP,):
-#         assert(control_widget.slider_frame.isVisible() == False)
-#         control_widget.toggle_button.click()
-#         assert(control_widget.slider_frame.isVisible() == True)
-#
-#         for i in range(n_samples):
-#             test_value = gen_test_value()
-#             control_widget.slider.setValue(test_value)
-#
-#             control_value = vent_gui.coordinator.get_control(value_name)
-#             assert(control_value.value == test_value)
-#
-#     # from set_value
-#     for i in range(n_samples):
-#         test_value = gen_test_value()
-#         vent_gui.set_value(test_value, value_name = value_name)
-#
-#         control_value = vent_gui.coordinator.get_control(value_name)
-#         assert(control_value.value == test_value)
+@pytest.mark.parametrize("test_value", [(k, v) for k, v in values.DISPLAY_CONTROL.items() if k!=values.ValueName.IE_RATIO])
+def test_gui_controls(qtbot, spawn_gui, test_value):
+    """
+    test setting controls in all the ways available to the GUI
+
+    from the :class:`~pvp.gui.widgets.control.Control` widget:
+
+        * :class:`~pvp.gui.widgets.components.EditableLabel` - setting label text
+        * setting slider value
+        * using :meth:`~pvp.gui.main.Vent_Gui.set_value`
 
 
-# @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.SENSOR.items()])
-# def test_gui_monitor(qtbot, spawn_gui, test_value):
-#
-#
-#     app, vent_gui = spawn_gui
-#
-#     vent_gui.start()
-#     vent_gui.timer.stop()
-#
-#
-#     value_name = test_value[0]
-#     value_params = test_value[1]
-#     abs_range = value_params.abs_range
-#
-#     # generate target value
-#     def gen_test_values():
-#         test_value = np.random.rand(2)*(abs_range[1]-abs_range[0]) + abs_range[0]
-#         test_value = np.round(test_value, value_params.decimals)
-#         return np.min(test_value), np.max(test_value)
-#
-#     monitor_widget = vent_gui.monitor[value_name.name]
-
-#         assert(control_value.value == test_value)
-
-#     # from slider
-#     # toggle it open
-#     assert(control_widget.slider_frame.isVisible() == False)
-#     control_widget.toggle_button.click()
-#     assert(control_widget.slider_frame.isVisible() == True)
-
-#     for i in range(n_samples):
-#         test_value = gen_test_value()
-#         control_widget.slider.setValue(test_value)
-
-#         control_value = vent_gui.coordinator.get_control(value_name)
-#         assert(control_value.value == test_value)
-
-#     # from set_value
-#     for i in range(n_samples):
-#         test_value = gen_test_value()
-#         vent_gui.set_value(test_value, value_name = value_name)
-
-#         control_value = vent_gui.coordinator.get_control(value_name)
-#         assert(control_value.value == test_value)
+    Args:
+        qtbot:
+        spawn_gui:
+        test_value:
 
 
-# @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.SENSOR.items()])
-# def test_gui_monitor(qtbot, spawn_gui, test_value):
+    """
+    value_name = test_value[0]
+    value_params = test_value[1]
+
+    app, vent_gui = spawn_gui
+
+    # if one of the cycle variables, make sure we click the other one as being autocalculated
+    if value_name == values.ValueName.INSPIRATION_TIME_SEC:
+        vent_gui.control_panel.cycle_buttons[values.ValueName.BREATHS_PER_MINUTE].click()
+    elif value_name == values.ValueName.BREATHS_PER_MINUTE:
+        vent_gui.control_panel.cycle_buttons[values.ValueName.INSPIRATION_TIME_SEC].click()
 
 
-#     app, vent_gui = spawn_gui
-
-#     vent_gui.start()
-#     vent_gui.timer.stop()
-
-
-#     value_name = test_value[0]
-#     value_params = test_value[1]
-#     abs_range = value_params.abs_range
-
-#     # generate target value
-#     def gen_test_values():
-#         test_value = np.random.rand(2)*(abs_range[1]-abs_range[0]) + abs_range[0]
-#         test_value = np.round(test_value, value_params.decimals)
-#         return np.min(test_value), np.max(test_value)
-
-#     monitor_widget = vent_gui.monitor[value_name.name]
-
-#     # open the control
-#     assert(monitor_widget.slider_frame.isVisible() == False)
-#     monitor_widget.toggle_button.click()
-#     assert (monitor_widget.slider_frame.isVisible() == True)
-
-#     # set handles to abs_min and max so are on absolute right and left sides
-#     monitor_widget.range_slider.setValue(abs_range)
-#     assert(monitor_widget.range_slider.low == monitor_widget.range_slider.minimum())
-#     assert (monitor_widget.range_slider.high == monitor_widget.range_slider.maximum())
-#     #
-#     # # move left a quarter of the way to the right
-#     # widget_size = monitor_widget.range_slider.size()
-#     #
-#     # # get low box position
-#     # low_pos = monitor_widget.range_slider.get_handle_rect(0)
-#     # click_pos = low_pos.center()
-#     # move_pos = copy(click_pos)
-#     # move_pos.setX(move_pos.x() + (widget_size.width()/4))
-#     #
-#     # qtbot.mouseMove(monitor_widget.range_slider, click_pos, delay=100)
-#     # qtbot.mousePress(monitor_widget.range_slider, QtCore.Qt.LeftButton, delay=200)
-#     # qtbot.mouseMove(monitor_widget.range_slider, move_pos)
-#     # qtbot.mouseRelease(monitor_widget.range_slider, QtCore.Qt.LeftButton, pos=move_pos, delay=200)
+    vent_gui.start()
+    vent_gui.timer.stop()
+    vent_gui.control_panel.lock_button.click()
 
 
-#     # set with range_slider
-#     # for i in range(n_samples):
-#     #     test_min, test_max = gen_test_values()
-#     #
-#     #
-#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-#     #         monitor_widget.range_slider.setLow(test_min)
-#     #         sleep(0.01)
-#     #         assert(blocker.args[0][0]==test_min)
-#     #
-#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-#     #         monitor_widget.range_slider.setHigh(test_max)
-#     #         sleep(0.01)
-#     #         assert(blocker.args[0][1]==test_max)
+    abs_range = value_params.abs_range
+    safe_range = value_params.safe_range
+
+    # generate target value
+    def gen_test_value():
+        test_value = np.random.rand()*(safe_range[1]-safe_range[0]) + safe_range[0]
+        test_value = np.round(test_value, value_params.decimals)
+        return test_value
+
+    ####
+    # test setting controls from control widget
+    # from editablelabel
+
+    control_widget = vent_gui.controls[value_name.name]
+
+    for i in range(n_samples):
+        test_value = gen_test_value()
+
+        control_widget.set_value_label.setLabelEditableAction()
+        control_widget.set_value_label.lineEdit.setText(str(test_value))
+        control_widget.set_value_label.returnPressedAction()
+        # should call labelUpdatedAction and send to controller
+
+        control_value = vent_gui.coordinator.get_control(value_name)
+
+        assert(control_value.value == test_value)
+
+    # from slider if we've got one
+    if value_params.control_type == "slider":
+    # toggle it open
+
+        assert(control_widget.slider_frame.isVisible() == False)
+        control_widget.toggle_button.click()
+        assert(control_widget.slider_frame.isVisible() == True)
+
+        for i in range(n_samples):
+            test_value = gen_test_value()
+            control_widget.slider.setValue(test_value)
+
+            control_value = vent_gui.coordinator.get_control(value_name)
+            assert(control_value.value == test_value)
+
+    # or from the recorder if we've got one
+    elif value_params.control_type == "record":
+        for i in range(n_samples):
+            # press record
+            assert(control_widget.toggle_button.isChecked() == False)
+            control_widget.toggle_button.click()
+            assert (control_widget.toggle_button.isChecked() == True)
+            # feed it 10 test values
+            test_values = []
+            for j in range(10):
+                new_test_value = gen_test_value()
+                test_values.append(new_test_value)
+                control_widget.update_sensor_value(new_test_value)
+
+            # stop recording and check the value
+            control_widget.toggle_button.click()
+            assert(control_widget.toggle_button.isChecked() == False)
+            control_value = vent_gui.coordinator.get_control(value_name)
+            assert control_value.value == np.mean(test_values)
+
+    # should be one or the other
+    else:
+        assert False
+
+    # from set_value
+    for i in range(n_samples):
+        test_value = gen_test_value()
+        vent_gui.set_value(test_value, value_name = value_name)
+
+        control_value = vent_gui.coordinator.get_control(value_name)
+        assert(control_value.value == test_value)
+
 
 
 
@@ -491,3 +399,70 @@ def test_sliders_during_unit_convertion():
 #         assert(rangeslider.low == lowpoint)
 #         assert(rangeslider.high == highpoint)
 #
+
+
+##########################
+# keeping for good pytest-qt exmaples
+
+# @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.SENSOR.items()])
+# def test_gui_monitor(qtbot, spawn_gui, test_value):
+
+
+#     app, vent_gui = spawn_gui
+
+#     vent_gui.start()
+#     vent_gui.timer.stop()
+
+
+#     value_name = test_value[0]
+#     value_params = test_value[1]
+#     abs_range = value_params.abs_range
+
+#     # generate target value
+#     def gen_test_values():
+#         test_value = np.random.rand(2)*(abs_range[1]-abs_range[0]) + abs_range[0]
+#         test_value = np.round(test_value, value_params.decimals)
+#         return np.min(test_value), np.max(test_value)
+
+#     monitor_widget = vent_gui.monitor[value_name.name]
+
+#     # open the control
+#     assert(monitor_widget.slider_frame.isVisible() == False)
+#     monitor_widget.toggle_button.click()
+#     assert (monitor_widget.slider_frame.isVisible() == True)
+
+#     # set handles to abs_min and max so are on absolute right and left sides
+#     monitor_widget.range_slider.setValue(abs_range)
+#     assert(monitor_widget.range_slider.low == monitor_widget.range_slider.minimum())
+#     assert (monitor_widget.range_slider.high == monitor_widget.range_slider.maximum())
+#     #
+#     # # move left a quarter of the way to the right
+#     # widget_size = monitor_widget.range_slider.size()
+#     #
+#     # # get low box position
+#     # low_pos = monitor_widget.range_slider.get_handle_rect(0)
+#     # click_pos = low_pos.center()
+#     # move_pos = copy(click_pos)
+#     # move_pos.setX(move_pos.x() + (widget_size.width()/4))
+#     #
+#     # qtbot.mouseMove(monitor_widget.range_slider, click_pos, delay=100)
+#     # qtbot.mousePress(monitor_widget.range_slider, QtCore.Qt.LeftButton, delay=200)
+#     # qtbot.mouseMove(monitor_widget.range_slider, move_pos)
+#     # qtbot.mouseRelease(monitor_widget.range_slider, QtCore.Qt.LeftButton, pos=move_pos, delay=200)
+
+
+#     # set with range_slider
+#     # for i in range(n_samples):
+#     #     test_min, test_max = gen_test_values()
+#     #
+#     #
+#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
+#     #         monitor_widget.range_slider.setLow(test_min)
+#     #         sleep(0.01)
+#     #         assert(blocker.args[0][0]==test_min)
+#     #
+#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
+#     #         monitor_widget.range_slider.setHigh(test_max)
+#     #         sleep(0.01)
+#     #         assert(blocker.args[0][1]==test_max)
+

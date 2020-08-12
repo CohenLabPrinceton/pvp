@@ -77,7 +77,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def __init__(self,
                  coordinator: typing.Type[coordinator.CoordinatorBase],
                  set_defaults: bool = False,
-                 update_period: float = 0.05):
+                 update_period: float = prefs.get_pref('GUI_UPDATE_TIME')):
         """
         The Main GUI window.
 

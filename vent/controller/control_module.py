@@ -1045,7 +1045,9 @@ class ControlModuleSimulator(ControlModuleBase):
             if len(self._DATA_PRESSURE_LIST) > 5:
                 self._DATA_PRESSURE_LIST.pop(0)
 
-            self._PID_update(dt = dt)                               # Update the PID Controller
+            self._PID_update(dt = dt)
+            self._last_update = time.time()
+            # Update the PID Controller
 
             x = self._get_control_signal_in()                       # Inspiratory side: get control signal for PropValve
             Qin = self.__SimulatedPropValve(x, dt = dt)             # And calculate the produced flow Qin
@@ -1057,7 +1059,7 @@ class ControlModuleSimulator(ControlModuleBase):
             self.Balloon.set_flow_out(Qout, dt = dt)
 
             self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout                    --- SENSOR 2
-            self._last_update = now
+
 
             if update_copies == 0:
                 self._controls_from_COPY()     # Update controls from possibly updated values as a chunk

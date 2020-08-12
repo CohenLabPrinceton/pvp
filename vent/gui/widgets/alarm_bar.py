@@ -124,10 +124,10 @@ class Alarm_Bar(QtWidgets.QFrame):
 
             # also start playing sound if havent already
             if not self.sound_player.playing:
-                self.sound_player.set_sound_now(alarm.severity, 0)
+                self.sound_player.set_sound(severity=alarm.severity, level=0)
                 self.sound_player.play()
             else:
-                self.sound_player.set_severity(alarm.severity)
+                self.sound_player.set_sound(severity=alarm.severity)
 
         # update our icon
         self.update_icon()
@@ -161,7 +161,7 @@ class Alarm_Bar(QtWidgets.QFrame):
                 if max_severity == AlarmSeverity.OFF:
                     self.sound_player.stop()
                 else:
-                    self.sound_player.set_severity(max_severity)
+                    self.sound_player.set_sound(severity=max_severity)
 
         self.update_icon()
 
@@ -362,6 +362,7 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
         self.playing = False
 
         self._sound_started = None
+        self._current_sound = None
         self._severity = None
         self._level = 0
         self._current_idx = 0
@@ -381,8 +382,8 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
     def init_audio(self):
 
         # init audio objects
-        self.player = QtMultimedia.QMediaPlayer(self)
-        self.playlist = QtMultimedia.QMediaPlaylist(self.player)
+        # self.player = QtMultimedia.QMediaPlayer(self)
+        # self.playlist = QtMultimedia.QMediaPlaylist(self.player)
 
         # find audio files
         vent_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -390,7 +391,7 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
         audio_files = glob.glob(os.path.join(audio_dir, "*.wav"))
         self.files = audio_files
 
-        current_index = 0
+        # current_index = 0
         for filename in sorted(audio_files):
             try:
                 # parse filename into components
@@ -403,51 +404,71 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
 
                 # load file and index
                 file_url = QtCore.QUrl.fromLocalFile(filename)
-                self.playlist.addMedia(QtMultimedia.QMediaContent(file_url))
-                self.idx[severity][number] = current_index
-                current_index += 1
+                sound = QtMultimedia.QSoundEffect()
+                sound.setSource(file_url)
+                sound.setLoopCount(QtMultimedia.QSoundEffect.Infinite)
+
+                # self.playlist.addMedia(QtMultimedia.QMediaContent(file_url))
+                self.idx[severity][number] = sound
+                # current_index += 1
 
             except Exception as e:
                 self.logger.exception(e)
 
         # finish configuring audio objects
-        self.playlist.setPlaybackMode(QtMultimedia.QMediaPlaylist.CurrentItemInLoop)
-        self.player.setPlaylist(self.playlist)
-        self.playlist.setCurrentIndex(self._current_idx)
-        self.player.mediaStatusChanged.connect(self._update_player)
+        # self.playlist.setPlaybackMode(QtMultimedia.QMediaPlaylist.CurrentItemInLoop)
+        # self.player.setPlaylist(self.playlist)
+        # self.playlist.setCurrentIndex(self._current_idx)
+        # self.player.mediaStatusChanged.connect(self._update_player)
 
     def play(self):
-        self.logger.debug('Playback Started')
-        self.playlist.setPlaybackMode(QtMultimedia.QMediaPlaylist.CurrentItemInLoop)
+
+        # self.playlist.setPlaybackMode(QtMultimedia.QMediaPlaylist.CurrentItemInLoop)
         self.playing = True
-        self.player.play()
-        self._increment_timer.start()
+        if self._current_sound is not None:
+            self._current_sound.play()
+            self._increment_timer.start()
+            self.logger.debug('Playback Started')
+        else:
+            self.logger.exception("No sound selected before using play method")
+        # self.player.play()
+
 
     def stop(self):
         self.logger.debug('Playback Stopped')
         self.playing = False
-        self.player.stop()
+        self._current_sound.stop()
+        self._current_sound = None
         self._increment_timer.stop()
         self._severity = AlarmSeverity.OFF
         self._level = 0
+    #
+    # def set_severity(self, severity: AlarmSeverity):
+    #     with self._changing_track:
+    #         if severity != self._severity:
+    #             if severity in self.idx.keys():
+    #                 new_sound = self.idx[severity][self._level]
+    #                 if self._current_sound is not None:
+    #                     self._current_sound.stop()
+    #                 new_sound.start()
+    #                 self._current_sound = new_sound
+    #                 self._severity = severity
+    #             else:
+    #                 # an alarm type we dont have, like OFF
+    #                 self.logger.warning(f"Tried to set alarm severity to {severity} but no sound was found")
+    #
+    # def set_level(self, level: int):
+    #     with self._changing_track:
+    #         if level != self._level:
+    #             new_sound = self.idx[self._severity][level]
+    #             if self._current_sound is not None:
+    #                 self._current_sound.stop()
+    #             new_sound.start()
+    #             self._current_sound = new_sound
+    #             self._level = level
+    #
 
-    def set_severity(self, severity: AlarmSeverity):
-        with self._changing_track:
-            if severity != self._severity:
-                if severity in self.idx.keys():
-                    self._change_to = self.idx[severity][self._level]
-                    self._severity = severity
-                else:
-                    # an alarm type we dont have, like OFF
-                    self.logger.warning(f"Tried to set alarm severity to {severity} but no sound was found")
-
-    def set_level(self, level: int):
-        with self._changing_track:
-            if level != self._level:
-                self._change_to = self.idx[self._severity][level]
-                self._level = level
-
-    def set_sound_now(self, severity: AlarmSeverity = None, level: int = None):
+    def set_sound(self, severity: AlarmSeverity = None, level: int = None):
         with self._changing_track:
             if severity is None:
                 severity = self._severity
@@ -456,29 +477,33 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
                 level = self._level
 
             if severity in self.idx.keys():
-                self._current_idx = self.idx[severity][level]
+                new_sound = self.idx[severity][level]
+                if self._current_sound is not None:
+                    self._current_sound.stop()
+                new_sound.play()
+                self._current_sound = new_sound
                 self._severity = severity
                 self._level = level
-                self.playlist.setCurrentIndex(self._current_idx)
-                if self.playing:
-                    self.player.play()
+                # self.playlist.setCurrentIndex(self._current_idx)
+                # if self.playing:
+                #     self.player.play()
             else:
                 self.logger.exception(f"{severity} doesnt have an alarm sound!")
 
 
     def increment_level(self):
         if self._level < self._max_level:
-            self.set_level(self._level + 1)
+            self.set_sound(level=self._level + 1)
 
 
 
-    def _update_player(self, status: QtMultimedia.QMediaPlayer.MediaStatus):
-        print(status)
-        if status == QtMultimedia.QMediaPlayer.MediaStatus.EndOfMedia:
-            if self._change_to is not None:
-                self.playlist.setCurrentIndex(self._change_to)
-                self.player.play()
-                self._current_idx = self._change_to
-                self._change_to = None
+    # def _update_player(self, status: QtMultimedia.QMediaPlayer.MediaStatus):
+    #     print(status)
+    #     if status == QtMultimedia.QMediaPlayer.MediaStatus.EndOfMedia:
+    #         if self._change_to is not None:
+    #             self.playlist.setCurrentIndex(self._change_to)
+    #             self.player.play()
+    #             self._current_idx = self._change_to
+    #             self._change_to = None
 
 

@@ -499,10 +499,8 @@ class ControlModuleBase:
             if time.time() - self.hapa_crossing_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
                 self.__SET_PIP = 30                 # Default: PIP to 30
                 if self.__control_signal_in != 0 and self.__control_signal_out != 1:
-                    for i in range(5):                   # Make sure to send this command for 100ms -> release pressure immediately
-                        self.__control_signal_out = 1
-                        self.__control_signal_in  = 0
-                        time.sleep(0.02)
+                    self.__control_signal_out = 1
+                    self.__control_signal_in  = 0
 
                 # create HAPA alarm
                 if self.HAPA is None:
@@ -902,7 +900,7 @@ class ControlModuleDevice(ControlModuleBase):
                 self.logger.warning("MainLoop: Update too long: " + str(dt))
                 print("Restarted cycle.")
                 self._control_reset()
-                dt = self._LOOP_UPDATE_TIME
+                # dt = self._LOOP_UPDATE_TIME
             
             self._get_HAL()                                          # Update pressure and flow measurement
             self._PID_update(dt = dt)                                # With that, calculate controls
@@ -918,6 +916,8 @@ class ControlModuleDevice(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
+
+            time.sleep(self._LOOP_UPDATE_TIME)
 
         # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
@@ -1049,6 +1049,7 @@ class ControlModuleSimulator(ControlModuleBase):
         ControlModuleBase.__init__(self, save_logs = False)
         self.Balloon = Balloon_Simulator(peep_valve = peep_valve_setting)          # This is the simulation
         self._sensor_to_COPY()
+        self._LOOP_UPDATE_TIME = prefs.get_pref('CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR')
 
         self.simulator_dt = simulator_dt
 
@@ -1148,6 +1149,8 @@ class ControlModuleSimulator(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
+
+            time.sleep(self._LOOP_UPDATE_TIME)
 
         # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk

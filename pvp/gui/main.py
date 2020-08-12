@@ -272,7 +272,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     cycle_time = 1/(bpm/60)
                     inspt = cycle_time/(1+1/new_value)
 
-                except KeyError: # pragma no cover
+                except KeyError: # pragma: no cover
                     self.logger.debug('Tried to set breath cycle controls with autocalc INSPt, but dont have BPM yet.') # pragma: no cover
                     # do nothing -- we've alredy stashed IE ratio above, will set both once we have bpm
 
@@ -283,7 +283,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     ie = self._state['controls'][ValueName.IE_RATIO.name]
                     cycle_time = 1/(new_value/60)
                     inspt = cycle_time / (1 + 1 / ie)
-                except KeyError:
+                except KeyError: # pragma: no cover
                     self.logger.debug('Tried to set breath cycle controls with autocalc INSPt, but dont have IE ratio yet. Setting BPM alone')
 
         elif self._autocalc_cycle == ValueName.BREATHS_PER_MINUTE:
@@ -294,7 +294,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     expt = inspt/new_value
                     cycle_time = inspt + expt # in Hz
                     bpm = (1/cycle_time)*60
-                except KeyError:
+                except KeyError: # pragma: no cover
                     self.logger.debug(
                         'Tried to set breath cycle controls with autocalc BPM, but dont have INSPt yet.')
 
@@ -305,7 +305,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     expt = new_value / ie
                     cycle_time = new_value + expt  # in Hz
                     bpm = (1 / cycle_time) * 60
-                except KeyError:
+                except KeyError: # pragma: no cover
                     self.logger.debug(
                         'Tried to set breath cycle controls with autocalc BPM, but dont have I:E yet. Setting INSPt alone')
 
@@ -323,7 +323,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                 expt = cycle_time - inspt
                 ie = inspt/expt
 
-            except KeyError:
+            except KeyError: # pragma: no cover
                 self.logger.debug(
                     f'Tried to set breath cycle controls with autocalc IE Ratio, but dont have BPM and INSPt. Setting {value_name} without calculating IE')
 
@@ -364,6 +364,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         if control_object.name.name in self.controls.keys():
             self.controls[control_object.name.name].update_set_value(control_object.value)
+        elif control_object.name.name in self.monitor.keys():
+            self.monitor[control_object.name.name].update_set_value(control_object.value)
 
         # if control_object.name in self.pressure_waveform.PARAMETERIZING_VALUES:
         #     self.pressure_waveform.update_target(control_object)
@@ -682,7 +684,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         if self.coordinator:
             try:
-                self.coordinator.stop()
+                self.coordinator.kill()
             except: # pragma: no cover
                 raise Warning('had a thread object, but the thread object couldnt be stopped')
 

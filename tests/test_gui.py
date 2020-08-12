@@ -279,6 +279,35 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
         control_value = vent_gui.coordinator.get_control(value_name)
         assert(control_value.value == test_value)
 
+def test_VTE_set(qtbot, spawn_gui):
+    app, vent_gui = spawn_gui
+
+    vent_gui.start()
+    vent_gui.timer.stop()
+    vent_gui.control_panel.lock_button.click()
+
+    control_widget = vent_gui.monitor[ValueName.VTE.name]
+
+    # record some VTEs n shit
+    for i in range(n_samples):
+        # press record
+        assert (control_widget.toggle_button.isChecked() == False)
+        control_widget.toggle_button.click()
+        assert (control_widget.toggle_button.isChecked() == True)
+        # feed it 10 test values
+        test_values = []
+        for j in range(10):
+            new_test_value = np.random.random()*2+1
+            test_values.append(new_test_value)
+            control_widget.update_sensor_value(new_test_value)
+
+        # stop recording and check the value
+        control_widget.toggle_button.click()
+        assert (control_widget.toggle_button.isChecked() == False)
+        control_value = vent_gui._state['controls'][ValueName.VTE.name]
+        assert control_value == np.mean(test_values)
+
+
 @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.VALUES.items() if k in \
                                         (ValueName.BREATHS_PER_MINUTE,
                                          ValueName.INSPIRATION_TIME_SEC,

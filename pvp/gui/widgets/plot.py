@@ -970,6 +970,10 @@ class Plot_Container(QtWidgets.QGroupBox):
         for plot in self.plots.values():
             plot.set_duration(duration)
 
+    def reset_start_time(self):
+        for plot in self.plots.values():
+            plot.reset_start_time()
+
 
 
 

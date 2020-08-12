@@ -18,7 +18,7 @@ from copy import copy
 import pdb
 
 import pytest
-from time import sleep
+from time import sleep, time
 
 
 from pytestqt import qt_compat
@@ -29,7 +29,9 @@ from pvp import gui
 from pvp.gui import styles
 from pvp.gui import widgets
 from pvp.common import message, values
+from pvp.common.values import ValueName
 from pvp.coordinator.coordinator import get_coordinator
+from pvp.alarm import AlarmType, AlarmSeverity
 
 # from pvp.common import prefs
 # prefs.set_pref('ENABLE_DIALOGS', False)
@@ -105,19 +107,62 @@ def spawn_gui(qtbot):
     vent_gui.init_controls()
     return app, vent_gui
 
+@pytest.fixture
+def fake_sensors():
+    def _fake_sensor(arg=None):
+        # make an empty SensorValues
+        vals = {k:0 for k in ValueName}
+        vals.update({k:0 for k in message.SensorValues.additional_values})
+
+        # since 0 is out of range for fio2, manually set it
+        # FIXME: find values that by definition don't raise any of the default rules
+        vals[ValueName.FIO2] = 80
+
+        # update with any in kwargs
+        if arg:
+            for k, v in arg.items():
+                vals[k] = v
+
+        sensors = message.SensorValues(vals=vals)
+
+        return sensors
+    return _fake_sensor
 
 
 
-def test_gui_launch(qtbot, spawn_gui):
+def test_gui_launch(qtbot):
 
-    app, vent_gui = spawn_gui
+
+    app = qt_api.QApplication.instance()
+    app.setStyle('Fusion')
+    app.setStyleSheet(styles.DARK_THEME)
+    app = styles.set_dark_palette(app)
+
+    coordinator = get_coordinator(sim_mode=True, single_process=False)
+    vent_gui = gui.Vent_Gui(coordinator, set_defaults=False)
+
+    qtbot.addWidget(vent_gui)
+
+    # try to launch without setting default controls
+
     vent_gui.control_panel.start_button.click()
+    assert not vent_gui.running
+    assert not vent_gui.coordinator.is_running()
 
+    # now set defaults and try again
+    vent_gui.init_controls()
+    vent_gui.control_panel.start_button.click()
     # wait for a second to let the simulation spin up and start spitting values
     qtbot.wait(2000)
 
     assert vent_gui.isVisible()
+    assert vent_gui.running
     assert vent_gui.coordinator.is_running()
+
+    vent_gui.control_panel.start_button.click()
+
+    assert not vent_gui.running
+    assert not vent_gui.coordinator.is_running()
 
 
 ################################
@@ -234,6 +279,109 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
         control_value = vent_gui.coordinator.get_control(value_name)
         assert(control_value.value == test_value)
 
+@pytest.mark.parametrize("test_value", [(k, v) for k, v in values.VALUES.items() if k in \
+                                        (ValueName.BREATHS_PER_MINUTE,
+                                         ValueName.INSPIRATION_TIME_SEC,
+                                         ValueName.IE_RATIO,
+                                         )])
+def test_autoset_cycle(qtbot, spawn_gui, test_value):
+    value_name = test_value[0]
+    value_params = test_value[1]
+
+    app, vent_gui = spawn_gui
+
+    if value_name == ValueName.BREATHS_PER_MINUTE:
+        vent_gui.control_panel.cycle_buttons[ValueName.BREATHS_PER_MINUTE].click()
+
+        assert vent_gui._autocalc_cycle == ValueName.BREATHS_PER_MINUTE
+
+        # set IE_RATIO and INSPIRATION_TIME_SEC
+        for i in range(n_samples):
+            test_ie = np.random.rand()+0.5
+            test_tinsp = np.random.rand()*3
+
+            vent_gui.set_value(test_ie, ValueName.IE_RATIO)
+            vent_gui.set_value(test_tinsp, ValueName.INSPIRATION_TIME_SEC)
+
+            ret_tinsp = vent_gui.coordinator.get_control(ValueName.INSPIRATION_TIME_SEC).value
+            ret_rr = vent_gui.coordinator.get_control(ValueName.BREATHS_PER_MINUTE).value
+            assert ret_tinsp == test_tinsp
+            assert ret_rr == 1/(test_tinsp + (test_tinsp/test_ie)) * 60
+
+    elif value_name == ValueName.INSPIRATION_TIME_SEC:
+        vent_gui.control_panel.cycle_buttons[ValueName.INSPIRATION_TIME_SEC].click()
+
+        assert vent_gui._autocalc_cycle == ValueName.INSPIRATION_TIME_SEC
+
+        for i in range(n_samples):
+            test_ie = np.random.rand()+0.5
+            test_rr = np.random.rand()*20+10
+
+            vent_gui.set_value(test_ie, ValueName.IE_RATIO)
+            vent_gui.set_value(test_rr, ValueName.BREATHS_PER_MINUTE)
+
+            ret_tinsp = vent_gui.coordinator.get_control(ValueName.INSPIRATION_TIME_SEC).value
+            ret_rr = vent_gui.coordinator.get_control(ValueName.BREATHS_PER_MINUTE).value
+            assert ret_tinsp == (1/(test_rr/60)) / (1+1/test_ie)
+            assert ret_rr == test_rr
+
+    elif value_name == ValueName.IE_RATIO:
+        # the easy one
+
+        vent_gui.control_panel.cycle_buttons[ValueName.IE_RATIO].click()
+
+        assert vent_gui._autocalc_cycle == ValueName.IE_RATIO
+
+        for i in range(n_samples):
+            test_tinsp = np.random.rand()*3
+            test_rr = np.random.rand() * 20 + 10
+
+            vent_gui.set_value(test_tinsp, ValueName.INSPIRATION_TIME_SEC)
+            vent_gui.set_value(test_rr, ValueName.BREATHS_PER_MINUTE)
+
+            ret_tinsp = vent_gui.coordinator.get_control(ValueName.INSPIRATION_TIME_SEC).value
+            ret_rr = vent_gui.coordinator.get_control(ValueName.BREATHS_PER_MINUTE).value
+            assert ret_tinsp == test_tinsp
+            assert ret_rr == test_rr
+
+def test_alarm_manager_signals(qtbot, spawn_gui):
+    # ensure test alarm_manager.update
+    # TODO: This
+    pass
+
+def test_handle_controller_alarm(qtbot, spawn_gui):
+    # TODO: This
+    pass
+
+def test_save_restore_gui_state(qtbot, spawn_gui):
+    # TODO: This
+    pass
+
+def test_raise_alarm_card(qtbot, spawn_gui, fake_sensors):
+    app, vent_gui = spawn_gui
+
+    # throw a hapa and make sure the alarm card shows up
+    uh_oh = fake_sensors()
+    vent_gui.alarm_manager.update(uh_oh)
+    # there will be some alarms because we dont have a way of generating safe values yet, but HAPA wont be in them
+    assert not any([a.alarm_type == AlarmType.HIGH_PRESSURE for a in vent_gui.alarm_bar.alarms])
+
+    # now poppa hapa
+    uh_oh['PRESSURE'] = 10000
+    vent_gui.alarm_manager.update(uh_oh)
+
+    assert any([a.alarm_type == AlarmType.HIGH_PRESSURE for a in vent_gui.alarm_bar.alarms])
+
+
+
+def test_gui_main_etc(qtbot, spawn_gui):
+
+    app, vent_gui = spawn_gui
+
+    # test setting update period
+    vent_gui.update_period = 0.10
+    assert vent_gui.update_period == 0.10
+
 
 
 
@@ -247,7 +395,9 @@ def test_sliders_during_unit_convertion():
     # TODO: this
     return
 
-
+def test_set_breath_detection():
+    # TODO: this
+    pass
 
 
 ###################################

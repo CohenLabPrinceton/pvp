@@ -133,7 +133,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.logger.debug('Alarm Manager instantiated')
 
         self.monitor = {} # type: typing.Dict[ValueName, widgets.Display]
-        self.plots = {} # type: typing.Dict[ValueName, widgets.Plot]
+        #self.plots = {} # type: typing.Dict[ValueName, widgets.Plot]
+        self.plot_box = None # type: typing.Union[None, widgets.plot.Plot_Container]
         self.controls = {} # type: typing.Dict[ValueName.name, widgets.Display]
 
         self.coordinator = coordinator
@@ -148,8 +149,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         # set update period (after timer is created!!)
         self._update_period = None
         self.update_period = update_period
-
-        self._plot_control = False
 
         self._autocalc_cycle = ValueName.INSPIRATION_TIME_SEC # which of the cycle control to autocalculate
 
@@ -220,8 +219,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
         Args:
             new_value (float): Som
         """
-        if self._plot_control:
-            return
         # get sender ID
         if value_name is None:
             value_name = self.sender().objectName()
@@ -275,8 +272,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     cycle_time = 1/(bpm/60)
                     inspt = cycle_time/(1+1/new_value)
 
-                except KeyError:
-                    self.logger.debug('Tried to set breath cycle controls with autocalc INSPt, but dont have BPM yet.')
+                except KeyError: # pragma no cover
+                    self.logger.debug('Tried to set breath cycle controls with autocalc INSPt, but dont have BPM yet.') # pragma: no cover
                     # do nothing -- we've alredy stashed IE ratio above, will set both once we have bpm
 
             elif value_name == ValueName.BREATHS_PER_MINUTE.name:
@@ -355,7 +352,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         """
         if isinstance(control_object, list):
-            control_object = control_object[0]
+            control_object = control_object[0] # pragma: no cover
         # pdb.set_trace()
         self.logger.info(f'Setting control value: {control_object.name.name}, {control_object.value}')
 
@@ -373,11 +370,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.update_state('controls', control_object.name.name, control_object.value)
 
-    @QtCore.Slot(bool)
-    def set_plot_control(self, plot_control: bool):
-        if plot_control != self._plot_control:
-            self._plot_control = plot_control
-
     def update_gui(self, vals: SensorValues = None):
         """
 
@@ -386,11 +378,6 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         """
         try:
-
-            # update ideal waveform
-            # be extra cautious here, don't want to break before being able to check alarms
-
-
             # if not running yet, don't update anything else.
             if not self.running:
                 return
@@ -401,7 +388,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
             # update alarms
             # only after first breath! many values are only defined after first cycle
             if vals.breath_count > 1:
-                self.alarm_manager.update(vals)
+                # don't test this because we don't usually want the GUI just updating during tests
+                # and this method is really heavy, so we test each of the pieces separately
+                self.alarm_manager.update(vals) # pragma: no cover
 
             try:
                 controller_alarms = self.coordinator.get_alarms()
@@ -409,7 +398,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
                     for alarm in controller_alarms:
                         # alarm can either be Alarm object of a list of Alarm objects
                         if isinstance(alarm, Alarm):
-                            self.handle_alarm(alarm)
+                            self.handle_alarm(alarm) # pragma: no cover - testing separately
                         elif isinstance(alarm, (tuple, list)):
                             for subalarm in alarm:
                                 self.handle_alarm(subalarm)
@@ -417,26 +406,26 @@ class Vent_Gui(QtWidgets.QMainWindow):
                             self.logger.warning(f'Dont know how to handle {alarm} gotten from controller get_alarms() method')
                 elif controller_alarms is not None:
                     self.logger.warning(f'Dont know how to handle {controller_alarms} gotten from controller get_alarms() method')
-            except Exception as e:
+            except Exception as e: # pragma: no cover
                 self.logger.exception(f'Couldnt get alarms from controller, got error {e}')
 
             try:
                 self.plot_box.update_value(vals)
-            except Exception as e:
+            except Exception as e: # pragma: no cover
                 self.logger.exception(f"couldnt update plot box with {vals}, got {e}")
 
             for monitor_key, monitor_obj in self.monitor.items():
                 if hasattr(vals, monitor_key):
                     try:
                         monitor_obj.update_sensor_value(getattr(vals, monitor_key))
-                    except Exception as e:
+                    except Exception as e: # pragma: no cover
                         self.logger.exception(f'Couldnt update monitor object with {monitor_key}, got error {e}')
 
             for control_key, control in self.controls.items():
                 if hasattr(vals, control_key):
                     try:
                         control.update_sensor_value(getattr(vals, control_key))
-                    except Exception as e:
+                    except Exception as e: # pragma: no cover
                         self.logger.exception(f'Couldnt update control object with {control_key}, got error {e}')
 
             # let our  timer know we got some data
@@ -575,7 +564,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         Connect Qt signals and slots
         """
 
-        self.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
+        #self.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
 
         # connect controls
         for control in self.controls.values():
@@ -615,8 +604,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self._autocalc_cycle = button
 
         else:
-            self.logger.exception(f"Dont know how to set autocalc cycle with {button}")
-            return
+            self.logger.exception(f"Dont know how to set autocalc cycle with {button}") # pragma: no cover
+            return # pragma: no cover
 
         for value in (ValueName.BREATHS_PER_MINUTE, ValueName.INSPIRATION_TIME_SEC, ValueName.IE_RATIO):
             control = self.controls[value.name]
@@ -659,13 +648,13 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.monitor[control.name.name].update_limits(control)
         self.plot_box.set_safe_limits(control)
 
-    @QtCore.Slot(Alarm)
-    def handle_cleared_alarm(self, alarm):
-        try:
-            self.monitor[alarm.alarm_name.name].alarm_state = False
-        except:
-            # FIXME: will be fixed when values are displayed next to controls
-            pass
+    # @QtCore.Slot(Alarm)
+    # def handle_cleared_alarm(self, alarm):
+    #     try:
+    #         self.monitor[alarm.alarm_name.name].alarm_state = False
+    #     except:
+    #         # FIXME: will be fixed when values are displayed next to controls
+    #         pass
 
     @property
     def alarm_state(self):
@@ -673,12 +662,15 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
     @alarm_state.setter
     def alarm_state(self, state):
-        if state == AlarmSeverity.HIGH:
-            pass
+        # FIXME: set colors on relevant widgets
+        self._alarm_state = state # pragma: no cover
+        pass
+        # if state == AlarmSeverity.HIGH:
+        #     pass
 
-    @QtCore.Slot(AlarmSeverity)
-    def alarm_state_changed(self, state):
-        self.alarm_state = state
+    # @QtCore.Slot(AlarmSeverity)
+    # def alarm_state_changed(self, state):
+    #     self.alarm_state = state
 
     def closeEvent(self, event):
         """
@@ -691,7 +683,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if self.coordinator:
             try:
                 self.coordinator.stop()
-            except:
+            except: # pragma: no cover
                 raise Warning('had a thread object, but the thread object couldnt be stopped')
 
         event.accept()
@@ -717,15 +709,17 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
         if state:
             # check if all controls have been set
-            if 'pytest' not in sys.modules:
-                if not self.controls_set:
+            if not self.controls_set:
+                if 'pytest' not in sys.modules: # pragma: no cover
                     box = widgets.pop_dialog(
                         'Not all controls have been set',
                         'Please ensure all controls have been set before starting ventilation',
                     )
                     box.exec_()
-                    self.control_panel.start_button.set_state('OFF')
-                    return
+                self.control_panel.start_button.set_state('OFF')
+                return
+
+            if 'pytest' not in sys.modules: # pragma: no cover - test controls_set and dialogs separately
 
                 if prefs.get_pref('ENABLE_WARNINGS'):
                     box = widgets.pop_dialog(
@@ -742,8 +736,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
             self.running = True
             self.control_panel.runtime.start_timer()
-            for plot in self.plots.values():
-                plot.reset_start_time()
+            self.plot_box.reset_start_time()
             self.coordinator.start()
             self.control_panel.start_button.set_state('ON')
             # self.control_panel.lock_button.set_state('LOCKED')
@@ -760,7 +753,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
             do_stop = False
 
-            if 'pytest' not in sys.modules and prefs.get_pref('ENABLE_WARNINGS'):
+            if 'pytest' not in sys.modules and prefs.get_pref('ENABLE_WARNINGS'): # pragma: no cover
                 box = widgets.pop_dialog(
                     'Confirm Ventilation Stop',
                     'Stopping Ventilation Prematurely is Dangerous! Are you sure?',
@@ -824,8 +817,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         """
         if state_type not in self._state.keys():
-            self.logger.warning(f'No such state type as {state_type}')
-            return
+            self.logger.warning(f'No such state type as {state_type}') # pragma: no cover
+            return # pragma: no cover
 
         self._state[state_type][key] = val
         self.save_state()
@@ -833,17 +826,17 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def save_state(self):
         try:
             # update timestamp
-            if 'pytest' not in sys.modules:
+            if 'pytest' not in sys.modules: # pragma: no cover
                 self._state['timestamp'] = time.time()
                 state_fn = os.path.join(prefs.get_pref('VENT_DIR'), prefs.get_pref('GUI_STATE_FN'))
                 with open(state_fn, 'w') as state_f:
                     json.dump(self._state, state_f,
                               indent=4, separators=(',', ': '))
 
-        except Exception as e:
+        except Exception as e: # pragma: no cover
             self.logger.warning(f'State could not be saved, state:\n    {self._state}\n\nerror message:\n    {e}')
 
-    def load_state(self, state: typing.Union[str, dict]):
+    def load_state(self, state: typing.Union[str, dict]): # pragma: no cover
         """
 
         Args:
@@ -905,7 +898,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
         self.coordinator.set_breath_detection(breath_detection)
 
-def launch_gui(coordinator, set_defaults=False):
+def launch_gui(coordinator, set_defaults=False): # pragma: no cover - identical thing in tests but we need a lil flavor
 
     # just for testing, should be run from main
     app = QtWidgets.QApplication(sys.argv)

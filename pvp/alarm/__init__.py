@@ -109,7 +109,13 @@ ALARM_RULES = odict({
                 condition.ValueCondition(
                     value_name=ValueName.VTE,
                     limit=VALUES[ValueName.VTE]['safe_range'][0],
-                    mode='min'
+                    mode='min',
+                    depends={
+                        'value_name': ValueName.VTE,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x : x-(x*0.15)
+                    }
                 )
             ),
             (
@@ -118,7 +124,13 @@ ALARM_RULES = odict({
                     value_name=ValueName.VTE,
                     limit=VALUES[ValueName.VTE]['safe_range'][0]- \
                           VALUES[ValueName.VTE]['safe_range'][0]*0.15,
-                    mode='min'
+                    mode='min',
+                    depends={
+                        'value_name': ValueName.VTE,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x : x-(x*0.25)
+                    }
                 ) + \
                 condition.CycleAlarmSeverityCondition(
                     alarm_type = AlarmType.LOW_VTE,
@@ -138,7 +150,13 @@ ALARM_RULES = odict({
                 condition.ValueCondition(
                     value_name=ValueName.VTE,
                     limit=VALUES[ValueName.VTE]['safe_range'][1],
-                    mode='max'
+                    mode='max',
+                    depends={
+                        'value_name': ValueName.VTE,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x : x+(x*0.15)
+                    }
                 )
             ),
             (
@@ -147,7 +165,13 @@ ALARM_RULES = odict({
                     value_name=ValueName.VTE,
                     limit=VALUES[ValueName.VTE]['safe_range'][1]+ \
                           VALUES[ValueName.VTE]['safe_range'][1]*0.15,
-                    mode='max'
+                    mode='max',
+                    depends={
+                        'value_name': ValueName.VTE,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x : x+(x*0.25)
+                    }
                 ) + \
                 condition.CycleAlarmSeverityCondition(
                     alarm_type = AlarmType.HIGH_VTE,

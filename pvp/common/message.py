@@ -41,7 +41,16 @@ class SensorValues:
         # if we were given None, try to get from kwargs.
         for val in self.additional_values:
             if getattr(self, val) is None:
-                setattr(self, val, kwargs[val])
+                try:
+                    setattr(self, val, kwargs[val])
+                except KeyError as e:
+                    if val == "timestamp":
+                        # if it's a timestamp we can make one, we cant make up the rest.
+                        # otherwise just make one
+                        self.timestamp = time.time()
+                    else:
+                        raise e
+
 
         # insist that we have all the rest of the vals
         assert(all([value.name in kwargs.keys() for value in values.SENSOR.keys()]))

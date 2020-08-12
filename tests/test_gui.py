@@ -435,53 +435,53 @@ def test_set_breath_detection():
 #####
 # doubleslider
 #
-# def test_doubleslider(qtbot):
-#     """
-#     test that the doubleslider accurately represents floats
-#     """
-#     doubleslider = widgets.components.DoubleSlider(decimals=decimals)
-#     doubleslider.show()
-#     qtbot.addWidget(doubleslider)
-#
-#     doubleslider.setMinimum(0)
-#     doubleslider.setMaximum(1)
-#
-#     for i in np.random.rand(n_samples):
-#         test_val = np.round(i, decimals)
-#
-#         # set value inside of signal catcher to test both value and signal
-#         with qtbot.waitSignal(doubleslider.doubleValueChanged, timeout=1000) as blocker:
-#             doubleslider.setValue(test_val)
-#
-#         assert(doubleslider.value() == test_val)
-#         assert(blocker.args == test_val)
-#
-#
-# def test_doubleslider_minmax(qtbot, generic_minmax):
-#
-#     doubleslider = widgets.components.DoubleSlider(decimals=decimals)
-#     doubleslider.show()
-#     qtbot.addWidget(doubleslider)
-#
-#     multiplier = 100
-#     for i in range(n_samples):
-#         min, max = generic_minmax()
-#
-#         doubleslider.setMinimum(min)
-#         doubleslider.setMaximum(max)
-#
-#         # test that values were set correctly
-#         assert(doubleslider.minimum() == min)
-#         assert(doubleslider.maximum() == max)
-#
-#         # test below min and above max
-#         test_min = min - np.random.rand()*multiplier
-#         test_max = max + np.random.rand()*multiplier
-#
-#         doubleslider.setValue(test_min)
-#         assert(doubleslider.value() == doubleslider.minimum())
-#         doubleslider.setValue(test_max)
-#         assert(doubleslider.value() == doubleslider.maximum())
+def test_doubleslider(qtbot):
+    """
+    test that the doubleslider accurately represents floats
+    """
+    doubleslider = widgets.components.DoubleSlider(decimals=decimals)
+    doubleslider.show()
+    qtbot.addWidget(doubleslider)
+
+    doubleslider.setMinimum(0)
+    doubleslider.setMaximum(1)
+
+    for i in np.random.rand(n_samples):
+        test_val = np.round(i, decimals)
+
+        # set value inside of signal catcher to test both value and signal
+        with qtbot.waitSignal(doubleslider.doubleValueChanged, timeout=1000) as blocker:
+            doubleslider.setValue(test_val)
+
+        assert(doubleslider.value() == test_val)
+        assert(blocker.args == test_val)
+
+
+def test_doubleslider_minmax(qtbot, generic_minmax):
+
+    doubleslider = widgets.components.DoubleSlider(decimals=decimals)
+    doubleslider.show()
+    qtbot.addWidget(doubleslider)
+
+    multiplier = 100
+    for i in range(n_samples):
+        min, max = generic_minmax()
+
+        doubleslider.setMinimum(min)
+        doubleslider.setMaximum(max)
+
+        # test that values were set correctly
+        assert(doubleslider.minimum() == min)
+        assert(doubleslider.maximum() == max)
+
+        # test below min and above max
+        test_min = min - np.random.rand()*multiplier
+        test_max = max + np.random.rand()*multiplier
+
+        doubleslider.setValue(test_min)
+        assert(doubleslider.value() == doubleslider.minimum())
+        doubleslider.setValue(test_max)
+        assert(doubleslider.value() == doubleslider.maximum())
 #
 # #################
 # # RangeSlider

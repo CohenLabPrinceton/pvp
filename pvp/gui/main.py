@@ -382,7 +382,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         try:
             # if not running yet, don't update anything else.
             if not self.running:
-                return
+                return # pragma: no cover
 
             if not vals:
                 vals = self.coordinator.get_sensors()

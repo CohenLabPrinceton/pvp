@@ -174,43 +174,43 @@ class Alarm_Bar(QtWidgets.QFrame):
             self.icon.clear()
 
 
-    @QtCore.Slot(Alarm)
-    def update_message(self, alarm):
-        """
-        Arguments:
-            alarm (:class:`~.message.Alarm`)
-
-        """
-
-        if alarm is None:
-            # clear
-            self.current_alarm = None
-            self.set_icon()
-            self.message.setText("")
-            return
-
-        self.alarms[alarm.id] = alarm
-
-        if self.current_alarm:
-            # see if we are outranked by current message
-            if alarm.severity >= self.current_alarm.severity:
-                self.set_icon(alarm.severity)
-                self.message.setText(alarm.message)
-                self.current_alarm = alarm
-                self.alarm_level = alarm.severity
-            else:
-                return
-
-        else:
-            self.set_icon(alarm.severity)
-            self.message.setText(alarm.message)
-            self.current_alarm = alarm
-            self.alarm_level = alarm.severity
-
-        # delete old messages from same value
-        self.alarms = {a_key: a_val for a_key, a_val in self.alarms.items() if
-                       (a_val.alarm_name != alarm.alarm_name) or
-                       (a_val.id == alarm.id)}
+    # @QtCore.Slot(Alarm)
+    # def update_message(self, alarm):
+    #     """
+    #     Arguments:
+    #         alarm (:class:`~.message.Alarm`)
+    #
+    #     """
+    #
+    #     if alarm is None:
+    #         # clear
+    #         self.current_alarm = None
+    #         self.set_icon()
+    #         self.message.setText("")
+    #         return
+    #
+    #     self.alarms[alarm.id] = alarm
+    #
+    #     if self.current_alarm:
+    #         # see if we are outranked by current message
+    #         if alarm.severity >= self.current_alarm.severity:
+    #             self.set_icon(alarm.severity)
+    #             self.message.setText(alarm.message)
+    #             self.current_alarm = alarm
+    #             self.alarm_level = alarm.severity
+    #         else:
+    #             return
+    #
+    #     else:
+    #         self.set_icon(alarm.severity)
+    #         self.message.setText(alarm.message)
+    #         self.current_alarm = alarm
+    #         self.alarm_level = alarm.severity
+    #
+    #     # delete old messages from same value
+    #     self.alarms = {a_key: a_val for a_key, a_val in self.alarms.items() if
+    #                    (a_val.alarm_name != alarm.alarm_name) or
+    #                    (a_val.id == alarm.id)}
 
     # def clear_message(self):
     #     if not self.current_alarm:

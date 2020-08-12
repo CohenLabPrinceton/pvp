@@ -67,393 +67,393 @@ class DoubleSlider(QtWidgets.QSlider):
         # pdb.set_trace()
         super(DoubleSlider, self).setValue(int(round(value * self._multi)))
 
-
-class RangeSlider(DoubleSlider):
-
-    valueChanged = QtCore.Signal(tuple)
-    """
-    (tuple): (low, high) set range of floats
-    """
-
-    def __init__(self, abs_range, safe_range, decimals=1, *args, **kwargs):
-        """
-        Slider with two handles that sets a range
-
-        Args:
-            abs_range (tuple): absolute range of slider
-            safe_range (tuple): default set values for handles of slider
-            decimals (int): number of decimals of precision
-            *args:
-            **kwargs:
-        """
-        super(RangeSlider, self).__init__(decimals=decimals, *args, **kwargs)
-        self.setStyleSheet(styles.RANGE_SLIDER)
-
-        self.decimals = decimals
-        self.setSingleStep(10 ** -self.decimals)
-
-        # abs range is the min/max theoretically allowable values
-        self.abs_range = abs_range
-        self.setMinimum(abs_range[0])
-        self.setMaximum(abs_range[1])
-
-        # safe range are the levels outside of which we trigger an alarm
-        # initialize high and low to full range first so they have acceptable values
-        self._low = int(round(abs_range[0] * self._multi))
-        self._high = int(round(abs_range[1] * self._multi))
-        # then set the initial value
-        self.safe_range = safe_range
-        self.setValue(self.safe_range)
-
-        self.pressed_control = QtWidgets.QStyle.SC_None
-        self.hover_control = QtWidgets.QStyle.SC_None
-        self.click_offset = 0
-
-        # 0 for the low, 1 for the high, -1 for both
-        self.active_slider = 0
-
-        # cache tick levels and labels so they're not redrawn constantly
-        self.levels = None
-        self.level_labels = None
-
-        if self.orientation() == QtCore.Qt.Orientation.Horizontal:
-            self.setMinimumHeight(styles.SLIDER_HEIGHT)
-        else:
-            self.setMinimumWidth(styles.SLIDER_WIDTH)
-
-
-    @property
-    def low(self):
-        return self._low / self._multi
-
-    @low.setter
-    def low(self, low):
-        old_low = self._low
-
-        low = int(round(low * self._multi))
-
-        # if the low value is above the minimum...
-        if low >= self._minimum():
-            # if the low value is higher than the high value,
-            # and there is at least one step of headroom,
-            # set the high value as well
-            if low > self._high:
-                if low <= self._maximum() - self._singleStep():
-                    self._high = low + self._singleStep()
-                else:
-                    return
-            self._low = low
-
-        elif low < self._minimum():
-            self._low = self._minimum()
-
-        if old_low != self._low:
-            self.valueChanged.emit((self.low, self.high))
-        self.update()
-
-    @property
-    def high(self):
-        return self._high / self._multi
-
-    @high.setter
-    def high(self, high):
-        old_high = self._high
-
-        high = int(round(high * self._multi))
-
-        # if the low value is above the minimum...
-        if high <= self._maximum():
-            # if the high value is lower than the low value,
-            # and there is at least one step of headroom,
-            # set the high value as well
-            if high < self._low:
-                if high >= self._minimum() + self._singleStep():
-                    self._low = high - self._singleStep()
-                else:
-                    return
-            self._high = high
-
-        elif high > self._maximum():
-            self._high = self._maximum()
-
-        if old_high != self._high:
-            self.valueChanged.emit((self.low, self.high))
-
-        self.update()
-
-    # make methods just so the can accept signals
-    def setLow(self, low):
-        self.low = low
-
-    def setHigh(self, high):
-        self.high = high
-
-    def setValue(self, value):
-        """
-        Args:
-            value (tuple): (low, high) to set
-        """
-
-        # if our signals were not blocked before now,
-        # we want to turn them on again afterwards
-
-        old_state = self.signalsBlocked()
-
-        # block signals so we don't double-emit the change
-        self.blockSignals(True)
-        self.low = value[0]
-        self.high = value[1]
-        self.blockSignals(old_state)
-
-        self.valueChanged.emit((self.low, self.high))
-
-    def value(self):
-        return (self.low, self.high)
-
-    def generate_labels(self):
-        """
-        Generate the text labels for the slider.
-
-        Called on init and on resizeEvent
-        """
-
-
-        self.levels = np.linspace(self.minimum(), self.maximum(), 5)
-        self.level_labels = []
-
-        painter = QtGui.QPainter(self)
-        painter.setFont(mono_font())
-
-        style = self.style()
-        opt = QtWidgets.QStyleOptionSlider()
-        self.initStyleOption(opt)
-        length = style.pixelMetric(QtWidgets.QStyle.PM_SliderLength, opt, self)
-        available = style.pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, opt, self)
-
-        for v in self.levels:
-            label_str = str(int(round(v)))
-            # label_str = "{0:d}".format(v)
-            rect = painter.drawText(QtCore.QRect(), QtCore.Qt.TextDontPrint, label_str)
-
-            if self.orientation() == QtCore.Qt.Horizontal:
-
-                x_loc = QtWidgets.QStyle.sliderPositionFromValue(self.minimum(),
-                                                                 self.maximum(), v, available, opt.upsideDown)
-
-                left = x_loc + length // 2 - rect.width() // 2
-                # there is a 3 px offset that I can't attribute to any metric
-                # left = (self.width())-(rect.width())-10
-                bottom = (self.height() / 2) + rect.height() //2 + 3
-
-            else:
-
-                y_loc= QtWidgets.QStyle.sliderPositionFromValue(self.minimum(),
-                        self.maximum(), v, available, opt.upsideDown)
-
-                bottom=y_loc+length//2+rect.height()//2-3
-                # there is a 3 px offset that I can't attribute to any metric
-                #left = (self.width())-(rect.width())-10
-                left = (self.width()/2)-(styles.INDICATOR_WIDTH/2)-rect.width()-3
-
-            pos=QtCore.QPoint(left, bottom)
-            self.level_labels.append((pos, QtGui.QStaticText(label_str)))
-
-            #painter.drawText(pos, label_str)
-
-        self.setTickInterval(self.levels[1]-self.levels[0])
-        self.redraw_labels = False
-
-
-    def paintEvent(self, event):
-        # based on http://qt.gitorious.org/qt/qt/blobs/master/src/gui/widgets/qslider.cpp
-
-        painter = QtGui.QPainter(self)
-        #style = QtWidgets.QApplication.style()
-        style = self.style()
-
-        for i, value in enumerate([self._high, self._low]):
-            opt = QtWidgets.QStyleOptionSlider()
-            self.initStyleOption(opt)
-            # pdb.set_trace()
-            # Only draw the groove for the first slider so it doesn't get drawn
-            # on top of the existing ones every time
-            if i == 0:
-                opt.subControls = style.SC_SliderGroove | style.SC_SliderHandle
-            else:
-                # opt.subControls = QtWidgets.QStyle.SC_SliderHandle
-                opt.subControls = style.SC_SliderHandle
-
-            #
-            # if self.tickPosition() != self.NoTicks:
-            #     opt.subControls |= QtWidgets.QStyle.SC_SliderTickmarks
-
-            if self.pressed_control:
-                opt.activeSubControls = self.pressed_control
-                opt.state |= QtWidgets.QStyle.State_Sunken
-            else:
-                opt.activeSubControls = self.hover_control
-
-            # opt.rect.setX(-self.width()/2)
-            opt.sliderPosition = value
-            opt.sliderValue = value
-            style.drawComplexControl(QtWidgets.QStyle.CC_Slider, opt, painter, self)
-
-        if not self.level_labels or self.redraw_labels:
-            painter.end()
-            self.generate_labels()
-            painter = QtGui.QPainter(self)
-
-        painter.setFont(mono_font())
-
-        for label in self.level_labels:
-            painter.drawStaticText(label[0], label[1])
-
-        #self.setTickInterval(self.levels[1]-self.levels[0])
-
-    def get_handle_rect(self, which=0):
-        """
-
-        Args:
-            which (int): 0 = low, 1 = high
-
-        Returns:
-            :class:`QtCore.QRect` of handle
-        """
-
-        painter = QtGui.QPainter(self)
-        #style = QtWidgets.QApplication.style()
-        style = self.style()
-
-        if which == 0 or which is False:
-            value = self._low
-        elif which == 1 or which is True:
-            value = self._high
-        else:
-            raise ValueError(f'needs to be 0 for low handle or 1 for high handle, got {which}')
-
-
-        opt = QtWidgets.QStyleOptionSlider()
-        self.initStyleOption(opt)
-        opt.subControls = style.SC_SliderHandle
-        opt.sliderPosition = value
-        opt.sliderValue = value
-
-        return style.subControlRect(QtWidgets.QStyle.CC_Slider, opt, QtWidgets.QStyle.SC_SliderHandle, self)
-
-
-
-
-
-
-    def mousePressEvent(self, event):
-        event.accept()
-
-        style = QtWidgets.QApplication.style()
-        button = event.button()
-
-        # In a normal slider control, when the user clicks on a point in the
-        # slider's total range, but not on the slider part of the control the
-        # control would jump the slider value to where the user clicked.
-        # For this control, clicks which are not direct hits will slide both
-        # slider parts
-
-        if button:
-            opt = QtWidgets.QStyleOptionSlider()
-            self.initStyleOption(opt)
-
-            self.active_slider = -1
-
-            for i, value in enumerate([self._low, self._high]):
-                opt.sliderPosition = value
-                hit = style.hitTestComplexControl(style.CC_Slider, opt, event.pos(), self)
-                if hit == style.SC_SliderHandle:
-                    self.active_slider = i
-                    self.pressed_control = hit
-
-                    self.triggerAction(self.SliderMove)
-                    self.setRepeatAction(self.SliderNoAction)
-                    self.setSliderDown(True)
-                    break
-
-            if self.active_slider < 0:
-                self.pressed_control = QtWidgets.QStyle.SC_SliderHandle
-                self.click_offset = self.__pixelPosToRangeValue(self.__pick(event.pos()))
-                self.triggerAction(self.SliderMove)
-                self.setRepeatAction(self.SliderNoAction)
-        else:
-            event.ignore()
-
-    def mouseMoveEvent(self, event):
-        if self.pressed_control != QtWidgets.QStyle.SC_SliderHandle:
-            event.ignore()
-            return
-
-        event.accept()
-
-        # get old values
-        old_low = copy.copy(self.low)
-        old_high = copy.copy(self.high)
-
-        new_pos = self.__pixelPosToRangeValue(self.__pick(event.pos()))
-        opt = QtWidgets.QStyleOptionSlider()
-        self.initStyleOption(opt)
-        if self.active_slider < 0:
-            offset = new_pos - self.click_offset
-            self.high += offset
-            self.low += offset
-            if self.low < self.minimum():
-                diff = self.minimum() - self.low
-                self.low += diff
-                self.high += diff
-            if self.high > self.maximum():
-                diff = self.maximum() - self.high
-                self.low += diff
-                self.high += diff
-        elif self.active_slider == 0:
-            if new_pos >= self.high:
-                #new_pos = self._high - 1
-                new_pos = self.low
-            self.low = new_pos
-        else:
-            if new_pos <= self.low:
-                #new_pos = self._low + 1
-                new_pos = self.high
-            self.high = new_pos
-        self.click_offset = new_pos
-        self.update()
-        self.emit(QtCore.SIGNAL('sliderMoved(int)'), new_pos)
-
-        # emit valuechanged signal
-        if (old_low != self.low) or (old_high != self.high):
-            self.valueChanged.emit((self.low, self.high))
-
-    def __pick(self, pt):
-        if self.orientation() == QtCore.Qt.Horizontal:
-            return pt.x()
-        else:
-            return pt.y()
-
-    def __pixelPosToRangeValue(self, pos):
-        opt = QtWidgets.QStyleOptionSlider()
-        self.initStyleOption(opt)
-        style = QtWidgets.QApplication.style()
-
-        gr = style.subControlRect(style.CC_Slider, opt, style.SC_SliderGroove, self)
-        sr = style.subControlRect(style.CC_Slider, opt, style.SC_SliderHandle, self)
-
-        if self.orientation() == QtCore.Qt.Horizontal:
-            slider_length = sr.width()
-            slider_min = gr.x()
-            slider_max = gr.right() - slider_length + 1
-        else:
-            slider_length = sr.height()
-            slider_min = gr.y()
-            slider_max = gr.bottom() - slider_length + 1
-        return style.sliderValueFromPosition(self.minimum()*self._multi, self.maximum()*self._multi, pos - slider_min, slider_max - \
-            slider_min, opt.upsideDown)/self._multi
-
-    def resizeEvent(self, event):
-        self.redraw_labels = True
+#
+# class RangeSlider(DoubleSlider):
+#
+#     valueChanged = QtCore.Signal(tuple)
+#     """
+#     (tuple): (low, high) set range of floats
+#     """
+#
+#     def __init__(self, abs_range, safe_range, decimals=1, *args, **kwargs):
+#         """
+#         Slider with two handles that sets a range
+#
+#         Args:
+#             abs_range (tuple): absolute range of slider
+#             safe_range (tuple): default set values for handles of slider
+#             decimals (int): number of decimals of precision
+#             *args:
+#             **kwargs:
+#         """
+#         super(RangeSlider, self).__init__(decimals=decimals, *args, **kwargs)
+#         self.setStyleSheet(styles.RANGE_SLIDER)
+#
+#         self.decimals = decimals
+#         self.setSingleStep(10 ** -self.decimals)
+#
+#         # abs range is the min/max theoretically allowable values
+#         self.abs_range = abs_range
+#         self.setMinimum(abs_range[0])
+#         self.setMaximum(abs_range[1])
+#
+#         # safe range are the levels outside of which we trigger an alarm
+#         # initialize high and low to full range first so they have acceptable values
+#         self._low = int(round(abs_range[0] * self._multi))
+#         self._high = int(round(abs_range[1] * self._multi))
+#         # then set the initial value
+#         self.safe_range = safe_range
+#         self.setValue(self.safe_range)
+#
+#         self.pressed_control = QtWidgets.QStyle.SC_None
+#         self.hover_control = QtWidgets.QStyle.SC_None
+#         self.click_offset = 0
+#
+#         # 0 for the low, 1 for the high, -1 for both
+#         self.active_slider = 0
+#
+#         # cache tick levels and labels so they're not redrawn constantly
+#         self.levels = None
+#         self.level_labels = None
+#
+#         if self.orientation() == QtCore.Qt.Orientation.Horizontal:
+#             self.setMinimumHeight(styles.SLIDER_HEIGHT)
+#         else:
+#             self.setMinimumWidth(styles.SLIDER_WIDTH)
+#
+#
+#     @property
+#     def low(self):
+#         return self._low / self._multi
+#
+#     @low.setter
+#     def low(self, low):
+#         old_low = self._low
+#
+#         low = int(round(low * self._multi))
+#
+#         # if the low value is above the minimum...
+#         if low >= self._minimum():
+#             # if the low value is higher than the high value,
+#             # and there is at least one step of headroom,
+#             # set the high value as well
+#             if low > self._high:
+#                 if low <= self._maximum() - self._singleStep():
+#                     self._high = low + self._singleStep()
+#                 else:
+#                     return
+#             self._low = low
+#
+#         elif low < self._minimum():
+#             self._low = self._minimum()
+#
+#         if old_low != self._low:
+#             self.valueChanged.emit((self.low, self.high))
+#         self.update()
+#
+#     @property
+#     def high(self):
+#         return self._high / self._multi
+#
+#     @high.setter
+#     def high(self, high):
+#         old_high = self._high
+#
+#         high = int(round(high * self._multi))
+#
+#         # if the low value is above the minimum...
+#         if high <= self._maximum():
+#             # if the high value is lower than the low value,
+#             # and there is at least one step of headroom,
+#             # set the high value as well
+#             if high < self._low:
+#                 if high >= self._minimum() + self._singleStep():
+#                     self._low = high - self._singleStep()
+#                 else:
+#                     return
+#             self._high = high
+#
+#         elif high > self._maximum():
+#             self._high = self._maximum()
+#
+#         if old_high != self._high:
+#             self.valueChanged.emit((self.low, self.high))
+#
+#         self.update()
+#
+#     # make methods just so the can accept signals
+#     def setLow(self, low):
+#         self.low = low
+#
+#     def setHigh(self, high):
+#         self.high = high
+#
+#     def setValue(self, value):
+#         """
+#         Args:
+#             value (tuple): (low, high) to set
+#         """
+#
+#         # if our signals were not blocked before now,
+#         # we want to turn them on again afterwards
+#
+#         old_state = self.signalsBlocked()
+#
+#         # block signals so we don't double-emit the change
+#         self.blockSignals(True)
+#         self.low = value[0]
+#         self.high = value[1]
+#         self.blockSignals(old_state)
+#
+#         self.valueChanged.emit((self.low, self.high))
+#
+#     def value(self):
+#         return (self.low, self.high)
+#
+#     def generate_labels(self):
+#         """
+#         Generate the text labels for the slider.
+#
+#         Called on init and on resizeEvent
+#         """
+#
+#
+#         self.levels = np.linspace(self.minimum(), self.maximum(), 5)
+#         self.level_labels = []
+#
+#         painter = QtGui.QPainter(self)
+#         painter.setFont(mono_font())
+#
+#         style = self.style()
+#         opt = QtWidgets.QStyleOptionSlider()
+#         self.initStyleOption(opt)
+#         length = style.pixelMetric(QtWidgets.QStyle.PM_SliderLength, opt, self)
+#         available = style.pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, opt, self)
+#
+#         for v in self.levels:
+#             label_str = str(int(round(v)))
+#             # label_str = "{0:d}".format(v)
+#             rect = painter.drawText(QtCore.QRect(), QtCore.Qt.TextDontPrint, label_str)
+#
+#             if self.orientation() == QtCore.Qt.Horizontal:
+#
+#                 x_loc = QtWidgets.QStyle.sliderPositionFromValue(self.minimum(),
+#                                                                  self.maximum(), v, available, opt.upsideDown)
+#
+#                 left = x_loc + length // 2 - rect.width() // 2
+#                 # there is a 3 px offset that I can't attribute to any metric
+#                 # left = (self.width())-(rect.width())-10
+#                 bottom = (self.height() / 2) + rect.height() //2 + 3
+#
+#             else:
+#
+#                 y_loc= QtWidgets.QStyle.sliderPositionFromValue(self.minimum(),
+#                         self.maximum(), v, available, opt.upsideDown)
+#
+#                 bottom=y_loc+length//2+rect.height()//2-3
+#                 # there is a 3 px offset that I can't attribute to any metric
+#                 #left = (self.width())-(rect.width())-10
+#                 left = (self.width()/2)-(styles.INDICATOR_WIDTH/2)-rect.width()-3
+#
+#             pos=QtCore.QPoint(left, bottom)
+#             self.level_labels.append((pos, QtGui.QStaticText(label_str)))
+#
+#             #painter.drawText(pos, label_str)
+#
+#         self.setTickInterval(self.levels[1]-self.levels[0])
+#         self.redraw_labels = False
+#
+#
+#     def paintEvent(self, event):
+#         # based on http://qt.gitorious.org/qt/qt/blobs/master/src/gui/widgets/qslider.cpp
+#
+#         painter = QtGui.QPainter(self)
+#         #style = QtWidgets.QApplication.style()
+#         style = self.style()
+#
+#         for i, value in enumerate([self._high, self._low]):
+#             opt = QtWidgets.QStyleOptionSlider()
+#             self.initStyleOption(opt)
+#             # pdb.set_trace()
+#             # Only draw the groove for the first slider so it doesn't get drawn
+#             # on top of the existing ones every time
+#             if i == 0:
+#                 opt.subControls = style.SC_SliderGroove | style.SC_SliderHandle
+#             else:
+#                 # opt.subControls = QtWidgets.QStyle.SC_SliderHandle
+#                 opt.subControls = style.SC_SliderHandle
+#
+#             #
+#             # if self.tickPosition() != self.NoTicks:
+#             #     opt.subControls |= QtWidgets.QStyle.SC_SliderTickmarks
+#
+#             if self.pressed_control:
+#                 opt.activeSubControls = self.pressed_control
+#                 opt.state |= QtWidgets.QStyle.State_Sunken
+#             else:
+#                 opt.activeSubControls = self.hover_control
+#
+#             # opt.rect.setX(-self.width()/2)
+#             opt.sliderPosition = value
+#             opt.sliderValue = value
+#             style.drawComplexControl(QtWidgets.QStyle.CC_Slider, opt, painter, self)
+#
+#         if not self.level_labels or self.redraw_labels:
+#             painter.end()
+#             self.generate_labels()
+#             painter = QtGui.QPainter(self)
+#
+#         painter.setFont(mono_font())
+#
+#         for label in self.level_labels:
+#             painter.drawStaticText(label[0], label[1])
+#
+#         #self.setTickInterval(self.levels[1]-self.levels[0])
+#
+#     def get_handle_rect(self, which=0):
+#         """
+#
+#         Args:
+#             which (int): 0 = low, 1 = high
+#
+#         Returns:
+#             :class:`QtCore.QRect` of handle
+#         """
+#
+#         painter = QtGui.QPainter(self)
+#         #style = QtWidgets.QApplication.style()
+#         style = self.style()
+#
+#         if which == 0 or which is False:
+#             value = self._low
+#         elif which == 1 or which is True:
+#             value = self._high
+#         else:
+#             raise ValueError(f'needs to be 0 for low handle or 1 for high handle, got {which}')
+#
+#
+#         opt = QtWidgets.QStyleOptionSlider()
+#         self.initStyleOption(opt)
+#         opt.subControls = style.SC_SliderHandle
+#         opt.sliderPosition = value
+#         opt.sliderValue = value
+#
+#         return style.subControlRect(QtWidgets.QStyle.CC_Slider, opt, QtWidgets.QStyle.SC_SliderHandle, self)
+#
+#
+#
+#
+#
+#
+#     def mousePressEvent(self, event):
+#         event.accept()
+#
+#         style = QtWidgets.QApplication.style()
+#         button = event.button()
+#
+#         # In a normal slider control, when the user clicks on a point in the
+#         # slider's total range, but not on the slider part of the control the
+#         # control would jump the slider value to where the user clicked.
+#         # For this control, clicks which are not direct hits will slide both
+#         # slider parts
+#
+#         if button:
+#             opt = QtWidgets.QStyleOptionSlider()
+#             self.initStyleOption(opt)
+#
+#             self.active_slider = -1
+#
+#             for i, value in enumerate([self._low, self._high]):
+#                 opt.sliderPosition = value
+#                 hit = style.hitTestComplexControl(style.CC_Slider, opt, event.pos(), self)
+#                 if hit == style.SC_SliderHandle:
+#                     self.active_slider = i
+#                     self.pressed_control = hit
+#
+#                     self.triggerAction(self.SliderMove)
+#                     self.setRepeatAction(self.SliderNoAction)
+#                     self.setSliderDown(True)
+#                     break
+#
+#             if self.active_slider < 0:
+#                 self.pressed_control = QtWidgets.QStyle.SC_SliderHandle
+#                 self.click_offset = self.__pixelPosToRangeValue(self.__pick(event.pos()))
+#                 self.triggerAction(self.SliderMove)
+#                 self.setRepeatAction(self.SliderNoAction)
+#         else:
+#             event.ignore()
+#
+#     def mouseMoveEvent(self, event):
+#         if self.pressed_control != QtWidgets.QStyle.SC_SliderHandle:
+#             event.ignore()
+#             return
+#
+#         event.accept()
+#
+#         # get old values
+#         old_low = copy.copy(self.low)
+#         old_high = copy.copy(self.high)
+#
+#         new_pos = self.__pixelPosToRangeValue(self.__pick(event.pos()))
+#         opt = QtWidgets.QStyleOptionSlider()
+#         self.initStyleOption(opt)
+#         if self.active_slider < 0:
+#             offset = new_pos - self.click_offset
+#             self.high += offset
+#             self.low += offset
+#             if self.low < self.minimum():
+#                 diff = self.minimum() - self.low
+#                 self.low += diff
+#                 self.high += diff
+#             if self.high > self.maximum():
+#                 diff = self.maximum() - self.high
+#                 self.low += diff
+#                 self.high += diff
+#         elif self.active_slider == 0:
+#             if new_pos >= self.high:
+#                 #new_pos = self._high - 1
+#                 new_pos = self.low
+#             self.low = new_pos
+#         else:
+#             if new_pos <= self.low:
+#                 #new_pos = self._low + 1
+#                 new_pos = self.high
+#             self.high = new_pos
+#         self.click_offset = new_pos
+#         self.update()
+#         self.emit(QtCore.SIGNAL('sliderMoved(int)'), new_pos)
+#
+#         # emit valuechanged signal
+#         if (old_low != self.low) or (old_high != self.high):
+#             self.valueChanged.emit((self.low, self.high))
+#
+#     def __pick(self, pt):
+#         if self.orientation() == QtCore.Qt.Horizontal:
+#             return pt.x()
+#         else:
+#             return pt.y()
+#
+#     def __pixelPosToRangeValue(self, pos):
+#         opt = QtWidgets.QStyleOptionSlider()
+#         self.initStyleOption(opt)
+#         style = QtWidgets.QApplication.style()
+#
+#         gr = style.subControlRect(style.CC_Slider, opt, style.SC_SliderGroove, self)
+#         sr = style.subControlRect(style.CC_Slider, opt, style.SC_SliderHandle, self)
+#
+#         if self.orientation() == QtCore.Qt.Horizontal:
+#             slider_length = sr.width()
+#             slider_min = gr.x()
+#             slider_max = gr.right() - slider_length + 1
+#         else:
+#             slider_length = sr.height()
+#             slider_min = gr.y()
+#             slider_max = gr.bottom() - slider_length + 1
+#         return style.sliderValueFromPosition(self.minimum()*self._multi, self.maximum()*self._multi, pos - slider_min, slider_max - \
+#             slider_min, opt.upsideDown)/self._multi
+#
+#     def resizeEvent(self, event):
+#         self.redraw_labels = True
 
 
 

@@ -3,6 +3,7 @@ System preferences are stored in ~/vent/prefs.json
 """
 
 import os
+import time
 import json
 import multiprocessing as mp
 from ctypes import c_bool
@@ -39,6 +40,7 @@ bool: flag to indicate whether prefs have been loaded (and thus :func:`set_pref`
 
 _DEFAULTS = {
     'PREFS_FN': None,
+    'TIME_FIRST_START' : None,
     'LOGGING_MAX_BYTES': 2 * 2 ** 30, # total
     'LOGGING_MAX_FILES': 5,
     'TIMEOUT': 0.05, # timeout used for timeout decorator
@@ -62,6 +64,7 @@ _DEFAULTS = {
 Declare all available parameters and set default values. If no default, set as None. 
 
 * ``PREFS_FN`` - absolute path to the prefs file
+* ``TIME_FIRST_START`` - time when the program has been started for the first time
 * ``VENT_DIR``: ~/vent - base directory for user storage
 * ``LOG_DIR``: ~/vent/logs - for storage of event and alarm logs
 * ``DATA_DIR``: ~/vent/data - for storage of waveform data
@@ -149,6 +152,12 @@ def load_prefs(prefs_fn: str):
 
     # save file
     save_prefs()
+
+    # Make sure startime is set if the program is run for the first time
+    if get_pref('TIME_FIRST_START') is None:
+        set_pref('TIME_FIRST_START', time.time()) 
+        globals()['_LOGGER'].info(f'Starttime set: ' + str(time.time()))
+
 
 def save_prefs(prefs_fn: str = None):
     if prefs_fn is None:

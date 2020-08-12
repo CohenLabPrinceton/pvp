@@ -39,7 +39,7 @@ class Alarm_Rule(object):
         for severity, condition in self.conditions:
             active = condition.check(sensor_values)
             if active:
-                if severity.value > active_severity.value:
+                if severity > active_severity:
                     active_severity = severity
 
         self._severity = active_severity

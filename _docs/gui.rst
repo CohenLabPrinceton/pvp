@@ -106,6 +106,7 @@ ______________
 * choice between pressure/volume over time and combined P/V plot
 * display flow in SLM (liters per minute)
 * deque for alarm manager logged alarms
+* need confirmation for start button
 
 
 
@@ -139,6 +140,14 @@ _________
     :undoc-members:
     :autosummary:
 
+Display
+_________
+
+.. automodule:: vent.gui.widgets.display
+    :members:
+    :undoc-members:
+    :autosummary:
+
 Plot
 _______
 
@@ -147,10 +156,18 @@ _______
     :undoc-members:
     :autosummary:
 
-Status Bar
+Control Panel
+_______________
+
+.. automodule:: vent.gui.widgets.control_panel
+    :members:
+    :undoc-members:
+    :autosummary:
+
+Alarm Bar
 ____________
 
-.. automodule:: vent.gui.widgets.status_bar
+.. automodule:: vent.gui.widgets.alarm_bar
     :members:
     :undoc-members:
     :autosummary:
@@ -163,18 +180,18 @@ ____________
     :undoc-members:
     :autosummary:
 
-GUI Stylesheets
-~~~~~~~~~~~~~~~~~~
+Dialog
+____________
 
-.. automodule:: vent.gui.styles
+.. automodule:: vent.gui.widgets.dialog
     :members:
     :undoc-members:
     :autosummary:
 
-GUI Alarm Manager
-~~~~~~~~~~~~~~~~~~~
+GUI Stylesheets
+~~~~~~~~~~~~~~~~~~
 
-.. automodule:: vent.gui.alarm_manager
+.. automodule:: vent.gui.styles
     :members:
     :undoc-members:
     :autosummary:

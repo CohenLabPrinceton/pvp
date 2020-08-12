@@ -48,7 +48,17 @@ _DEFAULTS = {
     'CONTROLLER_LOOP_UPDATE_TIME': 0.0,
     'CONTROLLER_LOOPS_UNTIL_UPDATE': 1, # update copied values like get_sensor every n loops,
     'CONTROLLER_RINGBUFFER_SIZE': 100,
-    'COUGH_DURATION': 0.1
+    'COUGH_DURATION': 0.1,
+    'BREATH_PRESSURE_DROP': 4,
+    'BREATH_DETECTION': True,
+    'LOGLEVEL': 'WARNING',
+    'GUI_STATE_FN': 'gui_state.json',
+    'ENABLE_DIALOGS': True, # enable _all_ dialogs -- for testing on virtual frame buffer
+    'ENABLE_WARNINGS': True, # enable user warnings and confirmations
+    'CONTROLLER_MAX_FLOW': 10,
+    'CONTROLLER_MAX_PRESSURE': 100,
+    'CONTROLLER_MAX_STUCK_SENSOR': 0.2
+
 }
 """
 Declare all available parameters and set default values. If no default, set as None. 
@@ -60,6 +70,12 @@ Declare all available parameters and set default values. If no default, set as N
 * ``DATA_DIR``: ~/vent/data - for storage of waveform data
 * ``LOGGING_MAX_BYTES`` : the **total** storage space for all loggers -- each logger gets ``LOGGING_MAX_BYTES/len(loggers)`` space
 * ``LOGGING_MAX_FILES`` : number of files to split each logger's logs across
+* ``GUI_STATE_FN``: Filename of gui control state file, relative to ``VENT_DIR``
+* ``BREATH_PRESSURE_DROP`` : pressure drop below peep that is detected as an attempt to breath.
+* ``BREATH_DETECTION``: (bool) whether the controller allows autonomous breaths (measured pressure is ``BREATH_PRESSURE_DROP`` below set PEEP)
+* ``CONTROLLER_MAX_FLOW``: If flows above that, hardware cannot be correct.
+* ``CONTROLLER_MAX_PRESSURE``: If pressure above that, hardware cannot be correct.
+* ``CONTROLLER_MAX_STUCK_SENSOR``: Max amount of time (in s) before considering a sensor stuck
 """
 
 def set_pref(key: str, val):
@@ -152,7 +168,8 @@ def save_prefs(prefs_fn: str = None):
 
     with globals()['_LOCK']:
         with open(prefs_fn, 'w') as prefs_f:
-            json.dump(globals()['_PREFS']._getvalue(), prefs_f)
+            json.dump(globals()['_PREFS']._getvalue(), prefs_f,
+                      indent=4, separators=(',', ': '))
 
     if globals()['_LOGGER'] is not None:
         globals()['_LOGGER'].info(f'Saved prefs to {prefs_fn}')

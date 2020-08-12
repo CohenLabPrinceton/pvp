@@ -126,14 +126,23 @@ class DerivedValues:
         self.vte              = vte
 
 class ControlSetting:
-    def __init__(self, name, value = None, min_value = None, max_value = None, timestamp = None):
+    def __init__(self,
+                 name: values.ValueName,
+                 value: float = None,
+                 min_value: float =None,
+                 max_value: float=None,
+                 timestamp: float =None,
+                 range_severity: 'AlarmSeverity' = None):
         """
-        TODO: if enum is hard to use, we may just use a predefined set, e.g. {'PIP', 'PEEP', ...}
-        :param name: enum belong to ValueName
-        :param value:
-        :param min_value:
-        :param max_value:
-        :param timestamp:
+
+        Args:
+            name:
+            value:
+            min_value:
+            max_value:
+            timestamp (float): ``time.time()``
+            range_severity (:class:`.AlarmSeverity`): Some control settings have multiple limits for different alarm severities,
+                this attr, when present, specified which is being set.
         """
         if isinstance(name, str):
             try:
@@ -143,7 +152,7 @@ class ControlSetting:
                 logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
                 raise e
         elif isinstance(name, values.ValueName):
-            assert name in values.CONTROL.keys()
+            assert name in values.CONTROL.keys() or name in (values.ValueName.VTE, values.ValueName.FIO2)
 
         self.name = name # type: values.ValueName
 
@@ -161,6 +170,7 @@ class ControlSetting:
             timestamp = time.time()
 
         self.timestamp = timestamp
+        self.range_severity = range_severity
 
 
 class Error:

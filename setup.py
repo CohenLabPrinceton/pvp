@@ -7,11 +7,16 @@ depend_links = []
 # detect if on raspberry pi, and
 # set location to wheel if we are
 IS_RASPI = False
-ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
-if ret == 0:
-    IS_RASPI = True
-    os.system("sudo +x INSTALL")
-    os.system("sudo ./INSTALL")
+try:
+    ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
+    if ret == 0:
+        IS_RASPI = True
+        os.system("sudo +x INSTALL")
+        os.system("sudo ./INSTALL")
+except:
+    # fine, not a raspi if it don't have grep or cpuinfo
+    pass
+
 
     # keeping this around for proper packaging later
     # get wheel name

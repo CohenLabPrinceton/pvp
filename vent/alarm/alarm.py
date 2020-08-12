@@ -1,5 +1,6 @@
 import time
 import importlib
+from datetime import datetime
 
 from itertools import count
 from vent.alarm import AlarmType, AlarmSeverity
@@ -21,11 +22,13 @@ class Alarm:
                  alarm_type: AlarmType,
                  severity: AlarmSeverity,
                  start_time: float = None,
-                 latch = True,
-                 persistent = True,
+                 latch: bool = True,
+                 persistent: bool = True,
                  value=None,
                  message=None):
         """
+        Attributes:
+            id (int): unique alarm ID
 
         Args:
             alarm_type :
@@ -36,7 +39,7 @@ class Alarm:
         """
 
 
-        self.id = next(Alarm.id_counter)
+        self.id = next(Alarm.id_counter) # type: int
 
         assert isinstance(severity, AlarmSeverity)
         self._severity = severity
@@ -51,10 +54,10 @@ class Alarm:
             self.start_time = start_time
 
         self.active = True
-        if self.severity.value == AlarmSeverity.OFF.value:
+        if self.severity == AlarmSeverity.OFF:
             self.active = False
 
-        self.alarm_end_time = None
+        self.end_time = None
         self.value = value
         self.message = message
         self.latch = latch
@@ -77,12 +80,12 @@ class Alarm:
     #         return Alarm_Manager()
 
     @property
-    def severity(self):
+    def severity(self) -> AlarmSeverity:
         # no setter, don't want to be able to change after instantiation
         return self._severity
 
     @property
-    def alarm_type(self):
+    def alarm_type(self) -> AlarmType:
         return self._alarm_type
 
 
@@ -91,8 +94,30 @@ class Alarm:
         if not self.active:
             return
 
-        self.alarm_end_time = time.time()
+        self.end_time = time.time()
         self.active = False
         # make sure the manager deactivates us.
         # manager checks if this has already been done so doesn't recurse
         #self.manager.deactivate_alarm(self)
+
+    def __str__(self) -> str:
+        """
+        Loggable representation of alarm
+
+        Returns:
+            str
+        """
+
+        if self.end_time is None:
+            end_time = ""
+        else:
+            end_time = datetime.fromtimestamp(self.end_time).isoformat()
+
+        alarm_str = "ALARM: {id} - {name} - SEVERITY: {severity} - START_TIME: {start_time} - END_TIME: {end_time}".format(
+            id = self.id,
+            name = self.alarm_type.name,
+            start_time = datetime.fromtimestamp(self.start_time).isoformat(),
+            end_time = end_time,
+            severity = self.severity.name
+        )
+        return alarm_str

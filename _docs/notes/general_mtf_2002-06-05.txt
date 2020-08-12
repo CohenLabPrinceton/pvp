@@ -1,0 +1,12 @@
+- give me a cartoon of peep valve to use in ui
+- can start ventilator and adjust PEEP 
+	- start PEEP mode before full launch to test measured PEEP
+- rather than start/stop, 'set_state' for controller to be able to 
+
+- split data logger into HAL for raw sensor values and controller for computed values.
+
+- make separate folder for regulatory (as opposed to software) tests.
+
+- make PEEP and VTE setting required after start.
+
+- check mechanical pressure dial on startup, compare to pressure readings.

@@ -21,7 +21,7 @@ from vent import prefs
 
 class ControlModuleBase:
     """
-    
+
     Abstract controller class for simulation/hardware.
 
     1. General notes:
@@ -34,7 +34,7 @@ class ControlModuleBase:
     Internal variables should only to be accessed though the set_ and get_ functions.
         These functions act on COPIES of internal variables (`__` and `_`), that are sync'd every few
         iterations. How often this is done is adjusted by the variable
-        `self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE`. To avoid multiple threads manipulating the same 
+        `self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE`. To avoid multiple threads manipulating the same
         variables at the same time, every manipulation of `COPY_` is surrounded by a thread lock.
 
     Public Methods:
@@ -104,10 +104,19 @@ class ControlModuleBase:
 
         # Alarm management; controller can only react to High airway pressure alarm, and report Hardware problems
         self.HAPA = None
+        self.hapa_crossing_time = None # time that the pressure first crosses the threshold
         self.TECHA = [] # type: typing.List[Alarm]
         self.limit_hapa = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0][1].limit # TODO: Jonny write method to get limits from alarm manager
-        self.cough_duration = prefs.get_pref('COUGH_DURATION')
-        self.breath_pressure_drop = 4 #prefs.get_pref('XXXXX')   #pressure drop below peep that is detected as an attempt to breath.  TODO: get this from prefs.
+        self.cough_duration = prefs.get_pref('COUGH_DURATION') # type: typing.Union[float, int]
+        #self.breath_pressure_drop = 4 #prefs.get_pref('XXXXX')   #pressure drop below peep that is detected as an attempt to breath.
+        self.breath_pressure_drop = prefs.get_pref('BREATH_PRESSURE_DROP') # type: typing.Union[float, int]
+        self.breath_detection = prefs.get_pref('BREATH_DETECTION') # type: bool
+
+        self.limit_max_flows = prefs.get_pref('CONTROLLER_MAX_FLOW')            # If flows above that, hardware cannot be correct.
+        self.limit_max_pressure = prefs.get_pref('CONTROLLER_MAX_PRESSURE')       # If pressure above that, hardware cannot be correct.
+        self.limit_max_stuck_sensor = prefs.get_pref('CONTROLLER_MAX_STUCK_SENSOR')   # 200 ms, jonny, wherever you want this number to live
+
+
 
         self.sensor_stuck_since = None
 
@@ -189,7 +198,7 @@ class ControlModuleBase:
             self.dl.close_logfile()
 
     def _initialize_set_to_COPY(self):
-        """ 
+        """
         Makes a copy of internal variables. This is used to facilitate threading
         """
         with self._lock:
@@ -394,6 +403,14 @@ class ControlModuleBase:
         self._time_last_contact = time.time()
         return return_value
 
+    def set_breath_detection(self, breath_detection: bool):
+        if isinstance(breath_detection, bool):
+            if self.breath_detection != breath_detection:
+                self.logger.info(f'Setting breath detection mode to {breath_detection}')
+                self.breath_detection = breath_detection
+        else:
+            self.logger.exception(f"Dont know how to set breath detection mode {breath_detection}, must be bool")
+
     def __get_PID_error(self, ytarget, yis, dt, RC):
         """
         Calculates the three terms for PID control. Also takes a timestep "dt" on which the integral-term is smoothed.
@@ -425,7 +442,7 @@ class ControlModuleBase:
         new_value +=  self.__KP*self._DATA_P
         new_value +=  self.__KI*self._DATA_I
         new_value +=  self.__KD*self._DATA_D
-        
+
         self.__control_signal_helpers[2] = self.__control_signal_helpers[1]
         self.__control_signal_helpers[1] = self.__control_signal_helpers[0]
         self.__control_signal_helpers[0] = new_value
@@ -433,7 +450,7 @@ class ControlModuleBase:
 
     def _get_control_signal_in(self):
         """
-        Produces the INSPIRATORY control-signal that has been calculated in `__calculate_control_signal_in(dt)` 
+        Produces the INSPIRATORY control-signal that has been calculated in `__calculate_control_signal_in(dt)`
 
         Returns:
             float: the numerical control signal for the inspiratory prop valve
@@ -470,28 +487,36 @@ class ControlModuleBase:
         #limit_hapa =
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.
         limit_max_pressure = 100        # TODO: If pressure above that, hardware cannot be correct. Should find central storge site for hardware limits
-        limit_max_stuck_sensor = 0.2    # TODO: 200 ms, jonny, wherever you want this number to live 
+        limit_max_stuck_sensor = 0.2    # TODO: 200 ms, jonny, wherever you want this number to live
 
         #### First: Check for High Airway Pressure (HAPA)
         if self._DATA_PRESSURE > self.limit_hapa:
-            if self.HAPA is None:
-                self.HAPA = Alarm(AlarmType.HIGH_PRESSURE,
-                                  AlarmSeverity.HIGH,
-                                  time.time(),
-                                  value=self._DATA_PRESSURE)
-            if time.time() - self.HAPA.start_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
+            # if just crossing, store time of threshold crossing
+            if self.hapa_crossing_time is None:
+                self.hapa_crossing_time = time.time()
+
+            # check if time elapsed is greater than cough duration.
+            if time.time() - self.hapa_crossing_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
                 self.__SET_PIP = 30                 # Default: PIP to 30
-                for i in range(5):                   # Make sure to send this command for 100ms -> release pressure immediately
-                    self.__control_signal_out = 1
-                    self.__control_signal_in  = 0
-                    time.sleep(0.02)
-                print("HAPA has been triggered")
+                if self.__control_signal_in != 0 and self.__control_signal_out != 1:
+                    for i in range(5):                   # Make sure to send this command for 100ms -> release pressure immediately
+                        self.__control_signal_out = 1
+                        self.__control_signal_in  = 0
+                        time.sleep(0.02)
+
+                # create HAPA alarm
+                if self.HAPA is None:
+                    self.HAPA = Alarm(AlarmType.HIGH_PRESSURE,
+                                      AlarmSeverity.HIGH,
+                                      time.time(),
+                                      value=self._DATA_PRESSURE)
+
                 self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
             else:
-                print("Transient high pressure; probably a cough.")
-                self.logger.warning(f'Potential cough (high transient pressure) detected: ' + str(self._DATA_PRESSURE))
+                self.logger.debug("Transient high pressure; probably a cough.")
         else:
             self.HAPA = None
+            self.hapa_crossing_time = None
 
         #### Second: Check for Technical Alerts via data plausibility:
         #  ->  Measurements change over time, and are in a plausible range
@@ -499,30 +524,31 @@ class ControlModuleBase:
             self.__DATA_old = [self.COPY_DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
             inputs_dont_change = False 
         else:
-            inputs_dont_change = (self.COPY_DATA_OXYGEN == self.__DATA_old[0]) or \
-                                 (self._DATA_Qout == self.__DATA_old[1]) or \
+            inputs_dont_change = (self.COPY_DATA_OXYGEN == self.__DATA_old[0]) and \
+                                 (self._DATA_Qout == self.__DATA_old[1]) and \
                                  (self._DATA_PRESSURE == self.__DATA_old[2])
             self.__DATA_old = [self.COPY_DATA_OXYGEN, self._DATA_Qout, self._DATA_PRESSURE]
 
         if inputs_dont_change:
-            if self.sensor_stuck_since == None:
+            if self.sensor_stuck_since is None:
                 self.sensor_stuck_since = time.time()                # If inputs are stuck, remember the time.
                 time_elapsed = 0
             else:
                 time_elapsed = time.time() - self.sensor_stuck_since   # If happened again, how long?
 
-            if time_elapsed > limit_max_stuck_sensor and not any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
+            if time_elapsed > self.limit_max_stuck_sensor and not any([a.alarm_type == AlarmType.SENSORS_STUCK for a in self.TECHA]):
                     self.TECHA.append(Alarm(
                         AlarmType.SENSORS_STUCK,
                         AlarmSeverity.TECHNICAL,
                     ))
         else:
+            self.TECHA = [a for a in self.TECHA if a.alarm_type != AlarmType.SENSORS_STUCK]
             self.sensor_stuck_since = None                           # If ok, reset sensor_stuck
 
 
         data_implausible = (self.COPY_DATA_OXYGEN < 0 or self.COPY_DATA_OXYGEN > 100) or \
-                           (self._DATA_Qout < 0 or self._DATA_Qout > limit_max_flows) or \
-                           (self._DATA_PRESSURE < 0 or self._DATA_PRESSURE > limit_max_pressure)
+                           (self._DATA_Qout < 0 or self._DATA_Qout > self.limit_max_flows) or \
+                           (self._DATA_PRESSURE < 0 or self._DATA_PRESSURE > self.limit_max_pressure)
         if data_implausible:
             if not any([a.alarm_type == AlarmType.BAD_SENSOR_READINGS for a in self.TECHA]):
                 self.TECHA.append(Alarm(
@@ -598,7 +624,7 @@ class ControlModuleBase:
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
             self._flow_list.append(self._DATA_Qout )                                                      # Keep a list of the flow out of the lung; for baseline e stimation
-            self.__control_signal_in = 0 
+            self.__control_signal_in = 0
             self.__control_signal_out = 1
 
 
@@ -608,8 +634,8 @@ class ControlModuleBase:
             self.__control_signal_in = 5 *(1 - np.exp( 5*((self.__SET_PEEP_TIME + self.__SET_I_PHASE) - cycle_phase )) )  # Make this nice and smooth.
 
 
-            if self._DATA_PRESSURE < self.__SET_PEEP - self.breath_pressure_drop:  #breath!
-                print("Autonomous breath detected; starting next cycle.")
+            if self.breath_detection and (self._DATA_PRESSURE < self.__SET_PEEP - self.breath_pressure_drop):  #breath!
+                self.logger.info("Autonomous breath detected; starting next cycle.")
                 self._cycle_start = time.time()  # New cycle starts
                 self._DATA_VOLUME = 0            # ... start at zero volume in the lung
                 self._DATA_dpdt    = 0            # and restart the rolling average for the dP/dt estimation
@@ -659,7 +685,7 @@ class ControlModuleBase:
 
     def get_past_waveforms(self):
         """
-        Public method to return a list of past waveforms from `__cycle_waveform_archive`. 
+        Public method to return a list of past waveforms from `__cycle_waveform_archive`.
         Note: After calling this function, archive is emptied! The format is
             - Returns a list of [Nx3] waveforms, of [time, pressure, volume]
             - Most recent entry is waveform_list[-1]
@@ -735,7 +761,7 @@ class ControlModuleBase:
 
     def is_running(self):
         """
-        Public Method to assess whether the main loop thread is running. 
+        Public Method to assess whether the main loop thread is running.
 
         Returns:
             bool: Return true if and only if the main thread of controller is running.
@@ -747,7 +773,7 @@ class ControlModuleBase:
     def get_heartbeat(self):
         """
         Returns an independent heart-beat of the controller, i.e. the internal loop counter incremented in `_start_mainloop`.
-        
+
         Returns:
             int: exact value of `self._loop_counter`
         """
@@ -808,9 +834,9 @@ class ControlModuleDevice(ControlModuleBase):
     # @timeout  #TODO: find a save setting for timeout, as the hardware is kinda slow. >10ms?
     def _set_HAL(self, valve_open_in, valve_open_out):
         """
-        Set Controls with HAL, decorated with a timeout. 
+        Set Controls with HAL, decorated with a timeout.
 
-        As hardware communication is the speed bottleneck. this code is slightly optimized in so far as only changes are sent to hardware. 
+        As hardware communication is the speed bottleneck. this code is slightly optimized in so far as only changes are sent to hardware.
 
         Args:
             valve_open_in (float): setting of the inspiratory valve; should be in range [0,100]
@@ -828,7 +854,7 @@ class ControlModuleDevice(ControlModuleBase):
     def _get_HAL(self):
         """
         Get sensor values from HAL, decorated with timeout.
-        As hardware communication is the speed bottleneck. this code is slightly optimized in so far as some sensors are 
+        As hardware communication is the speed bottleneck. this code is slightly optimized in so far as some sensors are
         queried only in certain phases of the breatch cycle. This is done to run the primary PID loop as fast as possible:
 
             - pressure is always queried
@@ -861,7 +887,7 @@ class ControlModuleDevice(ControlModuleBase):
 
     def _start_mainloop(self):
         """
-        This is the main loop. This method should be run as a thread (see the `start()` method in `ControlModuleBase`) 
+        This is the main loop. This method should be run as a thread (see the `start()` method in `ControlModuleBase`)
         """
         self.logger.info('MainLoop: start')
 
@@ -1013,7 +1039,7 @@ class ControlModuleSimulator(ControlModuleBase):
     """
     # Implement ControlModuleBase functions
     def __init__(self, simulator_dt = None, peep_valve_setting = 5):
-        """ 
+        """
         Initializes the ControlModuleBase with the simple simulation (for testing/dev).
 
         Args:
@@ -1081,7 +1107,7 @@ class ControlModuleSimulator(ControlModuleBase):
 
     def _start_mainloop(self):
         """
-        This is the main loop. This method should be run as a thread (see the `start()` method in `ControlModuleBase`) 
+        This is the main loop. This method should be run as a thread (see the `start()` method in `ControlModuleBase`)
         """
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
         self.logger.info("MainLoop: start")

@@ -10,6 +10,7 @@ import shutil
 import traceback
 import os
 import logging
+import sys
 from datetime import datetime
 from logging import handlers
 import scipy.io as sio
@@ -35,7 +36,7 @@ list of strings, which loggers have been created already.
 
 
 def init_logger(module_name: str,
-                log_level: int = logging.DEBUG,
+                log_level: int = None,
                 file_handler: bool = True) -> logging.Logger:
     """
     Initialize a logger for logging events.
@@ -59,6 +60,11 @@ def init_logger(module_name: str,
         return logger
 
     # set log level
+    if not log_level:
+        log_level = prefs.get_pref('LOGLEVEL')
+        log_level = getattr(logging, log_level)
+
+
     assert log_level in (logging.DEBUG,
                          logging.INFO,
                          logging.WARNING,
@@ -74,7 +80,7 @@ def init_logger(module_name: str,
 
     # handler to log to disk
     # max = 8 file x 16 MB = 128 MB
-    if file_handler:
+    if file_handler and 'pytest' not in sys.modules:
         log_filename = os.path.join(prefs.get_pref('LOG_DIR'),
                                     module_name + '.log')
         fh = logging.handlers.RotatingFileHandler(

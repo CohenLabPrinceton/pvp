@@ -96,7 +96,7 @@ def test_control_dynamical():
     Controller.set_control(command)
 
     v_bpm = random.randint(6, 20)
-    command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=v_bpm) 
+    command = ControlSetting(name=ValueName.BREATHS_PER_MINUTE, value=v_bpm)
 
     Controller.set_control(command)
 

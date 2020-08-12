@@ -1,4 +1,6 @@
 import copy
+import pdb
+import typing
 
 import numpy as np
 from PySide2 import QtWidgets, QtCore, QtGui
@@ -62,7 +64,7 @@ class DoubleSlider(QtWidgets.QSlider):
         return super(DoubleSlider, self).singleStep()
 
     def setValue(self, value):
-
+        # pdb.set_trace()
         super(DoubleSlider, self).setValue(int(round(value * self._multi)))
 
 
@@ -548,6 +550,9 @@ class EditableLabel(QtWidgets.QWidget):
         self.lineEdit.setFocus(QtCore.Qt.MouseFocusReason)
         self.lineEdit.selectAll()
 
+    def setEditable(self, editable: bool):
+        self.is_editable = editable
+
     def labelUpdatedAction(self):
         """Indicates the widget text has been updated"""
         text_to_update = self.lineEdit.text()
@@ -593,3 +598,55 @@ class QHLine(QtWidgets.QFrame):
         pal = self.palette()
         pal.setColor(QtGui.QPalette.WindowText, color)
         self.setPalette(pal)
+
+class QVLine(QtWidgets.QFrame):
+    def __init__(self, parent=None, color=styles.DIVIDER_COLOR):
+        super(QVLine, self).__init__(parent)
+        self.setFrameShape(QtWidgets.QFrame.VLine)
+        self.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.setLineWidth(0)
+        self.setMidLineWidth(3)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        color = QtGui.QColor(color)
+
+        self.setColor(color)
+
+    def setColor(self, color):
+        pal = self.palette()
+        pal.setColor(QtGui.QPalette.WindowText, color)
+        self.setPalette(pal)
+
+
+class OnOffButton(QtWidgets.QPushButton):
+    """
+    Simple extension of toggle button with styling for clearer 'ON' vs 'OFF'
+    """
+
+    def __init__(self, state_labels: typing.Tuple[str, str] = ('ON', 'OFF'), toggled:bool=False, *args, **kwargs):
+        """
+
+        Args:
+            state_labels (tuple): tuple of strings to set when toggled and untoggled
+            toggled (bool): initialize the button as toggled
+            *args: passed to :class:`~PySide2.QtWidgets.QPushButton`
+            **kwargs: passed to :class:`~PySide2.QtWidgets.QPushButton`
+        """
+        super(OnOffButton, self).__init__(*args, **kwargs)
+
+        self.state_labels = state_labels
+
+        self.setCheckable(True)
+        self.toggled.connect(self.set_state)
+        self.setChecked(toggled)
+
+        self.setStyleSheet(styles.TOGGLE_BUTTON)
+
+    @QtCore.Slot(bool)
+    def set_state(self, state: bool):
+        if state:
+            # button is pressed down
+            self.setText(self.state_labels[0])
+        else:
+            self.setText(self.state_labels[1])
+

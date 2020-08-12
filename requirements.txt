@@ -7,3 +7,4 @@ pytest-qt
 pytest-timeout
 setuptools~=40.8.0
 scipy~=1.4.1
+tables

@@ -14,6 +14,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../vent'))
+sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- Project information -----------------------------------------------------
@@ -102,7 +103,7 @@ todo_include_todos = True
 # Intersphinx
 
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
-                       #'PySide2': ('https://doc.qt.io/qtforpython/PySide2/', None),
+                       'PySide2': ('https://doc.qt.io/qtforpython/', None),
                        #'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
                        #'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
                        #'tornado': ('https://www.tornadoweb.org/en/stable/', None),

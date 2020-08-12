@@ -498,6 +498,7 @@ class ControlModuleBase:
             # check if time elapsed is greater than cough duration.
             if time.time() - self.hapa_crossing_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
                 self.__SET_PIP = 30                 # Default: PIP to 30
+                self.COPY_SET_PIP = 30
                 if self.__control_signal_in != 0 and self.__control_signal_out != 1:
                     self.__control_signal_out = 1
                     self.__control_signal_in  = 0
@@ -509,7 +510,7 @@ class ControlModuleBase:
                                       time.time(),
                                       value=self._DATA_PRESSURE)
 
-                self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
+                    self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
             else:
                 self.logger.debug("Transient high pressure; probably a cough.")
         else:
@@ -900,7 +901,7 @@ class ControlModuleDevice(ControlModuleBase):
                 self.logger.warning("MainLoop: Update too long: " + str(dt))
                 print("Restarted cycle.")
                 self._control_reset()
-                # dt = self._LOOP_UPDATE_TIME
+                dt = self._LOOP_UPDATE_TIME
             
             self._get_HAL()                                          # Update pressure and flow measurement
             self._PID_update(dt = dt)                                # With that, calculate controls

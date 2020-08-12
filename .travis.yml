@@ -44,7 +44,7 @@ before_script:
 script:
   - pytest --cov=pvp --cov-report term-missing tests
 
-after_success:
+after_script:
   - coveralls
 
 deploy:

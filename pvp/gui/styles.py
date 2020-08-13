@@ -23,7 +23,7 @@ TEXT_COLOR_DIM = "#BBBBBB"
 TEXT_COLOR_DARK = BACKGROUND_COLOR
 TEXT_COLOR_DARK_DIM = "#555555"
 BORDER_COLOR = "palette(midlight)"
-BOX_BORDERS = f"2px solid palette(midlight);"
+BOX_BORDERS = f"1px solid palette(midlight);"
 BOX_BORDERS_LOCKED = f"3px solid {SUBWAY_COLORS['lime']}"
 BOX_BORDERS_UNLOCKED = f"3px solid {SUBWAY_COLORS['red']}"
 BOX_MARGINS = 4
@@ -36,7 +36,9 @@ CONTROL_SUBBOX_BACKGROUND_LOCKED = "#DDDDDD"
 CONTROL_TEXT = BACKGROUND_COLOR
 CONTROL_TEXT_SECONDARY = "#333333"
 CONTROL_TEXT_SECONDARY_SIZE = 10
-CONTROL_SENSOR_BACKGROUND = "#CCCCCC"
+CONTROL_SENSOR_BACKGROUND_LIGHT = CONTROL_BACKGROUND
+CONTROL_SENSOR_BACKGROUND_DARK = BOX_BACKGROUND
+SENSOR_BAR_COLOR= "#999999"
 CONTROL_SENSOR_BAR_WIDTH = 50
 HANDLE_HEIGHT = 10
 SLIDER_WIDTH = 80
@@ -52,9 +54,9 @@ DISPLAY_MIN_HEIGHT = 100
 DIVIDER_COLOR = "#FFFFFF"
 DIVIDER_COLOR_DARK = BOX_BACKGROUND
 
-VALUE_SIZE = 72 #30
+VALUE_SIZE = 68 #30
 VALUE_MINOR_SIZE = 32
-NAME_SIZE = 32 #10
+NAME_SIZE = 26 #10
 UNIT_SIZE = 18
 TICK_SIZE = 12
 
@@ -271,9 +273,12 @@ QGroupBox {{
     border-right: 1px solid {BORDER_COLOR};
     border-top: 1px solid {BORDER_COLOR};
     border-bottom: 1px solid {BORDER_COLOR};
+    border-left: 1px solid {BORDER_COLOR};
     margin-right: {BOX_MARGINS}px;
+    margin-left: {BOX_MARGINS}px;
+    border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    margin-top: {MIDLINE_MARGIN}px;
 }}
 
 QGroupBox::title {{
@@ -335,30 +340,6 @@ QLineEdit {{
 
 """
 
-CONTROL_SENSOR_LABEL = f"""
-QLabel {{
-    color: {GRAY_TEXT};
-    font-size: {VALUE_MINOR_SIZE}pt;
-    background-color: {CONTROL_SENSOR_BACKGROUND};
-}}
-"""
-
-CONTROL_SENSOR_FRAME = f"""
-QFrame {{
-    background-color: {CONTROL_SENSOR_BACKGROUND};
-    border-radius: 10px;
-    border-color: palette(midlight);
-    border-style: outset;
-    border-width: 1px;
-}}
-
-QFrame QWidget {{
-    border-radius: 0px;
-    border-color: palette(midlight);
-    border-style: outset;
-    border-width: 0px;
-}}
-"""
 
 
 CONTROL_BOX = f"""
@@ -368,9 +349,8 @@ QGroupBox {{
     border-top: {BOX_BORDERS};
     border-right: {BOX_BORDERS};
     border-bottom: {BOX_BORDERS};
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-left: {BOX_BORDERS};
+    border-top-left-radius: 5px;
     margin-top: {MIDLINE_MARGIN}px;
 }}
 

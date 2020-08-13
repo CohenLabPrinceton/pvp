@@ -10,7 +10,7 @@ from PySide2 import QtWidgets, QtCore, QtGui
 
 import pvp.gui.widgets.alarm_bar
 from pvp import prefs
-from pvp.alarm import AlarmSeverity, Alarm
+from pvp.alarm import AlarmSeverity, Alarm, AlarmType
 from pvp.common import values
 from pvp.common.values import ValueName
 from pvp.common.loggers import init_logger
@@ -77,7 +77,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def __init__(self,
                  coordinator: coordinator.CoordinatorBase,
                  set_defaults: bool = False,
-                 update_period: float = 0.05):
+                 update_period: float = 0.05,
+                 screenshot=False):
         """
         The Main GUI window.
 
@@ -169,6 +170,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if set_defaults:
             self.init_controls()
 
+        if screenshot:
+            self._screenshot()
+
         self.toggle_cycle_widget(values.ValueName.INSPIRATION_TIME_SEC)
 
         self.show()
@@ -180,6 +184,32 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.monitor_box.setStyleSheet(styles.MONITOR_BOX)
 
         self.logger.info('GUI Initialized Successfully')
+
+    def _screenshot(self):
+        # make alarms!
+        # low
+        low = Alarm(alarm_type=AlarmType.LOW_PRESSURE,
+                    severity=AlarmSeverity.LOW,
+                    start_time=time.time(),
+                    latch=True,
+                    persistent=True)
+
+        med = Alarm(alarm_type=AlarmType.LOW_VTE,
+                    severity=AlarmSeverity.MEDIUM,
+                    start_time=time.time(),
+                    latch=True,
+                    persistent=True)
+
+        high = Alarm(alarm_type=AlarmType.HIGH_PRESSURE,
+                    severity=AlarmSeverity.HIGH,
+                    start_time=time.time(),
+                    latch=True,
+                    persistent=True)
+
+        self.handle_alarm(low)
+        self.handle_alarm(med)
+        self.handle_alarm(high)
+
 
     @property
     def update_period(self):
@@ -639,6 +669,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
         except:
             # FIXME: will be fixed when values are displayed next to controls
             pass
+        try:
+            self.controls[alarm.alarm_name.name].alarm_state=True
+        except:
+            pass
         if alarm.severity > self.alarm_state:
             self.alarm_state = alarm.severity
 
@@ -900,14 +934,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
         self.coordinator.set_breath_detection(breath_detection)
 
-def launch_gui(coordinator, set_defaults=False): # pragma: no cover - identical thing in tests but we need a lil flavor
+def launch_gui(coordinator, set_defaults=False, screenshot=False): # pragma: no cover - identical thing in tests but we need a lil flavor
 
     # just for testing, should be run from main
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('Fusion')
     app.setStyleSheet(styles.DARK_THEME)
     app = styles.set_dark_palette(app)
-    gui = Vent_Gui(coordinator, set_defaults)
+    gui = Vent_Gui(coordinator, set_defaults, screenshot=screenshot)
     gui.show()
 
     return app, gui

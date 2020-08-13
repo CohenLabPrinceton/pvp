@@ -126,8 +126,18 @@ class Plot(pg.PlotWidget):
         if plot_limits:
             for value in plot_limits:
                 self._plot_limits[value] = (
-                    pg.InfiniteLine(movable=False, angle=0, pos=0, pen=styles.SUBWAY_COLORS['red']),
-                    pg.InfiniteLine(movable=False, angle=0, pos=0, pen=styles.SUBWAY_COLORS['red'])
+                    pg.InfiniteLine(movable=False, angle=0, pos=0, pen=styles.SUBWAY_COLORS['red'],
+                                    label=f'{value.name}:{{value:0.2f}}',
+                                    labelOpts={
+                                        'color': styles.SUBWAY_COLORS['red'],
+                                        'position': 0.75
+                                    }),
+                    pg.InfiniteLine(movable=False, angle=0, pos=0, pen=styles.SUBWAY_COLORS['red'],
+                                    label=f'{value.name}:{{value:0.2f}}',
+                                    labelOpts={
+                                        'color': styles.SUBWAY_COLORS['red'],
+                                        'position': 0.9
+                                    })
                 )
                 # self.min_safe.sigPositionChanged.connect(self._safe_limits_changed)
                 # self.max_safe.sigPositionChanged.connect(self._safe_limits_changed)

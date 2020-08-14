@@ -1,45 +1,45 @@
-vent.gui.widgets package
+pvp.gui.widgets package
 ========================
 
 Submodules
 ----------
 
-vent.gui.widgets.components module
+pvp.gui.widgets.components module
 ----------------------------------
 
-.. automodule:: vent.gui.widgets.components
+.. automodule:: pvp.gui.widgets.components
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.gui.widgets.control module
+pvp.gui.widgets.control module
 -------------------------------
 
-.. automodule:: vent.gui.widgets.control
+.. automodule:: pvp.gui.widgets.control
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.gui.widgets.monitor\_value module
+pvp.gui.widgets.monitor\_value module
 --------------------------------------
 
-.. automodule:: vent.gui.widgets.monitor_value
+.. automodule:: pvp.gui.widgets.monitor_value
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.gui.widgets.plot module
+pvp.gui.widgets.plot module
 ----------------------------
 
-.. automodule:: vent.gui.widgets.plot
+.. automodule:: pvp.gui.widgets.plot
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.gui.widgets.status\_bar module
+pvp.gui.widgets.status\_bar module
 -----------------------------------
 
-.. automodule:: vent.gui.widgets.status_bar
+.. automodule:: pvp.gui.widgets.status_bar
    :members:
    :undoc-members:
    :show-inheritance:
@@ -48,7 +48,7 @@ vent.gui.widgets.status\_bar module
 Module contents
 ---------------
 
-.. automodule:: vent.gui.widgets
+.. automodule:: pvp.gui.widgets
    :members:
    :undoc-members:
    :show-inheritance:

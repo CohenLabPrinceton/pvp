@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,19 @@
   
 
   
+  <link rel="stylesheet" href="../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/_static/pvp_theme.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,11 +35,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/pvp_theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
 </head>
@@ -49,7 +50,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> PVP
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> PVP
           
 
           
@@ -76,6 +77,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,7 +91,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../hardware.html">Hardware Placeholder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware.html">Hardware Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
@@ -116,6 +118,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -154,7 +157,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Overview: module code</li>
     
@@ -173,6 +176,40 @@
             
   <h1>All modules for which code is available</h1>
 <ul><li><a href="PySide2/QtCore.html">PySide2.QtCore</a></li>
+<li><a href="logging.html">logging</a></li>
+<li><a href="multiprocessing/sharedctypes.html">multiprocessing.sharedctypes</a></li>
+<li><a href="multiprocessing/synchronize.html">multiprocessing.synchronize</a></li>
+<li><a href="pvp/alarm.html">pvp.alarm</a></li>
+<ul><li><a href="pvp/alarm/alarm.html">pvp.alarm.alarm</a></li>
+<li><a href="pvp/alarm/alarm_manager.html">pvp.alarm.alarm_manager</a></li>
+<li><a href="pvp/alarm/condition.html">pvp.alarm.condition</a></li>
+<li><a href="pvp/alarm/rule.html">pvp.alarm.rule</a></li>
+</ul><li><a href="pvp/common/fashion.html">pvp.common.fashion</a></li>
+<li><a href="pvp/common/loggers.html">pvp.common.loggers</a></li>
+<li><a href="pvp/common/message.html">pvp.common.message</a></li>
+<li><a href="pvp/common/prefs.html">pvp.common.prefs</a></li>
+<li><a href="pvp/common/unit_conversion.html">pvp.common.unit_conversion</a></li>
+<li><a href="pvp/common/utils.html">pvp.common.utils</a></li>
+<li><a href="pvp/common/values.html">pvp.common.values</a></li>
+<li><a href="pvp/controller/control_module.html">pvp.controller.control_module</a></li>
+<li><a href="pvp/coordinator/coordinator.html">pvp.coordinator.coordinator</a></li>
+<li><a href="pvp/coordinator/process_manager.html">pvp.coordinator.process_manager</a></li>
+<li><a href="pvp/coordinator/rpc.html">pvp.coordinator.rpc</a></li>
+<li><a href="pvp/gui.html">pvp.gui</a></li>
+<ul><li><a href="pvp/gui/main.html">pvp.gui.main</a></li>
+<li><a href="pvp/gui/styles.html">pvp.gui.styles</a></li>
+<li><a href="pvp/gui/widgets/alarm_bar.html">pvp.gui.widgets.alarm_bar</a></li>
+<li><a href="pvp/gui/widgets/components.html">pvp.gui.widgets.components</a></li>
+<li><a href="pvp/gui/widgets/control_panel.html">pvp.gui.widgets.control_panel</a></li>
+<li><a href="pvp/gui/widgets/dialog.html">pvp.gui.widgets.dialog</a></li>
+<li><a href="pvp/gui/widgets/display.html">pvp.gui.widgets.display</a></li>
+<li><a href="pvp/gui/widgets/plot.html">pvp.gui.widgets.plot</a></li>
+</ul><li><a href="pvp/io/devices/base.html">pvp.io.devices.base</a></li>
+<li><a href="pvp/io/devices/pins.html">pvp.io.devices.pins</a></li>
+<li><a href="pvp/io/devices/sensors.html">pvp.io.devices.sensors</a></li>
+<li><a href="pvp/io/devices/valves.html">pvp.io.devices.valves</a></li>
+<li><a href="pvp/io/hal.html">pvp.io.hal</a></li>
+<li><a href="pvp/main.html">pvp.main</a></li>
 <li><a href="tests/pigpio_mocks.html">tests.pigpio_mocks</a></li>
 <li><a href="tests/test_alarms.html">tests.test_alarms</a></li>
 <li><a href="tests/test_controller.html">tests.test_controller</a></li>
@@ -183,31 +220,6 @@
 <li><a href="tests/test_io_pins.html">tests.test_io_pins</a></li>
 <li><a href="tests/test_io_sensors.html">tests.test_io_sensors</a></li>
 <li><a href="tests/test_io_valves.html">tests.test_io_valves</a></li>
-<li><a href="vent/alarm.html">vent.alarm</a></li>
-<ul><li><a href="vent/alarm/alarm.html">vent.alarm.alarm</a></li>
-<li><a href="vent/alarm/alarm_manager.html">vent.alarm.alarm_manager</a></li>
-<li><a href="vent/alarm/condition.html">vent.alarm.condition</a></li>
-<li><a href="vent/alarm/rule.html">vent.alarm.rule</a></li>
-</ul><li><a href="vent/common/message.html">vent.common.message</a></li>
-<li><a href="vent/common/values.html">vent.common.values</a></li>
-<li><a href="vent/controller/control_module.html">vent.controller.control_module</a></li>
-<li><a href="vent/coordinator/coordinator.html">vent.coordinator.coordinator</a></li>
-<li><a href="vent/coordinator/process_manager.html">vent.coordinator.process_manager</a></li>
-<li><a href="vent/gui.html">vent.gui</a></li>
-<ul><li><a href="vent/gui/alarm_manager.html">vent.gui.alarm_manager</a></li>
-<li><a href="vent/gui/main.html">vent.gui.main</a></li>
-<li><a href="vent/gui/styles.html">vent.gui.styles</a></li>
-<li><a href="vent/gui/widgets/components.html">vent.gui.widgets.components</a></li>
-<li><a href="vent/gui/widgets/control.html">vent.gui.widgets.control</a></li>
-<li><a href="vent/gui/widgets/monitor.html">vent.gui.widgets.monitor</a></li>
-<li><a href="vent/gui/widgets/plot.html">vent.gui.widgets.plot</a></li>
-<li><a href="vent/gui/widgets/status_bar.html">vent.gui.widgets.status_bar</a></li>
-</ul><li><a href="vent/io/devices/base.html">vent.io.devices.base</a></li>
-<li><a href="vent/io/devices/pins.html">vent.io.devices.pins</a></li>
-<li><a href="vent/io/devices/sensors.html">vent.io.devices.sensors</a></li>
-<li><a href="vent/io/devices/valves.html">vent.io.devices.valves</a></li>
-<li><a href="vent/io/hal.html">vent.io.hal</a></li>
-<li><a href="vent/main.html">vent.main</a></li>
 </ul>
 
            </div>
@@ -220,11 +232,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, jonny saunders et al
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -235,7 +255,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

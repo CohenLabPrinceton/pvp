@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>vent.gui.widgets &mdash; ventilator 0.0.0 documentation</title>
+  <title>pvp.gui.widgets &mdash; ventilator 0.0.0 documentation</title>
   
 
   
@@ -155,9 +155,9 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-          <li><a href="../gui.html">vent.gui</a> &raquo;</li>
+          <li><a href="../gui.html">pvp.gui</a> &raquo;</li>
         
-      <li>vent.gui.widgets</li>
+      <li>pvp.gui.widgets</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -172,7 +172,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for vent.gui.widgets</h1><div class="highlight"><pre>
+  <h1>Source code for pvp.gui.widgets</h1><div class="highlight"><pre>
 <span></span>
 <span class="c1">#########################</span>
 <span class="c1"># Imports</span>
@@ -195,8 +195,8 @@
 
 
 <span class="c1"># import styles</span>
-<span class="kn">from</span> <span class="nn">vent.gui</span> <span class="kn">import</span> <span class="n">defaults</span>
-<span class="kn">from</span> <span class="nn">vent.gui</span> <span class="kn">import</span> <span class="n">styles</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">defaults</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">styles</span>
 
 <span class="c1">##########################</span>
 <span class="c1"># GUI Class</span>
@@ -209,7 +209,7 @@
 
 
 
-<div class="viewcode-block" id="Monitor_Value"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value">[docs]</a><span class="k">class</span> <span class="nc">Monitor_Value</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value"><a class="viewcode-back" href="../../../pvp.gui.html#pvp.gui.widgets.Monitor_Value">[docs]</a><span class="k">class</span> <span class="nc">Monitor_Value</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="n">alarm</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
     <span class="n">limits_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
 
@@ -229,7 +229,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timed_update</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Monitor_Value.init_ui"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value.init_ui"><a class="viewcode-back" href="../../../pvp.gui.html#pvp.gui.widgets.Monitor_Value.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
 
@@ -304,11 +304,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">label_layout</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Monitor_Value.update_boxes"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.update_boxes">[docs]</a>    <span class="k">def</span> <span class="nf">update_boxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_values</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value.update_boxes"><a class="viewcode-back" href="../../../pvp.gui.html#pvp.gui.widgets.Monitor_Value.update_boxes">[docs]</a>    <span class="k">def</span> <span class="nf">update_boxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_values</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_values</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Monitor_Value.update_value"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.update_value">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<div class="viewcode-block" id="Monitor_Value.update_value"><a class="viewcode-back" href="../../../pvp.gui.html#pvp.gui.widgets.Monitor_Value.update_value">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
 
@@ -317,13 +317,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">check_alarm</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">update_indicator</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Monitor_Value.update_limits"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.update_limits">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+<div class="viewcode-block" id="Monitor_Value.update_limits"><a class="viewcode-back" href="../../../pvp.gui.html#pvp.gui.widgets.Monitor_Value.update_limits">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_limits</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="n">new_limits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="n">new_limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_boxes</span><span class="p">(</span><span class="n">new_limits</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Monitor_Value.timed_update"><a class="viewcode-back" href="../../../vent.gui.html#vent.gui.widgets.Monitor_Value.timed_update">[docs]</a>    <span class="k">def</span> <span class="nf">timed_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Monitor_Value.timed_update"><a class="viewcode-back" href="../../../pvp.gui.html#pvp.gui.widgets.Monitor_Value.timed_update">[docs]</a>    <span class="k">def</span> <span class="nf">timed_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># format value based on decimals</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="n">value_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">))</span>

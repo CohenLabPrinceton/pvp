@@ -1,37 +1,37 @@
-vent.alarm package
+pvp.alarm package
 ==================
 
 Submodules
 ----------
 
-vent.alarm.alarm module
+pvp.alarm.alarm module
 -----------------------
 
-.. automodule:: vent.alarm.alarm
+.. automodule:: pvp.alarm.alarm
     :members:
     :undoc-members:
     :show-inheritance:
 
-vent.alarm.alarm\_manager module
+pvp.alarm.alarm\_manager module
 --------------------------------
 
-.. automodule:: vent.alarm.alarm_manager
+.. automodule:: pvp.alarm.alarm_manager
     :members:
     :undoc-members:
     :show-inheritance:
 
-vent.alarm.condition module
+pvp.alarm.condition module
 ---------------------------
 
-.. automodule:: vent.alarm.condition
+.. automodule:: pvp.alarm.condition
     :members:
     :undoc-members:
     :show-inheritance:
 
-vent.alarm.rule module
+pvp.alarm.rule module
 ----------------------
 
-.. automodule:: vent.alarm.rule
+.. automodule:: pvp.alarm.rule
     :members:
     :undoc-members:
     :show-inheritance:
@@ -40,7 +40,7 @@ vent.alarm.rule module
 Module contents
 ---------------
 
-.. automodule:: vent.alarm
+.. automodule:: pvp.alarm
     :members:
     :undoc-members:
     :show-inheritance:

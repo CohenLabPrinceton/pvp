@@ -1,5 +1,5 @@
 from .pigpio_mocks import patch_pigpio_base, patch_pigpio_gpio, soft_frequencies
-from vent.io.devices.pins import Pin, PWMOutput
+from pvp.io.devices.pins import Pin, PWMOutput
 from secrets import token_bytes
 
 import pytest

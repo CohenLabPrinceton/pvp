@@ -27,8 +27,8 @@ except:
 
 setup(
     name="pvp",
-    author="vent team",
-    author_email="vent@vents.com",
+    author="pvp team",
+    author_email="pvp@vents.com",
     description="some description of how we made a ventilator",
     keywords="vents ventilators etc",
     url="https://ventilator.readthedocs.io",
@@ -45,7 +45,8 @@ setup(
         'scipy'
     ],
     package_data={
-        "vent": "external/*"
+        "*": ["data/*", "cad-files/*", ""],
+        "pvp": ["external/*"]
     },
     dependency_links=depend_links,
     python_requires='==3.7.*'

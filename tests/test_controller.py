@@ -3,12 +3,12 @@ import numpy as np
 import pytest
 import random
 
-from vent.common.message import SensorValues, ControlSetting
-from vent.alarm import AlarmSeverity, Alarm
-from vent.common.values import ValueName
-from vent.coordinator.coordinator import get_coordinator
-from vent.controller.control_module import get_control_module
-from vent import prefs
+from pvp.common.message import SensorValues, ControlSetting
+from pvp.alarm import AlarmSeverity, Alarm
+from pvp.common.values import ValueName
+from pvp.coordinator.coordinator import get_coordinator
+from pvp.controller.control_module import get_control_module
+from pvp import prefs
 prefs.init()
 
 ######################################################################
@@ -179,12 +179,20 @@ def test_erratic_dt():
     '''
     Controller = get_control_module(sim_mode=True)
 
+    # set _LOOP_UPDATE_TIME to zero and use simulator_dt so that the test actually runs good
+    Controller._LOOP_UPDATE_TIME = 0
+
     Controller.start()
     ls = []
-    for t in np.arange(0, 30,0.05):
-        Controller._LOOP_UPDATE_TIME = np.random.randint(100)/1000  # updates anywhere between 0ms and 100ms
-        time.sleep(0.05)
+    test_cycles = 10
+    last_cycle = 0
+    for t in range(test_cycles):
+        Controller.simulator_dt = np.random.randint(100)/1000  # updates anywhere between 0ms and 100ms
         vals = Controller.get_sensors()
+        while vals.breath_count <= last_cycle:
+            time.sleep(0.05)
+            vals = Controller.get_sensors()
+        last_cycle = vals.breath_count
         ls.append(vals)
     Controller.stop()
 

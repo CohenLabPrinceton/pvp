@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,19 @@
   
 
   
+  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/_static/pvp_theme.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -29,11 +35,6 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -49,7 +50,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> PVP
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> PVP
           
 
           
@@ -76,6 +77,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,7 +91,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../hardware.html">Hardware Placeholder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware.html">Hardware Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
@@ -116,6 +118,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -154,7 +157,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -181,7 +184,7 @@
 <span class="sd">* control</span>
 <span class="sd">* monitor</span>
 <span class="sd">* plot</span>
-<span class="sd">* status_bar</span>
+<span class="sd">* control_panel</span>
 
 <span class="sd">test types</span>
 <span class="sd">* user interaction</span>
@@ -203,11 +206,14 @@
 <span class="c1"># mock before importing</span>
 
 
-<span class="kn">from</span> <span class="nn">vent</span> <span class="kn">import</span> <span class="n">gui</span>
-<span class="kn">from</span> <span class="nn">vent.gui</span> <span class="kn">import</span> <span class="n">styles</span>
-<span class="kn">from</span> <span class="nn">vent.gui</span> <span class="kn">import</span> <span class="n">widgets</span>
-<span class="kn">from</span> <span class="nn">vent.common</span> <span class="kn">import</span> <span class="n">message</span><span class="p">,</span> <span class="n">values</span>
-<span class="kn">from</span> <span class="nn">vent.coordinator.coordinator</span> <span class="kn">import</span> <span class="n">get_coordinator</span>
+<span class="kn">from</span> <span class="nn">pvp</span> <span class="kn">import</span> <span class="n">gui</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">styles</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">widgets</span>
+<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="kn">import</span> <span class="n">message</span><span class="p">,</span> <span class="n">values</span>
+<span class="kn">from</span> <span class="nn">pvp.coordinator.coordinator</span> <span class="kn">import</span> <span class="n">get_coordinator</span>
+
+<span class="c1"># from pvp.common import prefs</span>
+<span class="c1"># prefs.set_pref(&#39;ENABLE_DIALOGS&#39;, False)</span>
 
 
 <span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
@@ -216,13 +222,10 @@
 
 <span class="c1">##################################</span>
 
-
-
-
 <span class="c1"># turn off gui limiting</span>
 <span class="n">gui</span><span class="o">.</span><span class="n">limit_gui</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">decimals</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="n">global_minmax_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">global_safe_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">75</span><span class="p">)</span>
@@ -265,8 +268,9 @@
         <span class="k">return</span> <span class="n">abs_min</span><span class="p">,</span> <span class="n">abs_max</span>
     <span class="k">return</span> <span class="n">_generic_saferange</span></div>
 
-<div class="viewcode-block" id="spawn_gui"><a class="viewcode-back" href="../../tests.html#tests.test_gui.spawn_gui">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">spawn_gui</span><span class="p">(</span><span class="n">qtbot</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<div class="viewcode-block" id="spawn_gui"><a class="viewcode-back" href="../../tests.html#tests.test_gui.spawn_gui">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">spawn_gui</span><span class="p">(</span><span class="n">qtbot</span><span class="p">):</span>
+
     <span class="k">assert</span> <span class="n">qt_api</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">qt_api</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
@@ -274,10 +278,12 @@
     <span class="n">app</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">DARK_THEME</span><span class="p">)</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">set_dark_palette</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 
-    <span class="n">coordinator</span> <span class="o">=</span> <span class="n">get_coordinator</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">single_process</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">param</span><span class="p">)</span>
-    <span class="n">vent_gui</span> <span class="o">=</span> <span class="n">gui</span><span class="o">.</span><span class="n">Vent_Gui</span><span class="p">(</span><span class="n">coordinator</span><span class="p">)</span>
+    <span class="n">coordinator</span> <span class="o">=</span> <span class="n">get_coordinator</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">single_process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">vent_gui</span> <span class="o">=</span> <span class="n">gui</span><span class="o">.</span><span class="n">Vent_Gui</span><span class="p">(</span><span class="n">coordinator</span><span class="p">,</span> <span class="n">set_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># vent_gui.init_controls()</span>
     <span class="c1">#app, vent_gui = launch_gui(coordinator)</span>
     <span class="n">qtbot</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">vent_gui</span><span class="p">)</span>
+    <span class="n">vent_gui</span><span class="o">.</span><span class="n">init_controls</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">app</span><span class="p">,</span> <span class="n">vent_gui</span></div>
 
 
@@ -286,174 +292,231 @@
 <div class="viewcode-block" id="test_gui_launch"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_gui_launch">[docs]</a><span class="k">def</span> <span class="nf">test_gui_launch</span><span class="p">(</span><span class="n">qtbot</span><span class="p">,</span> <span class="n">spawn_gui</span><span class="p">):</span>
 
     <span class="n">app</span><span class="p">,</span> <span class="n">vent_gui</span> <span class="o">=</span> <span class="n">spawn_gui</span>
-    <span class="n">vent_gui</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span>
+    <span class="n">vent_gui</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span>
 
     <span class="c1"># wait for a second to let the simulation spin up and start spitting values</span>
     <span class="n">qtbot</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">vent_gui</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="test_gui_launch_mp"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_gui_launch_mp">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_gui_launch_mp</span><span class="p">(</span><span class="n">qtbot</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">qt_api</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-
-    <span class="n">coordinator</span> <span class="o">=</span> <span class="n">get_coordinator</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">single_process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">coordinator</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-    <span class="n">vent_gui</span> <span class="o">=</span> <span class="n">gui</span><span class="o">.</span><span class="n">Vent_Gui</span><span class="p">(</span><span class="n">coordinator</span><span class="p">)</span>
-    <span class="n">qtbot</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">vent_gui</span><span class="p">)</span>
-    <span class="n">vent_gui</span><span class="o">.</span><span class="n">status_bar</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span>
-
-    <span class="c1"># wait for a second to let the simulation spin up and start spitting values</span>
-    <span class="n">qtbot</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">5000</span><span class="p">)</span>
-
-    <span class="k">assert</span> <span class="n">vent_gui</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span></div>
+<span class="c1"># @pytest.mark.timeout(15)</span>
+<span class="c1"># def test_gui_launch_mp(qtbot):</span>
+<span class="c1">#     assert qt_api.QApplication.instance() is not None</span>
+<span class="c1">#</span>
+<span class="c1">#     # coordinator = get_coordinator(sim_mode=True, single_process=False)</span>
+<span class="c1">#     # coordinator.start()</span>
+<span class="c1">#     #</span>
+<span class="c1">#     # vent_gui = gui.Vent_Gui(coordinator)</span>
+<span class="c1">#     # qtbot.addWidget(vent_gui)</span>
+<span class="c1">#     # vent_gui.control_panel.start_button.click()</span>
+<span class="c1">#</span>
+<span class="c1">#     # wait for a second to let the simulation spin up and start spitting values</span>
+<span class="c1">#     qtbot.wait(5000)</span>
+<span class="c1">#</span>
+<span class="c1">#     assert vent_gui.isVisible()</span>
 
 
 <span class="c1">################################</span>
 <span class="c1"># test user interaction</span>
-
-<div class="viewcode-block" id="test_gui_controls"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_gui_controls">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;test_value&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">CONTROL</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
-<span class="k">def</span> <span class="nf">test_gui_controls</span><span class="p">(</span><span class="n">qtbot</span><span class="p">,</span> <span class="n">spawn_gui</span><span class="p">,</span> <span class="n">test_value</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    test setting controls in all the ways available to the GUI</span>
-
-<span class="sd">    from the :class:`~vent.gui.widgets.control.Control` widget:</span>
-
-<span class="sd">        * :class:`~vent.gui.widgets.components.EditableLabel` - setting label text</span>
-<span class="sd">        * setting slider value</span>
-<span class="sd">        * using :meth:`~vent.gui.main.Vent_Gui.set_value`</span>
-
-
-<span class="sd">    Args:</span>
-<span class="sd">        qtbot:</span>
-<span class="sd">        spawn_gui:</span>
-<span class="sd">        test_value:</span>
-
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">app</span><span class="p">,</span> <span class="n">vent_gui</span> <span class="o">=</span> <span class="n">spawn_gui</span>
-
-    <span class="n">vent_gui</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-    <span class="n">vent_gui</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-
-    <span class="n">value_name</span> <span class="o">=</span> <span class="n">test_value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">value_params</span> <span class="o">=</span> <span class="n">test_value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">abs_range</span> <span class="o">=</span> <span class="n">value_params</span><span class="o">.</span><span class="n">abs_range</span>
-
-    <span class="c1"># generate target value</span>
-    <span class="k">def</span> <span class="nf">gen_test_value</span><span class="p">():</span>
-        <span class="n">test_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">test_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">test_value</span><span class="p">,</span> <span class="n">value_params</span><span class="o">.</span><span class="n">decimals</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">test_value</span>
-
-    <span class="c1">####</span>
-    <span class="c1"># test setting controls from control widget</span>
-    <span class="c1"># from editablelabel</span>
-
-    <span class="n">control_widget</span> <span class="o">=</span> <span class="n">vent_gui</span><span class="o">.</span><span class="n">controls</span><span class="p">[</span><span class="n">value_name</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
-        <span class="n">test_value</span> <span class="o">=</span> <span class="n">gen_test_value</span><span class="p">()</span>
-
-        <span class="n">control_widget</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">setLabelEditableAction</span><span class="p">()</span>
-        <span class="n">control_widget</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">lineEdit</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">test_value</span><span class="p">))</span>
-        <span class="n">control_widget</span><span class="o">.</span><span class="n">value_label</span><span class="o">.</span><span class="n">returnPressedAction</span><span class="p">()</span>
-        <span class="c1"># should call labelUpdatedAction and send to controller</span>
-
-        <span class="n">control_value</span> <span class="o">=</span> <span class="n">vent_gui</span><span class="o">.</span><span class="n">coordinator</span><span class="o">.</span><span class="n">get_control</span><span class="p">(</span><span class="n">value_name</span><span class="p">)</span>
-
-        <span class="k">assert</span><span class="p">(</span><span class="n">control_value</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">test_value</span><span class="p">)</span>
-
-    <span class="c1"># from slider</span>
-    <span class="c1"># toggle it open</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">control_widget</span><span class="o">.</span><span class="n">slider_frame</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="n">control_widget</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">control_widget</span><span class="o">.</span><span class="n">slider_frame</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
-        <span class="n">test_value</span> <span class="o">=</span> <span class="n">gen_test_value</span><span class="p">()</span>
-        <span class="n">control_widget</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">test_value</span><span class="p">)</span>
-
-        <span class="n">control_value</span> <span class="o">=</span> <span class="n">vent_gui</span><span class="o">.</span><span class="n">coordinator</span><span class="o">.</span><span class="n">get_control</span><span class="p">(</span><span class="n">value_name</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">control_value</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">test_value</span><span class="p">)</span>
-
-    <span class="c1"># from set_value</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
-        <span class="n">test_value</span> <span class="o">=</span> <span class="n">gen_test_value</span><span class="p">()</span>
-        <span class="n">vent_gui</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">test_value</span><span class="p">,</span> <span class="n">value_name</span> <span class="o">=</span> <span class="n">value_name</span><span class="p">)</span>
-
-        <span class="n">control_value</span> <span class="o">=</span> <span class="n">vent_gui</span><span class="o">.</span><span class="n">coordinator</span><span class="o">.</span><span class="n">get_control</span><span class="p">(</span><span class="n">value_name</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">control_value</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">test_value</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="test_gui_monitor"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_gui_monitor">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;test_value&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">SENSOR</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
-<span class="k">def</span> <span class="nf">test_gui_monitor</span><span class="p">(</span><span class="n">qtbot</span><span class="p">,</span> <span class="n">spawn_gui</span><span class="p">,</span> <span class="n">test_value</span><span class="p">):</span>
-
-
-    <span class="n">app</span><span class="p">,</span> <span class="n">vent_gui</span> <span class="o">=</span> <span class="n">spawn_gui</span>
-
-    <span class="n">vent_gui</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-    <span class="n">vent_gui</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="c1">#</span>
+<span class="c1"># @pytest.mark.parametrize(&quot;test_value&quot;, [(k, v) for k, v in values.CONTROL.items() if k == values.ValueName.PIP] )</span>
+<span class="c1"># # @pytest.mark.parametrize(&quot;test_value&quot;, [(k, v) for k, v in values.CONTROL.items() if k==values.ValueName.PIP])</span>
+<span class="c1"># def test_gui_controls(qtbot, spawn_gui, test_value):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     test setting controls in all the ways available to the GUI</span>
+<span class="c1">#</span>
+<span class="c1">#     from the :class:`~pvp.gui.widgets.control.Control` widget:</span>
+<span class="c1">#</span>
+<span class="c1">#         * :class:`~pvp.gui.widgets.components.EditableLabel` - setting label text</span>
+<span class="c1">#         * setting slider value</span>
+<span class="c1">#         * using :meth:`~pvp.gui.main.Vent_Gui.set_value`</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     Args:</span>
+<span class="c1">#         qtbot:</span>
+<span class="c1">#         spawn_gui:</span>
+<span class="c1">#         test_value:</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     app, vent_gui = spawn_gui</span>
+<span class="c1">#</span>
+<span class="c1">#     vent_gui.start()</span>
+<span class="c1">#     vent_gui.timer.stop()</span>
+<span class="c1">#     vent_gui.control_panel.lock_button.click()</span>
+<span class="c1">#</span>
+<span class="c1">#     value_name = test_value[0]</span>
+<span class="c1">#     value_params = test_value[1]</span>
+<span class="c1">#     abs_range = value_params.abs_range</span>
+<span class="c1">#     safe_range = value_params.safe_range</span>
+<span class="c1">#</span>
+<span class="c1">#     # generate target value</span>
+<span class="c1">#     def gen_test_value():</span>
+<span class="c1">#         test_value = np.random.rand()*(safe_range[1]-safe_range[0]) + safe_range[0]</span>
+<span class="c1">#         test_value = np.round(test_value, value_params.decimals)</span>
+<span class="c1">#         return test_value</span>
+<span class="c1">#</span>
+<span class="c1">#     ####</span>
+<span class="c1">#     # test setting controls from control widget</span>
+<span class="c1">#     # from editablelabel</span>
+<span class="c1">#</span>
+<span class="c1">#     control_widget = vent_gui.controls[value_name.name]</span>
+<span class="c1">#</span>
+<span class="c1">#     for i in range(n_samples):</span>
+<span class="c1">#         test_value = gen_test_value()</span>
+<span class="c1">#</span>
+<span class="c1">#         control_widget.value_label.setLabelEditableAction()</span>
+<span class="c1">#         control_widget.value_label.lineEdit.setText(str(test_value))</span>
+<span class="c1">#         control_widget.value_label.returnPressedAction()</span>
+<span class="c1">#         # should call labelUpdatedAction and send to controller</span>
+<span class="c1">#</span>
+<span class="c1">#         control_value = vent_gui.coordinator.get_control(value_name)</span>
+<span class="c1">#</span>
+<span class="c1">#         assert(control_value.value == test_value)</span>
+<span class="c1">#</span>
+<span class="c1">#     # from slider</span>
+<span class="c1">#     # toggle it open</span>
+<span class="c1">#     if not value_name in (values.ValueName.PEEP,):</span>
+<span class="c1">#         assert(control_widget.slider_frame.isVisible() == False)</span>
+<span class="c1">#         control_widget.toggle_button.click()</span>
+<span class="c1">#         assert(control_widget.slider_frame.isVisible() == True)</span>
+<span class="c1">#</span>
+<span class="c1">#         for i in range(n_samples):</span>
+<span class="c1">#             test_value = gen_test_value()</span>
+<span class="c1">#             control_widget.slider.setValue(test_value)</span>
+<span class="c1">#</span>
+<span class="c1">#             control_value = vent_gui.coordinator.get_control(value_name)</span>
+<span class="c1">#             assert(control_value.value == test_value)</span>
+<span class="c1">#</span>
+<span class="c1">#     # from set_value</span>
+<span class="c1">#     for i in range(n_samples):</span>
+<span class="c1">#         test_value = gen_test_value()</span>
+<span class="c1">#         vent_gui.set_value(test_value, value_name = value_name)</span>
+<span class="c1">#</span>
+<span class="c1">#         control_value = vent_gui.coordinator.get_control(value_name)</span>
+<span class="c1">#         assert(control_value.value == test_value)</span>
 
 
-    <span class="n">value_name</span> <span class="o">=</span> <span class="n">test_value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">value_params</span> <span class="o">=</span> <span class="n">test_value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">abs_range</span> <span class="o">=</span> <span class="n">value_params</span><span class="o">.</span><span class="n">abs_range</span>
+<span class="c1"># @pytest.mark.parametrize(&quot;test_value&quot;, [(k, v) for k, v in values.SENSOR.items()])</span>
+<span class="c1"># def test_gui_monitor(qtbot, spawn_gui, test_value):</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     app, vent_gui = spawn_gui</span>
+<span class="c1">#</span>
+<span class="c1">#     vent_gui.start()</span>
+<span class="c1">#     vent_gui.timer.stop()</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     value_name = test_value[0]</span>
+<span class="c1">#     value_params = test_value[1]</span>
+<span class="c1">#     abs_range = value_params.abs_range</span>
+<span class="c1">#</span>
+<span class="c1">#     # generate target value</span>
+<span class="c1">#     def gen_test_values():</span>
+<span class="c1">#         test_value = np.random.rand(2)*(abs_range[1]-abs_range[0]) + abs_range[0]</span>
+<span class="c1">#         test_value = np.round(test_value, value_params.decimals)</span>
+<span class="c1">#         return np.min(test_value), np.max(test_value)</span>
+<span class="c1">#</span>
+<span class="c1">#     monitor_widget = vent_gui.monitor[value_name.name]</span>
 
-    <span class="c1"># generate target value</span>
-    <span class="k">def</span> <span class="nf">gen_test_values</span><span class="p">():</span>
-        <span class="n">test_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">test_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">test_value</span><span class="p">,</span> <span class="n">value_params</span><span class="o">.</span><span class="n">decimals</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">test_value</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">test_value</span><span class="p">)</span>
+<span class="c1">#         assert(control_value.value == test_value)</span>
 
-    <span class="n">monitor_widget</span> <span class="o">=</span> <span class="n">vent_gui</span><span class="o">.</span><span class="n">monitor</span><span class="p">[</span><span class="n">value_name</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+<span class="c1">#     # from slider</span>
+<span class="c1">#     # toggle it open</span>
+<span class="c1">#     assert(control_widget.slider_frame.isVisible() == False)</span>
+<span class="c1">#     control_widget.toggle_button.click()</span>
+<span class="c1">#     assert(control_widget.slider_frame.isVisible() == True)</span>
 
-    <span class="c1"># open the control</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">monitor_widget</span><span class="o">.</span><span class="n">slider_frame</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="n">monitor_widget</span><span class="o">.</span><span class="n">toggle_button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="p">(</span><span class="n">monitor_widget</span><span class="o">.</span><span class="n">slider_frame</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span>
+<span class="c1">#     for i in range(n_samples):</span>
+<span class="c1">#         test_value = gen_test_value()</span>
+<span class="c1">#         control_widget.slider.setValue(test_value)</span>
 
-    <span class="c1"># set handles to abs_min and max so are on absolute right and left sides</span>
-    <span class="n">monitor_widget</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">abs_range</span><span class="p">)</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">monitor_widget</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">low</span> <span class="o">==</span> <span class="n">monitor_widget</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">minimum</span><span class="p">())</span>
-    <span class="k">assert</span> <span class="p">(</span><span class="n">monitor_widget</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">high</span> <span class="o">==</span> <span class="n">monitor_widget</span><span class="o">.</span><span class="n">range_slider</span><span class="o">.</span><span class="n">maximum</span><span class="p">())</span></div>
-    <span class="c1">#</span>
-    <span class="c1"># # move left a quarter of the way to the right</span>
-    <span class="c1"># widget_size = monitor_widget.range_slider.size()</span>
-    <span class="c1">#</span>
-    <span class="c1"># # get low box position</span>
-    <span class="c1"># low_pos = monitor_widget.range_slider.get_handle_rect(0)</span>
-    <span class="c1"># click_pos = low_pos.center()</span>
-    <span class="c1"># move_pos = copy(click_pos)</span>
-    <span class="c1"># move_pos.setX(move_pos.x() + (widget_size.width()/4))</span>
-    <span class="c1">#</span>
-    <span class="c1"># qtbot.mouseMove(monitor_widget.range_slider, click_pos, delay=100)</span>
-    <span class="c1"># qtbot.mousePress(monitor_widget.range_slider, QtCore.Qt.LeftButton, delay=200)</span>
-    <span class="c1"># qtbot.mouseMove(monitor_widget.range_slider, move_pos)</span>
-    <span class="c1"># qtbot.mouseRelease(monitor_widget.range_slider, QtCore.Qt.LeftButton, pos=move_pos, delay=200)</span>
+<span class="c1">#         control_value = vent_gui.coordinator.get_control(value_name)</span>
+<span class="c1">#         assert(control_value.value == test_value)</span>
 
+<span class="c1">#     # from set_value</span>
+<span class="c1">#     for i in range(n_samples):</span>
+<span class="c1">#         test_value = gen_test_value()</span>
+<span class="c1">#         vent_gui.set_value(test_value, value_name = value_name)</span>
 
-    <span class="c1"># set with range_slider</span>
-    <span class="c1"># for i in range(n_samples):</span>
-    <span class="c1">#     test_min, test_max = gen_test_values()</span>
-    <span class="c1">#</span>
-    <span class="c1">#</span>
-    <span class="c1">#     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:</span>
-    <span class="c1">#         monitor_widget.range_slider.setLow(test_min)</span>
-    <span class="c1">#         sleep(0.01)</span>
-    <span class="c1">#         assert(blocker.args[0][0]==test_min)</span>
-    <span class="c1">#</span>
-    <span class="c1">#     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:</span>
-    <span class="c1">#         monitor_widget.range_slider.setHigh(test_max)</span>
-    <span class="c1">#         sleep(0.01)</span>
-    <span class="c1">#         assert(blocker.args[0][1]==test_max)</span>
+<span class="c1">#         control_value = vent_gui.coordinator.get_control(value_name)</span>
+<span class="c1">#         assert(control_value.value == test_value)</span>
 
 
+<span class="c1"># @pytest.mark.parametrize(&quot;test_value&quot;, [(k, v) for k, v in values.SENSOR.items()])</span>
+<span class="c1"># def test_gui_monitor(qtbot, spawn_gui, test_value):</span>
+
+
+<span class="c1">#     app, vent_gui = spawn_gui</span>
+
+<span class="c1">#     vent_gui.start()</span>
+<span class="c1">#     vent_gui.timer.stop()</span>
+
+
+<span class="c1">#     value_name = test_value[0]</span>
+<span class="c1">#     value_params = test_value[1]</span>
+<span class="c1">#     abs_range = value_params.abs_range</span>
+
+<span class="c1">#     # generate target value</span>
+<span class="c1">#     def gen_test_values():</span>
+<span class="c1">#         test_value = np.random.rand(2)*(abs_range[1]-abs_range[0]) + abs_range[0]</span>
+<span class="c1">#         test_value = np.round(test_value, value_params.decimals)</span>
+<span class="c1">#         return np.min(test_value), np.max(test_value)</span>
+
+<span class="c1">#     monitor_widget = vent_gui.monitor[value_name.name]</span>
+
+<span class="c1">#     # open the control</span>
+<span class="c1">#     assert(monitor_widget.slider_frame.isVisible() == False)</span>
+<span class="c1">#     monitor_widget.toggle_button.click()</span>
+<span class="c1">#     assert (monitor_widget.slider_frame.isVisible() == True)</span>
+
+<span class="c1">#     # set handles to abs_min and max so are on absolute right and left sides</span>
+<span class="c1">#     monitor_widget.range_slider.setValue(abs_range)</span>
+<span class="c1">#     assert(monitor_widget.range_slider.low == monitor_widget.range_slider.minimum())</span>
+<span class="c1">#     assert (monitor_widget.range_slider.high == monitor_widget.range_slider.maximum())</span>
+<span class="c1">#     #</span>
+<span class="c1">#     # # move left a quarter of the way to the right</span>
+<span class="c1">#     # widget_size = monitor_widget.range_slider.size()</span>
+<span class="c1">#     #</span>
+<span class="c1">#     # # get low box position</span>
+<span class="c1">#     # low_pos = monitor_widget.range_slider.get_handle_rect(0)</span>
+<span class="c1">#     # click_pos = low_pos.center()</span>
+<span class="c1">#     # move_pos = copy(click_pos)</span>
+<span class="c1">#     # move_pos.setX(move_pos.x() + (widget_size.width()/4))</span>
+<span class="c1">#     #</span>
+<span class="c1">#     # qtbot.mouseMove(monitor_widget.range_slider, click_pos, delay=100)</span>
+<span class="c1">#     # qtbot.mousePress(monitor_widget.range_slider, QtCore.Qt.LeftButton, delay=200)</span>
+<span class="c1">#     # qtbot.mouseMove(monitor_widget.range_slider, move_pos)</span>
+<span class="c1">#     # qtbot.mouseRelease(monitor_widget.range_slider, QtCore.Qt.LeftButton, pos=move_pos, delay=200)</span>
+
+
+<span class="c1">#     # set with range_slider</span>
+<span class="c1">#     # for i in range(n_samples):</span>
+<span class="c1">#     #     test_min, test_max = gen_test_values()</span>
+<span class="c1">#     #</span>
+<span class="c1">#     #</span>
+<span class="c1">#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:</span>
+<span class="c1">#     #         monitor_widget.range_slider.setLow(test_min)</span>
+<span class="c1">#     #         sleep(0.01)</span>
+<span class="c1">#     #         assert(blocker.args[0][0]==test_min)</span>
+<span class="c1">#     #</span>
+<span class="c1">#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:</span>
+<span class="c1">#     #         monitor_widget.range_slider.setHigh(test_max)</span>
+<span class="c1">#     #         sleep(0.01)</span>
+<span class="c1">#     #         assert(blocker.args[0][1]==test_max)</span>
 
 
 
+<span class="c1">#########################</span>
+<span class="c1"># Test control panel</span>
+<div class="viewcode-block" id="test_pressure_unit_conversion"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_pressure_unit_conversion">[docs]</a><span class="k">def</span> <span class="nf">test_pressure_unit_conversion</span><span class="p">():</span>
+    <span class="c1"># TODO: this</span>
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="test_sliders_during_unit_convertion"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_sliders_during_unit_convertion">[docs]</a><span class="k">def</span> <span class="nf">test_sliders_during_unit_convertion</span><span class="p">():</span>
+    <span class="c1"># TODO: this</span>
+    <span class="k">return</span></div>
 
 
 
@@ -463,150 +526,150 @@
 
 <span class="c1">#####</span>
 <span class="c1"># doubleslider</span>
-
-<div class="viewcode-block" id="test_doubleslider"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_doubleslider">[docs]</a><span class="k">def</span> <span class="nf">test_doubleslider</span><span class="p">(</span><span class="n">qtbot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    test that the doubleslider accurately represents floats</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">doubleslider</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">DoubleSlider</span><span class="p">(</span><span class="n">decimals</span><span class="o">=</span><span class="n">decimals</span><span class="p">)</span>
-    <span class="n">doubleslider</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-    <span class="n">qtbot</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">doubleslider</span><span class="p">)</span>
-
-    <span class="n">doubleslider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">doubleslider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
-        <span class="n">test_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)</span>
-
-        <span class="c1"># set value inside of signal catcher to test both value and signal</span>
-        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">doubleslider</span><span class="o">.</span><span class="n">doubleValueChanged</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocker</span><span class="p">:</span>
-            <span class="n">doubleslider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">test_val</span><span class="p">)</span>
-
-        <span class="k">assert</span><span class="p">(</span><span class="n">doubleslider</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">==</span> <span class="n">test_val</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">blocker</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="n">test_val</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="test_doubleslider_minmax"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_doubleslider_minmax">[docs]</a><span class="k">def</span> <span class="nf">test_doubleslider_minmax</span><span class="p">(</span><span class="n">qtbot</span><span class="p">,</span> <span class="n">generic_minmax</span><span class="p">):</span>
-
-    <span class="n">doubleslider</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">DoubleSlider</span><span class="p">(</span><span class="n">decimals</span><span class="o">=</span><span class="n">decimals</span><span class="p">)</span>
-    <span class="n">doubleslider</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-    <span class="n">qtbot</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">doubleslider</span><span class="p">)</span>
-
-    <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">100</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
-        <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span> <span class="o">=</span> <span class="n">generic_minmax</span><span class="p">()</span>
-
-        <span class="n">doubleslider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="nb">min</span><span class="p">)</span>
-        <span class="n">doubleslider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="nb">max</span><span class="p">)</span>
-
-        <span class="c1"># test that values were set correctly</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">doubleslider</span><span class="o">.</span><span class="n">minimum</span><span class="p">()</span> <span class="o">==</span> <span class="nb">min</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">doubleslider</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span> <span class="o">==</span> <span class="nb">max</span><span class="p">)</span>
-
-        <span class="c1"># test below min and above max</span>
-        <span class="n">test_min</span> <span class="o">=</span> <span class="nb">min</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="n">multiplier</span>
-        <span class="n">test_max</span> <span class="o">=</span> <span class="nb">max</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="n">multiplier</span>
-
-        <span class="n">doubleslider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">test_min</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">doubleslider</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">==</span> <span class="n">doubleslider</span><span class="o">.</span><span class="n">minimum</span><span class="p">())</span>
-        <span class="n">doubleslider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">test_max</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">doubleslider</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">==</span> <span class="n">doubleslider</span><span class="o">.</span><span class="n">maximum</span><span class="p">())</span></div>
-
-<span class="c1">#################</span>
-<span class="c1"># RangeSlider</span>
-
-<div class="viewcode-block" id="test_rangeslider"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_rangeslider">[docs]</a><span class="k">def</span> <span class="nf">test_rangeslider</span><span class="p">(</span><span class="n">qtbot</span><span class="p">,</span> <span class="n">generic_minmax</span><span class="p">,</span> <span class="n">generic_saferange</span><span class="p">):</span>
-    <span class="n">abs_range</span> <span class="o">=</span> <span class="n">generic_minmax</span><span class="p">()</span>
-    <span class="n">safe_range</span> <span class="o">=</span> <span class="n">generic_saferange</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">safe_range</span><span class="p">)</span>
-    <span class="n">orientation</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">Horizontal</span>
-
-
-    <span class="n">rangeslider</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">RangeSlider</span><span class="p">(</span>
-        <span class="n">abs_range</span><span class="p">,</span>
-        <span class="n">safe_range</span><span class="p">,</span>
-        <span class="n">decimals</span><span class="o">=</span><span class="n">decimals</span><span class="p">,</span>
-        <span class="n">orientation</span><span class="o">=</span><span class="n">orientation</span><span class="p">)</span>
-    <span class="n">rangeslider</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-    <span class="n">qtbot</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">rangeslider</span><span class="p">)</span>
-
-    <span class="c1"># test ranges &amp; values</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">minimum</span><span class="p">()</span> <span class="o">==</span> <span class="n">abs_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span> <span class="o">==</span> <span class="n">abs_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">low</span> <span class="o">==</span> <span class="n">safe_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">high</span> <span class="o">==</span> <span class="n">safe_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
-        <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span> <span class="o">=</span> <span class="n">generic_saferange</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocker</span><span class="p">:</span>
-            <span class="n">rangeslider</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="nb">max</span><span class="p">)</span>
-            <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">high</span> <span class="o">==</span> <span class="nb">max</span><span class="p">)</span>
-
-            <span class="n">rangeslider</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="nb">min</span><span class="p">)</span>
-            <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">low</span> <span class="o">==</span> <span class="nb">min</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="test_rangeslider_minmax"><a class="viewcode-back" href="../../tests.html#tests.test_gui.test_rangeslider_minmax">[docs]</a><span class="k">def</span> <span class="nf">test_rangeslider_minmax</span><span class="p">(</span><span class="n">qtbot</span><span class="p">,</span> <span class="n">generic_minmax</span><span class="p">,</span> <span class="n">generic_saferange</span><span class="p">):</span>
-    <span class="n">abs_range</span> <span class="o">=</span> <span class="n">generic_minmax</span><span class="p">()</span>
-    <span class="n">safe_range</span> <span class="o">=</span> <span class="n">generic_saferange</span><span class="p">()</span>
-    <span class="n">decimals</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">orientation</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">Horizontal</span>
-
-    <span class="n">rangeslider</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">RangeSlider</span><span class="p">(</span>
-        <span class="n">abs_range</span><span class="p">,</span>
-        <span class="n">safe_range</span><span class="p">,</span>
-        <span class="n">decimals</span><span class="o">=</span><span class="n">decimals</span><span class="p">,</span>
-        <span class="n">orientation</span><span class="o">=</span><span class="n">orientation</span><span class="p">)</span>
-    <span class="n">rangeslider</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-    <span class="n">qtbot</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">rangeslider</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
-        <span class="n">abs_min</span><span class="p">,</span> <span class="n">abs_max</span> <span class="o">=</span> <span class="n">generic_minmax</span><span class="p">()</span>
-        <span class="n">safe_min</span><span class="p">,</span> <span class="n">safe_max</span> <span class="o">=</span> <span class="n">generic_saferange</span><span class="p">()</span>
-
-        <span class="c1">#pdb.set_trace()</span>
-        <span class="c1"># Set min and max and test they were set correctly</span>
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">abs_min</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">minimum</span><span class="p">()</span> <span class="o">==</span> <span class="n">abs_min</span><span class="p">)</span>
-
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">abs_max</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span> <span class="o">==</span> <span class="n">abs_max</span><span class="p">)</span>
-
-        <span class="c1"># set low and high and test they were set correctly</span>
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="n">safe_max</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">high</span> <span class="o">==</span> <span class="n">safe_max</span><span class="p">)</span>
-
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="n">safe_min</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">low</span> <span class="o">==</span> <span class="n">safe_min</span><span class="p">)</span>
-
-        <span class="c1"># try to set low and high outside of max</span>
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="n">abs_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">high</span> <span class="o">==</span> <span class="n">rangeslider</span><span class="o">.</span><span class="n">maximum</span><span class="p">())</span>
-
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="n">abs_min</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">low</span> <span class="o">==</span> <span class="n">rangeslider</span><span class="o">.</span><span class="n">minimum</span><span class="p">())</span>
-
-        <span class="c1"># try to set low higher and high and vice versa</span>
-        <span class="n">midpoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">abs_min</span><span class="p">,</span> <span class="n">abs_max</span><span class="p">]),</span> <span class="n">decimals</span><span class="p">)</span>
-        <span class="n">highpoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">midpoint</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)</span>
-        <span class="n">lowpoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">midpoint</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="mi">10</span><span class="o">**-</span><span class="n">decimals</span><span class="p">),</span> <span class="n">decimals</span><span class="p">)</span>
-
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="n">midpoint</span><span class="p">)</span>
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="n">highpoint</span><span class="p">)</span>
-
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">high</span> <span class="o">==</span> <span class="n">highpoint</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">low</span> <span class="o">==</span> <span class="n">lowpoint</span><span class="p">)</span>
-
-        <span class="n">highpoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">midpoint</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="mi">10</span><span class="o">**-</span><span class="n">decimals</span><span class="p">),</span> <span class="n">decimals</span><span class="p">)</span>
-        <span class="n">lowpoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">midpoint</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)</span>
-
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="n">midpoint</span><span class="p">)</span>
-        <span class="n">rangeslider</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="n">lowpoint</span><span class="p">)</span>
-
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">low</span> <span class="o">==</span> <span class="n">lowpoint</span><span class="p">)</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">rangeslider</span><span class="o">.</span><span class="n">high</span> <span class="o">==</span> <span class="n">highpoint</span><span class="p">)</span></div>
-
+<span class="c1">#</span>
+<span class="c1"># def test_doubleslider(qtbot):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     test that the doubleslider accurately represents floats</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     doubleslider = widgets.components.DoubleSlider(decimals=decimals)</span>
+<span class="c1">#     doubleslider.show()</span>
+<span class="c1">#     qtbot.addWidget(doubleslider)</span>
+<span class="c1">#</span>
+<span class="c1">#     doubleslider.setMinimum(0)</span>
+<span class="c1">#     doubleslider.setMaximum(1)</span>
+<span class="c1">#</span>
+<span class="c1">#     for i in np.random.rand(n_samples):</span>
+<span class="c1">#         test_val = np.round(i, decimals)</span>
+<span class="c1">#</span>
+<span class="c1">#         # set value inside of signal catcher to test both value and signal</span>
+<span class="c1">#         with qtbot.waitSignal(doubleslider.doubleValueChanged, timeout=1000) as blocker:</span>
+<span class="c1">#             doubleslider.setValue(test_val)</span>
+<span class="c1">#</span>
+<span class="c1">#         assert(doubleslider.value() == test_val)</span>
+<span class="c1">#         assert(blocker.args == test_val)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def test_doubleslider_minmax(qtbot, generic_minmax):</span>
+<span class="c1">#</span>
+<span class="c1">#     doubleslider = widgets.components.DoubleSlider(decimals=decimals)</span>
+<span class="c1">#     doubleslider.show()</span>
+<span class="c1">#     qtbot.addWidget(doubleslider)</span>
+<span class="c1">#</span>
+<span class="c1">#     multiplier = 100</span>
+<span class="c1">#     for i in range(n_samples):</span>
+<span class="c1">#         min, max = generic_minmax()</span>
+<span class="c1">#</span>
+<span class="c1">#         doubleslider.setMinimum(min)</span>
+<span class="c1">#         doubleslider.setMaximum(max)</span>
+<span class="c1">#</span>
+<span class="c1">#         # test that values were set correctly</span>
+<span class="c1">#         assert(doubleslider.minimum() == min)</span>
+<span class="c1">#         assert(doubleslider.maximum() == max)</span>
+<span class="c1">#</span>
+<span class="c1">#         # test below min and above max</span>
+<span class="c1">#         test_min = min - np.random.rand()*multiplier</span>
+<span class="c1">#         test_max = max + np.random.rand()*multiplier</span>
+<span class="c1">#</span>
+<span class="c1">#         doubleslider.setValue(test_min)</span>
+<span class="c1">#         assert(doubleslider.value() == doubleslider.minimum())</span>
+<span class="c1">#         doubleslider.setValue(test_max)</span>
+<span class="c1">#         assert(doubleslider.value() == doubleslider.maximum())</span>
+<span class="c1">#</span>
+<span class="c1"># #################</span>
+<span class="c1"># # RangeSlider</span>
+<span class="c1">#</span>
+<span class="c1"># def test_rangeslider(qtbot, generic_minmax, generic_saferange):</span>
+<span class="c1">#     abs_range = generic_minmax()</span>
+<span class="c1">#     safe_range = generic_saferange()</span>
+<span class="c1">#     print(safe_range)</span>
+<span class="c1">#     orientation = QtCore.Qt.Orientation.Horizontal</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     rangeslider = widgets.components.RangeSlider(</span>
+<span class="c1">#         abs_range,</span>
+<span class="c1">#         safe_range,</span>
+<span class="c1">#         decimals=decimals,</span>
+<span class="c1">#         orientation=orientation)</span>
+<span class="c1">#     rangeslider.show()</span>
+<span class="c1">#     qtbot.addWidget(rangeslider)</span>
+<span class="c1">#</span>
+<span class="c1">#     # test ranges &amp; values</span>
+<span class="c1">#     assert(rangeslider.minimum() == abs_range[0])</span>
+<span class="c1">#     assert(rangeslider.maximum() == abs_range[1])</span>
+<span class="c1">#     assert(rangeslider.low == safe_range[0])</span>
+<span class="c1">#     assert(rangeslider.high == safe_range[1])</span>
+<span class="c1">#</span>
+<span class="c1">#     for i in range(n_samples):</span>
+<span class="c1">#         min, max = generic_saferange()</span>
+<span class="c1">#         print(min, max)</span>
+<span class="c1">#</span>
+<span class="c1">#         with qtbot.waitSignal(rangeslider.valueChanged, timeout=1000) as blocker:</span>
+<span class="c1">#             rangeslider.setHigh(max)</span>
+<span class="c1">#             assert(rangeslider.high == max)</span>
+<span class="c1">#</span>
+<span class="c1">#             rangeslider.setLow(min)</span>
+<span class="c1">#             assert(rangeslider.low == min)</span>
+<span class="c1">#</span>
+<span class="c1"># def test_rangeslider_minmax(qtbot, generic_minmax, generic_saferange):</span>
+<span class="c1">#     abs_range = generic_minmax()</span>
+<span class="c1">#     safe_range = generic_saferange()</span>
+<span class="c1">#     decimals = 5</span>
+<span class="c1">#     orientation = QtCore.Qt.Orientation.Horizontal</span>
+<span class="c1">#</span>
+<span class="c1">#     rangeslider = widgets.components.RangeSlider(</span>
+<span class="c1">#         abs_range,</span>
+<span class="c1">#         safe_range,</span>
+<span class="c1">#         decimals=decimals,</span>
+<span class="c1">#         orientation=orientation)</span>
+<span class="c1">#     rangeslider.show()</span>
+<span class="c1">#     qtbot.addWidget(rangeslider)</span>
+<span class="c1">#</span>
+<span class="c1">#     for i in range(n_samples):</span>
+<span class="c1">#         abs_min, abs_max = generic_minmax()</span>
+<span class="c1">#         safe_min, safe_max = generic_saferange()</span>
+<span class="c1">#</span>
+<span class="c1">#         #pdb.set_trace()</span>
+<span class="c1">#         # Set min and max and test they were set correctly</span>
+<span class="c1">#         rangeslider.setMinimum(abs_min)</span>
+<span class="c1">#         assert(rangeslider.minimum() == abs_min)</span>
+<span class="c1">#</span>
+<span class="c1">#         rangeslider.setMaximum(abs_max)</span>
+<span class="c1">#         assert(rangeslider.maximum() == abs_max)</span>
+<span class="c1">#</span>
+<span class="c1">#         # set low and high and test they were set correctly</span>
+<span class="c1">#         rangeslider.setHigh(safe_max)</span>
+<span class="c1">#         assert(rangeslider.high == safe_max)</span>
+<span class="c1">#</span>
+<span class="c1">#         rangeslider.setLow(safe_min)</span>
+<span class="c1">#         assert(rangeslider.low == safe_min)</span>
+<span class="c1">#</span>
+<span class="c1">#         # try to set low and high outside of max</span>
+<span class="c1">#         rangeslider.setHigh(abs_max + 1)</span>
+<span class="c1">#         assert(rangeslider.high == rangeslider.maximum())</span>
+<span class="c1">#</span>
+<span class="c1">#         rangeslider.setLow(abs_min - 1)</span>
+<span class="c1">#         assert(rangeslider.low == rangeslider.minimum())</span>
+<span class="c1">#</span>
+<span class="c1">#         # try to set low higher and high and vice versa</span>
+<span class="c1">#         midpoint = np.round(np.mean([abs_min, abs_max]), decimals)</span>
+<span class="c1">#         highpoint = np.round(midpoint-1, decimals)</span>
+<span class="c1">#         lowpoint = np.round(midpoint-1-(10**-decimals), decimals)</span>
+<span class="c1">#</span>
+<span class="c1">#         rangeslider.setLow(midpoint)</span>
+<span class="c1">#         rangeslider.setHigh(highpoint)</span>
+<span class="c1">#</span>
+<span class="c1">#         assert(rangeslider.high == highpoint)</span>
+<span class="c1">#         assert(rangeslider.low == lowpoint)</span>
+<span class="c1">#</span>
+<span class="c1">#         highpoint = np.round(midpoint+1+(10**-decimals), decimals)</span>
+<span class="c1">#         lowpoint = np.round(midpoint + 1, decimals)</span>
+<span class="c1">#</span>
+<span class="c1">#         rangeslider.setHigh(midpoint)</span>
+<span class="c1">#         rangeslider.setLow(lowpoint)</span>
+<span class="c1">#</span>
+<span class="c1">#         assert(rangeslider.low == lowpoint)</span>
+<span class="c1">#         assert(rangeslider.high == highpoint)</span>
+<span class="c1">#</span>
 </pre></div>
 
            </div>
@@ -619,11 +682,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, jonny saunders et al
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -634,7 +705,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

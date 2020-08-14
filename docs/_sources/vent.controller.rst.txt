@@ -1,13 +1,13 @@
-vent.controller package
+pvp.controller package
 =======================
 
 Submodules
 ----------
 
-vent.controller.control\_module module
+pvp.controller.control\_module module
 --------------------------------------
 
-.. automodule:: vent.controller.control_module
+.. automodule:: pvp.controller.control_module
    :members:
    :undoc-members:
    :show-inheritance:
@@ -16,7 +16,7 @@ vent.controller.control\_module module
 Module contents
 ---------------
 
-.. automodule:: vent.controller
+.. automodule:: pvp.controller
    :members:
    :undoc-members:
    :show-inheritance:

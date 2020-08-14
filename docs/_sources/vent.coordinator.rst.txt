@@ -1,29 +1,29 @@
-vent.coordinator package
+pvp.coordinator package
 ========================
 
 Submodules
 ----------
 
-vent.coordinator.coordinator module
+pvp.coordinator.coordinator module
 -----------------------------------
 
-.. automodule:: vent.coordinator.coordinator
+.. automodule:: pvp.coordinator.coordinator
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.coordinator.ipc module
+pvp.coordinator.ipc module
 ---------------------------
 
-.. automodule:: vent.coordinator.ipc
+.. automodule:: pvp.coordinator.ipc
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.coordinator.process\_manager module
+pvp.coordinator.process\_manager module
 ----------------------------------------
 
-.. automodule:: vent.coordinator.process_manager
+.. automodule:: pvp.coordinator.process_manager
    :members:
    :undoc-members:
    :show-inheritance:
@@ -32,7 +32,7 @@ vent.coordinator.process\_manager module
 Module contents
 ---------------
 
-.. automodule:: vent.coordinator
+.. automodule:: pvp.coordinator
    :members:
    :undoc-members:
    :show-inheritance:

@@ -3,7 +3,7 @@
 
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-SPHINXOPTS    ?= -j 6
+SPHINXOPTS    ?= -j 6 -a -E
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = ./
 BUILDDIR      = ../docs
@@ -15,7 +15,6 @@ help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 html:
-	sphinx-apidoc -o "$(SOURCEDIR)" ../
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O) && \
 	rsync -av $(BUILDDIR)/html/* ../docs --remove-source-files
 

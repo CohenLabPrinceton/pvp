@@ -1,0 +1,361 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pvp.gui &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/_static/pvp_theme.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware.html">Hardware Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pvp.gui</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pvp.gui</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1">#########################</span>
+<span class="c1"># Imports</span>
+
+<span class="c1"># python standard libraries</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span><span class="p">,</span> <span class="n">SENSOR</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">styles</span>
+<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="kn">import</span> <span class="n">init_logger</span>
+
+<span class="n">LIMIT_GUI_INSTANCE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">(bool): whether there hsould only be one GUI instance at a time. disabled during testing.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="limit_gui"><a class="viewcode-back" href="../../pvp.gui.html#pvp.gui.limit_gui">[docs]</a><span class="k">def</span> <span class="nf">limit_gui</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;LIMIT_GUI_INSTANCE&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;LIMIT_GUI_INSTANCE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">limit</span></div>
+
+
+<span class="n">PLOTS</span> <span class="o">=</span> <span class="n">odict</span><span class="p">({</span>
+    <span class="n">ValueName</span><span class="o">.</span><span class="n">PRESSURE</span><span class="p">:</span> <span class="n">SENSOR</span><span class="p">[</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PRESSURE</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+    <span class="n">ValueName</span><span class="o">.</span><span class="n">FLOWOUT</span><span class="p">:</span> <span class="n">SENSOR</span><span class="p">[</span><span class="n">ValueName</span><span class="o">.</span><span class="n">FLOWOUT</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="p">})</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Values to plot.</span>
+
+<span class="sd">Should have the same key as some key in :data:`~.defaults.SENSOR`. If it does,</span>
+<span class="sd">it will be mutually connected to the resulting :class:`.gui.widgets.Monitor_Value`</span>
+<span class="sd">such that the set limit range is updated when the horizontal bars on the plot are updated.::</span>
+
+<span class="sd">    {</span>
+<span class="sd">        &#39;name&#39; (str): title of plot,</span>
+<span class="sd">        &#39;abs_range&#39; (tuple): absolute limit of plot range,</span>
+<span class="sd">        &#39;safe_range&#39; (tuple): safe range, will be discolored outside of this range,</span>
+<span class="sd">        &#39;color&#39; (str): hex color of line (like &quot;#FF0000&quot;)</span>
+<span class="sd">    }</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># PLOTS[ValueName.PRESSURE][&#39;color&#39;] = styles.SUBWAY_COLORS[&#39;orange&#39;]</span>
+<span class="c1"># PLOTS[ValueName.FLOWOUT][&#39;color&#39;] = styles.SUBWAY_COLORS[&#39;blue&#39;]</span>
+<span class="c1"># PLOTS[ValueName.PRESSURE][&#39;plot_limits&#39;] = (ValueName.PIP, ValueName.PEEP)</span>
+
+
+<span class="c1">########################</span>
+
+<span class="n">_GUI_INSTANCE</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="set_gui_instance"><a class="viewcode-back" href="../../pvp.gui.html#pvp.gui.set_gui_instance">[docs]</a><span class="k">def</span> <span class="nf">set_gui_instance</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Store the current instance of the GUI</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        instance (:class:`~.pvp.gui.main.Vent_Gui`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_GUI_INSTANCE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span></div>
+
+
+<div class="viewcode-block" id="get_gui_instance"><a class="viewcode-back" href="../../pvp.gui.html#pvp.gui.get_gui_instance">[docs]</a><span class="k">def</span> <span class="nf">get_gui_instance</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retreive the currently running instance of the GUI</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`~.pvp.gui.main.Vent_Gui`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_GUI_INSTANCE&#39;</span><span class="p">]</span></div>
+
+<span class="c1">###########</span>
+<span class="c1"># Load a monospace font for displaying numbers</span>
+<span class="c1"># Want to load an explicit font because computing the hint to find the default mono font is expensive</span>
+
+<span class="n">_MONO_FONT</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="viewcode-block" id="mono_font"><a class="viewcode-back" href="../../pvp.gui.html#pvp.gui.mono_font">[docs]</a><span class="k">def</span> <span class="nf">mono_font</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    module function to return a :class:`PySide2.QtGui.QFont` to use as the mono font.</span>
+
+<span class="sd">    use this instead of just making because :class:`PySide2.QtGui.QFontDatabase` can&#39;t be instantiated before the</span>
+<span class="sd">    :class:`PySide2.QtWidgets.QApplication` is instantiated, so we load the font after the app</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_MONO_FONT&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">load_mono_font</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_MONO_FONT&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="load_mono_font"><a class="viewcode-back" href="../../pvp.gui.html#pvp.gui.load_mono_font">[docs]</a><span class="k">def</span> <span class="nf">load_mono_font</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load the monospaced font and set the module-global :data:`_MONO_FONT` object.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Must be called after :class:`PySide2.QtWidgets.QApplication` is instantiated!</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># first try to load fira code for monospace font</span>
+        <span class="n">external_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;external&#39;</span><span class="p">)</span>
+        <span class="n">font_db</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFontDatabase</span><span class="p">()</span>
+        <span class="n">font_db</span><span class="o">.</span><span class="n">addApplicationFont</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">external_dir</span><span class="p">,</span> <span class="s1">&#39;FiraCode-Regular.otf&#39;</span><span class="p">))</span>
+        <span class="n">font_db</span><span class="o">.</span><span class="n">addApplicationFont</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">external_dir</span><span class="p">,</span> <span class="s1">&#39;FiraCode-Bold.otf&#39;</span><span class="p">))</span>
+        <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">(</span><span class="s1">&#39;Fira Code&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>   <span class="c1"># pragma: no cover</span>
+        <span class="c1"># if that fails, try to load liberation mono</span>
+        <span class="c1"># TODO: Log this</span>
+        <span class="n">init_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldnt load Fira Code, exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">(</span><span class="s1">&#39;Liberation Mono&#39;</span><span class="p">)</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># otherwise get the system default mono font</span>
+            <span class="n">mono_font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+            <span class="n">mono_font</span><span class="o">.</span><span class="n">setStyleHint</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Monospace</span><span class="p">)</span>
+
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;_MONO_FONT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mono_font</span></div>
+
+
+<span class="kn">from</span> <span class="nn">pvp.gui.main</span> <span class="kn">import</span> <span class="n">Vent_Gui</span><span class="p">,</span> <span class="n">launch_gui</span><span class="p">,</span> <span class="n">get_gui_instance</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

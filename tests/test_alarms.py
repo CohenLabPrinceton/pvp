@@ -6,11 +6,11 @@ import copy
 
 import numpy as np
 
-from vent.alarm import condition, ALARM_RULES, AlarmType, AlarmSeverity, Alarm, Alarm_Manager
-from vent.alarm.rule import Alarm_Rule
+from pvp.alarm import condition, ALARM_RULES, AlarmType, AlarmSeverity, Alarm, Alarm_Manager
+from pvp.alarm.rule import Alarm_Rule
 
-from vent.common.values import ValueName, SENSOR
-from vent.common.message import SensorValues
+from pvp.common.values import ValueName, SENSOR
+from pvp.common.message import SensorValues
 
 ##########
 # conditions

@@ -39,12 +39,12 @@ install:
 before_script:
   - "herbstluftwm &"
   - sleep 1
-  - mkdir -p /home/travis/vent/logs # make directories for logs
+  - mkdir -p /home/travis/pvp/logs # make directories for logs
 
 script:
-  - pytest --cov=vent --cov-report term-missing tests
+  - pytest --cov=pvp --cov-report term-missing tests
 
-after_success:
+after_script:
   - coveralls
 
 deploy:

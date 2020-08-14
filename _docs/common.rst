@@ -1,21 +1,17 @@
 common module
 ===================
 
-message
---------------------------
+.. toctree::
+    :caption: Common Modules
 
-.. automodule:: vent.common.message
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    pvp.common.values
+    pvp.common.loggers
+    pvp.common.message
+    pvp.common.prefs
+    pvp.common.unit_conversion
+    pvp.common.utils
+    pvp.common.fashion
 
 
-values
----------------
 
-Parameterization of variables and values
 
-.. automodule:: vent.common.values
-   :members:
-   :undoc-members:
-   :show-inheritance:

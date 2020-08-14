@@ -1,4 +1,4 @@
-vent.io package
+pvp.io package
 ===============
 
 Subpackages
@@ -7,15 +7,15 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   vent.io.devices
+   pvp.io.devices
 
 Submodules
 ----------
 
-vent.io.hal module
+pvp.io.hal module
 ------------------
 
-.. automodule:: vent.io.hal
+.. automodule:: pvp.io.hal
    :members:
    :undoc-members:
    :show-inheritance:
@@ -24,7 +24,7 @@ vent.io.hal module
 Module contents
 ---------------
 
-.. automodule:: vent.io
+.. automodule:: pvp.io
    :members:
    :undoc-members:
    :show-inheritance:

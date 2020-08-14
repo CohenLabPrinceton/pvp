@@ -1,29 +1,29 @@
-vent.gui package
+pvp.gui package
 ================
 
 Submodules
 ----------
 
-vent.gui.defaults module
+pvp.gui.defaults module
 ------------------------
 
-.. automodule:: vent.gui.defaults
+.. automodule:: pvp.gui.defaults
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.gui.styles module
+pvp.gui.styles module
 ----------------------
 
-.. automodule:: vent.gui.styles
+.. automodule:: pvp.gui.styles
    :members:
    :undoc-members:
    :show-inheritance:
 
-vent.gui.widgets module
+pvp.gui.widgets module
 -----------------------
 
-.. automodule:: vent.gui.widgets
+.. automodule:: pvp.gui.widgets
    :members:
    :undoc-members:
    :show-inheritance:
@@ -32,7 +32,7 @@ vent.gui.widgets module
 Module contents
 ---------------
 
-.. automodule:: vent.gui
+.. automodule:: pvp.gui
    :members:
    :undoc-members:
    :show-inheritance:

@@ -116,7 +116,7 @@ GUI Object Documentation
 Main GUI Module
 ~~~~~~~~~~~~~~~~~
 
-.. automodule:: vent.gui.main
+.. automodule:: pvp.gui.main
     :members:
     :undoc-members:
     :autosummary:
@@ -124,34 +124,10 @@ Main GUI Module
 GUI Widgets
 ~~~~~~~~~~~~~
 
-Control
-_________
-
-.. automodule:: vent.gui.widgets.control
-    :members:
-    :undoc-members:
-    :autosummary:
-
-Monitor
-_________
-
-.. automodule:: vent.gui.widgets.monitor
-    :members:
-    :undoc-members:
-    :autosummary:
-
 Display
 _________
 
-.. automodule:: vent.gui.widgets.display
-    :members:
-    :undoc-members:
-    :autosummary:
-
-Plot
-_______
-
-.. automodule:: vent.gui.widgets.plot
+.. automodule:: pvp.gui.widgets.display
     :members:
     :undoc-members:
     :autosummary:
@@ -159,7 +135,15 @@ _______
 Control Panel
 _______________
 
-.. automodule:: vent.gui.widgets.control_panel
+.. automodule:: pvp.gui.widgets.control_panel
+    :members:
+    :undoc-members:
+    :autosummary:
+
+Plot
+_______
+
+.. automodule:: pvp.gui.widgets.plot
     :members:
     :undoc-members:
     :autosummary:
@@ -167,7 +151,7 @@ _______________
 Alarm Bar
 ____________
 
-.. automodule:: vent.gui.widgets.alarm_bar
+.. automodule:: pvp.gui.widgets.alarm_bar
     :members:
     :undoc-members:
     :autosummary:
@@ -175,7 +159,7 @@ ____________
 Components
 ____________
 
-.. automodule:: vent.gui.widgets.components
+.. automodule:: pvp.gui.widgets.components
     :members:
     :undoc-members:
     :autosummary:
@@ -183,7 +167,7 @@ ____________
 Dialog
 ____________
 
-.. automodule:: vent.gui.widgets.dialog
+.. automodule:: pvp.gui.widgets.dialog
     :members:
     :undoc-members:
     :autosummary:
@@ -191,7 +175,7 @@ ____________
 GUI Stylesheets
 ~~~~~~~~~~~~~~~~~~
 
-.. automodule:: vent.gui.styles
+.. automodule:: pvp.gui.styles
     :members:
     :undoc-members:
     :autosummary:

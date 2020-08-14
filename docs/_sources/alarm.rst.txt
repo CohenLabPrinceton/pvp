@@ -4,7 +4,7 @@ alarm
 Main Alarm Module
 -------------------
 
-.. automodule:: vent.alarm
+.. automodule:: pvp.alarm
     :members:
     :undoc-members:
     :autosummary:
@@ -12,7 +12,7 @@ Main Alarm Module
 Alarm Manager
 ----------------
 
-.. automodule:: vent.alarm.alarm_manager
+.. automodule:: pvp.alarm.alarm_manager
     :members:
     :undoc-members:
     :autosummary:
@@ -20,7 +20,7 @@ Alarm Manager
 Alarm
 ------------
 
-.. automodule:: vent.alarm.alarm
+.. automodule:: pvp.alarm.alarm
     :members:
     :undoc-members:
     :autosummary:
@@ -28,7 +28,7 @@ Alarm
 Condition
 -----------
 
-.. automodule:: vent.alarm.condition
+.. automodule:: pvp.alarm.condition
     :members:
     :undoc-members:
     :autosummary:
@@ -36,7 +36,7 @@ Condition
 Alarm Rule
 -----------
 
-.. automodule:: vent.alarm.rule
+.. automodule:: pvp.alarm.rule
     :members:
     :undoc-members:
     :autosummary:

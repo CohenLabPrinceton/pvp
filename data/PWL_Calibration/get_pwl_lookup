@@ -1,8 +1,8 @@
 
 import pigpio
 import time
-import vent.io.iobase as iobase
-import vent.io.devices as iodev
+import pvp.io.iobase as iobase
+import pvp.io.devices as iodev
 import numpy as np
 
 '''

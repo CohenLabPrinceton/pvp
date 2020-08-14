@@ -1,5 +1,5 @@
 from .pigpio_mocks import patch_pigpio_base
-from vent.io import Hal
+from pvp.io import Hal
 from random import randint, getrandbits
 
 
@@ -10,7 +10,7 @@ def test_functions(patch_pigpio_base):
             - Checks to make sure that valves report as being open if they are not fully closed (i.e. if they have a
                 nonzero setpoint)
     """
-    hal = Hal(config_file='vent/io/config/sim-devices.ini')
+    hal = Hal(config_file='pvp/io/config/sim-devices.ini')
     for _ in range(randint(1000, 10000)):
         assert hal._pressure_sensor.low <= hal.pressure <= hal._pressure_sensor.high
         assert hal._aux_pressure_sensor.low <= hal.aux_pressure <= hal._aux_pressure_sensor.high

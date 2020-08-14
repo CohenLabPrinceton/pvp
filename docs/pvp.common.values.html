@@ -1,0 +1,660 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>values &mdash; PVP 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="loggers" href="pvp.common.loggers.html" />
+    <link rel="prev" title="common module" href="common.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PVP
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="common.html">common</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">loggers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.prefs.html">prefs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">unit conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.fashion.html">fashion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="common.html">common module</a> &raquo;</li>
+        
+      <li>values</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pvp.common.values.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="values">
+<h1>values<a class="headerlink" href="#values" title="Permalink to this headline">¶</a></h1>
+<p>Parameterization of variables and values</p>
+<span class="target" id="module-pvp.common.values"></span><p><strong>Data</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.CONTROL" title="pvp.common.values.CONTROL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTROL</span></code></a></p></td>
+<td><p>Values to control but not monitor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.DISPLAY_CONTROL" title="pvp.common.values.DISPLAY_CONTROL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DISPLAY_CONTROL</span></code></a></p></td>
+<td><p>Values that should be displayed in the GUI.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.DISPLAY_MONITOR" title="pvp.common.values.DISPLAY_MONITOR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DISPLAY_MONITOR</span></code></a></p></td>
+<td><p>Values that should be displayed in the GUI.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.LIMITS" title="pvp.common.values.LIMITS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LIMITS</span></code></a></p></td>
+<td><p>Values that are dependent on other values:</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.SENSOR" title="pvp.common.values.SENSOR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SENSOR</span></code></a></p></td>
+<td><p>Values to monitor but not control.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.Value" title="pvp.common.values.Value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Value</span></code></a>(name, units, abs_range, safe_range, …)</p></td>
+<td><p>Definition of a value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.ValueName" title="pvp.common.values.ValueName"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueName</span></code></a>(value)</p></td>
+<td><p>An enumeration.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="pvp.common.values.ValueName">
+<em class="property">class </em><code class="sig-prename descclassname">pvp.common.values.</code><code class="sig-name descname">ValueName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/values.html#ValueName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.values.ValueName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>An enumeration.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.PIP" title="pvp.common.values.ValueName.PIP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PIP</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.PIP_TIME" title="pvp.common.values.ValueName.PIP_TIME"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PIP_TIME</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.PEEP" title="pvp.common.values.ValueName.PEEP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PEEP</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.PEEP_TIME" title="pvp.common.values.ValueName.PEEP_TIME"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PEEP_TIME</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.BREATHS_PER_MINUTE" title="pvp.common.values.ValueName.BREATHS_PER_MINUTE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BREATHS_PER_MINUTE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.INSPIRATION_TIME_SEC" title="pvp.common.values.ValueName.INSPIRATION_TIME_SEC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INSPIRATION_TIME_SEC</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.IE_RATIO" title="pvp.common.values.ValueName.IE_RATIO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IE_RATIO</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.FIO2" title="pvp.common.values.ValueName.FIO2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FIO2</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.VTE" title="pvp.common.values.ValueName.VTE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VTE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.PRESSURE" title="pvp.common.values.ValueName.PRESSURE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRESSURE</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.ValueName.FLOWOUT" title="pvp.common.values.ValueName.FLOWOUT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FLOWOUT</span></code></a></p></td>
+<td><p>int([x]) -&gt; integer</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.PIP">
+<code class="sig-name descname">PIP</code><em class="property"> = 1</em><a class="headerlink" href="#pvp.common.values.ValueName.PIP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.PIP_TIME">
+<code class="sig-name descname">PIP_TIME</code><em class="property"> = 2</em><a class="headerlink" href="#pvp.common.values.ValueName.PIP_TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.PEEP">
+<code class="sig-name descname">PEEP</code><em class="property"> = 3</em><a class="headerlink" href="#pvp.common.values.ValueName.PEEP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.PEEP_TIME">
+<code class="sig-name descname">PEEP_TIME</code><em class="property"> = 4</em><a class="headerlink" href="#pvp.common.values.ValueName.PEEP_TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.BREATHS_PER_MINUTE">
+<code class="sig-name descname">BREATHS_PER_MINUTE</code><em class="property"> = 5</em><a class="headerlink" href="#pvp.common.values.ValueName.BREATHS_PER_MINUTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.INSPIRATION_TIME_SEC">
+<code class="sig-name descname">INSPIRATION_TIME_SEC</code><em class="property"> = 6</em><a class="headerlink" href="#pvp.common.values.ValueName.INSPIRATION_TIME_SEC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.IE_RATIO">
+<code class="sig-name descname">IE_RATIO</code><em class="property"> = 7</em><a class="headerlink" href="#pvp.common.values.ValueName.IE_RATIO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.FIO2">
+<code class="sig-name descname">FIO2</code><em class="property"> = 8</em><a class="headerlink" href="#pvp.common.values.ValueName.FIO2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.VTE">
+<code class="sig-name descname">VTE</code><em class="property"> = 9</em><a class="headerlink" href="#pvp.common.values.ValueName.VTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.PRESSURE">
+<code class="sig-name descname">PRESSURE</code><em class="property"> = 10</em><a class="headerlink" href="#pvp.common.values.ValueName.PRESSURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pvp.common.values.ValueName.FLOWOUT">
+<code class="sig-name descname">FLOWOUT</code><em class="property"> = 11</em><a class="headerlink" href="#pvp.common.values.ValueName.FLOWOUT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="pvp.common.values.Value">
+<em class="property">class </em><code class="sig-prename descclassname">pvp.common.values.</code><code class="sig-name descname">Value</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">units: str</em>, <em class="sig-param">abs_range: tuple</em>, <em class="sig-param">safe_range: tuple</em>, <em class="sig-param">decimals: int</em>, <em class="sig-param">control: bool</em>, <em class="sig-param">sensor: bool</em>, <em class="sig-param">display: bool</em>, <em class="sig-param">plot: bool = False</em>, <em class="sig-param">plot_limits: Union[None</em>, <em class="sig-param">Tuple[pvp.common.values.ValueName]] = None</em>, <em class="sig-param">control_type: Union[None</em>, <em class="sig-param">str] = None</em>, <em class="sig-param">group: Union[None</em>, <em class="sig-param">dict] = None</em>, <em class="sig-param">default: (&lt;class 'int'&gt;</em>, <em class="sig-param">&lt;class 'float'&gt;) = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/values.html#Value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.values.Value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Definition of a value.</p>
+<p>Used by the GUI and control module to set defaults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Human-readable name of the value</p></li>
+<li><p><strong>units</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Human-readable description of units</p></li>
+<li><p><strong>abs_range</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a>) – tuple of ints or floats setting the logical limit of the value,
+eg. a percent between 0 and 100, (0, 100)</p></li>
+<li><p><strong>safe_range</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a>) – <p>tuple of ints or floats setting the safe ranges of the value,</p>
+<p>note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>this is not the same thing as the user-set alarm values,
+though the user-set alarm values are initialized as ``safe_range``.
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>decimals</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – the number of decimals of precision used when displaying the value</p></li>
+<li><p><strong>display</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – whether the value should be displayed in the monitor. if <code class="docutils literal notranslate"><span class="pre">control</span> <span class="pre">==</span> <span class="pre">True</span></code>,
+automatically set to <code class="docutils literal notranslate"><span class="pre">False</span></code> because all controls have their own numerical displays</p></li>
+<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – whether or not the value is plottable int he center plot window</p></li>
+<li><p><strong>plot_limits</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>(</em><a class="reference internal" href="#pvp.common.values.ValueName" title="pvp.common.values.ValueName"><em>ValueName</em></a><em>)</em>) – If plottable, and the plotted value has some alarm limits for another value,
+plot those limits as horizontal lines in the plot. eg. the PIP alarm range limits should be plotted on the Pressure plot</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.Value.__init__" title="pvp.common.values.Value.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(name, units, abs_range, safe_range, …)</p></td>
+<td><p>Definition of a value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.Value.to_dict" title="pvp.common.values.Value.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.Value.abs_range" title="pvp.common.values.Value.abs_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abs_range</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.Value.control" title="pvp.common.values.Value.control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">control</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.Value.control_type" title="pvp.common.values.Value.control_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">control_type</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.Value.decimals" title="pvp.common.values.Value.decimals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decimals</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.Value.default" title="pvp.common.values.Value.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.Value.display" title="pvp.common.values.Value.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.Value.group" title="pvp.common.values.Value.group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">group</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.Value.name" title="pvp.common.values.Value.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.Value.plot" title="pvp.common.values.Value.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.Value.plot_limits" title="pvp.common.values.Value.plot_limits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_limits</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.values.Value.safe_range" title="pvp.common.values.Value.safe_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_range</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.values.Value.sensor" title="pvp.common.values.Value.sensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sensor</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="pvp.common.values.Value.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">units: str</em>, <em class="sig-param">abs_range: tuple</em>, <em class="sig-param">safe_range: tuple</em>, <em class="sig-param">decimals: int</em>, <em class="sig-param">control: bool</em>, <em class="sig-param">sensor: bool</em>, <em class="sig-param">display: bool</em>, <em class="sig-param">plot: bool = False</em>, <em class="sig-param">plot_limits: Union[None</em>, <em class="sig-param">Tuple[pvp.common.values.ValueName]] = None</em>, <em class="sig-param">control_type: Union[None</em>, <em class="sig-param">str] = None</em>, <em class="sig-param">group: Union[None</em>, <em class="sig-param">dict] = None</em>, <em class="sig-param">default: (&lt;class 'int'&gt;</em>, <em class="sig-param">&lt;class 'float'&gt;) = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/values.html#Value.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.values.Value.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Definition of a value.</p>
+<p>Used by the GUI and control module to set defaults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Human-readable name of the value</p></li>
+<li><p><strong>units</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Human-readable description of units</p></li>
+<li><p><strong>abs_range</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a>) – tuple of ints or floats setting the logical limit of the value,
+eg. a percent between 0 and 100, (0, 100)</p></li>
+<li><p><strong>safe_range</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a>) – <p>tuple of ints or floats setting the safe ranges of the value,</p>
+<p>note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>this is not the same thing as the user-set alarm values,
+though the user-set alarm values are initialized as ``safe_range``.
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>decimals</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – the number of decimals of precision used when displaying the value</p></li>
+<li><p><strong>display</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – whether the value should be displayed in the monitor. if <code class="docutils literal notranslate"><span class="pre">control</span> <span class="pre">==</span> <span class="pre">True</span></code>,
+automatically set to <code class="docutils literal notranslate"><span class="pre">False</span></code> because all controls have their own numerical displays</p></li>
+<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – whether or not the value is plottable int he center plot window</p></li>
+<li><p><strong>plot_limits</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>(</em><a class="reference internal" href="#pvp.common.values.ValueName" title="pvp.common.values.ValueName"><em>ValueName</em></a><em>)</em>) – If plottable, and the plotted value has some alarm limits for another value,
+plot those limits as horizontal lines in the plot. eg. the PIP alarm range limits should be plotted on the Pressure plot</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.name">
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#pvp.common.values.Value.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.abs_range">
+<em class="property">property </em><code class="sig-name descname">abs_range</code><a class="headerlink" href="#pvp.common.values.Value.abs_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.safe_range">
+<em class="property">property </em><code class="sig-name descname">safe_range</code><a class="headerlink" href="#pvp.common.values.Value.safe_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.decimals">
+<em class="property">property </em><code class="sig-name descname">decimals</code><a class="headerlink" href="#pvp.common.values.Value.decimals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.default">
+<em class="property">property </em><code class="sig-name descname">default</code><a class="headerlink" href="#pvp.common.values.Value.default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.control">
+<em class="property">property </em><code class="sig-name descname">control</code><a class="headerlink" href="#pvp.common.values.Value.control" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.sensor">
+<em class="property">property </em><code class="sig-name descname">sensor</code><a class="headerlink" href="#pvp.common.values.Value.sensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.display">
+<em class="property">property </em><code class="sig-name descname">display</code><a class="headerlink" href="#pvp.common.values.Value.display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.control_type">
+<em class="property">property </em><code class="sig-name descname">control_type</code><a class="headerlink" href="#pvp.common.values.Value.control_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.group">
+<em class="property">property </em><code class="sig-name descname">group</code><a class="headerlink" href="#pvp.common.values.Value.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.plot">
+<em class="property">property </em><code class="sig-name descname">plot</code><a class="headerlink" href="#pvp.common.values.Value.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.plot_limits">
+<em class="property">property </em><code class="sig-name descname">plot_limits</code><a class="headerlink" href="#pvp.common.values.Value.plot_limits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.common.values.Value.to_dict">
+<code class="sig-name descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/values.html#Value.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.values.Value.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.values.SENSOR">
+<code class="sig-prename descclassname">pvp.common.values.</code><code class="sig-name descname">SENSOR</code><em class="property"> = OrderedDict([(&lt;ValueName.PIP: 1&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.PEEP: 3&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.BREATHS_PER_MINUTE: 5&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.INSPIRATION_TIME_SEC: 6&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.PRESSURE: 10&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.VTE: 9&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.FIO2: 8&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.FLOWOUT: 11&gt;, &lt;pvp.common.values.Value object&gt;)])</em><a class="headerlink" href="#pvp.common.values.SENSOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values to monitor but not control.</p>
+<p>Used to set alarms for out-of-bounds sensor values. These should be sent from the control module and not computed.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;name&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span>  <span class="n">Human</span> <span class="n">readable</span> <span class="n">name</span><span class="p">,</span>
+    <span class="s1">&#39;units&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="n">units</span> <span class="n">string</span><span class="p">,</span> <span class="p">(</span><span class="n">like</span> <span class="n">degrees</span> <span class="ow">or</span> <span class="o">%</span><span class="p">),</span>
+    <span class="s1">&#39;abs_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="n">absolute</span> <span class="n">possible</span> <span class="nb">range</span> <span class="n">of</span> <span class="n">values</span><span class="p">,</span>
+    <span class="s1">&#39;safe_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="nb">range</span> <span class="n">outside</span> <span class="n">of</span> <span class="n">which</span> <span class="n">a</span> <span class="n">warning</span> <span class="n">will</span> <span class="n">be</span> <span class="n">raised</span><span class="p">,</span>
+    <span class="s1">&#39;decimals&#39;</span> <span class="p">(</span><span class="nb">int</span><span class="p">):</span> <span class="n">The</span> <span class="n">number</span> <span class="n">of</span> <span class="n">decimals</span> <span class="n">of</span> <span class="n">precision</span> <span class="n">this</span> <span class="n">number</span> <span class="n">should</span> <span class="n">be</span> <span class="n">displayed</span> <span class="k">with</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.values.CONTROL">
+<code class="sig-prename descclassname">pvp.common.values.</code><code class="sig-name descname">CONTROL</code><em class="property"> = OrderedDict([(&lt;ValueName.PIP: 1&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.PEEP: 3&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.BREATHS_PER_MINUTE: 5&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.INSPIRATION_TIME_SEC: 6&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.IE_RATIO: 7&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.PIP_TIME: 2&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.PEEP_TIME: 4&gt;, &lt;pvp.common.values.Value object&gt;)])</em><a class="headerlink" href="#pvp.common.values.CONTROL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values to control but not monitor.</p>
+<p>Sent to control module to control operation of ventilator.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;name&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span>  <span class="n">Human</span> <span class="n">readable</span> <span class="n">name</span><span class="p">,</span>
+    <span class="s1">&#39;units&#39;</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="n">units</span> <span class="n">string</span><span class="p">,</span> <span class="p">(</span><span class="n">like</span> <span class="n">degrees</span> <span class="ow">or</span> <span class="o">%</span><span class="p">),</span>
+    <span class="s1">&#39;abs_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="n">absolute</span> <span class="n">possible</span> <span class="nb">range</span> <span class="n">of</span> <span class="n">values</span><span class="p">,</span>
+    <span class="s1">&#39;safe_range&#39;</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">):</span> <span class="nb">range</span> <span class="n">outside</span> <span class="n">of</span> <span class="n">which</span> <span class="n">a</span> <span class="n">warning</span> <span class="n">will</span> <span class="n">be</span> <span class="n">raised</span><span class="p">,</span>
+    <span class="s1">&#39;default&#39;</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span> <span class="n">the</span> <span class="n">default</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="n">parameter</span><span class="p">,</span>
+    <span class="s1">&#39;decimals&#39;</span> <span class="p">(</span><span class="nb">int</span><span class="p">):</span> <span class="n">The</span> <span class="n">number</span> <span class="n">of</span> <span class="n">decimals</span> <span class="n">of</span> <span class="n">precision</span> <span class="n">this</span> <span class="n">number</span> <span class="n">should</span> <span class="n">be</span> <span class="n">displayed</span> <span class="k">with</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.values.DISPLAY_MONITOR">
+<code class="sig-prename descclassname">pvp.common.values.</code><code class="sig-name descname">DISPLAY_MONITOR</code><em class="property"> = OrderedDict([(&lt;ValueName.PIP: 1&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.PEEP: 3&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.BREATHS_PER_MINUTE: 5&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.INSPIRATION_TIME_SEC: 6&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.PRESSURE: 10&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.VTE: 9&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.FIO2: 8&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.FLOWOUT: 11&gt;, &lt;pvp.common.values.Value object&gt;)])</em><a class="headerlink" href="#pvp.common.values.DISPLAY_MONITOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values that should be displayed in the GUI. If a value is also a CONTROL it will always have the measured value displayed,
+these values are those that are sensor values that are uncontrolled and should be displayed.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.values.DISPLAY_CONTROL">
+<code class="sig-prename descclassname">pvp.common.values.</code><code class="sig-name descname">DISPLAY_CONTROL</code><em class="property"> = OrderedDict([(&lt;ValueName.PIP: 1&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.PEEP: 3&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.BREATHS_PER_MINUTE: 5&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.INSPIRATION_TIME_SEC: 6&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.IE_RATIO: 7&gt;, &lt;pvp.common.values.Value object&gt;), (&lt;ValueName.PIP_TIME: 2&gt;, &lt;pvp.common.values.Value object&gt;)])</em><a class="headerlink" href="#pvp.common.values.DISPLAY_CONTROL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values that should be displayed in the GUI. If a value is also a CONTROL it will always have the measured value displayed,
+these values are those that are sensor values that are uncontrolled and should be displayed.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.values.LIMITS">
+<code class="sig-prename descclassname">pvp.common.values.</code><code class="sig-name descname">LIMITS</code><em class="property"> = {}</em><a class="headerlink" href="#pvp.common.values.LIMITS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Values that are dependent on other values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;dependent_value&quot;</span><span class="p">:</span> <span class="p">(</span>
+        <span class="p">[</span><span class="s1">&#39;value_1&#39;</span><span class="p">,</span> <span class="s1">&#39;value_2&#39;</span><span class="p">],</span>
+        <span class="n">callable_returning_boolean</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Where the first argument in the tuple is a list of the values that will be
+given as argument to the <code class="docutils literal notranslate"><span class="pre">callable_returning_boolean</span></code> which will return
+whether (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or not (<code class="docutils literal notranslate"><span class="pre">False</span></code>) a value is allowed.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pvp.common.loggers.html" class="btn btn-neutral float-right" title="loggers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="common.html" class="btn btn-neutral float-left" title="common module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

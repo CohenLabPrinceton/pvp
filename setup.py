@@ -66,7 +66,7 @@ setup(
         'scipy'
     ],
     package_data={
-        "*": ["data/*", "cad-files/*", ""],
+        "*": ["data/*", "assets/*", ""],
         "pvp": ["external/*", "gui/images/*"]
     },
     dependency_links=depend_links,

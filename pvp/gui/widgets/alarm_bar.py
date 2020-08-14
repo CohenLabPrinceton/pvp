@@ -36,9 +36,10 @@ class Alarm_Bar(QtWidgets.QFrame):
         #self._changing_alarms = threading.Lock()
         self.setContentsMargins(0,0,0,0)
 
+        self.sound_player = Alarm_Sound_Player()
         self.make_icons()
         self.init_ui()
-        self.sound_player = Alarm_Sound_Player()
+
 
     def make_icons(self):
 
@@ -82,12 +83,13 @@ class Alarm_Bar(QtWidgets.QFrame):
 
         # mute button
         self.mute_button = QtWidgets.QPushButton('Mute')
+        self.mute_button.setStyleSheet(styles.TOGGLE_BUTTON)
         self.mute_button.setCheckable(True)
         self.mute_button.setChecked(False)
         self.mute_button.setEnabled(False)
-        self.mute_button.toggled.connect(self.mute_alarms)
-        self.setFixedWidth(styles.MUTE_BUTTON_WIDTH)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
+        self.mute_button.toggled.connect(self.sound_player.set_mute)
+        self.mute_button.setFixedWidth(styles.MUTE_BUTTON_WIDTH)
+        self.mute_button.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
                            QtWidgets.QSizePolicy.Expanding)
 
         #self.layout.addWidget(self.message, 6)
@@ -117,14 +119,21 @@ class Alarm_Bar(QtWidgets.QFrame):
 
         # alarm priority should go low on left, high on right
         # newer alarms should be on the right of older alarms of same severity
+        added_alarm = False
         for i, existing_alarm in enumerate(self.alarms):
             if alarm.severity < existing_alarm.severity:
                 self.alarms.insert(i, alarm)
                 self.alarm_cards.insert(i, alarm_card)
                 self.alarm_layout.insertWidget(i, alarm_card)
+                added_alarm = True
                 break
 
-        else:
+        if not added_alarm:
+
+            if len(self.alarms) == 0:
+                # we just started, enable the mute button
+                self.mute_button.setEnabled(True)
+
             # no alarm was greater than us, we should go at the end
             self.alarms.append(alarm)
             self.alarm_cards.append(alarm_card)
@@ -169,6 +178,8 @@ class Alarm_Bar(QtWidgets.QFrame):
             if self.sound_player.playing:
                 if max_severity == AlarmSeverity.OFF:
                     self.sound_player.stop()
+                    self.mute_button.setEnabled(False)
+                    self.mute_button.setChecked(False)
                 else:
                     self.sound_player.set_sound(severity=max_severity)
 
@@ -213,9 +224,6 @@ class Alarm_Bar(QtWidgets.QFrame):
             self.setStyleSheet(styles.STATUS_NORMAL)
             #self.clear_button.setVisible(False)
             self.icon.clear()
-
-    def mute_alarms(self):
-        pass
 
 
     # @QtCore.Slot(Alarm)
@@ -380,6 +388,7 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
         self._current_idx = 0
         self._max_level = 0
         self._change_to = None
+        self._muted = False
         self._increment_timer = QtCore.QTimer(self)
         self._increment_timer.setInterval(self.increment_delay)
         self._increment_timer.timeout.connect(self.increment_level)
@@ -436,6 +445,10 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
     def play(self):
 
         # self.playlist.setPlaybackMode(QtMultimedia.QMediaPlaylist.CurrentItemInLoop)
+        if self.playing:
+            self.logger.warning('play method called for sounds but sounds are already playing')
+            return
+
         self.playing = True
         if self._current_sound is not None:
             self._current_sound.play()
@@ -454,6 +467,7 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
         self._increment_timer.stop()
         self._severity = AlarmSeverity.OFF
         self._level = 0
+        self._muted = False
     #
     # def set_severity(self, severity: AlarmSeverity):
     #     with self._changing_track:
@@ -492,7 +506,10 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
                 new_sound = self.idx[severity][level]
                 if self._current_sound is not None:
                     self._current_sound.stop()
-                new_sound.play()
+
+                if not self._muted:
+                    new_sound.play()
+
                 self._current_sound = new_sound
                 self._severity = severity
                 self._level = level
@@ -506,6 +523,17 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
     def increment_level(self):
         if self._level < self._max_level:
             self.set_sound(level=self._level + 1)
+
+    def set_mute(self, mute):
+        if mute:
+            self._muted = True
+            if self._current_sound:
+                self._current_sound.stop()
+
+        else:
+            self._muted = False
+            if self._current_sound:
+                self._current_sound.play()
 
 
 

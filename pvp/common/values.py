@@ -341,22 +341,23 @@ VALUES = odict({
         'sensor': True,
         'display': True
     }),
-    ValueName.FIO2: Value(**{
-        'name': 'FiO2',
-        'units': '%',
-        'abs_range': (0, 100),
-        'safe_range': (20, 100),
-        'decimals': 1,
-        'control': False,
-        'sensor': True,
-        'display': True
-    }),
     ValueName.FLOWOUT: Value(**{
         'name': 'Flow',
         'units': 'L/min',
         'abs_range': (0, 2),
         'safe_range': (0, 2),
         'decimals': 2,
+        'control': False,
+        'sensor': True,
+        'display': True,
+        'plot': True
+    }),
+    ValueName.FIO2: Value(**{
+        'name': 'FiO2',
+        'units': '%',
+        'abs_range': (0, 100),
+        'safe_range': (20, 100),
+        'decimals': 1,
         'control': False,
         'sensor': True,
         'display': True,

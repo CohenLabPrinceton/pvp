@@ -122,20 +122,26 @@ class Plot(pg.PlotWidget):
 
         #self.enableAutoRange(y=True)
 
+        # split plot curve into two so that the endpoint doesn't get connected to the start point
+        self.early_curve = self.plot(width=3)
+        self.late_curve = self.plot(width=3)
+
         self._plot_limits = {}
         if plot_limits:
             for value in plot_limits:
                 self._plot_limits[value] = (
                     pg.InfiniteLine(movable=False, angle=0, pos=0, pen=styles.SUBWAY_COLORS['red'],
-                                    label=f'{value.name}:{{value:0.2f}}',
+                                    label=f'{value.name}:{{value:0.1f}}',
                                     labelOpts={
-                                        'color': styles.SUBWAY_COLORS['red'],
-                                        'position': 0.75
+                                        'color': styles.TEXT_COLOR,
+                                        'fill': styles.SUBWAY_COLORS['red'],
+                                        'position': 0.1
                                     }),
                     pg.InfiniteLine(movable=False, angle=0, pos=0, pen=styles.SUBWAY_COLORS['red'],
-                                    label=f'{value.name}:{{value:0.2f}}',
+                                    label=f'{value.name}:{{value:0.1f}}',
                                     labelOpts={
-                                        'color': styles.SUBWAY_COLORS['red'],
+                                        'color': styles.TEXT_COLOR,
+                                        'fill': styles.SUBWAY_COLORS['red'],
                                         'position': 0.9
                                     })
                 )
@@ -144,19 +150,12 @@ class Plot(pg.PlotWidget):
                 self.addItem(self._plot_limits[value][0])
                 self.addItem(self._plot_limits[value][1])
 
-
-        self.setXRange(0, plot_duration)
-
-        # split plot curve into two so that the endpoint doesn't get connected to the start point
-        self.early_curve = self.plot(width=3)
-        self.late_curve = self.plot(width=3)
+        # vline to indicate current time
         self.time_marker = pg.InfiniteLine(movable=False, angle=90, pos=0)
         self.time_marker.setPen(color="#FFFFFF", width=1)
         self.addItem(self.time_marker)
 
-
-
-
+        self.setXRange(0, plot_duration)
 
         if color:
             self.early_curve.setPen(color=color, width=3)
@@ -310,11 +309,34 @@ class Plot_Container(QtWidgets.QGroupBox):
             new_button.toggled.connect(self.toggle_plot)
             self.button_layout.addWidget(new_button, 2)
             self.selection_buttons[plot_key.name] = new_button
+            if plot_key == ValueName.FIO2:
+                new_button.setChecked(False)
 
-        self.button_layout.addStretch(5)
+        self.button_layout.addStretch(2)
+
+        # # select display mode
+        # self.plot_mode_buttons = [
+        #     QtWidgets.QPushButton('Waveform'),
+        #     QtWidgets.QPushButton('Cycle')
+        # ]
+        #
+        # self.plot_mode_button_group = QtWidgets.QButtonGroup()
+        # self.plot_mode_button_group.setExclusive(True)
+        # self.plot_mode_layout = QtWidgets.QHBoxLayout()
+        #
+        # for button in self.plot_mode_buttons:
+        #     button.setObjectName(button.text())
+        #     button.setCheckable(True)
+        #     self.plot_mode_button_group.addButton(button)
+        #     button.setStyleSheet(styles.TOGGLE_BUTTON)
+        #     self.plot_mode_layout.addWidget(button)
+        #
+        # self.plot_mode_buttons[0].setChecked(True)
+        # self.plot_mode_button_group.buttonClicked.connect(self.set_plot_mode)
+        #
+        # self.button_layout.addLayout(self.plot_mode_layout)
 
         # time box and slider
-        self.button_layout.addWidget(QtWidgets.QLabel('Plot Zoom'))
 
         self.time_box = QtWidgets.QLineEdit()
         self.time_box.setValidator(QtGui.QIntValidator())
@@ -326,7 +348,7 @@ class Plot_Container(QtWidgets.QGroupBox):
         self.slider.setMinimum(5)
         self.slider.setMaximum(60)
         self.slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
-        self.slider.setTickPosition(QtWidgets.QSlider.TickPosition.TicksBelow)
+        # self.slider.setTickPosition(QtWidgets.QSlider.TickPosition.TicksBelow)
         self.slider.valueChanged.connect(self.set_duration)
         self.button_layout.addWidget(self.slider, 2)
 
@@ -344,6 +366,8 @@ class Plot_Container(QtWidgets.QGroupBox):
                 plot_color = styles.SUBWAY_COLORS['ltblue']
             self.plots[plot_key.name] = Plot(color=plot_color, **plot_params.to_dict())
             self.layout.addWidget(self.plots[plot_key.name], 1)
+            if plot_key == ValueName.FIO2:
+                self.plots[plot_key.name].setVisible(False)
 
         self.setLayout(self.layout)
 
@@ -381,6 +405,9 @@ class Plot_Container(QtWidgets.QGroupBox):
     def reset_start_time(self):
         for plot in self.plots.values():
             plot.reset_start_time()
+
+    def set_plot_mode(self):
+        raise NotImplementedError('PVP 2!!!')
 
 
 

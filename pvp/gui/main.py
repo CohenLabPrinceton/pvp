@@ -77,7 +77,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def __init__(self,
                  coordinator: coordinator.CoordinatorBase,
                  set_defaults: bool = False,
-                 update_period: float = prefs.get_pref('GUI_UPDATE_TIME')):
+                 update_period: float = prefs.get_pref('GUI_UPDATE_TIME'),
                  screenshot=False):
         """
         The Main GUI window.
@@ -546,6 +546,23 @@ class Vent_Gui(QtWidgets.QMainWindow):
             self.display_layout.addWidget(self.monitor[display_key.name], 1)
 
         self.display_layout.addStretch(10)
+
+        # add logo
+        try:
+            logo_path = os.path.join(os.path.dirname(__file__), 'images', 'pvp_logo.png')
+            logo_pixmap = QtGui.QPixmap(logo_path).scaled(QtCore.QSize(styles.LOGO_MAX_HEIGHT,styles.LOGO_MAX_HEIGHT), QtCore.Qt.KeepAspectRatio)
+            self.logo = QtWidgets.QLabel()
+            self.logo.setPixmap(logo_pixmap)
+            # self.logo.setScaledContents(True)
+            self.logo.setMaximumHeight(styles.LOGO_MAX_HEIGHT)
+            self.logo.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                    QtWidgets.QSizePolicy.Maximum)
+            self.display_layout.addWidget(self.logo, alignment=QtCore.Qt.AlignBottom)
+
+        except Exception as e:
+            #nbd if we can't load logo
+            self.logger.exception(f'Logo could not be loaded: {e}')
+
 
         self.layout.addWidget(self.monitor_box, 2,0,2,1)
 

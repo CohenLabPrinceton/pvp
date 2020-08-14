@@ -890,6 +890,7 @@ class ControlModuleDevice(ControlModuleBase):
         This is the main loop. This method should be run as a thread (see the `start()` method in `ControlModuleBase`)
         """
         self.logger.info('MainLoop: start')
+        self._last_update = time.time()
 
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 

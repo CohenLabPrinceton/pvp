@@ -21,6 +21,7 @@ from pvp.common.loggers import init_logger
 from pvp.common import unit_conversion, prefs
 from pvp.gui.widgets.components import EditableLabel, DoubleSlider, QVLine
 from pvp.gui.widgets.dialog import pop_dialog
+from pvp.alarm import AlarmSeverity
 
 class Display(QtWidgets.QWidget):
     limits_changed = QtCore.Signal(tuple)
@@ -88,7 +89,7 @@ class Display(QtWidgets.QWidget):
         self._convert_in = None
         self._convert_out = None
         # for drawing alarm state
-        self._alarm_state = False
+        self._alarm_state = AlarmSeverity.OFF # type: AlarmSeverity
         # for setting control values by recording recent values
         self._log_values = False
         self._logged_values = []
@@ -143,7 +144,7 @@ class Display(QtWidgets.QWidget):
         else:
             raise NotImplementedError('Need to use "light" or "dark" for _style')
 
-        self._styles['label_alarm'] = styles.DISPLAY_VALUE_ALARM
+        #self._styles['label_alarm'] = styles.DISPLAY_VALUE_ALARM
 
         self.setProperty('widgetClass', 'Display')
         self.setStyleSheet(self._styles['main'])
@@ -668,15 +669,15 @@ class Display(QtWidgets.QWidget):
             return True
 
     @property
-    def alarm_state(self):
+    def alarm_state(self) -> AlarmSeverity:
         return self._alarm_state
 
     @alarm_state.setter
-    def alarm_state(self, alarm_state):
-        if alarm_state:
-            self.sensor_label.setStyleSheet(self._styles['label_alarm'])
-        else:
+    def alarm_state(self, alarm_state:AlarmSeverity):
+        if alarm_state == AlarmSeverity.OFF or alarm_state not in AlarmSeverity:
             self.sensor_label.setStyleSheet(self._styles['label_value'])
+        else:
+            self.sensor_label.setStyleSheet(styles.DISPLAY_ALARM_STYLES[alarm_state])
 
         self._alarm_state = alarm_state
 

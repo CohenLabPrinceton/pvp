@@ -680,22 +680,19 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.logger.info(str(alarm))
 
         if alarm.severity > AlarmSeverity.OFF:
-
             self.alarm_bar.add_alarm(alarm)
-            alarm_on = True
         else:
             self.alarm_bar.clear_alarm(alarm)
-            alarm_on = False
 
         if alarm.cause is not None:
             for cause in alarm.cause:
                 try:
-                    self.monitor[cause.name].alarm_state = alarm_on
+                    self.monitor[cause.name].alarm_state = alarm.severity
                 except:
                     # FIXME: will be fixed when values are displayed next to controls
                     pass
                 try:
-                    self.controls[cause.name].alarm_state= alarm_on
+                    self.controls[cause.name].alarm_state= alarm.severity
                 except:
                     pass
         if alarm.severity > self.alarm_state:

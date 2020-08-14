@@ -153,12 +153,32 @@ QLabel {{
 }}""".format(textcolor=BACKGROUND_COLOR,
              value_size=VALUE_SIZE)
 
-DISPLAY_VALUE_ALARM =  f"""
+
+
+DISPLAY_VALUE_ALARM_LOW =  f"""
 QLabel {{ 
-    color: {ALARM_COLOR}; 
+    color: {SUBWAY_COLORS['yellow']}; 
     font-size: {VALUE_SIZE}pt; 
     font-weight: bold;
 }}"""
+DISPLAY_VALUE_ALARM_MED =  f"""
+QLabel {{ 
+    color: {SUBWAY_COLORS['orange']}; 
+    font-size: {VALUE_SIZE}pt; 
+    font-weight: bold;
+}}"""
+DISPLAY_VALUE_ALARM_HIGH =  f"""
+QLabel {{ 
+    color: {SUBWAY_COLORS['red']}; 
+    font-size: {VALUE_SIZE}pt; 
+    font-weight: bold;
+}}"""
+
+DISPLAY_ALARM_STYLES = {
+    AlarmSeverity.LOW:DISPLAY_VALUE_ALARM_LOW,
+    AlarmSeverity.MEDIUM:DISPLAY_VALUE_ALARM_MED,
+    AlarmSeverity.HIGH:DISPLAY_VALUE_ALARM_HIGH
+}
 
 DISPLAY_NAME = """
 QLabel {{ 

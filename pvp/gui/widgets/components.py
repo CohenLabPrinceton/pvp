@@ -111,7 +111,7 @@ class EditableLabel(QtWidgets.QWidget):
 
         self.mainLayout.addWidget(self.label)
         self.lineEdit = QtWidgets.QLineEdit(self)
-        # self.lineEdit.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
         #                             QtWidgets.QSizePolicy.Expanding)
         # self.lineEdit.setMinimumHeight(styles.VALUE_SIZE)
         self.lineEdit.setObjectName("lineEdit")

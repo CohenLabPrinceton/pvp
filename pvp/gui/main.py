@@ -188,23 +188,26 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def _screenshot(self):
         # make alarms!
         # low
-        low = Alarm(alarm_type=AlarmType.LOW_PRESSURE,
+        low = Alarm(alarm_type=AlarmType.LOW_VTE,
                     severity=AlarmSeverity.LOW,
                     start_time=time.time(),
                     latch=True,
-                    persistent=True)
+                    persistent=True,
+                    cause=[ValueName.VTE])
 
-        med = Alarm(alarm_type=AlarmType.LOW_VTE,
+        med = Alarm(alarm_type=AlarmType.LOW_PEEP,
                     severity=AlarmSeverity.MEDIUM,
                     start_time=time.time(),
                     latch=True,
-                    persistent=True)
+                    persistent=True,
+                    cause=[ValueName.PEEP])
 
         high = Alarm(alarm_type=AlarmType.HIGH_PRESSURE,
                     severity=AlarmSeverity.HIGH,
                     start_time=time.time(),
                     latch=True,
-                    persistent=True)
+                    persistent=True,
+                    cause=[ValueName.PIP])
 
         self.handle_alarm(low)
         self.handle_alarm(med)

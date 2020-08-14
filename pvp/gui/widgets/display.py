@@ -410,9 +410,11 @@ class Display(QtWidgets.QWidget):
                 self._value_changed(mean_val)
 
             self.toggle_button.setIcon(self.rec_icon)
-            self.sensor_label.setStyleSheet(self._styles['label_value'])
+            # self.sensor_label.setStyleSheet(self._styles['label_value'])
             self.name_label.setStyleSheet(self._styles['label_name'])
             self.units_label.setStyleSheet(self._styles['label_units'])
+            # this resets the style to the alarm state
+            self.alarm_state = self.alarm_state
 
     def _value_changed(self, new_value: float):
         """

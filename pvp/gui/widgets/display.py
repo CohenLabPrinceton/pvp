@@ -431,14 +431,14 @@ class Display(QtWidgets.QWidget):
             new_value = self._convert_out(new_value)
 
         if (new_value > self.safe_range[1]) or (new_value < self.safe_range[0]):
-            if self._dialog_open:
+            if self._dialog_open: # pragma: no cover
                 # if we're already opening a dialogue, don't try to set value or emit
                 return
 
             if (not self._confirmed_unsafe) and \
                ('pytest' not in sys.modules) and \
                 prefs.get_pref('ENABLE_WARNINGS') and \
-                self._firstset:
+                self._firstset: # pragma: no cover
 
                 self._dialog_open = True
                 safe_range = self.safe_range

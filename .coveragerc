@@ -1,0 +1,12 @@
+[run]
+omit =
+    pvp/gui/constraints.py
+    pvp/gui/styles.py
+    pvp/gui/widgets/dialog.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    self.logger.
+    if __name__ == __main__
+    NotImplementedError

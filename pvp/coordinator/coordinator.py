@@ -54,6 +54,9 @@ class CoordinatorBase:
     def is_running(self) -> bool:
         pass
 
+    def kill(self):
+        pass
+
     def stop(self):
         pass
 
@@ -112,6 +115,11 @@ class CoordinatorLocal(CoordinatorBase):
         """
         self.control_module.stop()
 
+    def kill(self):
+        # dont need to do anything since should just go away on its own
+        pass
+
+
 
 class CoordinatorRemote(CoordinatorBase):
     def __init__(self, sim_mode=False):
@@ -168,10 +176,16 @@ class CoordinatorRemote(CoordinatorBase):
             self.rpc_client.stop()
         except ConnectionRefusedError:
             pass
+
+    def kill(self):
+        """
+        Stop the coordinator and end the whole program
+        """
+        self.stop()
         self.process_manager.try_stop_process()
 
     def __del__(self):
-        self.stop()
+        self.kill()
 
 
 def get_coordinator(single_process=False, sim_mode=False) -> CoordinatorBase:

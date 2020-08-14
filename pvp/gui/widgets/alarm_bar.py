@@ -13,7 +13,7 @@ class Alarm_Bar(QtWidgets.QFrame):
     Holds and manages a collection of :class:`Alarm_Card` s
     """
 
-    message_cleared = QtCore.Signal()
+    #message_cleared = QtCore.Signal()
     level_changed = QtCore.Signal()
     alarm_dismissed = QtCore.Signal()
     """
@@ -174,66 +174,66 @@ class Alarm_Bar(QtWidgets.QFrame):
             self.icon.clear()
 
 
-    @QtCore.Slot(Alarm)
-    def update_message(self, alarm):
-        """
-        Arguments:
-            alarm (:class:`~.message.Alarm`)
+    # @QtCore.Slot(Alarm)
+    # def update_message(self, alarm):
+    #     """
+    #     Arguments:
+    #         alarm (:class:`~.message.Alarm`)
+    #
+    #     """
+    #
+    #     if alarm is None:
+    #         # clear
+    #         self.current_alarm = None
+    #         self.set_icon()
+    #         self.message.setText("")
+    #         return
+    #
+    #     self.alarms[alarm.id] = alarm
+    #
+    #     if self.current_alarm:
+    #         # see if we are outranked by current message
+    #         if alarm.severity >= self.current_alarm.severity:
+    #             self.set_icon(alarm.severity)
+    #             self.message.setText(alarm.message)
+    #             self.current_alarm = alarm
+    #             self.alarm_level = alarm.severity
+    #         else:
+    #             return
+    #
+    #     else:
+    #         self.set_icon(alarm.severity)
+    #         self.message.setText(alarm.message)
+    #         self.current_alarm = alarm
+    #         self.alarm_level = alarm.severity
+    #
+    #     # delete old messages from same value
+    #     self.alarms = {a_key: a_val for a_key, a_val in self.alarms.items() if
+    #                    (a_val.alarm_name != alarm.alarm_name) or
+    #                    (a_val.id == alarm.id)}
 
-        """
-
-        if alarm is None:
-            # clear
-            self.current_alarm = None
-            self.set_icon()
-            self.message.setText("")
-            return
-
-        self.alarms[alarm.id] = alarm
-
-        if self.current_alarm:
-            # see if we are outranked by current message
-            if alarm.severity >= self.current_alarm.severity:
-                self.set_icon(alarm.severity)
-                self.message.setText(alarm.message)
-                self.current_alarm = alarm
-                self.alarm_level = alarm.severity
-            else:
-                return
-
-        else:
-            self.set_icon(alarm.severity)
-            self.message.setText(alarm.message)
-            self.current_alarm = alarm
-            self.alarm_level = alarm.severity
-
-        # delete old messages from same value
-        self.alarms = {a_key: a_val for a_key, a_val in self.alarms.items() if
-                       (a_val.alarm_name != alarm.alarm_name) or
-                       (a_val.id == alarm.id)}
-
-    def clear_message(self):
-        if not self.current_alarm:
-            return
-
-        self.message_cleared.emit(self.current_alarm)
-        del self.alarms[self.current_alarm.id]
-
-
-        # check if we have another message to display
-        if len(self.alarms)>0:
-            # get message priorities
-            paired_priorities = [(alarm.id, alarm.severity) for alarm in self.alarmss()]
-            priorities = np.array([msg[1] for msg in paired_priorities])
-            # find the max priority
-            max_ind = np.argmax(priorities)
-            self.current_alarm = None
-            new_alarm = self.alarms[paired_priorities[max_ind][0]]
-            self.update_message(new_alarm)
-            self.alarm_level = new_alarm.severity
-        else:
-            self.update_message(None)
-            self.alarm_level = AlarmSeverity.OFF
+    # def clear_message(self):
+    #     if not self.current_alarm:
+    #         return
+    #
+    #     self.message_cleared.emit(self.current_alarm)
+    #     del self.alarms[self.current_alarm.id]
+    #
+    #
+    #     # check if we have another message to display
+    #     if len(self.alarms)>0:
+    #         # get message priorities
+    #         paired_priorities = [(alarm.id, alarm.severity) for alarm in self.alarmss()]
+    #         priorities = np.array([msg[1] for msg in paired_priorities])
+    #         # find the max priority
+    #         max_ind = np.argmax(priorities)
+    #         self.current_alarm = None
+    #         new_alarm = self.alarms[paired_priorities[max_ind][0]]
+    #         self.update_message(new_alarm)
+    #         self.alarm_level = new_alarm.severity
+    #     else:
+    #         self.update_message(None)
+    #         self.alarm_level = AlarmSeverity.OFF
 
     @property
     def alarm_level(self):

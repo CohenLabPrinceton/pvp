@@ -422,7 +422,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
             if vals.breath_count > 1:
                 # don't test this because we don't usually want the GUI just updating during tests
                 # and this method is really heavy, so we test each of the pieces separately
-                self.alarm_manager.update(vals) # pragma: no cover
+                try:
+                    self.alarm_manager.update(vals) # pragma: no cover
+                except Exception as e:
+                    self.logger.exception(f"Couldnt update alarm manager: {e}")
 
             try:
                 controller_alarms = self.coordinator.get_alarms()
@@ -679,18 +682,22 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if alarm.severity > AlarmSeverity.OFF:
 
             self.alarm_bar.add_alarm(alarm)
+            alarm_on = True
         else:
             self.alarm_bar.clear_alarm(alarm)
+            alarm_on = False
 
-        try:
-            self.monitor[alarm.alarm_name.name].alarm_state = True
-        except:
-            # FIXME: will be fixed when values are displayed next to controls
-            pass
-        try:
-            self.controls[alarm.alarm_name.name].alarm_state=True
-        except:
-            pass
+        if alarm.cause is not None:
+            for cause in alarm.cause:
+                try:
+                    self.monitor[cause.name].alarm_state = alarm_on
+                except:
+                    # FIXME: will be fixed when values are displayed next to controls
+                    pass
+                try:
+                    self.controls[cause.name].alarm_state= alarm_on
+                except:
+                    pass
         if alarm.severity > self.alarm_state:
             self.alarm_state = alarm.severity
 

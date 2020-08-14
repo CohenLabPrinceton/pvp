@@ -88,7 +88,7 @@ class Display(QtWidgets.QWidget):
         self._convert_in = None
         self._convert_out = None
         # for drawing alarm state
-        self._alarm = False
+        self._alarm_state = False
         # for setting control values by recording recent values
         self._log_values = False
         self._logged_values = []
@@ -142,6 +142,8 @@ class Display(QtWidgets.QWidget):
             # self._styles['sensor_frame'] = styles.CONTROL_SENSOR_FRAME
         else:
             raise NotImplementedError('Need to use "light" or "dark" for _style')
+
+        self._styles['label_alarm'] = styles.DISPLAY_VALUE_ALARM
 
         self.setProperty('widgetClass', 'Display')
         self.setStyleSheet(self._styles['main'])
@@ -664,6 +666,21 @@ class Display(QtWidgets.QWidget):
             return False
         else:
             return True
+
+    @property
+    def alarm_state(self):
+        return self._alarm_state
+
+    @alarm_state.setter
+    def alarm_state(self, alarm_state):
+        if alarm_state:
+            self.sensor_label.setStyleSheet(self._styles['label_alarm'])
+        else:
+            self.sensor_label.setStyleSheet(self._styles['label_value'])
+
+        self._alarm_state = alarm_state
+
+
 
 
 class Limits_Plot(pg.PlotWidget):

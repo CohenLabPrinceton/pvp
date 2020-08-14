@@ -153,12 +153,12 @@ QLabel {{
 }}""".format(textcolor=BACKGROUND_COLOR,
              value_size=VALUE_SIZE)
 
-DISPLAY_VALUE_ALARM =  """
-QLabel { 
-    color: #ff0000; 
-    font-size: 72pt; 
+DISPLAY_VALUE_ALARM =  f"""
+QLabel {{ 
+    color: {ALARM_COLOR}; 
+    font-size: {VALUE_SIZE}pt; 
     font-weight: bold;
-}"""
+}}"""
 
 DISPLAY_NAME = """
 QLabel {{ 

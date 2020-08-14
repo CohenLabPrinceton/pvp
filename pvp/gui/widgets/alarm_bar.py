@@ -73,9 +73,20 @@ class Alarm_Bar(QtWidgets.QFrame):
         self.icon.setFixedHeight(size)
         self.icon.setFixedWidth(size)
 
+        # mute button
+        self.mute_button = QtWidgets.QPushButton('Mute')
+        self.mute_button.setCheckable(True)
+        self.mute_button.setChecked(False)
+        self.mute_button.setEnabled(False)
+        self.mute_button.toggled.connect(self.mute_alarms)
+        self.setFixedWidth(styles.MUTE_BUTTON_WIDTH)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
+                           QtWidgets.QSizePolicy.Expanding)
+
         #self.layout.addWidget(self.message, 6)
         self.layout.addLayout(self.alarm_layout, 6)
         self.layout.addWidget(self.icon, 1)
+        self.layout.addWidget(self.mute_button, 1)
         # self.layout.addWidget(self.clear_button,1)
         self.setLayout(self.layout)
         self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Raised)
@@ -172,6 +183,9 @@ class Alarm_Bar(QtWidgets.QFrame):
             self.setStyleSheet(styles.STATUS_NORMAL)
             #self.clear_button.setVisible(False)
             self.icon.clear()
+
+    def mute_alarms(self):
+        pass
 
 
     # @QtCore.Slot(Alarm)

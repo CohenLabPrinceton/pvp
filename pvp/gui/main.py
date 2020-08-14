@@ -10,7 +10,7 @@ from PySide2 import QtWidgets, QtCore, QtGui
 
 import pvp.gui.widgets.alarm_bar
 from pvp import prefs
-from pvp.alarm import AlarmSeverity, Alarm
+from pvp.alarm import AlarmSeverity, Alarm, AlarmType
 from pvp.common import values
 from pvp.common.values import ValueName
 from pvp.common.loggers import init_logger
@@ -77,7 +77,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
     def __init__(self,
                  coordinator: coordinator.CoordinatorBase,
                  set_defaults: bool = False,
-                 update_period: float = 0.05):
+                 update_period: float = prefs.get_pref('GUI_UPDATE_TIME'),
+                 screenshot=False):
         """
         The Main GUI window.
 
@@ -169,6 +170,9 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if set_defaults:
             self.init_controls()
 
+        if screenshot:
+            self._screenshot()
+
         self.toggle_cycle_widget(values.ValueName.INSPIRATION_TIME_SEC)
 
         self.show()
@@ -180,6 +184,35 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.monitor_box.setStyleSheet(styles.MONITOR_BOX)
 
         self.logger.info('GUI Initialized Successfully')
+
+    def _screenshot(self):
+        # make alarms!
+        # low
+        low = Alarm(alarm_type=AlarmType.LOW_VTE,
+                    severity=AlarmSeverity.LOW,
+                    start_time=time.time(),
+                    latch=True,
+                    persistent=True,
+                    cause=[ValueName.VTE])
+
+        med = Alarm(alarm_type=AlarmType.LOW_PEEP,
+                    severity=AlarmSeverity.MEDIUM,
+                    start_time=time.time(),
+                    latch=True,
+                    persistent=True,
+                    cause=[ValueName.PEEP])
+
+        high = Alarm(alarm_type=AlarmType.HIGH_PRESSURE,
+                    severity=AlarmSeverity.HIGH,
+                    start_time=time.time(),
+                    latch=True,
+                    persistent=True,
+                    cause=[ValueName.PIP])
+
+        self.handle_alarm(low)
+        self.handle_alarm(med)
+        self.handle_alarm(high)
+
 
     @property
     def update_period(self):
@@ -392,7 +425,10 @@ class Vent_Gui(QtWidgets.QMainWindow):
             if vals.breath_count > 1:
                 # don't test this because we don't usually want the GUI just updating during tests
                 # and this method is really heavy, so we test each of the pieces separately
-                self.alarm_manager.update(vals) # pragma: no cover
+                try:
+                    self.alarm_manager.update(vals) # pragma: no cover
+                except Exception as e:
+                    self.logger.exception(f"Couldnt update alarm manager: {e}")
 
             try:
                 controller_alarms = self.coordinator.get_alarms()
@@ -517,6 +553,23 @@ class Vent_Gui(QtWidgets.QMainWindow):
 
         self.display_layout.addStretch(10)
 
+        # add logo
+        try:
+            logo_path = os.path.join(os.path.dirname(__file__), 'images', 'pvp_logo.png')
+            logo_pixmap = QtGui.QPixmap(logo_path).scaled(QtCore.QSize(styles.LOGO_MAX_HEIGHT,styles.LOGO_MAX_HEIGHT), QtCore.Qt.KeepAspectRatio)
+            self.logo = QtWidgets.QLabel()
+            self.logo.setPixmap(logo_pixmap)
+            # self.logo.setScaledContents(True)
+            self.logo.setMaximumHeight(styles.LOGO_MAX_HEIGHT)
+            self.logo.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                    QtWidgets.QSizePolicy.Maximum)
+            self.display_layout.addWidget(self.logo, alignment=QtCore.Qt.AlignBottom)
+
+        except Exception as e:
+            #nbd if we can't load logo
+            self.logger.exception(f'Logo could not be loaded: {e}')
+
+
         self.layout.addWidget(self.monitor_box, 2,0,2,1)
 
 
@@ -566,7 +619,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         Connect Qt signals and slots
         """
 
-        #self.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
+        # self.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
+        self.alarm_bar.alarm_dismissed.connect(self.alarm_manager.dismiss_alarm)
 
         # connect controls
         for control in self.controls.values():
@@ -629,16 +683,21 @@ class Vent_Gui(QtWidgets.QMainWindow):
         self.logger.info(str(alarm))
 
         if alarm.severity > AlarmSeverity.OFF:
-
             self.alarm_bar.add_alarm(alarm)
         else:
             self.alarm_bar.clear_alarm(alarm)
 
-        try:
-            self.monitor[alarm.alarm_name.name].alarm_state = True
-        except:
-            # FIXME: will be fixed when values are displayed next to controls
-            pass
+        if alarm.cause is not None:
+            for cause in alarm.cause:
+                try:
+                    self.monitor[cause.name].alarm_state = alarm.severity
+                except:
+                    # FIXME: will be fixed when values are displayed next to controls
+                    pass
+                try:
+                    self.controls[cause.name].alarm_state= alarm.severity
+                except:
+                    pass
         if alarm.severity > self.alarm_state:
             self.alarm_state = alarm.severity
 
@@ -649,6 +708,8 @@ class Vent_Gui(QtWidgets.QMainWindow):
         if control.name.name in self.monitor.keys():
             self.monitor[control.name.name].update_limits(control)
         self.plot_box.set_safe_limits(control)
+        if control.name == ValueName.PIP:
+            self.coordinator.set_control(control)
 
     # @QtCore.Slot(Alarm)
     # def handle_cleared_alarm(self, alarm):
@@ -900,14 +961,14 @@ class Vent_Gui(QtWidgets.QMainWindow):
         """
         self.coordinator.set_breath_detection(breath_detection)
 
-def launch_gui(coordinator, set_defaults=False): # pragma: no cover - identical thing in tests but we need a lil flavor
+def launch_gui(coordinator, set_defaults=False, screenshot=False): # pragma: no cover - identical thing in tests but we need a lil flavor
 
     # just for testing, should be run from main
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('Fusion')
     app.setStyleSheet(styles.DARK_THEME)
     app = styles.set_dark_palette(app)
-    gui = Vent_Gui(coordinator, set_defaults)
+    gui = Vent_Gui(coordinator, set_defaults, screenshot=screenshot)
     gui.show()
 
     return app, gui

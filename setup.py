@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
 import os
 import subprocess
+import codecs
+import os.path
 
 depend_links = []
 
@@ -24,6 +26,25 @@ except:
     #pyside_wheel = [whl for whl in external_files if whl.endswith('.whl') and whl.startswith("PySide2")][0]
     #depend_links.append(os.path.join(os.getcwd(), 'external', pyside_wheel))
 
+def read(rel_path):
+    """
+    https://packaging.python.org/guides/single-sourcing-package-version/
+    """
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
+
+def get_version(rel_path):
+    """
+    https://packaging.python.org/guides/single-sourcing-package-version/
+    """
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+
 
 setup(
     name="pvp",
@@ -32,7 +53,7 @@ setup(
     description="some description of how we made a ventilator",
     keywords="vents ventilators etc",
     url="https://ventilator.readthedocs.io",
-    version="0.0.2",
+    version=get_version('pvp/__init__.py'),
     packages=find_packages(),
     install_requires=[
         'numpy',
@@ -45,7 +66,8 @@ setup(
         'scipy'
     ],
     package_data={
-        "*": ["data/*", "cad-files/*", ""]
+        "*": ["data/*", "cad-files/*", ""],
+        "pvp": ["external/*", "gui/images/*"]
     },
     dependency_links=depend_links,
     python_requires='==3.7.*'

@@ -1,7 +1,8 @@
 """
 Class to declare alarm rules
 """
-
+import typing
+from pvp.common.values import ValueName
 from pvp.alarm import AlarmType, AlarmSeverity
 
 class Alarm_Rule(object):
@@ -59,3 +60,31 @@ class Alarm_Rule(object):
     def reset(self):
         for _, condition in self.conditions:
             condition.reset()
+
+    @property
+    def depends(self) -> typing.List[ValueName]:
+        """
+        Get all ValueNames whose alarm limits depend on this alarm rule
+        Returns:
+            list[ValueName]
+        """
+        depends = []
+        for condition_pair in self.conditions:
+            condition = condition_pair[1]
+
+            if condition.depends is not None:
+                if condition.depends.get('value_name', False):
+                    depends.append(condition.depends['value_name'])
+
+        return depends
+
+    @property
+    def value_names(self) -> typing.List[ValueName]:
+        """
+        Get all ValueNames specified as value_names in alarm conditions
+
+        Returns:
+            list[ValueName]
+        """
+
+        return [c[1].value_name for c in self.conditions]

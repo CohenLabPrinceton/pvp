@@ -437,7 +437,7 @@ class ControlModuleBase:
         Args:
             dt (float): timestep
         """
-        
+
         new_value  = 0
         new_value +=  self.__KP*self._DATA_P
         new_value +=  self.__KI*self._DATA_I
@@ -511,9 +511,10 @@ class ControlModuleBase:
                                       value=self._DATA_PRESSURE)
 
                     self.logger.warning(f'Triggered HAPA at ' + str(self._DATA_PRESSURE))
-            else:
-                self.logger.debug("Transient high pressure; probably a cough.")
+
         else:
+            if self.hapa_crossing_time is not None and self.HAPA is None:
+                self.logger.warning('Transient high pressure that did not trigger HAPA, probably a cough')
             self.HAPA = None
             self.hapa_crossing_time = None
 
@@ -619,7 +620,7 @@ class ControlModuleBase:
 
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.3)
             self.__calculate_control_signal_in(dt = dt)
-            self.__control_signal_out = 0 
+            self.__control_signal_out = 0
 
         elif cycle_phase < self.__SET_PEEP_TIME + self.__SET_I_PHASE:                                     # then, we drop pressure to PEEP
             self._flow_list.append(self._DATA_Qout )                                                      # Keep a list of the flow out of the lung; for baseline e stimation
@@ -864,7 +865,7 @@ class ControlModuleDevice(ControlModuleBase):
         inspiration_phase = (time.time() - self._cycle_start) < self.COPY_SET_I_PHASE
 
         self._DATA_PRESSURE_LIST.append( self.HAL.pressure )             # Append pressure to list -> is averaged over a couple values
-                
+
         if inspiration_phase:
             self._DATA_Qout         = 0                                  # Flow out and oxygen are not measured
             self.COPY_DATA_OXYGEN   = self._DATA_OXYGEN
@@ -889,41 +890,44 @@ class ControlModuleDevice(ControlModuleBase):
         This is the main loop. This method should be run as a thread (see the `start()` method in `ControlModuleBase`)
         """
         self.logger.info('MainLoop: start')
+        self._last_update = time.time()
 
         update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
 
-        while self._running.is_set():
-            self._loop_counter += 1
-            now = time.time()
-            dt = now - self._last_update                            # Time sincle last cycle of main-loop
+        try:
+            while self._running.is_set():
+                self._loop_counter += 1
+                now = time.time()
+                dt = now - self._last_update                            # Time sincle last cycle of main-loop
 
-            if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
-                self.logger.warning("MainLoop: Update too long: " + str(dt))
-                print("Restarted cycle.")
-                self._control_reset()
-                dt = self._LOOP_UPDATE_TIME
-            
-            self._get_HAL()                                          # Update pressure and flow measurement
-            self._PID_update(dt = dt)                                # With that, calculate controls
-            valve_open_in  = self._get_control_signal_in()           #    -> Inspiratory side: get control signal for PropValve
-            valve_open_out = self._get_control_signal_out()          #    -> Expiratory side: get control signal for Solenoid
-            self._set_HAL(valve_open_in, valve_open_out)             # And set values.
+                if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
+                    self.logger.warning("MainLoop: Update too long: " + str(dt))
+                    print("Restarted cycle.")
+                    self._control_reset()
+                    dt = self._LOOP_UPDATE_TIME
 
-            self._last_update = now
+                self._get_HAL()                                          # Update pressure and flow measurement
+                self._PID_update(dt = dt)                            # With that, calculate controls
+                valve_open_in  = self._get_control_signal_in()           #    -> Inspiratory side: get control signal for PropValve
+                valve_open_out = self._get_control_signal_out()          #    -> Expiratory side: get control signal for Solenoid
+                self._set_HAL(valve_open_in, valve_open_out)             # And set values.
 
-            if update_copies == 0:
-                self._controls_from_COPY()     # Update controls from possibly updated values as a chunk
-                self._sensor_to_COPY()         # Copy sensor values to COPY
-                update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
-            else:
-                update_copies -= 1
+                self._last_update = now
 
-            time.sleep(self._LOOP_UPDATE_TIME)
+                if update_copies == 0:
+                    self._controls_from_COPY()     # Update controls from possibly updated values as a chunk
+                    self._sensor_to_COPY()         # Copy sensor values to COPY
+                    update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
+                else:
+                    update_copies -= 1
 
-        # get final values on stop
-        self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
-        self._sensor_to_COPY()  # Copy sensor values to COPY
-        self.set_valves_standby()
+                time.sleep(self._LOOP_UPDATE_TIME)
+
+        # # get final values on stop
+        finally:
+            self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
+            self._sensor_to_COPY()  # Copy sensor values to COPY
+            self.set_valves_standby()
 
 
 class Balloon_Simulator:

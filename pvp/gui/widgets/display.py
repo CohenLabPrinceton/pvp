@@ -21,6 +21,7 @@ from pvp.common.loggers import init_logger
 from pvp.common import unit_conversion, prefs
 from pvp.gui.widgets.components import EditableLabel, DoubleSlider, QVLine
 from pvp.gui.widgets.dialog import pop_dialog
+from pvp.alarm import AlarmSeverity
 
 class Display(QtWidgets.QWidget):
     limits_changed = QtCore.Signal(tuple)
@@ -88,7 +89,7 @@ class Display(QtWidgets.QWidget):
         self._convert_in = None
         self._convert_out = None
         # for drawing alarm state
-        self._alarm = False
+        self._alarm_state = AlarmSeverity.OFF # type: AlarmSeverity
         # for setting control values by recording recent values
         self._log_values = False
         self._logged_values = []
@@ -142,6 +143,8 @@ class Display(QtWidgets.QWidget):
             # self._styles['sensor_frame'] = styles.CONTROL_SENSOR_FRAME
         else:
             raise NotImplementedError('Need to use "light" or "dark" for _style')
+
+        #self._styles['label_alarm'] = styles.DISPLAY_VALUE_ALARM
 
         self.setProperty('widgetClass', 'Display')
         self.setStyleSheet(self._styles['main'])
@@ -200,7 +203,7 @@ class Display(QtWidgets.QWidget):
         self.units_label.setText(self.units)
         self.units_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
         self.units_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Maximum)
+                                         QtWidgets.QSizePolicy.Expanding)
 
     def init_ui_toggle_button(self):
         self.toggle_button = QtWidgets.QToolButton(checkable=True, checked=False)
@@ -239,7 +242,7 @@ class Display(QtWidgets.QWidget):
                                       QtWidgets.QSizePolicy.Maximum)
 
         # bar graph that indicates current value and limits
-        self.sensor_plot = Limits_Plot()
+        self.sensor_plot = Limits_Plot(style=self._style)
 
         if self.control is None:
             label_size_policy = self.set_value_label.sizePolicy()
@@ -407,9 +410,11 @@ class Display(QtWidgets.QWidget):
                 self._value_changed(mean_val)
 
             self.toggle_button.setIcon(self.rec_icon)
-            self.sensor_label.setStyleSheet(self._styles['label_value'])
+            # self.sensor_label.setStyleSheet(self._styles['label_value'])
             self.name_label.setStyleSheet(self._styles['label_name'])
             self.units_label.setStyleSheet(self._styles['label_units'])
+            # this resets the style to the alarm state
+            self.alarm_state = self.alarm_state
 
     def _value_changed(self, new_value: float):
         """
@@ -654,7 +659,7 @@ class Display(QtWidgets.QWidget):
             self.locked = False
             if self.control:
                 self.toggle_button.setEnabled(True)
-                self.set_value_label.setEditable(False)
+                self.set_value_label.setEditable(True)
     # ---------------------------------
     # Properties
     # ---------------------------------
@@ -665,24 +670,42 @@ class Display(QtWidgets.QWidget):
         else:
             return True
 
+    @property
+    def alarm_state(self) -> AlarmSeverity:
+        return self._alarm_state
+
+    @alarm_state.setter
+    def alarm_state(self, alarm_state:AlarmSeverity):
+        if alarm_state == AlarmSeverity.OFF or alarm_state not in AlarmSeverity:
+            self.sensor_label.setStyleSheet(self._styles['label_value'])
+        else:
+            self.sensor_label.setStyleSheet(styles.DISPLAY_ALARM_STYLES[alarm_state])
+
+        self._alarm_state = alarm_state
+
+
+
 
 class Limits_Plot(pg.PlotWidget):
     """
     Widget to display current value in a bar graph along with alarm limits
     """
 
-    def __init__(self, background = styles.CONTROL_SENSOR_BACKGROUND, *args, **kwargs):
+    def __init__(self, style:str="light", *args, **kwargs):
         self.set_value = None
         self.sensor_value = None
         self._minimum = None
         self._maximum = None
+        self._style = style
         self.yrange = (0, 1)
 
         self._convert_in = None
         self._convert_out = None
 
-        super(Limits_Plot, self).__init__(background=background, *args, **kwargs)
-
+        if self._style == "light":
+            super(Limits_Plot, self).__init__(background=styles.CONTROL_SENSOR_BACKGROUND_LIGHT, *args, **kwargs)
+        elif self._style == "dark":
+            super(Limits_Plot, self).__init__(background=styles.CONTROL_SENSOR_BACKGROUND_DARK, *args, **kwargs)
 
 
         self.init_ui()
@@ -695,24 +718,38 @@ class Limits_Plot(pg.PlotWidget):
         self.setRange(xRange=(-0.5, 0.5))
 
         # bar itself
+        # if self._style == "light:"
         self.sensor_bar = pg.BarGraphItem(x=np.array([0]), y1=np.array([0]), width=np.array([1]),
-                                          brush=styles.GRAY_TEXT)
+                                          brush=styles.SENSOR_BAR_COLOR)
 
         # error bars for limit indicators
-        self.top_limit = pg.InfiniteLine(movable=False, angle=0, pos=1,
+        self.top_limit = pg.InfiniteLine(movable=False, angle=0, pos=0,
                                          pen={
                                                  'color': styles.SUBWAY_COLORS['red'],
                                                  'width': 2
-                                             })
+                                             },
+                                         label='{value:0.1f}',
+                                         labelOpts = {
+                                            'color': styles.SUBWAY_COLORS['red']
+                                        })
         self.bottom_limit = pg.InfiniteLine(movable=False, angle=0, pos=0,
                                             pen={
                                                  'color': styles.SUBWAY_COLORS['red'],
                                                  'width': 2
-                                             })
+                                             },
+                                            label='{value:0.1f}',
+                                            labelOpts={
+                                                'color': styles.SUBWAY_COLORS['red']
+                                            })
 
         # the set value
-        self.sensor_set = pg.InfiniteLine(movable=False, angle=0, pos=0.5,
-                                          pen={'color': styles.BACKGROUND_COLOR, 'width': 5})
+        if self._style == "light":
+            self.sensor_set = pg.InfiniteLine(movable=False, angle=0, pos=0,
+                                              pen={'color': styles.BACKGROUND_COLOR, 'width': 5})
+        elif self._style == "dark":
+            self.sensor_set = pg.InfiniteLine(movable=False, angle=0, pos=0,
+                                              pen={'color': styles.TEXT_COLOR, 'width': 5})
+
 
         self.addItem(self.sensor_bar)
         self.addItem(self.top_limit)
@@ -726,7 +763,8 @@ class Limits_Plot(pg.PlotWidget):
         self.setFixedWidth(styles.CONTROL_SENSOR_BAR_WIDTH)
         # self.setFixedHeight(styles.CONTROL_SENSOR_BAR_WIDTH)
 
-        self.enableAutoRange(y=True)
+        # self.enableAutoRange(y=True)
+        self.update_yrange()
 
     def update_value(self,
                      min: float = None,
@@ -748,7 +786,7 @@ class Limits_Plot(pg.PlotWidget):
             self._minimum = float(min)
 
         if max:
-            self.bottom_limit.setValue(float(max))
+            self.top_limit.setValue(float(max))
             self._maximum = float(max)
 
         if sensor_value:
@@ -760,8 +798,25 @@ class Limits_Plot(pg.PlotWidget):
             self.set_value = float(set_value)
 
 
-        #self.update_yrange()
+        self.update_yrange()
 
+    def update_yrange(self):
+        if self.set_value:
+            # put set_value in the middle, add space above and below to fit alarms
+            min_dist = 0
+            max_dist = 0
+            sensor_dist = 0
+            if self._minimum:
+                min_dist = np.abs(self.set_value-self._minimum)
+            if self._maximum:
+                max_dist = np.abs(self.set_value-self._maximum)
+            if self.sensor_value:
+                sensor_dist = np.abs(self.set_value-self.sensor_value)
+
+            dist = np.max([min_dist, max_dist])
+            self.setYRange(self.set_value-dist, self.set_value+dist)
+        else:
+            self.setYRange(0,0)
 
 
 

@@ -22,11 +22,14 @@ def parse_cmd_args():
     parser.add_argument('--default_controls',
                         help='set default ControlValues on start (default: False).',
                         action='store_true')
+    parser.add_argument('--screenshot',
+                        help='raise dummy alarms to take a screenshot!',
+                        action='store_true')
     return parser.parse_args()
 
-def set_valves_save_position():
-    print("Terminating program; closing vents...")
+def set_valves_save_position(args):
     if not args.simulation:
+        print("Terminating program; closing vents...")
         time.sleep(0.01)
         HAL = io.Hal( config_file = 'pvp/io/config/devices.ini')
         for i in range(10):
@@ -40,10 +43,10 @@ def main():
     args = parse_cmd_args()
     try:
         coordinator = get_coordinator(single_process=args.single_process, sim_mode=args.simulation)
-        app, gui = launch_gui(coordinator, args.default_controls)
+        app, gui = launch_gui(coordinator, args.default_controls, screenshot=args.screenshot)
         sys.exit(app.exec_())
     finally:
-        set_valves_to_save_position()
+        set_valves_save_position(args)
 
 
     # TODO: gui.main(ui_control_module)

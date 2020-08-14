@@ -54,6 +54,7 @@ _DEFAULTS = {
     'BREATH_DETECTION': True,
     'LOGLEVEL': 'WARNING',
     'GUI_STATE_FN': 'gui_state.json',
+    'GUI_UPDATE_TIME': 0.05,
     'ENABLE_DIALOGS': True, # enable _all_ dialogs -- for testing on virtual frame buffer
     'ENABLE_WARNINGS': True, # enable user warnings and confirmations
     'CONTROLLER_MAX_FLOW': 10,

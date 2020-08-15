@@ -18,7 +18,7 @@
 
 .. raw:: html
 
-    <video width="100%">
+    <video width="100%" autoplay loop>
       <source src="images/ventilator_rotate.mp4" type="video/mp4">
     Video of a rotating ventilator
     </video>

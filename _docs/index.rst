@@ -36,6 +36,11 @@ Site Contents
    :maxdepth: 4
    :caption: Hardware:
 
+   Sensors <sensors>
+   Actuators <actuators>
+   Electronics <electronics>
+   Safety <safety>
+   Enclosure <enclosure>
 
 
 

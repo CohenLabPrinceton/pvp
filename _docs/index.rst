@@ -1,10 +1,15 @@
-.. ventilator documentation master file, created by
-   sphinx-quickstart on Thu Apr  9 21:00:18 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+
+.. image:: assets/images/pvp_logo_fulltext.png
+   :alt: People's Ventilator Project logo
+   :width: 60%
+   :align: center
 
 The People's Ventilator Project
 ======================================
+
+
+Site Contents
+=============
 
 .. toctree::
    :maxdepth: 4

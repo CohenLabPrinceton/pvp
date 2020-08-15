@@ -1,8 +1,8 @@
 .. raw:: html
 
-   <div style="display: flex;">
+   <div style="display: flex; align-items:end; margin-bottom: 2rem">
       <img alt="People's Ventilator Project logo" src="images/pvp_logo_fulltext.png" style="width: 60%;">
-      <div>
+      <div style="margin-left: 2em;">
          <h1>A fully-open</h1>
          <h1>Supply-chain resilient</h1>
          <h1>pressure-control ventilator</h1>
@@ -17,16 +17,19 @@
 **<The People's Ventilator>** is an open-source, low-cost pressure-control ventilator designed to adapt to supply chain shortages and diverse ventilation needs
 
 
+
 Site Contents
 =============
 
 .. toctree::
+   :hidden:
    :maxdepth: 4
    :caption: Overview
 
    System Overview <overview>
 
 .. toctree::
+   :hidden:
    :maxdepth: 4
    :caption: Hardware:
 
@@ -38,6 +41,7 @@ Site Contents
    Enclosure <hardware_enclosure>
 
 .. toctree::
+   :hidden:
    :maxdepth: 4
    :caption: Software:
 
@@ -52,6 +56,7 @@ Site Contents
 
 
 .. toctree::
+   :hidden:
    :maxdepth: 4
    :caption: Resources:
 
@@ -61,18 +66,11 @@ Site Contents
 
 
 .. toctree::
+   :hidden:
    :maxdepth: 4
    :caption: Meta:
 
    Changelog <changelog/index>
    Building the Docs <buildthedocs>
    Markdown Example <example_markdown>
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   Index <meta_index>

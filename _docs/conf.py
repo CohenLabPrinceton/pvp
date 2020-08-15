@@ -27,9 +27,9 @@ copyright = '2020, jonny saunders et al'
 author = 'jonny saunders et al'
 
 # the short X.Y version
-version = '0.0'
+version = '0.2'
 # the full version, includeing alpha/beta/rc/rags
-release = '0.0.0'
+release = '0.2.0'
 
 
 # -- General configuration ---------------------------------------------------

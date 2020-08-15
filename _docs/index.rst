@@ -1,9 +1,7 @@
 .. raw:: html
 
    <div style="display: flex;">
-      <div>
-         <img alt="People's Ventilator Project logo" src="images/pvp_logo_fulltext.png" style="width: 60%;">
-      </div>
+      <img alt="People's Ventilator Project logo" src="images/pvp_logo_fulltext.png" style="width: 60%;">
       <div>
          <h1>A fully-open</h1>
          <h1>Supply-chain resilient</h1>
@@ -11,6 +9,12 @@
          <h1>for the people</h1>
       </div>
    </div>
+
+**<Statement of need>** of ventilators
+
+**<Statement of cost>** of ventilators, system complexity, stats about manufacturing time
+
+**<The People's Ventilator>** is an open-source, low-cost pressure-control ventilator designed to adapt to supply chain shortages and diverse ventilation needs
 
 
 Site Contents

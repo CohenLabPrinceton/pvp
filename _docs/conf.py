@@ -122,10 +122,11 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_static_path = ['_static']
 sass_configs = [
     {
     'entry':'_src/sass/theme.sass',
-    'output':'pvp_theme.css'
+    'output':'_static/pvp_theme.css'
     }
 ]
 html_style="pvp_theme.css"
@@ -152,5 +153,5 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+
 html_extra_path = ['assets']

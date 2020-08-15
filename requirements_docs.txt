@@ -5,6 +5,7 @@ sphinx>=3.0.0
 sphinx_rtd_theme
 sphinx-automodapi
 sphinxcontrib-napoleon
+sphinxcontrib-video
 recommonmark
 autodocsumm
 tables

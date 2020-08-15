@@ -5,7 +5,6 @@ sphinx>=3.0.0
 sphinx_rtd_theme
 sphinx-automodapi
 sphinxcontrib-napoleon
-git+git://github.com/sphinx-contrib/video.git
 recommonmark
 autodocsumm
 tables

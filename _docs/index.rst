@@ -1,11 +1,23 @@
 
 .. image:: assets/images/pvp_logo_fulltext.png
-   :alt: People's Ventilator Project logo
+   :alt: The People's Ventilator Project fullpage logo
    :width: 60%
    :align: center
 
-The People's Ventilator Project
-======================================
+.. raw:: html
+   <div style="display: flex;">
+      <div>
+      <a class="reference internal image-reference" href="_images/pvp_logo_fulltext.png">
+         <img alt="People's Ventilator Project logo" class="align-center" src="_images/pvp_logo_fulltext.png" style="width: 60%;">
+      </a>
+      </div>
+      <div>
+         <h1>A fully-open</h1>
+         <h1>Supply-chain resilient</h1>
+         <h1>pressure-control ventilator</h1>
+         <h1>for the people</h1>
+      </div>
+   </div>
 
 
 Site Contents
@@ -15,13 +27,17 @@ Site Contents
    :maxdepth: 4
    :caption: Overview
 
-   Control Overview <control_overview>
+   System Overview <overview>
+   Hardware <overview_hardware>
+   Control <overview_control>
+   GUI <overview_gui>
 
 .. toctree::
    :maxdepth: 4
    :caption: Hardware:
 
-   Hardware Overview <hardware>
+
+
 
 
 .. toctree::

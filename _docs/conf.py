@@ -47,6 +47,7 @@ extensions = [
     'sphinx.ext.viewcode',
     # 'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon', # parse google style docstrings
+    'sphinxcontrib.video',
     'autodocsumm',
     'recommonmark',   # support markdown
     'sphinx_sass' # support sass/scss

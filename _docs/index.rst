@@ -16,7 +16,10 @@
 
 **<The People's Ventilator>** is an open-source, low-cost pressure-control ventilator designed to adapt to supply chain shortages and diverse ventilation needs
 
-
+.. video:: /images/ventilator_rotate.mp4
+   :width: 100%
+   :autoplay:
+   :nocontrols:
 
 Hardware
 =========

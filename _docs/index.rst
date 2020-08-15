@@ -23,27 +23,23 @@ Site Contents
    :caption: Overview
 
    System Overview <overview>
-   Hardware <overview_hardware>
-   Control <overview_control>
-   GUI <overview_gui>
 
 .. toctree::
    :maxdepth: 4
    :caption: Hardware:
 
-   Sensors <sensors>
-   Actuators <actuators>
-   Electronics <electronics>
-   Safety <safety>
-   Enclosure <enclosure>
-
-
-
+   Hardware Overview <hardware_overview>
+   Sensors <hardware_sensors>
+   Actuators <hardware_actuators>
+   Electronics <hardware_electronics>
+   Safety <hardware_safety>
+   Enclosure <hardware_enclosure>
 
 .. toctree::
    :maxdepth: 4
    :caption: Software:
 
+   Software Overview <software_overview>
    main <main>
    common <common>
    controller <controller>

@@ -19,7 +19,7 @@
 .. raw:: html
 
     <video width="100%">
-      <source src="/images/ventilator_rotate.mp4" type="video/mp4">
+      <source src="images/ventilator_rotate.mp4" type="video/mp4">
     Video of a rotating ventilator
     </video>
 
@@ -35,6 +35,23 @@ Hardware
 
 Software
 ========
+
+.. image:: /images/gui_overview_v1_1920px.png
+   :width: 100%
+   :alt: Gui Overview - modular design, alarm cards, multiple modalities of input, alarm limits represented consistently across ui
+
+
+GUI
+----
+
+Modular GUI written with
+
+
+Controller
+----------
+
+IO
+--
 
 
 

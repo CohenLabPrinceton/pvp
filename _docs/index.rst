@@ -2,7 +2,7 @@
 
    <div style="display: flex;">
       <div>
-      <a class="reference internal image-reference" href="_images/pvp_logo_fulltext.png">
+      <a class="reference internal image-reference" href="images/pvp_logo_fulltext.png">
          <img alt="People's Ventilator Project logo" class="align-center" src="_images/pvp_logo_fulltext.png" style="width: 60%;">
       </a>
       </div>

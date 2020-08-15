@@ -1,7 +1,7 @@
 .. raw:: html
 
-   <div style="display: flex; align-items:end; margin-bottom: 2rem">
-      <img alt="People's Ventilator Project logo" src="images/pvp_logo_fulltext.png" style="width: 40%; min-width: 600px">
+   <div style="display: flex; align-items:end; margin-bottom: 2rem; flex-wrap: wrap;">
+      <img alt="People's Ventilator Project logo" src="images/pvp_logo_fulltext.png" style="width: 40%; min-width: 400px">
       <div style="margin-left: 2em;">
          <h1>A fully-open</h1>
          <h1>Supply-chain resilient</h1>

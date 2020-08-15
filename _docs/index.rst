@@ -1,4 +1,5 @@
 .. raw:: html
+
    <div style="display: flex;">
       <div>
       <a class="reference internal image-reference" href="_images/pvp_logo_fulltext.png">

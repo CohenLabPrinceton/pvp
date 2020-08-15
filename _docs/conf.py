@@ -130,7 +130,7 @@ sass_configs = [
 ]
 html_style="pvp_theme.css"
 html_logo="assets/images/pvp_logo_only.png"
-
+html_favicon="assets/images/pvp_logo_favicon.png"
 
 html_theme_options = {
     'canonical_url': '',

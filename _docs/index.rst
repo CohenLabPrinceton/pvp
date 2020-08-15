@@ -1,9 +1,3 @@
-
-.. image:: assets/images/pvp_logo_fulltext.png
-   :alt: The People's Ventilator Project fullpage logo
-   :width: 60%
-   :align: center
-
 .. raw:: html
    <div style="display: flex;">
       <div>

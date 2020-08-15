@@ -18,6 +18,11 @@
 
 
 
+Hardware
+=========
+
+<Brief statement about hardware design, physical design of system>
+
 Site Contents
 =============
 

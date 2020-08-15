@@ -2,7 +2,7 @@
 
    <div class="header-img" >
       <img alt="People's Ventilator Project logo" src="images/pvp_logo_fulltext.png">
-      <div style="margin-left: 2em;">
+      <div>
          <h1>A fully-open</h1>
          <h1>Supply-chain resilient</h1>
          <h1>pressure-control ventilator</h1>

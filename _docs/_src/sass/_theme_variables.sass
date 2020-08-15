@@ -5,7 +5,7 @@
 $fa-font-path:                        "fonts"
 $static-img:                          "../img/"
 
-$accent-color: darken($red, 15%)
+$accent-color: $red
 
 $breakpoint-full: 1300px
 $breakpoint-tablet: 1100px
@@ -18,7 +18,7 @@ $mathjax-color:                       $text-color
 
 $headerlink-color:                    $text-color
 
-$link-color:                          $accent-color
+$link-color:                          darken($accent-color, 15%)
 $link-color-visited:                  lighten($accent-color, 15%)
 $link-color-hover:                    lighten($link-color, 6%) !default
 $link-color-alt:                      hsl(33, 100%, 51%)

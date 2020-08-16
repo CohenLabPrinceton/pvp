@@ -1,3 +1,5 @@
+.. _gui_widgets:
+
 GUI Widgets
 ===========
 

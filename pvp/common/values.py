@@ -1,3 +1,14 @@
+"""
+Values
+=======
+
+Testing headings and subheadings in docstring docs
+
+Subheading
+-----------
+
+"""
+
 from collections import OrderedDict as odict
 from enum import Enum, auto
 import typing

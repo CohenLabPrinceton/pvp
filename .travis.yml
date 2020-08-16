@@ -17,6 +17,7 @@ addons:
       - qttools5-dev-tools
       - libpulse-mainloop-glib0
       - pulseaudio
+      - libpulse-dev
 
 services:
   - xvfb

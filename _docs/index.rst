@@ -27,10 +27,6 @@
     Video of a rotating ventilator
     </video>
 
-.. video:: /images/ventilator_rotate.mp4
-   :width: 100%
-   :autoplay:
-   :nocontrols:
 
 Hardware
 =========

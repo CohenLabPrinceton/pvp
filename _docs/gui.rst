@@ -5,19 +5,10 @@ GUI
    :hidden:
    :maxdepth: 4
 
-   GUI Overview <gui_overview>
    PVP GUI <gui.main>
    Widgets <gui.widgets>
    Stylesheets <gui.styles>
 
-
-
-GUI Overview
----------------
-.. _gui_overview:
-
-Design
-~~~~~~~~~~~~~~~~~~~~
 
 .. raw:: html
    :file: assets/images/pvp_gui_overview_clickable.svg
@@ -45,7 +36,7 @@ and a few prelaunch preparations (:func:`~.gui.main.launch_gui`). PVP should be 
     python3 -m pvp.main
 
 Module Overview
-~~~~~~~~~~~~~~~~
+----------------
 
 .. raw:: html
 
@@ -56,7 +47,7 @@ Module Overview
     </div>
 
 Screenshot
-~~~~~~~~~~~
+----------
 
 .. image:: /images/gui_overview_v1_1920px.png
    :width: 100%

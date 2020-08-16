@@ -1,3 +1,5 @@
+.. title:: The People's Ventilator Project
+
 .. raw:: html
 
    <div class="header-img" >

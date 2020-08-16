@@ -23,7 +23,7 @@ from pvp.alarm import Alarm_Manager
 
 
 
-class Vent_Gui(QtWidgets.QMainWindow):
+class PVP_Gui(QtWidgets.QMainWindow):
 
     gui_closing = QtCore.Signal()
     """
@@ -123,7 +123,7 @@ class Vent_Gui(QtWidgets.QMainWindow):
         else:
             set_gui_instance(self)
 
-        super(Vent_Gui, self).__init__()
+        super(PVP_Gui, self).__init__()
 
         self.alarm_manager = Alarm_Manager()
         self._alarm_state = AlarmSeverity.OFF
@@ -968,7 +968,7 @@ def launch_gui(coordinator, set_defaults=False, screenshot=False): # pragma: no 
     app.setStyle('Fusion')
     app.setStyleSheet(styles.DARK_THEME)
     app = styles.set_dark_palette(app)
-    gui = Vent_Gui(coordinator, set_defaults, screenshot=screenshot)
+    gui = PVP_Gui(coordinator, set_defaults, screenshot=screenshot)
     gui.show()
 
     return app, gui

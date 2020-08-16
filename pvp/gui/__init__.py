@@ -55,7 +55,7 @@ def set_gui_instance(instance):
     Store the current instance of the GUI
 
     Arguments:
-        instance (:class:`~.pvp.gui.main.Vent_Gui`)
+        instance (:class:`~.pvp.gui.main.PVP_Gui`)
     """
     globals()['_GUI_INSTANCE'] = instance
 
@@ -65,7 +65,7 @@ def get_gui_instance():
     Retreive the currently running instance of the GUI
 
     Returns:
-        :class:`~.pvp.gui.main.Vent_Gui`
+        :class:`~.pvp.gui.main.PVP_Gui`
     """
     return globals()['_GUI_INSTANCE']
 
@@ -118,4 +118,4 @@ def load_mono_font():
     globals()['_MONO_FONT'] = mono_font
 
 
-from pvp.gui.main import Vent_Gui, launch_gui, get_gui_instance
+from pvp.gui.main import PVP_Gui, launch_gui, get_gui_instance

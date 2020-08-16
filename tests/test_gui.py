@@ -100,7 +100,7 @@ def spawn_gui(qtbot):
     app = styles.set_dark_palette(app)
 
     coordinator = get_coordinator(sim_mode=True, single_process=False)
-    vent_gui = gui.Vent_Gui(coordinator, set_defaults=True)
+    vent_gui = gui.PVP_Gui(coordinator, set_defaults=True)
     # vent_gui.init_controls()
     #app, vent_gui = launch_gui(coordinator)
     qtbot.addWidget(vent_gui)
@@ -139,7 +139,7 @@ def test_gui_launch(qtbot):
     app = styles.set_dark_palette(app)
 
     coordinator = get_coordinator(sim_mode=True, single_process=False)
-    vent_gui = gui.Vent_Gui(coordinator, set_defaults=False)
+    vent_gui = gui.PVP_Gui(coordinator, set_defaults=False)
 
     qtbot.addWidget(vent_gui)
 
@@ -178,7 +178,7 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
 
         * :class:`~pvp.gui.widgets.components.EditableLabel` - setting label text
         * setting slider value
-        * using :meth:`~pvp.gui.main.Vent_Gui.set_value`
+        * using :meth:`~pvp.gui.main.PVP_Gui.set_value`
 
 
     Args:

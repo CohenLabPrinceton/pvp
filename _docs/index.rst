@@ -37,7 +37,15 @@ Hardware
 
 <Brief statement about hardware design, physical design of system>
 
+.. raw:: html
+
+    <object type="image/svg+xml" data="images/Schematic_v2.svg">
+    Hardware schematic for People's Ventilator Project
+    </object>
+
 ... something something inexpensive off-the-shelf components all run from a raspberry pi ...
+
+
 
 Software
 ========

@@ -27,7 +27,7 @@ The GUI is configured by the :mod:`~.common.values` module, in particular it cre
 
 * :class:`~.widgets.display.Display` widgets in the left "sensor monitor" box from all :class:`~.common.values.Value` s in :data:`~.values.DISPLAY_MONITOR` ,
 * :class:`~.widgets.display.Display` widgets in the right "control" box from all :class:`~.common.values.Value` s in :data:`~.values.DISPLAY_CONTROL` , and
-* :class:`~.widgets.plot.Plot` widgets in the center plot box from all :class:`~.common.values.Value` s in :data:`~.values.PLOT` 
+* :class:`~.widgets.plot.Plot` widgets in the center plot box from all :class:`~.common.values.Value` s in :data:`~.values.PLOT`
 
 The GUI is not intended to be launched alone, as it needs an active :mod:`~pvp.coordinator` to communicate with the controller process
 and a few prelaunch preparations (:func:`~.gui.main.launch_gui`). PVP should be started like::
@@ -40,11 +40,9 @@ Module Overview
 .. raw:: html
 
     <div class="software-summary">
-        <a href="gui.html"><h2>GUI</h2></a> <p>A modular GUI with intuitive controls and a clear alarm system that can be configured to control any parameter or display values from any sensor.</p>
-        <a href="controller.html"><h2>Controller</h2></a> <p>... Manuel write this</p>
-        <a href="io.html"><h2>IO</h2></a> <p>A hardware abstraction layer powered by <a href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> that can read/write at [x Hz]</p>
-        <a href="alarm.html"><h2>Alarm</h2></a> <p>Define complex and responsive alarm triggering criteria with human-readable Alarm Rules</p>
-        <a href="common.html"><h2>Common</h2><a> <p>Modules that provide the API between the GUI and controller, user preferences, and other utilities</p>
+        <a href="gui.main.html"><h2>PVP_Gui</h2></a> <p>Main GUI Object that controls all the others!</p>
+        <a href="gui.widgets.html"><h2>Widgets</h2></a> <p>Widgets used by main GUI</p>
+        <a href="gui.styles.html"><h2>IO</h2></a> <p>Stylesheets used by the GUI</p>
     </div>
 
 Screenshot

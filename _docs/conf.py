@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.abspath('../pvp'))
 sys.path.insert(0, os.path.abspath('.'))
 
 sys.modules['Shiboken'] = mock.Mock()
+sys.modules['PySide2.QtMultimedia'] = mock.Mock()
 
 
 # -- Project information -----------------------------------------------------

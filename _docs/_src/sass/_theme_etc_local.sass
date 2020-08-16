@@ -30,7 +30,7 @@
 
 .software-summary
   display: grid
-  grid-template-columns: repeat(2, minmax($breakpoint-table, 1fw))
+  grid-template-columns: auto auto
   align-items: center
   column-gap: 2rem
   row-gap: 2rem
@@ -38,6 +38,10 @@
   border-bottom: 1px solid black
   padding-top: 1rem
   padding-bottom: 1rem
+
+  @media (max-width: $breakpoint-tablet)
+    grid-template-columns: auto
+    
 
   h2
     margin: 0

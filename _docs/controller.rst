@@ -1,4 +1,6 @@
-controller module
+.. _controller_overview:
+
+Controller
 =================
 
 .. automodule:: pvp.controller.control_module

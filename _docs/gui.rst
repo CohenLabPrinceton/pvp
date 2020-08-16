@@ -1,3 +1,5 @@
+.. _gui_overview:
+
 GUI
 ======
 

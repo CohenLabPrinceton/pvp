@@ -1,4 +1,6 @@
-prefs
+.. _prefs_overview:
+
+Prefs
 =========
 
 .. automodule:: pvp.common.prefs

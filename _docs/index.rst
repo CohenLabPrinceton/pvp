@@ -47,8 +47,8 @@ Software
    :alt: Gui Overview - modular design, alarm cards, multiple modalities of input, alarm limits represented consistently across ui
 
 
-PVP's software was developed to bring the philosophy of free and open source software to medical devices. PVP is not only
-open-source from top to bottom, but we have developed it as a framework for **an adaptable, general-purpose, communally-developed ventilator.**
+PVP's software was developed to bring the philosophy of free and open-source software to medical devices. PVP is not only
+open from top to bottom, but we have developed it as a framework for **an adaptable, general-purpose, communally-developed ventilator.**
 
 PVP's ventilation control system is fast, robust, and **written entirely in high-level Python** (3.7) -- without the development
 and inspection bottlenecks of split computer/microprocessor systems that require users to read and write low-level hardware firmware.
@@ -56,8 +56,8 @@ and inspection bottlenecks of split computer/microprocessor systems that require
 All of PVP's components are **modularly designed**, allowing them to be reconfigured and expanded for new ventilation modes and
 hardware configurations.
 
-We provide complete **:ref:`API-level documentation <software_overview>`** and an **`automated testing suite <https://github.com/CohenLabPrinceton/pvp/tree/master/tests>`_** to give everyone the freedom to inspect,
-understand, and expand PVP's software framework.
+We provide complete **API-level documentation** and an **automated testing suite**
+to give everyone the freedom to inspect, understand, and expand PVP's software framework.
 
 
 

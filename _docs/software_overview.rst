@@ -3,6 +3,11 @@
 Software Overview
 ==================
 
+.. image:: /images/pvp_software_overview-01.png
+    :width: 100%
+    :alt: PVP software overview block diagram: the GUI accepts input from a user and displays system status. The GUI sends sensor values and receives alarms from the alarm manager. The GUI sends control values and receives sensor values from the coordinator. The coordinator runs the ventilation logic and sends control signals to HAL, the hardware abstraction layer. HAL translates control messages from the coordinator to the particular hardware device and sends them to the pigpio daemon.
+
+
 PVP Modules
 ------------
 

@@ -102,14 +102,13 @@ PVP Modules
    :caption: Software:
 
    Software Overview <software_overview>
-   main <main>
-   common <common>
-   controller <controller>
-   coordinator <coordinator>
+   Main <main>
    GUI <gui>
-   io <io>
-   alarm <alarm>
-
+   Controller <controller>
+   Common <common>
+   I/O <io>
+   Alarm <alarm>
+   Coordinator <coordinator>
 
 .. toctree::
    :hidden:

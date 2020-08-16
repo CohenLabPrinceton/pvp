@@ -12,15 +12,9 @@ GUI
 GUI Overview
 ----------------
 
-Program Diagram
-~~~~~~~~~~~~~~~~~
+.. raw:: html
+   :file: assets/images/pvp_gui_overview_clickable.svg
 
-.. figure:: /images/gui_diagram.png
-    :align: center
-    :figwidth: 100%
-    :width: 100%
-
-    Schematic diagram of major UI components and signals
 
 
 

@@ -1,8 +1,19 @@
-gui
+GUI
 ======
 
-Program Diagram
+.. toctree::
+   :hidden:
+   :maxdepth: 4
+
+   PVP_Gui <gui.main>
+   Widgets <gui.widgets>
+   Stylesheets <gui.styles>
+
+GUI Overview
 ----------------
+
+Program Diagram
+~~~~~~~~~~~~~~~~~
 
 .. figure:: /images/gui_diagram.png
     :align: center
@@ -12,13 +23,4 @@ Program Diagram
     Schematic diagram of major UI components and signals
 
 
-GUI Object Documentation
--------------------------
 
-.. toctree::
-   :maxdepth: 4
-   :caption: GUI Object Documentation
-
-   PVP_Gui <gui.main>
-   Widgets <gui.widgets>
-   Stylesheets <gui.styles>

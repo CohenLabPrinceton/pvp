@@ -43,7 +43,14 @@ Hardware
     Hardware schematic for People's Ventilator Project
     </object>
 
-... something something inexpensive off-the-shelf components all run from a raspberry pi ...
+The components of the PVP are coordinated by a Raspberry Pi 4 board, which runs the graphical user interface, administers the alarm system, monitors sensor values, and sends actuation commands to the inexpensive, accessible, off-the-shelf components.
+The core electrical system consists of two modular board 'hats', a sensor board and an actuator board, that stack onto the Raspberry Pi via 40-pin stackable headers.
+The modularity of this system enables individual boards to be revised or modified substitute components in the case of scarcity.
+
+.. raw:: html
+
+    <img src="images/electronics_diagram.png" alt="Electronics diagram for People's Ventilator Project">
+    </img>
 
 
 

@@ -2,7 +2,7 @@
 Values
 =======
 
-Testing headings and subheadings in docstring docs
+
 
 Subheading
 -----------
@@ -15,7 +15,9 @@ import typing
 
 # TODO: Zhenyu's job is to make sure the print value is an intepretable string
 class ValueName(Enum):
-    #Setting that are likely important for future adjustements
+    """
+    Canonical names of all values used in PVP.
+    """
     PIP = auto()       # PIP pressure
     PIP_TIME = auto()  # time to reach PIP
     PEEP = auto()      # PEEP pressure
@@ -23,7 +25,6 @@ class ValueName(Enum):
     BREATHS_PER_MINUTE = auto()
     INSPIRATION_TIME_SEC = auto()
     IE_RATIO = auto()
-    #Settings that are read out, but can not be controlled by software
     FIO2 = auto()
     VTE = auto()
     PRESSURE = auto()
@@ -31,6 +32,15 @@ class ValueName(Enum):
 
 
 class Value(object):
+    """
+    Class to parameterize how a value is used in PVP.
+
+    Sets whether a value is a sensor value, a control value, whether it should be plotted,
+    and other details for the rest of the system to determine how to use it.
+
+    Values should only be declared in this file so that they are kept consistent with :class:`.ValueName`
+    and to not leak stray values anywhere else in the program.
+    """
 
     def __init__(self,
                  name: str,
@@ -64,11 +74,15 @@ class Value(object):
                     though the user-set alarm values are initialized as ``safe_range``.
 
             decimals (int): the number of decimals of precision used when displaying the value
-            display (bool): whether the value should be displayed in the monitor. if ``control == True``,
-                automatically set to ``False`` because all controls have their own numerical displays
-            plot (bool): whether or not the value is plottable int he center plot window
+            control (bool): Whether or not the value is used to control ventilation
+            sensor (bool): Whether or not the value is a measured sensor value
+            display (bool): whether the value should be created as a :class:`.gui.widgets.Display` widget.
+            plot (bool): whether or not the value is plottable in the center plot window
             plot_limits (None, tuple(ValueName)): If plottable, and the plotted value has some alarm limits for another value,
                 plot those limits as horizontal lines in the plot. eg. the PIP alarm range limits should be plotted on the Pressure plot
+            control_type (None, "slider", "record"): If a control sets whether the control should use a slider or be set by recording recent sensor values.
+            group (None, str): Unused currently, but to be used to create subgroups of control & display widgets
+            default (None, int, float): Default value, if any. (Not automatically set in the GUI.)
         """
 
         self._name = None
@@ -103,6 +117,12 @@ class Value(object):
 
     @property
     def name(self) -> str:
+        """
+        Human readable name of value
+
+        Returns:
+            str
+        """
         return self._name
 
     @name.setter
@@ -112,6 +132,13 @@ class Value(object):
 
     @property
     def abs_range(self) -> tuple:
+        """
+        tuple of ints or floats setting the logical limit of the value,
+        eg. a percent between 0 and 100, (0, 100)
+
+        Returns:
+            tuple
+        """
         return self._abs_range
 
     @abs_range.setter
@@ -122,6 +149,17 @@ class Value(object):
 
     @property
     def safe_range(self) -> tuple:
+        """
+        tuple of ints or floats setting the safe ranges of the value,
+
+            note::
+
+                this is not the same thing as the user-set alarm values,
+                though the user-set alarm values are initialized as ``safe_range``.
+
+        Returns:
+            tuple
+        """
         return self._safe_range
 
     @safe_range.setter
@@ -133,6 +171,12 @@ class Value(object):
 
     @property
     def decimals(self) -> int:
+        """
+        The number of decimals of precision used when displaying the value
+
+        Returns:
+            int
+        """
         return self._decimals
 
     @decimals.setter
@@ -142,6 +186,9 @@ class Value(object):
 
     @property
     def default(self):
+        """
+        Default value, if any. (Not automatically set in the GUI.)
+        """
         return self._default
 
     @default.setter
@@ -150,7 +197,13 @@ class Value(object):
         self._default = default
 
     @property
-    def control(self):
+    def control(self) -> bool:
+        """
+        Whether or not the value is used to control ventilation
+
+        Returns:
+            bool
+        """
         return self._control
 
     @control.setter
@@ -159,7 +212,13 @@ class Value(object):
         self._control = control
 
     @property
-    def sensor(self):
+    def sensor(self) -> bool:
+        """
+        Whether or not the value is a measured sensor value
+
+        Returns:
+            bool
+        """
         return self._sensor
 
     @sensor.setter
@@ -169,6 +228,12 @@ class Value(object):
 
     @property
     def display(self):
+        """
+        Whether the value should be created as a :class:`.gui.widgets.Display` widget.
+
+        Returns:
+            bool
+        """
         return self._display
 
     @display.setter
@@ -178,6 +243,12 @@ class Value(object):
 
     @property
     def control_type(self):
+        """
+        If a control sets whether the control should use a slider or be set by recording recent sensor values.
+
+        Returns:
+            None, "slider", "record"
+        """
         return self._control_type
 
     @control_type.setter
@@ -187,6 +258,12 @@ class Value(object):
 
     @property
     def group(self):
+        """
+        Unused currently, but to be used to create subgroups of control & display widgets
+
+        Returns:
+            None, str
+        """
         return self._group
 
     @group.setter
@@ -199,6 +276,12 @@ class Value(object):
 
     @property
     def plot(self):
+        """
+        whether or not the value is plottable in the center plot window
+
+        Returns:
+            bool
+        """
         return self._plot
 
     @plot.setter
@@ -208,6 +291,13 @@ class Value(object):
 
     @property
     def plot_limits(self):
+        """
+        If plottable, and the plotted value has some alarm limits for another value,
+        plot those limits as horizontal lines in the plot. eg. the PIP alarm range limits should be plotted on the Pressure plot
+
+        Returns:
+            None, typing.Tuple[ValueName]
+        """
         return self._plot_limits
 
     @plot_limits.setter
@@ -375,22 +465,17 @@ VALUES = odict({
         'plot': True
     }),
 })
+"""
+Declaration of all values used by PVP
+"""
 
 SENSOR = odict({
     k:v for k, v in VALUES.items() if v.sensor
 })
 """
-Values to monitor but not control. 
+Sensor values
 
-Used to set alarms for out-of-bounds sensor values. These should be sent from the control module and not computed.::
-
-    {
-        'name' (str):  Human readable name,
-        'units' (str): units string, (like degrees or %),
-        'abs_range' (tuple): absolute possible range of values,
-        'safe_range' (tuple): range outside of which a warning will be raised,
-        'decimals' (int): The number of decimals of precision this number should be displayed with
-    }
+Automatically generated as all :class:`.Value` objects in :data:`.VALUES` where ``sensor == True``
 """
 
 
@@ -400,52 +485,32 @@ CONTROL = odict({
 """
 Values to control but not monitor.
 
-Sent to control module to control operation of ventilator.::
-
-    {
-        'name' (str):  Human readable name,
-        'units' (str): units string, (like degrees or %),
-        'abs_range' (tuple): absolute possible range of values,
-        'safe_range' (tuple): range outside of which a warning will be raised,
-        'default' (int, float): the default value of the parameter,
-        'decimals' (int): The number of decimals of precision this number should be displayed with
-    }
+Automatically generated as all :class:`.Value` objects in :data:`.VALUES` where ``control == True``
 """
 
 DISPLAY_MONITOR = odict({
     k: v for k, v in VALUES.items() if v.sensor and v.display
 })
 """
-Values that should be displayed in the GUI. If a value is also a CONTROL it will always have the measured value displayed,
-these values are those that are sensor values that are uncontrolled and should be displayed.
+Those sensor values that should also have a widget created in the GUI
+
+Automatically generated as all :class:`.Value` objects in :data:`.VALUES` where ``sensor == True`` and ``display == True``
 """
 
 DISPLAY_CONTROL = odict({
     k: v for k, v in VALUES.items() if v.control and v.display
 })
 """
-Values that should be displayed in the GUI. If a value is also a CONTROL it will always have the measured value displayed,
-these values are those that are sensor values that are uncontrolled and should be displayed.
+Control values that should also have a widget created in the GUI
+
+Automatically generated as all :class:`.Value` objects in :data:`.VALUES` where ``control == True`` and ``display == True``
 """
 
 PLOTS = odict({
     k: v for k, v in VALUES.items() if v.plot
 })
-
-LIMITS = {
-
-}
 """
-Values that are dependent on other values::
+Values that can be plotted
 
-    {
-        "dependent_value": (
-            ['value_1', 'value_2'],
-            callable_returning_boolean
-        }
-    }
-    
-Where the first argument in the tuple is a list of the values that will be 
-given as argument to the ``callable_returning_boolean`` which will return
-whether (``True``) or not (``False``) a value is allowed.
+Automatically generated as all :class:`.Value` objects in :data:`.VALUES` where ``plot == True``
 """

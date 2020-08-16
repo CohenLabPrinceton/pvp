@@ -40,8 +40,7 @@ An inexpensive proportional valve controls inspiratory flow, and a relay valve c
 A gauge pressure sensor monitors airway pressure, and an inexpensive D-lite spirometer used in conjunction with a differential pressure sensor monitors expiratory flow.
 
 .. raw:: html
-
-    <object type="image/svg+xml" data="images/Schematic_v2.svg">
+    <object type="image/svg+xml" data="assets/images/Schematic_v2.svg">
     Hardware schematic for People's Ventilator Project
     </object>
 
@@ -51,7 +50,7 @@ The modularity of this system enables individual boards to be revised or modifie
 
 .. raw:: html
 
-    <img src="images/electronics_diagram.png" alt="Electronics diagram for People's Ventilator Project">
+    <img src="assets/images/electronics_diagram.png" alt="Electronics diagram for People's Ventilator Project">
     </img>
 
 Links to system:

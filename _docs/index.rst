@@ -54,16 +54,15 @@ and inspection bottlenecks of split computer/microprocessor systems that require
 All of PVP's components are **modularly designed**, allowing them to be reconfigured and expanded for new ventilation modes and
 hardware configurations.
 
-We provide complete **API-level documentation** and an **automated testing suite** to give everyone the freedom to inspect,
+We provide complete **:ref:`API-level documentation <software_overview>`** and an **`automated testing suite <https://github.com/CohenLabPrinceton/pvp/tree/master/tests>`_** to give everyone the freedom to inspect,
 understand, and expand PVP's software framework.
+
 
 
 PVP Modules
 ------------
 
 .. raw:: html
-
-
 
     <div class="software-summary">
         <a href="gui.html"><h2>GUI</h2></a> <p>A modular GUI with intuitive controls and a clear alarm system that can be configured to control any parameter or display values from any sensor.</p>
@@ -72,7 +71,6 @@ PVP Modules
         <a href="alarm.html"><h2>Alarm</h2></a> <p>Define complex and responsive alarm triggering criteria with human-readable Alarm Rules</p>
         <a href="common.html"><h2>Common</h2><a> <p>Modules that provide the API between the GUI and controller, user preferences, and other utilities</p>
     </div>
-
 
 
 
@@ -127,6 +125,7 @@ PVP Modules
    :caption: Meta:
 
    Changelog <changelog/index>
+   Contributing <contributing>
    Building the Docs <buildthedocs>
    Markdown Example <example_markdown>
    Index <meta_index>

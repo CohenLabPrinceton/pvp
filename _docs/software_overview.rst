@@ -4,7 +4,7 @@ Software Overview
 ==================
 
 .. raw:: html
-    :file: /images/pvp_software_overview_clickable.svg
+    :file: assets/images/pvp_software_overview_clickable.svg
 
 
 PVP Modules

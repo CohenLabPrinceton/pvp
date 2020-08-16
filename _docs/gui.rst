@@ -1,181 +1,62 @@
-gui
+.. _gui_overview:
+
+GUI
 ======
 
-Program Diagram
+.. toctree::
+   :hidden:
+   :maxdepth: 4
+
+   PVP GUI <gui.main>
+   Widgets <gui.widgets>
+   Stylesheets <gui.styles>
+
+
+.. raw:: html
+   :file: assets/images/pvp_gui_overview_clickable.svg
+
+The GUI is written using `PySide2 <https://wiki.qt.io/Qt_for_Python>`_ and consists of one main :class:`~.gui.main.PVP_Gui`
+object that instantiates a series of :ref:`gui_widgets`. The GUI is responsible for setting ventilation control parameters
+and sending them to the :mod:`~pvp.controller` (see :meth:`~.PVP_Gui.set_control`), as well as receiving and displaying sensor values (:meth:`~.ControlModuleBase.get_sensors`).
+
+The GUI also feeds the :class:`.Alarm_Manager` :class:`.SensorValues` objects so that it can compute alarm state. The :class:`.Alarm_Manager`
+reciprocally updates the GUI with :class:`.Alarm` s (:meth:`.PVP_Gui.handle_alarm`) and Alarm limits (:meth:`.PVP_Gui.limits_updated`).
+
+The main **polling loop** of the GUI is :meth:`.PVP_Gui.update_gui` which queries the controller for new :class:`.SensorValues` and distributes
+them to all listening widgets (see method documentation for more details). The rest of the GUI is event driven, usually with Qt
+Signals and Slots.
+
+The GUI is **configured** by the :mod:`~.common.values` module, in particular it creates
+
+* :class:`~.widgets.display.Display` widgets in the left "sensor monitor" box from all :class:`~.common.values.Value` s in :data:`~.values.DISPLAY_MONITOR` ,
+* :class:`~.widgets.display.Display` widgets in the right "control" box from all :class:`~.common.values.Value` s in :data:`~.values.DISPLAY_CONTROL` , and
+* :class:`~.widgets.plot.Plot` widgets in the center plot box from all :class:`~.common.values.Value` s in :data:`~.values.PLOT`
+
+The GUI is not intended to be launched alone, as it needs an active :mod:`~pvp.coordinator` to communicate with the controller process
+and a few prelaunch preparations (:func:`~.gui.main.launch_gui`). PVP should be started like::
+
+    python3 -m pvp.main
+
+Module Overview
 ----------------
 
-.. figure:: /images/gui_diagram.png
-    :align: center
-    :figwidth: 100%
-    :width: 100%
+.. raw:: html
 
-    Schematic diagram of major UI components and signals
+    <div class="software-summary">
+        <a href="gui.main.html"><h2>PVP_Gui</h2></a> <p>Main GUI Object that controls all the others!</p>
+        <a href="gui.widgets.html"><h2>Widgets</h2></a> <p>Widgets used by main GUI</p>
+        <a href="gui.styles.html"><h2>IO</h2></a> <p>Stylesheets used by the GUI</p>
+    </div>
 
-Design Requirements
--------------------
+Screenshot
+----------
 
-* Display Values
-
-    * Value name, units, absolute range, recommended range, default range
-    * VTE
-    * FiO2
-    * Humidity
-    * Temperature
-
-* Plots
-* Controlled Values
-
-    * PIP
-    * PEEP
-    * Inspiratory Time
-
-* Value Dependencies
-
-UI Notes & Todo
--------------------
-
-* Jonny add notes from helpful RT in discord!!!
-* Top status Bar
-
-    * Start/stop button
-    * Status indicator - a clock that increments with heartbeats,
-      or some other visual indicator that things are alright
-    * Status bar - most recent alarm or notification w/ means of clearing
-    * Override to give 100% oxygen and silence all alarms
-
-* API
-
-    * Two queues, input and output. Read from socket and put directly into queue.
-    * Input, receive (timestamp, key, value) messages where key and value are names of variables and their values
-    * Output, send same format
-
-* Menus
-
-    * Trigger some testing/calibration routine
-    * Log/alarm viewer
-    * Wizard to set values?
-    * save/load values
-
-* Alarms
-
-    * Multiple levels
-    * Silenced/reset
-    * Logging
-    * Sounds?
-
-
-* General
-
-    * Reduce space given to waveforms
-    * Clearer grouping & titling for display values & controls
-    * Collapsible range setting
-    * Ability to declare dependencies between values
-
-        * Limits - one value's range logically depends on another
-        * Derived - one value is computed from another/others
-
-    * Monitored values should have defaults, warning range, and absolute range
-    * Two classes of monitored values -- ones with limits and ones without. There seem to be
-      lots and lots of observed values, but only some need limits. might want to make larger drawer
-      of smaller displayed values that don't need controls
-    * Save/load parameters. Autosave, and autorestore if saved <5m ago, otherwise init from defaults.
-    * Implement timed updates to plots to limit resource usage
-    * Make class for setting values
-    * Possible plots
-
-        * Pressure vs. flow
-        * flow vs volume
-        * volume vs time
-
-* Performance
-
-    * Cache drawText() calls in range selector by drawing to pixmap
-
-Jonny Questions
-------------------
-
-* Which alarm sounds to use?
-* Final final final breakdown on values and ranges plzzz
-* RR always has to be present, can only auto calculate InspT, I:E
-* make alarm dismissals all latch and snooze.
-
-jonny todo
-______________
-
-* use loop_counter to check on controller advancement
-* choice between pressure/volume over time and combined P/V plot
-* display flow in SLM (liters per minute)
-* deque for alarm manager logged alarms
-* need confirmation for start button
+.. image:: /images/gui_overview_v1_1920px.png
+   :width: 100%
+   :alt: Gui Overview - modular design, alarm cards, multiple modalities of input, alarm limits represented consistently across ui
 
 
 
-GUI Object Documentation
--------------------------
 
-Main GUI Module
-~~~~~~~~~~~~~~~~~
 
-.. automodule:: pvp.gui.main
-    :members:
-    :undoc-members:
-    :autosummary:
 
-GUI Widgets
-~~~~~~~~~~~~~
-
-Display
-_________
-
-.. automodule:: pvp.gui.widgets.display
-    :members:
-    :undoc-members:
-    :autosummary:
-
-Control Panel
-_______________
-
-.. automodule:: pvp.gui.widgets.control_panel
-    :members:
-    :undoc-members:
-    :autosummary:
-
-Plot
-_______
-
-.. automodule:: pvp.gui.widgets.plot
-    :members:
-    :undoc-members:
-    :autosummary:
-
-Alarm Bar
-____________
-
-.. automodule:: pvp.gui.widgets.alarm_bar
-    :members:
-    :undoc-members:
-    :autosummary:
-
-Components
-____________
-
-.. automodule:: pvp.gui.widgets.components
-    :members:
-    :undoc-members:
-    :autosummary:
-
-Dialog
-____________
-
-.. automodule:: pvp.gui.widgets.dialog
-    :members:
-    :undoc-members:
-    :autosummary:
-
-GUI Stylesheets
-~~~~~~~~~~~~~~~~~~
-
-.. automodule:: pvp.gui.styles
-    :members:
-    :undoc-members:
-    :autosummary:

@@ -1,5 +1,5 @@
-Hardware
-=========
+Hardware Overview
+==================
 
 Mechanical Diagram
 ----------------

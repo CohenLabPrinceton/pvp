@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.abspath('../pvp'))
 sys.path.insert(0, os.path.abspath('.'))
 
 sys.modules['Shiboken'] = mock.Mock()
+sys.modules['PySide2.QtMultimedia'] = mock.Mock()
 
 
 # -- Project information -----------------------------------------------------
@@ -27,9 +28,9 @@ copyright = '2020, jonny saunders et al'
 author = 'jonny saunders et al'
 
 # the short X.Y version
-version = '0.0'
+version = '0.2'
 # the full version, includeing alpha/beta/rc/rags
-release = '0.0.0'
+release = '0.2.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -122,6 +123,7 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_static_path = ['_static']
 sass_configs = [
     {
     'entry':'_src/sass/theme.sass',
@@ -129,6 +131,8 @@ sass_configs = [
     }
 ]
 html_style="pvp_theme.css"
+html_logo="assets/images/pvp_logo_only.png"
+html_favicon="assets/images/pvp_logo_favicon.png"
 
 html_theme_options = {
     'canonical_url': '',
@@ -150,5 +154,5 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+
 html_extra_path = ['assets']

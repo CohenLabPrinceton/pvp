@@ -1,4 +1,4 @@
-# pvp control pseudocode
+# Control Overview
 Describes the procedure to operate low-cost ventilator under pressure control
 
 ## Pressure control parameters

@@ -1,0 +1,62 @@
+.header-img
+  display: flex
+  align-items: end
+  margin-bottom: 2rem
+  @media (max-width: $breakpoint-tablet)
+    flex-wrap: wrap
+
+  img
+    width: 40%
+    //min-width: 400px
+    @media (max-width: $breakpoint-tablet)
+      width: 100%
+
+  & > div
+    margin-left: 2em
+
+    @media (max-width: $breakpoint-tablet)
+      margin-left: 0
+      margin-top: 2rem
+
+    & > h1
+      margin-bottom: 0
+
+      @media (max-width: $breakpoint-tablet)
+        margin-top: 0
+        font-size: 200%
+
+.icon-home
+  color: $accent-color !important
+
+.software-summary
+  display: grid
+  grid-template-columns: auto auto
+  align-items: center
+  column-gap: 2rem
+  row-gap: 2rem
+  border-top: 1px solid black
+  border-bottom: 1px solid black
+  padding-top: 1rem
+  padding-bottom: 1rem
+
+  @media (max-width: $breakpoint-tablet)
+    grid-template-columns: auto
+    row-gap: 0
+
+  h2
+    margin: 0
+
+    @media (max-width: $breakpoint-tablet)
+      margin-top: 1rem
+
+  p
+    margin: 0
+
+
+//Make class labels a lil bigger
+.sig-prename, .sig-name
+  font-size: 200%
+
+//make methods a lil more distinguishable
+.method
+  border-top: 1px dotted $gray

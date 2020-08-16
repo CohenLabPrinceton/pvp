@@ -35,7 +35,9 @@ It supports pressure-controlled ventilation, combined with standard-features lik
 Hardware
 =========
 
-<Brief statement about hardware design, physical design of system>
+PVP is a pressure-controlled ventilator that uses a minimal set of inexpensive, off-the-self hardware components.
+An inexpensive proportional valve controls inspiratory flow, and a relay valve controls expiratory flow.
+A gauge pressure sensor monitors airway pressure, and an inexpensive D-lite spirometer used in conjunction with a differential pressure sensor monitors expiratory flow.
 
 .. raw:: html
 
@@ -43,16 +45,18 @@ Hardware
     Hardware schematic for People's Ventilator Project
     </object>
 
-The components of the PVP are coordinated by a Raspberry Pi 4 board, which runs the graphical user interface, administers the alarm system, monitors sensor values, and sends actuation commands to the inexpensive, accessible, off-the-shelf components.
+PVP's components are coordinated by a Raspberry Pi 4 board, which runs the graphical user interface, administers the alarm system, monitors sensor values, and sends actuation commands to the valves.
 The core electrical system consists of two modular board 'hats', a sensor board and an actuator board, that stack onto the Raspberry Pi via 40-pin stackable headers.
-The modularity of this system enables individual boards to be revised or modified substitute components in the case of scarcity.
+The modularity of this system enables individual boards to be revised or modified to substitute components in the case of part scarcity.
 
 .. raw:: html
 
     <img src="images/electronics_diagram.png" alt="Electronics diagram for People's Ventilator Project">
     </img>
 
-
+Links to system:
+... Mechanical overview
+... Electronics overview
 
 Software
 ========

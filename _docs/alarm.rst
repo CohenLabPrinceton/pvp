@@ -26,10 +26,10 @@ Alarm Modules
 .. raw:: html
 
     <div class="software-summary">
-        <a href="alarm.alarm_manager.html"><h2>Control Panel</h2></a> <p>Computes alarm logic and emits alarms to the GUI</p>
-        <a href="alarm.alarm.html"><h2>Alarm Bar</h2></a> <p>Objects used to represent alarms</p>
-        <a href="alarm.alarm_rule.html"><h2>Display</h2></a> <p>Define conditions for triggering alarms and their behavior</p>
-        <a href="alarm.condition.html"><h2>Plot</h2></a> <p>Objects to check for alarm state</p>
+        <a href="alarm.alarm_manager.html"><h2>Alarm Manager</h2></a> <p>Computes alarm logic and emits alarms to the GUI</p>
+        <a href="alarm.alarm.html"><h2>Alarm</h2></a> <p>Objects used to represent alarms</p>
+        <a href="alarm.alarm_rule.html"><h2>Alarm Rule</h2></a> <p>Define conditions for triggering alarms and their behavior</p>
+        <a href="alarm.condition.html"><h2>Condition</h2></a> <p>Objects to check for alarm state</p>
     </div>
 
 

@@ -8,7 +8,7 @@ for raising :class:`~.alarm.Alarm` s of different :class:`~.alarm.AlarmSeverity`
 continuously fed :class:`~.message.SensorValues` objects during :meth:`.PVP_Gui.update_gui`, which it uses to
 :meth:`~.Alarm_Rule.check` each alarm rule. The alarm manager emits :class:`~.alarm.Alarm` objects to the
 :meth:`.PVP_Gui.handle_alarm` method. The alarm manager also updates alarm thresholds set as :attr:`.Condition.depends`
-when control parameters are set (eg. updates the ``HIGH_PRESSURE`` alarm to be triggered 15% above some set ``PIP`` ). 
+when control parameters are set (eg. updates the ``HIGH_PRESSURE`` alarm to be triggered 15% above some set ``PIP`` ).
 
 One :class:`~.alarm.Alarm_Rule` is defined for each :class:`~.alarm.AlarmType` in :data:`.alarm.ALARM_RULES`.
 
@@ -22,6 +22,14 @@ Main Alarm Module
     :members:
     :undoc-members:
     :autosummary:
+
+.. toctree::
+    :hidden:
+
+    Alarm Manager <alarm.alarm_manager>
+    Alarm <alarm.alarm>
+    Alarm Rule <alarm.alarm_rule>
+    Alarm Condition <alarm.condition
 
 
 

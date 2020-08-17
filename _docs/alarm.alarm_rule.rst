@@ -80,7 +80,7 @@ Next, we define the ``MEDIUM`` severity alarm condition::
 The first ``ValueCondition`` is the same as in the ``LOW`` alarm severity condition, except that it is
 set 15% below ``PIP``.
 
-A second :class:`.CycleAlarmSeverityCondition` has been added (with ``\+``) to the :class:`.ValueCondition`
+A second :class:`.CycleAlarmSeverityCondition` has been added (with ``+``) to the :class:`.ValueCondition`
 When conditions are added together, they will only return ``True`` (ie. trigger an alarm) if all of the conditions are met.
 This condition checks that the ``LOW_PRESSURE`` alarm has been active at a ``LOW`` severity for at least two cycles.
 

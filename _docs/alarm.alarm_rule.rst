@@ -84,7 +84,7 @@ A second :class:`.CycleAlarmSeverityCondition` has been added (with ``+``) to th
 When conditions are added together, they will only return ``True`` (ie. trigger an alarm) if all of the conditions are met.
 This condition checks that the ``LOW_PRESSURE`` alarm has been active at a ``LOW`` severity for at least two cycles.
 
-For the full source code of this example,
+Full source for this example and all alarm rules can be found `here <_modules/pvp/alarm.html>`_
 
 
 Module Documentation

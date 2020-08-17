@@ -1,6 +1,14 @@
 Alarm
 ==========
 
+.. toctree::
+    :hidden:
+
+    Alarm Manager <alarm.alarm_manager>
+    Alarm <alarm.alarm>
+    Alarm Rule <alarm.alarm_rule>
+    Alarm Condition <alarm.condition>
+
 Alarm System Overview
 ----------------------
 
@@ -21,51 +29,70 @@ An alarm rule defines:
 
 * The conditions for raising different severities of an alarm
 * The dependencies between set values and alarm thresholds
-* The behavior of the alarm, specifically whether it is :attr:`~.Alarm_Rule.latch` ed or :attr:`~.Alarm_Rule.persistent`
+* The behavior of the alarm, specifically whether it is :attr:`~.Alarm_Rule.latch` ed.
 
-::
+As an example, we'll define a ``LOW_PRESSURE`` alarm with escalating severity. First we define the name and
+behavior of the alarm::
 
     Alarm_Rule(
         name = AlarmType.LOW_PRESSURE,
         latch = False,
-        persistent = False,
+
+In this case, ``latch == False`` means that the alarm will disappear (or be downgraded in severity)
+whenever the conditions for that alarm are no longer met. If ``latch == True``, an alarm requires manual dismissal before
+it is downgraded or disappears.
+
+Next we'll define a tuple of :class:`.Condition` objects for ``LOW`` and ``MEDIUM`` severity objects.
+
+Starting with the ``LOW`` severity alarm::
+
         conditions = (
             (
             AlarmSeverity.LOW,
-                condition.ValueCondition(
-                    value_name=ValueName.PIP,
-                    limit=VALUES[ValueName.PIP]['safe_range'][0],
-                    mode='min',
-                    depends={
-                        'value_name': ValueName.PIP,
-                        'value_attr': 'value',
-                        'condition_attr': 'limit',
-                        'transform': lambda x : x-(x*0.10)
-                    }
-                )
+            condition.ValueCondition(
+                value_name=ValueName.PIP,
+                limit=VALUES[ValueName.PIP]['safe_range'][0],
+                mode='min',
+                depends={
+                    'value_name': ValueName.PIP,
+                    'value_attr': 'value',
+                    'condition_attr': 'limit',
+                    'transform': lambda x : x-(x*0.10)
+                })
             ),
+            # ... continued in next block
+
+Each condition is a tuple of an ``(:class:`.AlarmSeverity`, :class:`.Condition`)``. In this case,
+we use a :class:`.ValueCondition` which tests whether a value is above or below a set ``'max'`` or ``'min'``, respectively.
+For the low severity ``LOW_PRESSURE`` alarm, we test if ``ValueName.PIP`` is below (``mode='min'``) some ``limit``, which
+is initialized as the low-end of ``PIP``'s safe range.
+
+We also define a condition for updating the ``'limit'`` of the condition (``'condition_attr' : 'limit'``), from the
+:attr:`.ControlSetting.value`` field whenever ``PIP`` is updated. Specifically, we set the ``limit`` to be 10% less than the
+set ``PIP`` value by 10% with a lambda function (``lambda x : x-(x*0.10)``).
+
+Next, we define the ``MEDIUM`` severity alarm condition::
+
+
             (
             AlarmSeverity.MEDIUM,
-                condition.ValueCondition(
-                    value_name=ValueName.PIP,
-                    limit=VALUES[ValueName.PIP]['safe_range'][0]- \
-                          VALUES[ValueName.PIP]['safe_range'][0]*0.15,
-                    depends={
-                        'value_name': ValueName.PIP,
-                        'value_attr': 'value',
-                        'condition_attr': 'limit',
-                        'transform': lambda x: x - (x * 0.15)
-                    },
-                    mode='min'
-                ) + \
-                condition.CycleAlarmSeverityCondition(
-                    alarm_type = AlarmType.LOW_PRESSURE,
-                    severity   = AlarmSeverity.LOW,
-                    n_cycles = 2
-                )
-            )
-        )
-    )
+            condition.ValueCondition(
+                value_name=ValueName.PIP,
+                limit=VALUES[ValueName.PIP]['safe_range'][0]- \
+                      VALUES[ValueName.PIP]['safe_range'][0]*0.15,
+                depends={
+                    'value_name': ValueName.PIP,
+                    'value_attr': 'value',
+                    'condition_attr': 'limit',
+                    'transform': lambda x: x - (x * 0.15)
+                },
+                mode='min'
+            ) + \
+            condition.CycleAlarmSeverityCondition(
+                alarm_type = AlarmType.LOW_PRESSURE,
+                severity   = AlarmSeverity.LOW,
+                n_cycles = 2
+            ))
 
 
 Main Alarm Module
@@ -76,13 +103,7 @@ Main Alarm Module
     :undoc-members:
     :autosummary:
 
-.. toctree::
-    :hidden:
 
-    Alarm Manager <alarm.alarm_manager>
-    Alarm <alarm.alarm>
-    Alarm Rule <alarm.alarm_rule>
-    Alarm Condition <alarm.condition>
 
 
 

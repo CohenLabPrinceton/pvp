@@ -40,7 +40,6 @@ ALARM_RULES = odict({
     AlarmType.LOW_PRESSURE: Alarm_Rule(
         name = AlarmType.LOW_PRESSURE,
         latch = False,
-        persistent = False,
         conditions = (
             (
             AlarmSeverity.LOW,
@@ -81,7 +80,6 @@ ALARM_RULES = odict({
     AlarmType.HIGH_PRESSURE: Alarm_Rule(
         name = AlarmType.HIGH_PRESSURE,
         latch = True,
-        persistent = True,
         conditions = (
             (
             AlarmSeverity.HIGH,
@@ -102,7 +100,6 @@ ALARM_RULES = odict({
     AlarmType.LOW_VTE: Alarm_Rule(
         name = AlarmType.LOW_VTE,
         latch = False,
-        persistent = False,
         conditions = (
             (
             AlarmSeverity.LOW,
@@ -143,7 +140,6 @@ ALARM_RULES = odict({
     AlarmType.HIGH_VTE: Alarm_Rule(
         name = AlarmType.HIGH_VTE,
         latch = False,
-        persistent = False,
         conditions = (
             (
             AlarmSeverity.LOW,
@@ -184,7 +180,6 @@ ALARM_RULES = odict({
     AlarmType.LOW_PEEP: Alarm_Rule(
         name = AlarmType.LOW_PEEP,
         latch = False,
-        persistent = False,
         conditions = (
             (
             AlarmSeverity.MEDIUM,
@@ -205,7 +200,6 @@ ALARM_RULES = odict({
     AlarmType.HIGH_PEEP: Alarm_Rule(
         name = AlarmType.HIGH_PEEP,
         latch = False,
-        persistent = False,
         conditions = (
             (
             AlarmSeverity.MEDIUM,
@@ -227,7 +221,6 @@ ALARM_RULES = odict({
     AlarmType.LOW_O2: Alarm_Rule(
         name=AlarmType.LOW_O2,
         latch=False,
-        persistent=False,
         conditions=(
             (
                 AlarmSeverity.MEDIUM,
@@ -242,7 +235,6 @@ ALARM_RULES = odict({
     AlarmType.HIGH_O2: Alarm_Rule(
         name=AlarmType.HIGH_O2,
         latch=False,
-        persistent=False,
         conditions=(
             (
                 AlarmSeverity.MEDIUM,

@@ -1034,21 +1034,18 @@ class PVP_Gui(QtWidgets.QMainWindow):
                     severity=AlarmSeverity.LOW,
                     start_time=time.time(),
                     latch=True,
-                    persistent=True,
                     cause=[ValueName.VTE])
 
         med = Alarm(alarm_type=AlarmType.LOW_PEEP,
                     severity=AlarmSeverity.MEDIUM,
                     start_time=time.time(),
                     latch=True,
-                    persistent=True,
                     cause=[ValueName.PEEP])
 
         high = Alarm(alarm_type=AlarmType.HIGH_PRESSURE,
                     severity=AlarmSeverity.HIGH,
                     start_time=time.time(),
                     latch=True,
-                    persistent=True,
                     cause=[ValueName.PIP])
 
         self.handle_alarm(low)

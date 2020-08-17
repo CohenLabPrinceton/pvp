@@ -9,20 +9,18 @@ class Alarm_Rule(object):
     """
     * name of rule
     * conditions: ((alarm_type, (condition_1, condition_2)), ...)
-    * persistent (bool): if True, alarm will not be visually dismissed until alarm conditions are no longer true
     * latch (bool): if True, alarm severity cannot be decremented until user manually dismisses
 
     * silencing/overriding rules
     """
 
-    def __init__(self, name: AlarmType, conditions, latch=True, persistent=True, technical=False):
+    def __init__(self, name: AlarmType, conditions, latch=True, technical=False):
         super(Alarm_Rule, self).__init__()
 
         self.name = name
         self.conditions = conditions
         self.technical = technical
         self.latch = latch
-        self.persistent = persistent
 
         self._severity = AlarmSeverity.OFF
 

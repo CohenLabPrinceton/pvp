@@ -23,7 +23,6 @@ class Alarm:
                  severity: AlarmSeverity,
                  start_time: float = None,
                  latch: bool = True,
-                 persistent: bool = True,
                  cause: list = None,
                  value=None,
                  message=None):
@@ -63,7 +62,6 @@ class Alarm:
         self.value = value
         self.message = message
         self.latch = latch
-        self.persistent = persistent
         self.cause = cause
 
         # if not managed:

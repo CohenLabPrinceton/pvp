@@ -57,9 +57,6 @@ class Value(object):
                  group: typing.Union[None, dict] = None,
                  default: (int, float) = None):
         """
-        Definition of a value.
-
-        Used by the GUI and control module to set defaults.
 
         Args:
             name (str): Human-readable name of the value
@@ -314,7 +311,14 @@ class Value(object):
     def __getitem__(self, key):
         return self.__getattribute__(key)
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """
+        Gather up all attributes and return as a dict!
+
+        Returns:
+            dict
+        """
+
         return {
             'name': self.name,
             'units': self.units,

@@ -1,14 +1,3 @@
-"""
-Values
-=======
-
-
-
-Subheading
------------
-
-"""
-
 from collections import OrderedDict as odict
 from enum import Enum, auto
 import typing

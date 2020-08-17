@@ -1,5 +1,8 @@
 .. _prefs_overview:
 
+Prefs
+=========
+
 Prefs set configurable parameters used throughout PVP.
 
 See :data:`.prefs._DEFAULTS` for description of all available parameters
@@ -21,8 +24,6 @@ are durable between runtimes.
 
 Additional ``prefs`` should be added by adding an entry in the :data:`.prefs._DEFAULTS` dict rather than hardcoding them elsewhere in the program.
 
-Prefs
-=========
 
 .. automodule:: pvp.common.prefs
    :members:

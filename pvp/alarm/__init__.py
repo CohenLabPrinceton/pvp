@@ -16,7 +16,8 @@ class AlarmType(Enum):
     MISSED_HEARTBEAT = auto()
 
     @property
-    def human_name(self):
+    def human_name(self) -> str:
+        """Replace ``.name`` underscores with spaces"""
         return self.name.replace('_', ' ')
 
 

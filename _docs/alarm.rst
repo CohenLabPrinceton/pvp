@@ -5,8 +5,7 @@ Alarm System Overview
 ----------------------
 
 Alarms are represented as :class:`~.alarm.Alarm` objects, which are created and managed by the
-:class:`~.alarm.Alarm_Manager`. A collection of :class:`~.alarm.Alarm_Rule` s
- define the :class:`~.alarm.Condition` s
+:class:`.Alarm_Manager`. A collection of :class:`.Alarm_Rule` s define the :class:`.Condition` s
 for raising :class:`~.alarm.Alarm` s of different :class:`~.alarm.AlarmSeverity` . The alarm manager is
 continuously fed :class:`~.message.SensorValues` objects during :meth:`.PVP_Gui.update_gui`, which it uses to
 :meth:`~.Alarm_Rule.check` each alarm rule. The alarm manager emits :class:`~.alarm.Alarm` objects to the
@@ -16,7 +15,7 @@ when control parameters are set (eg. updates the ``HIGH_PRESSURE`` alarm to be t
 Alarm Rule Example
 ~~~~~~~~~~~~~~~~~~~
 
-One :class:`~.alarm.Alarm_Rule` is defined for each :class:`~.alarm.AlarmType` in :data:`.alarm.ALARM_RULES`.
+One :class:`.Alarm_Rule` is defined for each :class:`~.alarm.AlarmType` in :data:`.ALARM_RULES`.
 
 An alarm rule defines:
 

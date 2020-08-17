@@ -1,7 +1,7 @@
 Alarm Condition
 ===================
 
-Condition objects define conditions that can raise alarms.
+Condition objects define conditions that can raise alarms. They are used by :class:`.Alarm_Rule` s.
 
 Each has to define a :meth:`.Condition.check` method that accepts :class:`.SensorValues` .
 The method should return ``True`` if the alarm condition is met, and ``False`` otherwise.

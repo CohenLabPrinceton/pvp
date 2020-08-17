@@ -7,6 +7,16 @@ from collections import OrderedDict as odict
 from pvp.common.loggers import init_logger
 
 class SensorValues:
+    """
+    Structured class for communicating sensor readings throughout PVP.
+
+    Should be instantiated with each of the :attr:`.SensorValues.additional_values`, and values for all
+    :class:`.ValueName` s in :data:`.values.SENSOR` by passing them in the ``vals`` kwarg.
+    An ``AssertionError`` if an incomplete set of values is given.
+
+    Values can be accessed either via attribute name (``SensorValues.PIP``) or like a dictionary (``SensorValues['PIP']``)
+
+    """
 
     additional_values = ('timestamp', 'loop_counter', 'breath_count')
     """
@@ -15,14 +25,6 @@ class SensorValues:
 
     def __init__(self, timestamp=None, loop_counter=None, breath_count=None, vals=typing.Union[None, typing.Dict['ValueName', float]], **kwargs):
         """
-        Structured class for communicating sensor readings throughout PVP.
-
-        Should be instantiated with each of the :attr:`.SensorValues.additional_values`, and values for all
-        :class:`.ValueName` s in :data:`.values.SENSOR` by passing them in the ``vals`` kwarg.
-        An ``AssertionError`` if an incomplete set of values is given.
-
-        Values can be accessed either via attribute name (``SensorValues.PIP``) or like a dictionary (``SensorValues['PIP']``)
-
         Args:
             timestamp (float): from time.time(). must be passed explicitly or as an entry in ``vals``
             loop_counter (int): number of control_module loops. must be passed explicitly or as an entry in ``vals``

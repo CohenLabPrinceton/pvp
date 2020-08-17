@@ -83,7 +83,7 @@ Main Alarm Module
     Alarm Manager <alarm.alarm_manager>
     Alarm <alarm.alarm>
     Alarm Rule <alarm.alarm_rule>
-    Alarm Condition <alarm.condition
+    Alarm Condition <alarm.condition>
 
 
 

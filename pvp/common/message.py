@@ -1,4 +1,5 @@
 import time
+import typing
 
 from pvp.common import values
 from copy import copy
@@ -8,14 +9,26 @@ from pvp.common.loggers import init_logger
 class SensorValues:
 
     additional_values = ('timestamp', 'loop_counter', 'breath_count')
-    def __init__(self, timestamp=None, loop_counter=None, breath_count=None, vals=None, **kwargs):
-        """
+    """
+    Additional attributes that are not :class:`.ValueName` s that are expected in each SensorValues message
+    """
 
+    def __init__(self, timestamp=None, loop_counter=None, breath_count=None, vals=typing.Union[None, typing.Dict['ValueName', float]], **kwargs):
+        """
+        Structured class for communicating sensor readings throughout PVP.
+
+        Should be instantiated with each of the :attr:`.SensorValues.additional_values`, and values for all
+        :class:`.ValueName` s in :data:`.values.SENSOR` by passing them in the ``vals`` kwarg.
+        An ``AssertionError`` if an incomplete set of values is given.
+
+        Values can be accessed either via attribute name (``SensorValues.PIP``) or like a dictionary (``SensorValues['PIP']``)
 
         Args:
             timestamp (float): from time.time(). must be passed explicitly or as an entry in ``vals``
             loop_counter (int): number of control_module loops. must be passed explicitly or as an entry in ``vals``
             breath_count (int): number of breaths taken. must be passed explicitly or as an entry in ``vals``
+            vals (None, dict): Dict of ``{ValueName: float}`` that contains current sensor readings. Can also be equivalently given as ``kwargs`` .
+                if None, assumed values are being passed as kwargs, but an exception will be raised if they aren't.
             **kwargs: sensor readings, must be in :data:`pvp.values.SENSOR.keys`
         """
 
@@ -66,9 +79,15 @@ class SensorValues:
             else:
                 raise KeyError(f'value {key} not declared in pvp.values!!!')
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """
+        Return a dictionary of all sensor values and additional values
+
+        Returns:
+            dict
+        """
         ret_dict = {
-            valname: getattr(self,valname.name) for valname in values.SENSOR.keys()
+            valname: getattr(self, valname.name) for valname in values.SENSOR.keys()
         }
 
         ret_dict.update({
@@ -97,43 +116,6 @@ class SensorValues:
         else:
             raise KeyError(f'No such value as {key}')
 
-
-class ControlValues:
-    """
-    Class to save control values, analogous to SensorValues.
-    Key difference: SensorValues come exclusively from the sensors, ControlValues contains controller variables, i.e. control signals and controlled signals (the flows).
-    :param control_signal_in:
-    :param control_signal_out:
-    """
-    def __init__(self, control_signal_in, control_signal_out):
-        self.control_signal_in = control_signal_in
-        self.control_signal_out = control_signal_out
-
-class DerivedValues:
-    """
-    Class to save derived values, analogous to SensorValues.
-    Key difference: SensorValues come exclusively from the sensors, DerivedValues contain estimates of I_PHASE_DURATION, PIP_TIME, PEEP_time, PIP, PIP_PLATEAU, PEEP, and VTE.
-    :param timestamp:
-    :param breath_count:
-    :param I_phase_duration:
-    :param pip_time:
-    :param peep_time:
-    :param pip:
-    :param pip_plateau:
-    :param peep:
-    :param vte:
-    """
-    def __init__(self, timestamp, breath_count, I_phase_duration, pip_time, peep_time, pip, pip_plateau, peep, vte):
-        self.timestamp        = timestamp
-        self.breath_count     = breath_count
-        self.I_phase_duration = I_phase_duration
-        self.pip_time         = pip_time
-        self.peep_time        = peep_time
-        self.pip              = pip
-        self.pip_plateau      = pip_plateau
-        self.peep             = peep
-        self.vte              = vte
-
 class ControlSetting:
     def __init__(self,
                  name: values.ValueName,
@@ -143,15 +125,21 @@ class ControlSetting:
                  timestamp: float =None,
                  range_severity: 'AlarmSeverity' = None):
         """
+        Message containing ventilation control parameters.
+
+        At least **one of** ``value``, ``min_value``, or ``max_value`` must be given (unlike :class:`.SensorValues` which requires
+        all fields to be present) -- eg. in the case where one is setting alarm thresholds without changing the actual set value
+
+        When a parameter has multiple alarm limits for different alarm severities, the severity should be passed to ``range_severity``
 
         Args:
-            name:
-            value:
-            min_value:
-            max_value:
-            timestamp (float): ``time.time()``
+            name ( :class:`.ValueName` ): Name of value being set
+            value (float): Value to set control
+            min_value (float): Value to set control minimum (typically used for alarm thresholds)
+            max_value (float): Value to set control maximum (typically used for alarm thresholds)
+            timestamp (float): ``time.time()`` control message was generated
             range_severity (:class:`.AlarmSeverity`): Some control settings have multiple limits for different alarm severities,
-                this attr, when present, specified which is being set.
+                this attr, when present, specifies which is being set.
         """
         if isinstance(name, str):
             try:
@@ -181,11 +169,46 @@ class ControlSetting:
         self.timestamp = timestamp
         self.range_severity = range_severity
 
+class ControlValues:
+    """
+    Class to save control values, analogous to SensorValues.
 
-class Error:
-    def __init__(self, errnum, err_str, timestamp):
-        self.errnum = errnum
-        self.err_str = err_str
-        self.timestamp = timestamp
+    Used by the controller to save waveform data in :meth:`.DataLogger.store_waveform_data` and :meth:`.ControlModuleBase.__save_values``
 
+    Key difference: SensorValues come exclusively from the sensors, ControlValues contains controller variables, i.e. control signals and controlled signals (the flows).
+    :param control_signal_in:
+    :param control_signal_out:
+    """
+    def __init__(self, control_signal_in, control_signal_out):
+        self.control_signal_in = control_signal_in
+        self.control_signal_out = control_signal_out
+
+class DerivedValues:
+    """
+    Class to save derived values, analogous to SensorValues.
+
+    Used by controller to store derived values (like PIP from Pressure) in :meth:`.DataLogger.store_derived_data` and
+    in :meth:`.ControlModuleBase.__analyze_last_waveform``
+
+    Key difference: SensorValues come exclusively from the sensors, DerivedValues contain estimates of I_PHASE_DURATION, PIP_TIME, PEEP_time, PIP, PIP_PLATEAU, PEEP, and VTE.
+    :param timestamp:
+    :param breath_count:
+    :param I_phase_duration:
+    :param pip_time:
+    :param peep_time:
+    :param pip:
+    :param pip_plateau:
+    :param peep:
+    :param vte:
+    """
+    def __init__(self, timestamp, breath_count, I_phase_duration, pip_time, peep_time, pip, pip_plateau, peep, vte):
+        self.timestamp        = timestamp
+        self.breath_count     = breath_count
+        self.I_phase_duration = I_phase_duration
+        self.pip_time         = pip_time
+        self.peep_time        = peep_time
+        self.pip              = pip
+        self.pip_plateau      = pip_plateau
+        self.peep             = peep
+        self.vte              = vte
 

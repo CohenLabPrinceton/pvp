@@ -1,13 +1,7 @@
 Alarm
 ==========
 
-.. toctree::
-    :hidden:
 
-    Alarm Manager <alarm.alarm_manager>
-    Alarm <alarm.alarm>
-    Alarm Rule <alarm.alarm_rule>
-    Alarm Condition <alarm.condition>
 
 Alarm System Overview
 ----------------------
@@ -20,6 +14,25 @@ continuously fed :class:`~.message.SensorValues` objects during :meth:`.PVP_Gui.
 :meth:`.PVP_Gui.handle_alarm` method. The alarm manager also updates alarm thresholds set as :attr:`.Condition.depends`
 when control parameters are set (eg. updates the ``HIGH_PRESSURE`` alarm to be triggered 15% above some set ``PIP`` ).
 
+Alarm Modules
+---------------
+
+.. toctree::
+    :hidden:
+
+    Alarm Manager <alarm.alarm_manager>
+    Alarm <alarm.alarm>
+    Alarm Rule <alarm.alarm_rule>
+    Alarm Condition <alarm.condition>
+
+.. raw:: html
+
+    <div class="software-summary">
+        <a href="alarm.alarm_manager.html"><h2>Control Panel</h2></a> <p>Computes alarm logic and emits alarms to the GUI</p>
+        <a href="alarm.alarm.html"><h2>Alarm Bar</h2></a> <p>Objects used to represent alarms</p>
+        <a href="alarm.alarm_rule.html"><h2>Display</h2></a> <p>Define conditions for triggering alarms and their behavior</p>
+        <a href="alarm.condition.html"><h2>Plot</h2></a> <p>Objects to check for alarm state</p>
+    </div>
 
 
 Main Alarm Module

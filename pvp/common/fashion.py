@@ -1,7 +1,7 @@
 """ Decorators for dangerous functions
 
 """
-from pvp.common.loggers import log_exception
+from pvp.common.loggers import init_logger
 import traceback
 import functools
 
@@ -31,8 +31,7 @@ def locked(func):
             self.lock.acquire()
             ret = func(self, *args, **kwargs)
         except Exception as e:
-            log_exception(
-                e,
+            init_logger(__name__).exception(
                 traceback.TracebackException.from_exception(e, limit=MAX_STACK_DEPTH)
             )
         finally:
@@ -50,7 +49,7 @@ def pigpio_command(func):
         try:
             result = func(self, *args, **kwargs)
         except Exception as e:
-            log_exception(e, traceback.TracebackException.from_exception(e))
+            init_logger(__name__).exception(traceback.TracebackException.from_exception(e))
         return result
 
     return exception_catcher

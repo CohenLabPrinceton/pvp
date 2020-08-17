@@ -19,11 +19,9 @@ class Condition(object):
     """
     Base class for specifying alarm test conditions
 
-    Need to be able to condition alarms based on
-    * value ranges
-    * value ranges & durations
-    * levels of other alarms
+    Subclasses must define :meth:`.Condition.check` and :meth:`.Conditino.reset`
 
+    Condition objects can be added together to create compound conditions.
 
     Attributes:
         manager (:class:`pvp.alarm.alarm_manager.Alarm_Manager`): alarm manager, used to get status of alarms

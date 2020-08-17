@@ -247,4 +247,7 @@ ALARM_RULES = odict({
         )
     ),
 })
+"""
+Definitions of all :class:`.Alarm_Rule` s used by the :class:`.Alarm_Manager`
+"""
 

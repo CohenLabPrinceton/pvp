@@ -74,6 +74,8 @@ class Alarm_Rule(object):
                 if condition.depends.get('value_name', False):
                     depends.append(condition.depends['value_name'])
 
+        depends = list(set(depends))
+
         return depends
 
     @property

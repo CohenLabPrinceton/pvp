@@ -1,6 +1,8 @@
 import operator
 import types
 import importlib
+import copy
+
 
 from pvp.alarm import AlarmType, AlarmSeverity
 from pvp.common.message import SensorValues
@@ -89,14 +91,17 @@ class Condition(object):
         # can't just add any ole apples n oranges
         assert(issubclass(type(other), Condition))
 
-        if self._child is None:
+        _self = copy.deepcopy(self)
+
+        if _self._child is None:
             # if something hasn't been added to us yet...
             # claim our child
-            self._child = other
+            _self._child = other
 
             # override our check method so we check recursively
             # make a quick backup first tho yno
-            self._check = self.check
+            _self._check = _self.check
+            _self._reset = _self.reset
 
             def new_check(self, sensor_values):
                 if not self._check(sensor_values):
@@ -108,14 +113,20 @@ class Condition(object):
                     return self._child.check(sensor_values)
 
             # use python types to programmatically reassign method
-            self.check = types.MethodType(new_check, self)
+            _self.check = types.MethodType(new_check, _self)
+
+            def new_reset(self):
+                self._reset()
+                self._child.reset()
+
+            _self.reset = types.MethodType(new_reset, _self)
 
         else:
             # if we have already had something added to us,
             # add it to our child instead, (also potentially recursively)
-            self._child = self._child + other
+            _self._child = _self._child + other
 
-        return self
+        return _self
 
 
 class ValueCondition(Condition):
@@ -400,7 +411,7 @@ class CycleAlarmSeverityCondition(AlarmSeverityCondition):
 
     @n_cycles.setter
     def n_cycles(self, n_cycles):
-        if not isinstance(n_cycles, int):
+        if not isinstance(n_cycles, int): # pragma: no cover
             n_cycles = int(round(n_cycles))
         assert(n_cycles>0)
         self._n_cycles = n_cycles

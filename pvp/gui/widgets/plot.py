@@ -224,13 +224,13 @@ class Plot(pg.PlotWidget):
         if limits.name in self._plot_limits.keys():
 
             if limits.min_value:
-                if self._convert_out:
-                    self._plot_limits[limits.name][0].setPos(self._convert_out(limits.min_value))
+                if self._convert_in:
+                    self._plot_limits[limits.name][0].setPos(self._convert_in(limits.min_value))
                 else:
                     self._plot_limits[limits.name][0].setPos(limits.min_value)
             if limits.max_value:
-                if self._convert_out:
-                    self._plot_limits[limits.name][1].setPos(self._convert_out(limits.max_value))
+                if self._convert_in:
+                    self._plot_limits[limits.name][1].setPos(self._convert_in(limits.max_value))
                 else:
                     self._plot_limits[limits.name][1].setPos(limits.max_value)
 

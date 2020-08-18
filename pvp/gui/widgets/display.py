@@ -493,7 +493,7 @@ class Display(QtWidgets.QWidget):
 
                 dialog = pop_dialog(
                     message = f'Confirm setting potentially unsafe {self.name} value',
-                    sub_message= f'Values of {self.name} outside of {self.safe_range[0]}-{self.safe_range[1]} {self.units} are usually unsafe.\n\nAre you sure you want to set {self.name} to {orig_value} {self.units}',
+                    sub_message= f'Values of {self.name} outside of {safe_range[0]}-{safe_range[1]} {self.units} are usually unsafe.\n\nAre you sure you want to set {self.name} to {orig_value} {self.units}',
                     buttons =  QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok,
                     default_button =  QtWidgets.QMessageBox.Cancel
                 )
@@ -632,12 +632,15 @@ class Display(QtWidgets.QWidget):
                 if self.control == "slider":
                     try:
                         self.slider.blockSignals(True)
-                        self.slider.setValue(set_value)
                         self.slider.setMinimum(abs_range[0])
                         self.slider.setMaximum(abs_range[1])
                         self.slider.setDecimals(self.decimals)
+                        self.slider.setValue(set_value)
+                        self.slider.update()
                         self.slider_min.setText(unit_conversion.rounded_string(abs_range[0], self.decimals))
                         self.slider_max.setText(unit_conversion.rounded_string(abs_range[1], self.decimals))
+                    except Exception as e:
+                        self.logger.exception(e)
                     finally:
                         self.slider.blockSignals(False)
 

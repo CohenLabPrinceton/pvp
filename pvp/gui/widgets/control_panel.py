@@ -14,16 +14,37 @@ import pvp
 
 class Control_Panel(QtWidgets.QGroupBox):
     """
+    The control panel starts and stops ventilation and controls runtime settings
+
+    It creates:
+
     * Start/stop button
     * Status indicator - a clock that increments with heartbeats,
         or some other visual indicator that things are alright
-    * Status bar - most recent alarm or notification w/ means of clearing
-    * Override to give 100% oxygen and silence all alarms
+    * Version indicator
+    * Buttons to select options like cycle autoset and automatic breath detection
+
+    Args:
+
+    Attributes:
+        start_button ( :class:`.Start_Button` ): Button to start and stop ventilation
+        lock_button ( :class:`.Lock_Button` ): Button used to lock controls
+        heartbeat ( :class:`.HeartBeat` ): Widget to keep track of communication with controller
+        runtime ( :class:`.StopWatch` ): Widget used to display time since start of ventilation
 
     """
 
     pressure_units_changed = QtCore.Signal(str)
+    """
+    Signal emitted when pressure units have been changed.
+    
+    Contains str of current pressure units
+    """
+
     cycle_autoset_changed = QtCore.Signal()
+    """
+    Signal emitted when a different breath cycle control value is set to be autocalculated
+    """
 
     def __init__(self):
         super(Control_Panel, self).__init__('Control Panel')
@@ -33,6 +54,7 @@ class Control_Panel(QtWidgets.QGroupBox):
         self.init_ui()
 
     def init_ui(self):
+        """Initialize all graphical elements and buttons!"""
 
         self.setStyleSheet(styles.CONTROL_PANEL)
 
@@ -190,27 +212,31 @@ class Control_Panel(QtWidgets.QGroupBox):
         # self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
         #                    QtWidgets.QSizePolicy.Expanding)
 
-    def add_alarm(self, alarm: Alarm):
+    def _pressure_units_changed(self, button):
         """
-        Wraps  :meth:`.Alarm_Bar.add_alarm`
+        Emit the str of the current pressure units
 
         Args:
-            alarm (:class:`.Alarm`): passed to :class:`Alarm_Bar`
+            button ( :class:`PySide2.QtWidgets.QPushButton` ): Button that was clicked
         """
-        self.alarm_bar.add_alarm(alarm)
-
-    def clear_alarm(self, alarm: Alarm = None, alarm_type: AlarmType = None):
-        """
-        Wraps :meth:`.Alarm_Bar.clear_alarm`
-        """
-        self.alarm_bar.clear_alarm(alarm, alarm_type)
-
-    def _pressure_units_changed(self, button):
         self.pressure_units_changed.emit(button.text())
 
 
 class Start_Button(QtWidgets.QToolButton):
+    """
+    Button to start and stop Ventilation, created by :class:`.Control_Panel`
+
+    Attributes:
+        pixmaps (dict): Dictionary containing pixmaps used to draw start/stop state
+
+
+    """
+
     states = ['OFF', 'ON', 'ALARM']
+    """
+    Possible states of Start_Button
+    """
+
     def __init__(self, *args, **kwargs):
         super(Start_Button, self).__init__(*args, **kwargs)
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
@@ -229,6 +255,9 @@ class Start_Button(QtWidgets.QToolButton):
         self.set_state('OFF')
 
     def load_pixmaps(self):
+        """
+        Load pixmaps to :attr:`.Start_Button.pixmaps`
+        """
         gui_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         power_dir = os.path.join(gui_dir, 'images', 'power')
 
@@ -236,13 +265,14 @@ class Start_Button(QtWidgets.QToolButton):
         self.pixmaps['ON'] =  QtGui.QPixmap(os.path.join(power_dir, 'start_button_on.png'))
         self.pixmaps['ALARM'] =  QtGui.QPixmap(os.path.join(power_dir, 'start_button_alarm.png'))
 
-
     def set_state(self, state):
         """
+        Set state of button
+
         Should only be called by other objects (as there are checks to whether it's ok to start/stop that we shouldn't be aware of)
 
         Args:
-            state (str): ``('OFF', 'ON', 'ALARM')``
+            state (str): one of ``('OFF', 'ON', 'ALARM')``
         """
         self.blockSignals(True)
         if state == "OFF":
@@ -261,8 +291,21 @@ class Start_Button(QtWidgets.QToolButton):
         self.blockSignals(False)
 
 class Lock_Button(QtWidgets.QToolButton):
+    """
+    Button to lock and unlock controls
+
+    Created by :class:`.Control_Panel`
+
+    Attributes:
+        pixmaps (dict): Dictionary containing pixmaps used to draw locked/unlocked state
+
+    """
 
     states = ['DISABLED', 'UNLOCKED', 'LOCKED']
+    """
+    Possible states of Lock Button
+    """
+
     def __init__(self, *args, **kwargs):
         super(Lock_Button, self).__init__(*args, **kwargs)
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
@@ -280,6 +323,9 @@ class Lock_Button(QtWidgets.QToolButton):
         self.set_state('DISABLED')
 
     def load_pixmaps(self):
+        """
+        Load pixmaps used to display lock state to :attr:`.Lock_Button.pixmaps`
+        """
         gui_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         lock_dir = os.path.join(gui_dir, 'images', 'lock')
 
@@ -289,6 +335,8 @@ class Lock_Button(QtWidgets.QToolButton):
 
     def set_state(self, state):
         """
+        Set lock state of button
+
         Should only be called by other objects (as there are checks to whether it's ok to start/stop that we shouldn't be aware of)
 
         Args:
@@ -311,19 +359,38 @@ class Lock_Button(QtWidgets.QToolButton):
 
 
 class HeartBeat(QtWidgets.QFrame):
+    """
+    Track state of connection with Controller
+
+    Check when we last had contact with controller every :attr:`.HeartBeat.update_interval` ms,
+    if longer than :attr:`.HeartBeat.timeout_dur` then emit a timeout signal
+
+    Args:
+        update_interval (int): How often to do the heartbeat, in ms
+        timeout (int): how long to wait before hearing from control process, in ms
+
+    Attributes:
+        _state (bool): whether the system is running or not
+        _last_heartbeat (float): Timestamp of last contact with controller
+        start_time (float): Time that ventilation was started
+        timer ( :class:`PySide2.QtCore.QTimer` ): Timer that checks for last contact
+        update_interval (int): How often to do the heartbeat, in ms
+        timeout (int): how long to wait before hearing from control process, in ms
+
+
+    """
 
     timeout = QtCore.Signal(bool)
+    """
+    Signal that a timeout has occurred -- too long between contact with controller.
+    """
+
     heartbeat = QtCore.Signal(float)
+    """
+    Signal that requests to affirm contact with controller if no message has been received in timeout duration
+    """
 
-    def __init__(self, update_interval = 100, timeout_dur = 5000):
-        """
-        Attributes:
-            _state (bool): whether the system is running or not
-
-        Args:
-            update_interval (int): How often to do the heartbeat, in ms
-            timeout (int): how long to wait before hearing from control process
-        """
+    def __init__(self, update_interval: int = 100, timeout_dur: int = 5000):
 
         super(HeartBeat, self).__init__()
 
@@ -342,6 +409,9 @@ class HeartBeat(QtWidgets.QFrame):
         get_gui_instance().gui_closing.connect(self.timer.stop)
 
     def init_ui(self):
+        """
+        Initialize labels and status indicator
+        """
 
         self.layout = QtWidgets.QHBoxLayout()
 
@@ -367,6 +437,14 @@ class HeartBeat(QtWidgets.QFrame):
 
     @QtCore.Slot(bool)
     def set_state(self, state):
+        """
+        Set running state
+
+        if just starting reset :attr:`.HeartBeat._last_heartbeat`
+
+        Args:
+            state (bool): Whether we are starting (True) or stopping (False)
+        """
         # if current state is false and turning on, reset _last_heartbeat so we don't
         # jump immediately into timeout
         if not self._state and state:
@@ -374,6 +452,12 @@ class HeartBeat(QtWidgets.QFrame):
         self._state = state
 
     def set_indicator(self, state=None):
+        """
+        Set visual indicator
+
+        Args:
+            state ('ALARM', 'OFF', 'NORMAL'): Current state of connection with controller
+        """
         if self._indicator == state:
             return
 
@@ -392,8 +476,10 @@ class HeartBeat(QtWidgets.QFrame):
 
     def start_timer(self, update_interval=None):
         """
+        Start :attr:`.HeartBeat.timer` to check for contact with controller
+
         Args:
-            update_interval (float): How often (in ms) the timer should be updated.
+            update_interval (int): How often (in ms) the timer should be updated. if None, use ``self.update_interval``
         """
         self.start_time = time.time()
         self._last_heartbeat = self.start_time
@@ -405,13 +491,19 @@ class HeartBeat(QtWidgets.QFrame):
 
     def stop_timer(self):
         """
-        you can read the sign ya punk
+        Stop timer and clear text
         """
         self.timer.stop()
         self.setText("")
 
     @QtCore.Slot(float)
     def beatheart(self, heartbeat_time):
+        """
+        Slot that receives timestamps of last contact with controller
+
+        Args:
+            heartbeat_time (float): timestamp of last contact with controller
+        """
         self._last_heartbeat = heartbeat_time
 
     def _heartbeat(self):
@@ -439,16 +531,15 @@ class HeartBeat(QtWidgets.QFrame):
                 self.timeout.emit(True)
 
 
-
-
 class StopWatch(QtWidgets.QLabel):
     def __init__(self, update_interval: float = 100, *args, **kwargs):
         """
+        Simple widget to display ventilation time!
 
         Args:
             update_interval (float): update clock every n seconds
-            *args:
-            **kwargs:
+            *args: passed to :class:`PySide2.QtWidgets.QLabel`
+            **kwargs: passed to :class:`PySide2.QtWidgets.QLabel`
         """
         super(StopWatch, self).__init__(*args, **kwargs)
 
@@ -479,7 +570,7 @@ class StopWatch(QtWidgets.QLabel):
 
     def stop_timer(self):
         """
-        you can read the sign ya punk
+        Stop timer and reset label
         """
         self.timer.stop()
         self.setText("")
@@ -489,18 +580,4 @@ class StopWatch(QtWidgets.QLabel):
 
         secs_elapsed = time.time()-self.start_time
         self.setText("{:02d}:{:02d}:{:.2f}".format(int(secs_elapsed / 3600), int((secs_elapsed / 60)) % 60, secs_elapsed % 60))
-
-
-
-
-
-class Power_Button(QtWidgets.QPushButton):
-
-    def __init__(self):
-
-        super(Power_Button, self).__init__()
-        self.init_ui()
-
-    def init_ui(self):
-        pass
 

@@ -64,8 +64,8 @@ class Plot(pg.PlotWidget):
 
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, name, buffer_size = 4092,
-                 plot_duration = 10,
+    def __init__(self, name: str, buffer_size: int = 4092,
+                 plot_duration: float = 10,
                  plot_limits: tuple = None,
                  color=None,
                  units='',
@@ -89,6 +89,8 @@ class Plot(pg.PlotWidget):
         self.getPlotItem().titleLabel.setAttr('justify', 'left')
 
         self.name = name
+
+        self.logger = init_logger(__name__)
 
         # pdb.set_trace()
 
@@ -204,11 +206,8 @@ class Plot(pg.PlotWidget):
             except IndexError:
                 self.early_curve.setData(plot_timestamps, plot_values)
                 self.late_curve.clear()
-        except:
-            # FIXME: Log this lol
-            print('error plotting value: {}, timestamp: {}'.format(new_value[1], new_value[0]))
-
-        #self._last_time = this_time
+        except Exception as e:  # pragma: no cover
+            self.logger.exception('{}: error plotting value: {}, {}'.format(self.name, new_value[1], e))
 
     # @QtCore.Slot(tuple)
     def set_safe_limits(self, limits: ControlSetting):
@@ -218,7 +217,7 @@ class Plot(pg.PlotWidget):
         Args:
             limits ( :class:`.ControlSetting` ): Controlsetting that has either a ``min_value`` or ``max_value`` defined
         """
-        if self._plot_limits is None:
+        if self._plot_limits is None: # pragma: no cover
             return
 
         if limits.name in self._plot_limits.keys():
@@ -416,7 +415,7 @@ class Plot_Container(QtWidgets.QGroupBox):
             if hasattr(vals, plot_key):
                 try:
                     plot.update_value((time.time(), getattr(vals, 'breath_count'), getattr(vals, plot_key)))
-                except Exception as e:
+                except Exception as e: # pragma: no cover
                     self.logger.exception(f'Couldnt update plot with {plot_key}, got error {e}')
 
     def toggle_plot(self, state: bool):
@@ -462,7 +461,7 @@ class Plot_Container(QtWidgets.QGroupBox):
         Returns:
 
         """
-        if isinstance(duration, str):
+        if isinstance(duration, str): # pragma: no cover
             duration = float(duration)
 
         self.time_box.setText(str(duration))

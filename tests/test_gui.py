@@ -435,6 +435,19 @@ def test_gui_main_etc(qtbot, spawn_gui):
     assert vent_gui.update_period == 0.10
     assert vent_gui.timer.interval() == 0.10 * 1000 # (in ms)
 
+    # test appearing and disappearing plots
+    plot_key = list(values.PLOTS.keys())[0]
+    plot_visible = vent_gui.plot_box.plots[plot_key.name].isVisible()
+
+    vent_gui.plot_box.selection_buttons[plot_key.name].click()
+    visible_now = vent_gui.plot_box.plots[plot_key.name].isVisible()
+    assert plot_visible != visible_now
+
+    vent_gui.plot_box.selection_buttons[plot_key.name].click()
+    how_about_now = vent_gui.plot_box.plots[plot_key.name].isVisible()
+    assert plot_visible == how_about_now
+
+
 
 #########################
 # Test control panel
@@ -668,6 +681,13 @@ def test_editable_label(qtbot):
     assert not label.label.isHidden()
     assert label.lineEdit.isHidden()
     assert label.text() == new_text
+
+    # test is_editable
+    label.setEditable(False)
+    qtbot.mouseClick(label.label, QtCore.Qt.LeftButton, delay=10)
+    assert not label._editing
+    assert not label.label.isHidden()
+    assert label.lineEdit.isHidden()
 
 
 

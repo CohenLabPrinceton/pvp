@@ -273,6 +273,9 @@ def test_alarmseverity_condition(fake_rule, fake_sensors):
     assert cond_2.check() == False
     assert cond_3.check() == True
 
+    manager.rules = {}
+    manager.load_rules()
+
 
 
 def test_cyclealarmseverity_condition():
@@ -364,7 +367,10 @@ def test_condition_dependency(fake_rule, test_mode):
         assert limits_changed[1].min_value == 7
         assert limits_changed[2].min_value == 8
 
-
+    manager.rules = {}
+    manager.dependencies = {}
+    manager.depends_callbacks = []
+    manager.load_rules()
 
 
 

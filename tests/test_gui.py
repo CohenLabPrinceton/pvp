@@ -239,8 +239,8 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
         control_widget.set_value_label.setLabelEditableAction()
         control_widget.set_value_label.lineEdit.setText(str(test_value))
 
-        qtbot.keyPress(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 10)
-        qtbot.keyRelease(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 10)
+        qtbot.keyPress(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
+        qtbot.keyRelease(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
 
         # control_widget.set_value_label.returnPressedAction()
         # should call labelUpdatedAction and send to controller
@@ -544,7 +544,7 @@ def test_doubleslider_minmax(qtbot, generic_minmax):
         # test that values were set correctly
         assert(doubleslider.minimum() == min)
         assert(doubleslider.maximum() == max)
-        
+
         # test below min and above max
         test_min = min - np.random.rand()*multiplier
         test_max = max + np.random.rand()*multiplier

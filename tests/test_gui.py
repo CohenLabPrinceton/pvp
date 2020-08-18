@@ -31,7 +31,7 @@ from pvp.gui import widgets
 from pvp.common import message, values, unit_conversion
 from pvp.common.values import ValueName
 from pvp.coordinator.coordinator import get_coordinator
-from pvp.alarm import AlarmType, AlarmSeverity
+from pvp.alarm import AlarmType, AlarmSeverity, Alarm
 
 # from pvp.common import prefs
 # prefs.set_pref('ENABLE_DIALOGS', False)
@@ -459,6 +459,39 @@ def test_sliders_during_unit_convertion():
 def test_set_breath_detection():
     # TODO: this
     pass
+
+#######################
+# alarm bar
+
+def test_alarm_bar(qtbot):
+
+    alarm_bar = widgets.Alarm_Bar()
+
+    qtbot.addWidget(alarm_bar)
+
+    # raise alarms
+    low = Alarm(alarm_type=AlarmType.HIGH_PRESSURE,
+                severity=AlarmSeverity.LOW, latch=False)
+    med = Alarm(alarm_type = AlarmType.LOW_PEEP,
+                severity=AlarmSeverity.MEDIUM, latch=False)
+    high = Alarm(alarm_type = AlarmType.LOW_VTE,
+                 severity=AlarmSeverity.HIGH, latch=False)
+
+    alarm_bar.add_alarm(med)
+    alarm_bar.add_alarm(low)
+    alarm_bar.add_alarm(high)
+
+    # test reordering
+    assert alarm_bar.alarms == [low, med, high]
+    assert alarm_bar.sound_player.playing
+
+    # clear alarms
+    alarm_bar.clear_alarm(alarm=med)
+    alarm_bar.clear_alarm(alarm_type=high.alarm_type)
+    alarm_bar.clear_alarm(alarm=low)
+
+    assert alarm_bar.alarms == []
+    assert alarm_bar.sound_player.playing == False
 
 
 ###################################

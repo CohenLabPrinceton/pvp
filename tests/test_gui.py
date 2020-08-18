@@ -20,6 +20,7 @@ import pdb
 import pytest
 from time import sleep, time
 
+from .test_alarms import fake_rule
 
 from pytestqt import qt_compat
 from pytestqt.qt_compat import qt_api
@@ -31,7 +32,7 @@ from pvp.gui import widgets
 from pvp.common import message, values, unit_conversion, prefs
 from pvp.common.values import ValueName
 from pvp.coordinator.coordinator import get_coordinator
-from pvp.alarm import AlarmType, AlarmSeverity, Alarm
+from pvp.alarm import AlarmType, AlarmSeverity, Alarm, Alarm_Manager
 
 # from pvp.common import prefs
 # prefs.set_pref('ENABLE_DIALOGS', False)
@@ -45,6 +46,7 @@ import numpy as np
 
 # turn off gui limiting
 gui.limit_gui(False)
+assert gui.limit_gui() == False
 
 n_samples = 100
 decimals = 5
@@ -481,9 +483,25 @@ def test_set_breath_detection(qtbot, spawn_gui):
 #######################
 # alarm bar
 
-def test_alarm_bar(qtbot):
+def test_alarm_bar(qtbot, fake_rule):
 
     alarm_bar = widgets.Alarm_Bar()
+
+    alarm_manager = Alarm_Manager()
+    alarm_manager.reset()
+    alarm_manager.rules = {}
+    alarm_manager.load_rule(fake_rule())
+
+    # make callback to catch emitted alarms
+    global alarms_emitted
+    alarms_emitted = []
+
+    def alarm_cb(alarm):
+        assert isinstance(alarm, Alarm)
+        global alarms_emitted
+        alarms_emitted.append(alarm)
+
+    alarm_manager.add_callback(alarm_cb)
 
     qtbot.addWidget(alarm_bar)
 
@@ -510,6 +528,37 @@ def test_alarm_bar(qtbot):
 
     assert alarm_bar.alarms == []
     assert alarm_bar.sound_player.playing == False
+
+    # add an alarm and replace it with another of the same type
+    med_hapa = Alarm(alarm_type=AlarmType.HIGH_PRESSURE,
+                severity=AlarmSeverity.MEDIUM, latch=False)
+    alarm_bar.add_alarm(low)
+    alarm_bar.add_alarm(med_hapa)
+    assert alarm_bar.alarms == [med_hapa]
+    assert alarm_bar.sound_player.playing == True
+
+    # get an error if try to clear nothing
+    with pytest.raises(ValueError):
+        alarm_bar.clear_alarm()
+
+    # mute the sound
+    alarm_bar.mute_button.click()
+    assert alarm_bar.sound_player._muted
+    assert not alarm_bar.sound_player.playing
+
+    # dismiss the alarm
+    alarm_bar.alarm_cards[0].close_button.click()
+    # check that we get an alarm with alarmseverity off.
+    # the GUI would clear this alarm if so
+    assert alarms_emitted[-1].alarm_type == AlarmType.HIGH_PRESSURE
+    assert alarms_emitted[-1].severity == AlarmSeverity.OFF
+
+    alarm_manager.reset()
+    alarm_manager.rules = {}
+    alarm_manager.dependencies = {}
+    alarm_manager.load_rules()
+
+
 
 
 ###################################

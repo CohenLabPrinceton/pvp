@@ -442,7 +442,7 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
                 self.idx[severity][number] = sound
                 # current_index += 1
 
-            except Exception as e:
+            except Exception as e: # pragma: no cover
                 self.logger.exception(e)
 
         # finish configuring audio objects
@@ -463,7 +463,7 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
         """
 
         # self.playlist.setPlaybackMode(QtMultimedia.QMediaPlaylist.CurrentItemInLoop)
-        if self.playing:
+        if self.playing: # pragma: no cover
             self.logger.warning('play method called for sounds but sounds are already playing')
             return
 
@@ -472,7 +472,7 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
             self._current_sound.play()
             self._increment_timer.start()
             self.logger.debug('Playback Started')
-        else:
+        else: # pragma: no cover
             self.playing = False
             self.logger.exception("No sound selected before using play method")
         # self.player.play()
@@ -544,10 +544,12 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
             self._muted = True
             if self._current_sound:
                 self._current_sound.stop()
+                self.playing = False
 
         else:
             self._muted = False
             if self._current_sound:
                 self._current_sound.play()
+                self.playing = True
 
 

@@ -50,6 +50,7 @@ def pigpio_command(func):
             result = func(self, *args, **kwargs)
         except Exception as e:
             init_logger(__name__).exception(traceback.TracebackException.from_exception(e))
+            raise e
         return result
 
     return exception_catcher

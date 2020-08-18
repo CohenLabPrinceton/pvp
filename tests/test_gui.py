@@ -152,8 +152,9 @@ def test_gui_launch(qtbot):
     # now set defaults and try again
     vent_gui.init_controls()
     vent_gui.control_panel.start_button.click()
+    vent_gui.plot_box.set_duration(1)
     # wait for a second to let the simulation spin up and start spitting values
-    qtbot.wait(2000)
+    qtbot.wait(5000)
 
     assert vent_gui.isVisible()
     assert vent_gui.running
@@ -451,6 +452,9 @@ def test_pressure_unit_conversion(qtbot, spawn_gui, fake_sensors):
 
     assert display_text == unit_conversion.rounded_string(unit_conversion.cmH2O_to_hPa(10), display_widget.decimals)
 
+    vent_gui.control_panel.pressure_buttons['cmH2O'].click()
+
+    # TODO: test if shit is displayed like all back to normal like
 
 def test_sliders_during_unit_convertion():
     # TODO: this

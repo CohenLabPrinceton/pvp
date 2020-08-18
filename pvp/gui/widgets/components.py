@@ -1,3 +1,8 @@
+"""
+Very basic components used by other widgets.
+
+These are relatively sparsely documented because their operation is mostly self-explanatory
+"""
 import copy
 import pdb
 import typing

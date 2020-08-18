@@ -204,6 +204,8 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
     vent_gui.start()
     vent_gui.timer.stop()
     vent_gui.control_panel.lock_button.click()
+    # stop controller because it will do funny things like change the PIP setting on us to correct for a HAPA with our random ass settings
+    vent_gui.coordinator.stop()
 
 
     abs_range = value_params.abs_range
@@ -542,9 +544,7 @@ def test_doubleslider_minmax(qtbot, generic_minmax):
         # test that values were set correctly
         assert(doubleslider.minimum() == min)
         assert(doubleslider.maximum() == max)
-        assert(doubleslider._minimum() == doubleslider.minimum()*doubleslider._multi)
-        assert (doubleslider._maximum() == doubleslider.maximum() * doubleslider._multi)
-
+        
         # test below min and above max
         test_min = min - np.random.rand()*multiplier
         test_max = max + np.random.rand()*multiplier

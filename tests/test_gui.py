@@ -223,9 +223,23 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
     for i in range(n_samples):
         test_value = gen_test_value()
 
+        # qtbot.mouseMove(control_widget.set_value_label, click_pos, delay=100)
+        # qtbot.mouseClick(control_widget.set_value_label.label, QtCore.Qt.LeftButton, delay=10)
+        # qtbot.mouseRelease(control_widget.set_value_label, QtCore.Qt.LeftButton)
+
+        # qtbot.keyPress(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Escape, delay=10)
+        # qtbot.keyRelease(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Escape)
+
+        # qtbot.mouseClick(control_widget.set_value_label.label, QtCore.Qt.LeftButton, delay=100)
+
+
         control_widget.set_value_label.setLabelEditableAction()
         control_widget.set_value_label.lineEdit.setText(str(test_value))
-        control_widget.set_value_label.returnPressedAction()
+
+        qtbot.keyPress(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 10)
+        qtbot.keyRelease(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 10)
+
+        # control_widget.set_value_label.returnPressedAction()
         # should call labelUpdatedAction and send to controller
 
         control_value = vent_gui.coordinator.get_control(value_name)
@@ -491,6 +505,8 @@ def test_doubleslider_minmax(qtbot, generic_minmax):
         # test that values were set correctly
         assert(doubleslider.minimum() == min)
         assert(doubleslider.maximum() == max)
+        assert(doubleslider._minimum() == doubleslider.minimum()*doubleslider._multi)
+        assert (doubleslider._maximum() == doubleslider.maximum() * doubleslider._multi)
 
         # test below min and above max
         test_min = min - np.random.rand()*multiplier

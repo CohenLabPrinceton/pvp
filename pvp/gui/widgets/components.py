@@ -59,13 +59,13 @@ class DoubleSlider(QtWidgets.QSlider):
     def _maximum(self):
         return super(DoubleSlider, self).maximum()
 
-    def setSingleStep(self, value):
+    def setSingleStep(self, value): # pragma: no cover - don't care about this
         return super(DoubleSlider, self).setSingleStep(round(value * self._multi))
 
-    def singleStep(self):
+    def singleStep(self): # pragma: no cover - don't care about this
         return float(super(DoubleSlider, self).singleStep()) / self._multi
 
-    def _singleStep(self):
+    def _singleStep(self): # pragma: no cover - don't care about this
         return super(DoubleSlider, self).singleStep()
 
     def setValue(self, value):

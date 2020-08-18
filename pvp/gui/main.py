@@ -546,12 +546,21 @@ class PVP_Gui(QtWidgets.QMainWindow):
                 try:
                     self.monitor[cause.name].alarm_state = alarm.severity
                 except:
-                    # FIXME: will be fixed when values are displayed next to controls
                     pass
                 try:
                     self.controls[cause.name].alarm_state= alarm.severity
                 except:
                     pass
+
+        if self.running:
+            if len(self.alarm_bar.alarms) > 0:
+                self.control_panel.start_button.set_state('ALARM')
+            else:
+                self.control_panel.start_button.set_state('ON')
+
+
+
+
 
     @QtCore.Slot(ControlSetting)
     def limits_updated(self, control:ControlSetting):
@@ -673,6 +682,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
                 self.control_panel.start_button.set_state('OFF')
                 self.toggle_lock(False)
                 self.control_panel.runtime.stop_timer()
+                self.control_panel.heartbeat.stop_timer()
             return
 
         self.state_changed.emit(state)

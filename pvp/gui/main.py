@@ -173,7 +173,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
         if set_defaults:
             self.init_controls()
 
-        if screenshot:
+        if screenshot: # pragma: no cover -- just for testing
             self._screenshot()
 
         self.toggle_cycle_widget(values.ValueName.INSPIRATION_TIME_SEC)
@@ -1017,7 +1017,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
                 continue
             self.set_value(control_params.default, control_name)
 
-    def _screenshot(self):
+    def _screenshot(self): # pragma: no cover - just for testing
         """
         Raise each of the alarm severities to check if they work and to take a screenshot
 

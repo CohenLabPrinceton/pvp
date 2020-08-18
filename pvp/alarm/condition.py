@@ -179,7 +179,7 @@ class ValueCondition(Condition):
             self.operator = operator.lt
         elif mode == 'max':
             self.operator = operator.gt
-        else:
+        else: # pragma: no cover
             raise ValueError('needs to be max or min')
         self._mode = mode
 
@@ -281,7 +281,7 @@ class CycleValueCondition(ValueCondition):
         self._start_cycle = 0
 
 
-class TimeValueCondition(ValueCondition):
+class TimeValueCondition(ValueCondition): # pragma: no cover
     """
     value goes out of range for specific amount of time
 
@@ -376,7 +376,7 @@ class AlarmSeverityCondition(Condition):
             raise ValueError(f'needs to be max or min, got {mode}')
         self._mode = mode
 
-    def check(self, sensor_values):
+    def check(self, sensor_values=None):
         alarm_severity = self.manager.get_alarm_severity(self.alarm_type)
         return self.operator(alarm_severity, self.severity)
 

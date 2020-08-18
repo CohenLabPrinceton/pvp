@@ -222,9 +222,51 @@ def test_cyclevalue_condition(fake_sensors, test_value):
     sensors[test_value] = 2
     assert cond.check(sensors) == False
 
-def test_alarmseverity_condition():
-    # FIXME
-    pass
+def test_alarmseverity_condition(fake_rule, fake_sensors):
+    manager = Alarm_Manager()
+    manager.reset()
+    manager.rules = {}
+    manager.dependencies = {}
+
+    rule = fake_rule()
+    manager.load_rule(rule)
+
+    cond_1 = condition.AlarmSeverityCondition(
+        AlarmType.HIGH_PRESSURE, AlarmSeverity.LOW, mode='min')
+    cond_2 = condition.AlarmSeverityCondition(
+        AlarmType.HIGH_PRESSURE, AlarmSeverity.MEDIUM, mode='max')
+    cond_3 = condition.AlarmSeverityCondition(
+        AlarmType.HIGH_PRESSURE, AlarmSeverity.HIGH, mode='eq')
+
+    assert cond_1.check() == False
+    assert cond_2.check() == True
+    assert cond_3.check() == False
+
+    # raise low alarm
+    sensor = fake_sensors({ValueName.PRESSURE: 1.5})
+    manager.update(sensor)
+
+    assert cond_1.check() == True
+    assert cond_2.check() == True
+    assert cond_3.check() == False
+
+    # raise med alarm
+    sensor = fake_sensors({ValueName.PRESSURE: 2.5})
+    manager.update(sensor)
+
+    assert cond_1.check() == True
+    assert cond_2.check() == True
+    assert cond_3.check() == False
+
+    # raise high alarm
+    sensor = fake_sensors({ValueName.PRESSURE: 3.5})
+    manager.update(sensor)
+
+    assert cond_1.check() == True
+    assert cond_2.check() == False
+    assert cond_3.check() == True
+
+
 
 def test_cyclealarmseverity_condition():
     # FIXME

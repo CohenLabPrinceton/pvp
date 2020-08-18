@@ -849,7 +849,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
         self.controls[ValueName.PEEP.name].set_units(units)
         # self.pressure_waveform.set_units(units)
         self.monitor[ValueName.PRESSURE.name].set_units(units)
-        self.plots[ValueName.PRESSURE.name].set_units(units)
+        self.plot_box.set_units(units)
 
     def set_breath_detection(self, breath_detection: bool):
         """

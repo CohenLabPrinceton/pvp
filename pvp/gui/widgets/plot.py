@@ -478,6 +478,14 @@ class Plot_Container(QtWidgets.QGroupBox):
         for plot in self.plots.values():
             plot.reset_start_time()
 
+    def set_units(self, units: str):
+        """
+        Call :meth:`.Plot.set_units` for all contained plots
+        """
+        for plot in self.plots.values():
+            plot.set_units(units)
+
+
     def set_plot_mode(self):
         """
         .. todo::

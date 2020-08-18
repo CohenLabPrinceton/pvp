@@ -603,7 +603,7 @@ class Display(QtWidgets.QWidget):
         # convert some guaranteed values
         abs_range = self.abs_range
         if self._convert_in:
-            abs_range = (self._convert_in(x) for x in abs_range)
+            abs_range = [self._convert_in(x) for x in abs_range]
 
         # sensor value
         if self.sensor_value:
@@ -645,7 +645,7 @@ class Display(QtWidgets.QWidget):
         if self.alarm_range:
             alarm_range = self.alarm_range
             if self._convert_in:
-                alarm_range = (self._convert_in(x) for x in alarm_range)
+                alarm_range = [self._convert_in(x) for x in alarm_range]
             self.sensor_plot.update_value(min=alarm_range[0], max=alarm_range[1])
 
 
@@ -684,7 +684,8 @@ class Display(QtWidgets.QWidget):
         Args:
             units ('cmH2O', 'hPa'): new units to display
         """
-        if self.name in (ValueName.PIP.name, ValueName.PEEP.name):
+        if self.name in (ValueName.PIP.name, ValueName.PEEP.name, "Pressure") or \
+                self.enum_name in (ValueName.PIP, ValueName.PEEP, ValueName.PRESSURE):
             if units == 'cmH2O':
                 self.decimals = 1
                 self._convert_in = None

@@ -28,7 +28,7 @@ from pytestqt.qt_compat import qt_api
 from pvp import gui
 from pvp.gui import styles
 from pvp.gui import widgets
-from pvp.common import message, values
+from pvp.common import message, values, unit_conversion
 from pvp.common.values import ValueName
 from pvp.coordinator.coordinator import get_coordinator
 from pvp.alarm import AlarmType, AlarmSeverity
@@ -412,13 +412,31 @@ def test_gui_main_etc(qtbot, spawn_gui):
     assert vent_gui.update_period == 0.10
 
 
-
-
 #########################
 # Test control panel
-def test_pressure_unit_conversion():
-    # TODO: this
-    return
+def test_pressure_unit_conversion(qtbot, spawn_gui, fake_sensors):
+    app, vent_gui = spawn_gui
+
+    vent_gui.control_panel.start_button.click()
+    vent_gui.timer.stop()
+
+    sensor = fake_sensors({ValueName.PRESSURE: 10})
+    vent_gui.update_gui(sensor)
+    vent_gui.timer.stop()
+
+    assert vent_gui.monitor[ValueName.PRESSURE.name].sensor_value == 10
+    assert vent_gui.plot_box.plots[ValueName.PRESSURE.name]
+
+
+    vent_gui.control_panel.pressure_buttons['hPa'].click()
+
+    # get display text and compare
+    display_widget = vent_gui.monitor[ValueName.PRESSURE.name]
+    display_widget.timed_update()
+    display_text = display_widget.sensor_label.text()
+
+    assert display_text == unit_conversion.rounded_string(unit_conversion.cmH2O_to_hPa(10), display_widget.decimals)
+
 
 def test_sliders_during_unit_convertion():
     # TODO: this

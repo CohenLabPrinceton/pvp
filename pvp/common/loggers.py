@@ -90,7 +90,7 @@ def init_logger(module_name: str,
 
     # handler to log to disk
     # max = 8 file x 16 MB = 128 MB
-    if file_handler and 'pytest' not in sys.modules:
+    if file_handler and 'pytest' not in sys.modules: # pragma: no cover - doing this breaks travis for some reason but it works locally
         log_filename = os.path.join(prefs.get_pref('LOG_DIR'),
                                     module_name + '.log')
         fh = logging.handlers.RotatingFileHandler(
@@ -118,7 +118,7 @@ def update_logger_sizes():
     for logger_name in globals()['_LOGGERS']:
         logger = logging.getLogger(logger_name)
         for handler in logger.handlers:
-            if isinstance(handler, logging.handlers.RotatingFileHandler):
+            if isinstance(handler, logging.handlers.RotatingFileHandler): # pragma: no cover - same reason as above
                 handler.maxBytes = new_max_bytes
 
 

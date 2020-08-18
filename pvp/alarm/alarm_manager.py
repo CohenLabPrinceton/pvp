@@ -253,7 +253,7 @@ class Alarm_Manager(object):
             got_alarm.deactivate()
             self.logged_alarms.append(got_alarm)
             self.logger.info('Deactivated Alarm:\n    ' + str(got_alarm))
-        else:
+        else: # pragma: no cover
             return
 
     def dismiss_alarm(self,

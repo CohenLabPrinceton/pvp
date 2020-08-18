@@ -429,7 +429,7 @@ def test_gui_main_etc(qtbot, spawn_gui):
     # test setting update period
     vent_gui.update_period = 0.10
     assert vent_gui.update_period == 0.10
-    assert vent_gui.timer.interval() == 0.10
+    assert vent_gui.timer.interval() == 0.10 * 1000 # (in ms)
 
 
 #########################

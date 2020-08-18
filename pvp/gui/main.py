@@ -210,7 +210,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
                 # and this method is really heavy, so we test each of the pieces separately
                 try: # pragma: no cover
                     self.alarm_manager.update(vals)
-                except Exception as e:
+                except Exception as e: # pragma: no cover
                     self.logger.exception(f"Couldnt update alarm manager: {e}")
 
             try:

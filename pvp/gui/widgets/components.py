@@ -101,6 +101,7 @@ class EditableLabel(QtWidgets.QWidget):
 
         self.is_editable = kwargs.get("editable", True)
         self.keyPressHandler = KeyPressHandler(self)
+        self._editing = False
 
         # self.setStyleSheet(styles.CONTROL_VALUE)
 
@@ -164,6 +165,7 @@ class EditableLabel(QtWidgets.QWidget):
         self.lineEdit.blockSignals(False)
         self.lineEdit.setFocus(QtCore.Qt.MouseFocusReason)
         self.lineEdit.selectAll()
+        self._editing = True
 
     def setEditable(self, editable: bool):
         self.is_editable = editable
@@ -180,6 +182,7 @@ class EditableLabel(QtWidgets.QWidget):
         self.lineEdit.setHidden(True)
         self.lineEdit.blockSignals(True)
         self.label.blockSignals(False)
+        self._editing = False
 
     def returnPressedAction(self):
         """Return/enter event handler"""
@@ -191,6 +194,7 @@ class EditableLabel(QtWidgets.QWidget):
         self.lineEdit.setHidden(True)
         self.lineEdit.blockSignals(True)
         self.label.blockSignals(False)
+        self._editing = False
 
 
 class QHLine(QtWidgets.QFrame):

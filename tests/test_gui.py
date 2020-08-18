@@ -546,6 +546,10 @@ def test_alarm_bar(qtbot, fake_rule):
     assert alarm_bar.sound_player._muted
     assert not alarm_bar.sound_player.playing
 
+    alarm_bar.mute_button.click()
+    assert not alarm_bar.sound_player._muted
+    assert alarm_bar.sound_player.playing
+
     # dismiss the alarm
     alarm_bar.alarm_cards[0].close_button.click()
     # check that we get an alarm with alarmseverity off.
@@ -605,6 +609,8 @@ def test_doubleslider_minmax(qtbot, generic_minmax):
         # test that values were set correctly
         assert(doubleslider.minimum() == min)
         assert(doubleslider.maximum() == max)
+        assert doubleslider._minimum() == doubleslider.minimum() * doubleslider._multi
+        assert doubleslider._maximum() == doubleslider.maximum() * doubleslider._multi
 
         # test below min and above max
         test_min = min - np.random.rand()*multiplier
@@ -614,6 +620,53 @@ def test_doubleslider_minmax(qtbot, generic_minmax):
         assert(doubleslider.value() == doubleslider.minimum())
         doubleslider.setValue(test_max)
         assert(doubleslider.value() == doubleslider.maximum())
+
+def test_editable_label(qtbot):
+    label = widgets.components.EditableLabel()
+    qtbot.addWidget(label)
+
+    test_val = str(1.0)
+    label.setText(test_val)
+
+    assert label.text() == test_val
+    assert not label._editing
+
+    # click and edit label
+    qtbot.mouseClick(label.label, QtCore.Qt.LeftButton, delay=10)
+    assert label._editing
+    assert label.label.isHidden()
+    assert not label.lineEdit.isHidden()
+    assert label.lineEdit.text() == test_val
+
+    new_text = "2.0"
+    qtbot.keyClicks(label.lineEdit, new_text)
+
+    with qtbot.waitSignal(label.textChanged, timeout=1000) as emitted_text:
+        qtbot.keyClick(label.lineEdit, QtCore.Qt.Key_Enter, delay=10)
+
+    assert emitted_text.args == [new_text]
+
+    assert label.text() == new_text
+    assert not label._editing
+    assert not label.label.isHidden()
+    assert label.lineEdit.isHidden()
+
+    # test escape
+    qtbot.mouseClick(label.label, QtCore.Qt.LeftButton, delay=10)
+    assert label._editing
+    assert label.label.isHidden()
+    assert not label.lineEdit.isHidden()
+
+    escape_text = "3.0"
+    qtbot.keyClicks(label.lineEdit, escape_text)
+    qtbot.keyClick(label.lineEdit, QtCore.Qt.Key_Escape, delay=10)
+    assert not label._editing
+    assert not label.label.isHidden()
+    assert label.lineEdit.isHidden()
+    assert label.text() == new_text
+
+
+
 #
 # #################
 # # RangeSlider

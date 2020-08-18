@@ -196,7 +196,7 @@ class ValueCondition(Condition):
         assert(isinstance(sensor_values, SensorValues))
         return self.operator(sensor_values[self.value_name], self.limit)
 
-    def reset(self):
+    def reset(self): # pragma: no cover
         """
         not stateful, do nothing.
         """
@@ -347,7 +347,7 @@ class AlarmSeverityCondition(Condition):
         self.mode = mode
 
     @property
-    def mode(self) -> str:
+    def mode(self) -> str: # pragma: no cover
         """
         'min' returns true if the alarm is at least this value
         (note the difference from ValueCondition which returns true if the alarm is less than..)
@@ -372,7 +372,7 @@ class AlarmSeverityCondition(Condition):
             self.operator = operator.eq
         elif mode == 'max':
             self.operator = operator.le
-        else:
+        else: # pragma: no cover
             raise ValueError(f'needs to be max or min, got {mode}')
         self._mode = mode
 
@@ -380,7 +380,7 @@ class AlarmSeverityCondition(Condition):
         alarm_severity = self.manager.get_alarm_severity(self.alarm_type)
         return self.operator(alarm_severity, self.severity)
 
-    def reset(self):
+    def reset(self): # pragma: no cover
         pass
 
 
@@ -439,7 +439,7 @@ class CycleAlarmSeverityCondition(AlarmSeverityCondition):
                 # don't check yet, n_cycles must > 0
                 return False
 
-        else:
+        else: # pragma: no cover - usually this comes after a check for this that should return false, so we never reach here.
             # if we're not outside the range, false.
             # reset the flag that says we're inside a check
             self._mid_check = False

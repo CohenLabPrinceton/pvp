@@ -208,8 +208,8 @@ class PVP_Gui(QtWidgets.QMainWindow):
             if vals.breath_count > 1:
                 # don't test this because we don't usually want the GUI just updating during tests
                 # and this method is really heavy, so we test each of the pieces separately
-                try:
-                    self.alarm_manager.update(vals) # pragma: no cover
+                try: # pragma: no cover
+                    self.alarm_manager.update(vals)
                 except Exception as e:
                     self.logger.exception(f"Couldnt update alarm manager: {e}")
 
@@ -368,7 +368,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
                                     QtWidgets.QSizePolicy.Maximum)
             self.display_layout.addWidget(self.logo, alignment=QtCore.Qt.AlignBottom)
 
-        except Exception as e:
+        except Exception as e: # pragma: no cover
             #nbd if we can't load logo
             self.logger.exception(f'Logo could not be loaded: {e}')
 
@@ -644,7 +644,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
             #     'NotImplementedError.exe',
             # )
             # box.exec_()
-            if not self.running:
+            if not self.running: # pragma: no cover
                 return
 
             do_stop = False
@@ -669,9 +669,9 @@ class PVP_Gui(QtWidgets.QMainWindow):
 
             if do_stop:
                 self.coordinator.stop()
+                self.running = False
                 self.control_panel.start_button.set_state('OFF')
                 self.toggle_lock(False)
-                self.running = False
                 self.control_panel.runtime.stop_timer()
             return
 
@@ -841,7 +841,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
         Args:
             units (str): one of "cmH2O" or "hPa"
         """
-        if units not in ('cmH2O', 'hPa'):
+        if units not in ('cmH2O', 'hPa'): # pragma: no cover
             self.logger.exception(f'Couldnt set pressure units {units}')
             return
 
@@ -859,6 +859,15 @@ class PVP_Gui(QtWidgets.QMainWindow):
             breath_detection (bool): Whether the controller detects autonomous breaths and resets the breath cycle accordingly
         """
         self.coordinator.set_breath_detection(breath_detection)
+
+    def get_breath_detection(self) -> bool:
+        """
+        Get the current state of breath detection from the controller
+
+        Returns:
+            bool: if True, automatic breath detection is enabled
+        """
+        return self.coordinator.get_breath_detection()
 
     def _set_cycle_control(self, value_name: str, new_value: float):
         """

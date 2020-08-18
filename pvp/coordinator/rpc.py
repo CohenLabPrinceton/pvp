@@ -39,6 +39,10 @@ def set_breath_detection(breath_detection):
     args = pickle.loads(breath_detection.data)
     remote_controller.set_breath_detection(args)
 
+def get_breath_detection():
+    res = remote_controller.get_breath_detection()
+    return pickle.dumps(res)
+
 def get_target_waveform():
     res = remote_controller.get_target_waveform()
     return pickle.dumps(res)
@@ -65,6 +69,7 @@ def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port)
     server.register_function(remote_controller.stop, "stop")
     server.register_function(get_alarms, 'get_alarms')
     server.register_function(set_breath_detection, 'set_breath_detection')
+    server.register_function(get_breath_detection, "get_breath_detection")
     serve_event.set()
     server.serve_forever()
 

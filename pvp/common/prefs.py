@@ -118,12 +118,12 @@ def get_pref(key: str = None):
         key (str, None): get configuration value with specific ``key`` .
             if ``None`` , return all config values.
     """
-    if key is None:
+    if key is None: # pragma: no cover
         return globals()['_PREFS']._getvalue()
     else:
         try:
             return globals()['_PREFS'][key]
-        except KeyError:
+        except KeyError: # pragma: no cover
             return None
 
 def load_prefs(prefs_fn: str):
@@ -159,7 +159,7 @@ def load_prefs(prefs_fn: str):
                     prefs = json.load(prefs_f)
 
             new_prefs.update(prefs)
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError as e: # pragma: no cover
             Warning(f'JSON decoding error in loading prefs, restoring from defaults.\n{e}')
 
     else:
@@ -201,7 +201,7 @@ def save_prefs(prefs_fn: str = None):
     if prefs_fn is None:
         try:
             prefs_fn = globals()['_PREFS']['PREFS_FN']
-        except KeyError:
+        except KeyError: # pragma: no cover
             raise RuntimeError('Asked to save_prefs without prefs_fn, but no PREFS_FN in prefs')
 
     with globals()['_LOCK']:
@@ -215,7 +215,7 @@ def save_prefs(prefs_fn: str = None):
 
 
 
-def make_dirs():
+def make_dirs(): # pragma: no cover - travis doesnt like making directories like this
     """
     ensures _DIRECTORIES are created and added to prefs.
     """

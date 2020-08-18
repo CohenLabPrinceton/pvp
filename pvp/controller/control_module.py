@@ -411,6 +411,15 @@ class ControlModuleBase:
         else:
             self.logger.exception(f"Dont know how to set breath detection mode {breath_detection}, must be bool")
 
+    def get_breath_detection(self) -> bool:
+        """
+        Return current state of autonomous breath detection
+
+        Returns:
+            bool
+        """
+        return self.breath_detection
+
     def __get_PID_error(self, ytarget, yis, dt, RC):
         """
         Calculates the three terms for PID control. Also takes a timestep "dt" on which the integral-term is smoothed.

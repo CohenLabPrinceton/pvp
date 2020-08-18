@@ -28,7 +28,7 @@ from pytestqt.qt_compat import qt_api
 from pvp import gui
 from pvp.gui import styles
 from pvp.gui import widgets
-from pvp.common import message, values, unit_conversion
+from pvp.common import message, values, unit_conversion, prefs
 from pvp.common.values import ValueName
 from pvp.coordinator.coordinator import get_coordinator
 from pvp.alarm import AlarmType, AlarmSeverity, Alarm
@@ -427,6 +427,7 @@ def test_gui_main_etc(qtbot, spawn_gui):
     # test setting update period
     vent_gui.update_period = 0.10
     assert vent_gui.update_period == 0.10
+    assert vent_gui.timer.interval() == 0.10
 
 
 #########################
@@ -458,13 +459,24 @@ def test_pressure_unit_conversion(qtbot, spawn_gui, fake_sensors):
 
     # TODO: test if shit is displayed like all back to normal like
 
-def test_sliders_during_unit_convertion():
-    # TODO: this
-    return
+def test_set_breath_detection(qtbot, spawn_gui):
+    app, vent_gui = spawn_gui
 
-def test_set_breath_detection():
-    # TODO: this
-    pass
+    breath_detection = prefs.get_pref('BREATH_DETECTION')
+
+    assert vent_gui.get_breath_detection() == breath_detection
+    assert vent_gui.control_panel.breath_detection_button.isChecked() == breath_detection
+
+    breath_detection = not breath_detection
+
+    vent_gui.control_panel.breath_detection_button.click()
+
+    assert vent_gui.get_breath_detection() == breath_detection
+    assert vent_gui.control_panel.breath_detection_button.isChecked() == breath_detection
+
+
+
+
 
 #######################
 # alarm bar

@@ -10,7 +10,7 @@ from pvp.alarm import condition, ALARM_RULES, AlarmType, AlarmSeverity, Alarm, A
 from pvp.alarm.rule import Alarm_Rule
 
 from pvp.common.values import ValueName, SENSOR
-from pvp.common.message import SensorValues
+from pvp.common.message import SensorValues, ControlSetting
 
 ##########
 # conditions
@@ -53,6 +53,12 @@ def fake_rule():
                         value_name=ValueName.PRESSURE,
                         limit=1,
                         mode='max',
+                        depends={
+                            'value_name': ValueName.PIP,
+                            'value_attr': 'value',
+                            'condition_attr': 'limit',
+                            'transform': lambda x: x + 1
+                        }
                     )
                 ),
                 (
@@ -60,7 +66,13 @@ def fake_rule():
                     condition.ValueCondition(
                         value_name=ValueName.PRESSURE,
                         limit=2,
-                        mode='max'
+                        mode='max',
+                        depends={
+                        'value_name': ValueName.PIP,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x: x + 2
+                    }
                     )
                 ),
                 (
@@ -68,7 +80,13 @@ def fake_rule():
                     condition.ValueCondition(
                         value_name=ValueName.PRESSURE,
                         limit=3,
-                        mode='max'
+                        mode='max',
+                        depends={
+                            'value_name': ValueName.PIP,
+                            'value_attr': 'value',
+                            'condition_attr': 'limit',
+                            'transform': lambda x: x + 3
+                        }
                     )
                 )
             )
@@ -251,9 +269,44 @@ def test_condition_addition(fake_sensors):
     assert cond_5.check(no_alarm_4_1) == False
 
 
-def test_condition_dependency():
-    # FIXME
-    pass
+def test_condition_dependency(fake_rule):
+    rule = fake_rule()
+
+    manager = Alarm_Manager()
+    manager.reset()
+    manager.rules = {}
+    manager.dependencies = {}
+    manager.load_rule(rule)
+
+    # create callback to catch limit changes
+    global limits_changed
+    limits_changed = []
+
+    def depends_cb(control_message):
+        global limits_changed
+        limits_changed.append(control_message)
+
+    manager.add_dependency_callback(depends_cb)
+
+    assert manager.rules[rule.name].conditions[0][1].limit == 1
+    assert manager.rules[rule.name].conditions[1][1].limit == 2
+    assert manager.rules[rule.name].conditions[2][1].limit == 3
+
+    control_message = ControlSetting(ValueName.PIP, value=5)
+    manager.update_dependencies(control_message)
+    assert manager.rules[rule.name].conditions[0][1].limit == 6
+    assert manager.rules[rule.name].conditions[1][1].limit == 7
+    assert manager.rules[rule.name].conditions[2][1].limit == 8
+
+    assert len(limits_changed) == 3
+    assert limits_changed[0].max_value == 6
+    assert limits_changed[1].max_value == 7
+    assert limits_changed[2].max_value == 8
+
+
+
+
+
 
 
 ###############################

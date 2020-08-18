@@ -51,7 +51,7 @@ class Alarm_Manager(object):
     snoozed_alarms = {}
     callbacks = []
     depends_callbacks = []
-    rules = {}
+    rules = {} # type: typing.Dict[AlarmType, Alarm_Rule]
 
     logger = init_logger(__name__)
 

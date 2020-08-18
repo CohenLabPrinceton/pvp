@@ -230,7 +230,7 @@ class CycleValueCondition(ValueCondition):
 
     @n_cycles.setter
     def n_cycles(self, n_cycles: int):
-        if not isinstance(n_cycles, int):
+        if not isinstance(n_cycles, int): # pragma: no cover
             n_cycles = int(round(n_cycles))
         assert(n_cycles>0)
         self._n_cycles = n_cycles

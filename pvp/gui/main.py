@@ -430,9 +430,6 @@ class PVP_Gui(QtWidgets.QMainWindow):
         * Connect control panel buttons to their respective methods
         """
 
-        # self.alarm_bar.message_cleared.connect(self.handle_cleared_alarm)
-        self.alarm_bar.alarm_dismissed.connect(self.alarm_manager.dismiss_alarm)
-
         # connect controls
         for control in self.controls.values():
             control.value_changed.connect(self.set_value)
@@ -1034,21 +1031,18 @@ class PVP_Gui(QtWidgets.QMainWindow):
                     severity=AlarmSeverity.LOW,
                     start_time=time.time(),
                     latch=True,
-                    persistent=True,
                     cause=[ValueName.VTE])
 
         med = Alarm(alarm_type=AlarmType.LOW_PEEP,
                     severity=AlarmSeverity.MEDIUM,
                     start_time=time.time(),
                     latch=True,
-                    persistent=True,
                     cause=[ValueName.PEEP])
 
         high = Alarm(alarm_type=AlarmType.HIGH_PRESSURE,
                     severity=AlarmSeverity.HIGH,
                     start_time=time.time(),
                     latch=True,
-                    persistent=True,
                     cause=[ValueName.PIP])
 
         self.handle_alarm(low)

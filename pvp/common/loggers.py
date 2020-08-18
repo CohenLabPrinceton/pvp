@@ -1,8 +1,10 @@
 """
 Logging functionality
 
-There are two types of loggers: a standard :class:`logging.Logger` -based logging system for debugging and recording system events,
-and a :mod:`tables` - based :class:`.DataLogger` class to store continuously measured sensor values.
+There are two types of loggers:
+
+* :func:`.loggers.init_logger` creates a standard :class:`logging.Logger` -based logging system for debugging and recording system events, and a
+* :class:`.loggers.DataLogger` - a :mod:`tables` - based class to store continuously measured sensor values.
 
 """
 import typing
@@ -20,12 +22,10 @@ import numpy as np
 import tables as pytb
 
 if typing.TYPE_CHECKING:
+    # only import when type checking to avoid cyclical imports
     # from pvp.common.message import SensorValues, ControlValues, ControlSetting
     from pvp.common.message import SensorValues, ControlValues, DerivedValues, ControlSetting
 
-
-# some global stack param
-MAX_STACK_DEPTH = 20
 
 from pvp.common import prefs
 
@@ -41,7 +41,17 @@ def init_logger(module_name: str,
     """
     Initialize a logger for logging events.
 
-    If a logger has already been initialized, return that.
+    To keep logs sensible, you should usually initialize the logger with the name of the module that's using it, eg::
+
+        logger = init_logger(__name__)
+
+    If a logger has already been initialized (ie. its name is in :data:`.loggers._LOGGERS`, return that.
+
+    otherwise configure and return the logger such that
+
+    * its ``LOGLEVEL`` is set to ``prefs.LOGLEVEL``
+    * It formats logging messages with logger name, time, and logging level
+    * if a file handler is specified (default), create a :class:`logging.RotatingFileHandler` according to params set in ``prefs``
 
     Args:
         module_name (str): module name used to generate filename and name logger
@@ -110,21 +120,6 @@ def update_logger_sizes():
         for handler in logger.handlers:
             if isinstance(handler, logging.handlers.RotatingFileHandler):
                 handler.maxBytes = new_max_bytes
-
-
-
-
-def log_exception(e, tb):
-    """  # TODO: Stub exception logger. Prints exception type & traceback
-
-    Args:
-        e: Exception to log
-        tb: TraceBack associated with Exception e
-
-    """
-    print("Caught the following exception:", e, " but I don't know what to do with it.")
-    # print(traceback.print_tb(tb, limit=MAX_STACK_DEPTH))
-    raise
 
 
 class ContinuousData(pytb.IsDescription):

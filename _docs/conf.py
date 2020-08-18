@@ -46,6 +46,7 @@ extensions = [
     'sphinx.ext.intersphinx', # include documentation from other projects
     'sphinx.ext.todo',        # todo directive
     'sphinx.ext.viewcode',
+    'sphinx.ext.inheritance_diagram',
     # 'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon', # parse google style docstrings
     'autodocsumm',

@@ -1,3 +1,7 @@
+"""
+Function to display a dialog to the user and receive feedback!
+"""
+
 import typing
 
 from PySide2 import QtCore, QtGui, QtWidgets

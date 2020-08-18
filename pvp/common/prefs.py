@@ -1,7 +1,3 @@
-"""
-System preferences are stored in ~/pvp/prefs.json
-"""
-
 import os
 import time
 import json
@@ -11,10 +7,19 @@ from ctypes import c_bool
 import logging
 
 _PREF_MANAGER = mp.Manager()
+"""
+The :class:`multiprocessing.Manager` that stores prefs during system operation
+"""
 
 _PREFS = _PREF_MANAGER.dict()
+"""
+The dict created by :data:`.prefs._PREF_MANAGER` to store prefs.
+"""
 
 _LOGGER = None # type: logging.Logger
+"""
+A :class:`logging.Logger` to log pref init and setting events
+"""
 
 _LOCK = mp.Lock()
 """
@@ -35,7 +40,9 @@ _DIRECTORIES['DATA_DIR'] = os.path.join(_DIRECTORIES['VENT_DIR'], 'logs')
 
 LOADED = mp.Value(c_bool, False)
 """
-bool: flag to indicate whether prefs have been loaded (and thus :func:`set_pref` should write to disk.
+bool: flag to indicate whether prefs have been loaded (and thus :func:`set_pref` should write to disk).
+
+uses a :class:`multiprocessing.Value` to be thread and process safe.
 """
 
 _DEFAULTS = {
@@ -43,23 +50,23 @@ _DEFAULTS = {
     'TIME_FIRST_START' : None,
     'LOGGING_MAX_BYTES': 2 * 2 ** 30, # total
     'LOGGING_MAX_FILES': 5,
+    'LOGLEVEL': 'WARNING',
     'TIMEOUT': 0.05, # timeout used for timeout decorator
     'HEARTBEAT_TIMEOUT': 0.02, # timeout used in heartbeat between gui and contorller,
-    'CONTROLLER_LOOP_UPDATE_TIME': 0.0,
-    'CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR': 0.005,
-    'CONTROLLER_LOOPS_UNTIL_UPDATE': 1, # update copied values like get_sensor every n loops,
-    'CONTROLLER_RINGBUFFER_SIZE': 100,
-    'COUGH_DURATION': 0.1,
-    'BREATH_PRESSURE_DROP': 4,
-    'BREATH_DETECTION': True,
-    'LOGLEVEL': 'WARNING',
     'GUI_STATE_FN': 'gui_state.json',
     'GUI_UPDATE_TIME': 0.05,
     'ENABLE_DIALOGS': True, # enable _all_ dialogs -- for testing on virtual frame buffer
     'ENABLE_WARNINGS': True, # enable user warnings and confirmations
     'CONTROLLER_MAX_FLOW': 10,
     'CONTROLLER_MAX_PRESSURE': 100,
-    'CONTROLLER_MAX_STUCK_SENSOR': 0.2
+    'CONTROLLER_MAX_STUCK_SENSOR': 0.2,
+    'CONTROLLER_LOOP_UPDATE_TIME': 0.0,
+    'CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR': 0.005,
+    'CONTROLLER_LOOPS_UNTIL_UPDATE': 1,  # update copied values like get_sensor every n loops,
+    'CONTROLLER_RINGBUFFER_SIZE': 100,
+    'COUGH_DURATION': 0.1,
+    'BREATH_PRESSURE_DROP': 4,
+    'BREATH_DETECTION': True,
 
 }
 """
@@ -70,17 +77,35 @@ Declare all available parameters and set default values. If no default, set as N
 * ``VENT_DIR``: ~/pvp - base directory for user storage
 * ``LOG_DIR``: ~/pvp/logs - for storage of event and alarm logs
 * ``DATA_DIR``: ~/pvp/data - for storage of waveform data
-* ``LOGGING_MAX_BYTES`` : the **total** storage space for all loggers -- each logger gets ``LOGGING_MAX_BYTES/len(loggers)`` space
-* ``LOGGING_MAX_FILES`` : number of files to split each logger's logs across
-* ``GUI_STATE_FN``: Filename of gui control state file, relative to ``VENT_DIR``
-* ``BREATH_PRESSURE_DROP`` : pressure drop below peep that is detected as an attempt to breath.
-* ``BREATH_DETECTION``: (bool) whether the controller allows autonomous breaths (measured pressure is ``BREATH_PRESSURE_DROP`` below set PEEP)
-* ``CONTROLLER_MAX_FLOW``: If flows above that, hardware cannot be correct.
-* ``CONTROLLER_MAX_PRESSURE``: If pressure above that, hardware cannot be correct.
-* ``CONTROLLER_MAX_STUCK_SENSOR``: Max amount of time (in s) before considering a sensor stuck
+* ``LOGGING_MAX_BYTES`` : the **total** storage space for all loggers -- each logger gets ``LOGGING_MAX_BYTES/len(loggers)`` space (2GB by default)
+* ``LOGGING_MAX_FILES`` : number of files to split each logger's logs across (default: 5)
+* ``LOGLEVEL``: One of ``('DEBUG', 'INFO', 'WARNING', 'EXCEPTION')`` that sets the minimum log level that is printed and written to disk
+* ``TIMEOUT``: timeout used for timeout decorators on time-sensitive operations (in seconds, default 0.05)
+* ``HEARTBEAT_TIMEOUT``: Time between heartbeats between GUI and controller after which contact is assumed to be lost (in seconds, default 0.02)
+* ``GUI_STATE_FN``: Filename of gui control state file, relative to ``VENT_DIR`` (default: gui_state.json)
+* ``GUI_UPDATE_TIME``: Time between calls of :meth:`.PVP_Gui.update_gui` (in seconds, default: 0.05)
+* ``ENABLE_DIALOGS``: Enable all GUI dialogs -- set as False when testing on virtual frame buffer that doesn't support them (default: True and should stay that way)
+* ``ENABLE_WARNINGS``: Enable user warnings and value change confirmations (default: True)
+* ``CONTROLLER_MAX_FLOW``: Maximum flow, above which the controller considers a sensor error (default: 10)
+* ``CONTROLLER_MAX_PRESSURE``: Maximum pressure, above which the controller considers a sensor error (default: 100)
+* ``CONTROLLER_MAX_STUCK_SENSOR``: Max amount of time (in s) before considering a sensor stuck (default: 0.2)
+* ``CONTROLLER_LOOP_UPDATE_TIME``: Amount of time to sleep in between controller update times when using :class:`.ControlModuleDevice` (default: 0.0)
+* ``CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR``: Amount of time to sleep in between controller updates when using :class:`.ControlModuleSimulator` (default: 0.005)
+* ``CONTROLLER_LOOPS_UNTIL_UPDATE``: Number of controller loops in between updating its externally-available ``COPY`` attributes retrieved by :meth:`.ControlModuleBase.get_sensor` et al
+* ``CONTROLLER_RINGBUFFER_SIZE``: Maximum number of breath cycle records to be kept in memory (default: 100)
+* ``COUGH_DURATION``: Amount of time the high-pressure alarm limit can be exceeded and considered a cough (in seconds, default: 0.1)
+* ``BREATH_PRESSURE_DROP``: Amount pressure can drop below set PEEP before being considered an autonomous breath when in breath detection mode
+* ``BREATH_DETECTION``: Whether the controller should detect autonomous breaths in order to reset ventilation cycles (default: True)
 """
 
 def set_pref(key: str, val):
+    """
+    Sets a pref in the manager and, if :data:`.prefs.LOADED` is True, calls :func:`.prefs.save_prefs`
+
+    Args:
+        key (str): Name of pref key
+        val: Value to set
+    """
     globals()['_PREFS'][key] = val
     if globals()['LOADED'].value == True:
         save_prefs()
@@ -104,6 +129,10 @@ def get_pref(key: str = None):
 def load_prefs(prefs_fn: str):
     """
     Load prefs from a .json prefs file, combining (and overwriting) any existing prefs, and then saves.
+
+    Called on pvp import by :func:`.prefs.init`
+
+    Also initializes :data:`.prefs._LOGGER`
 
     .. note::
 
@@ -162,6 +191,13 @@ def load_prefs(prefs_fn: str):
 
 
 def save_prefs(prefs_fn: str = None):
+    """
+    Dumps loaded prefs to ``PREFS_FN``.
+
+    Args:
+        prefs_fn (str): Location to dump prefs. if None, use existing ``PREFS_FN``
+
+    """
     if prefs_fn is None:
         try:
             prefs_fn = globals()['_PREFS']['PREFS_FN']
@@ -200,7 +236,6 @@ def init():
     # pull them up top like _DIRECTORIES
 
     make_dirs()
-    # make_dirs should have
     load_prefs(os.path.join(get_pref('VENT_DIR'), 'prefs.json'))
 
 

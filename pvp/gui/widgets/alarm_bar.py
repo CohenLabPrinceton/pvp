@@ -1,3 +1,8 @@
+"""
+The :class:`.Alarm_Bar` displays :class:`.Alarm` status with :class:`.Alarm_Card` widgets
+and plays alarm sounds with the :class:`.Alarm_Sound_Player`
+
+"""
 import datetime
 import typing
 import glob
@@ -14,14 +19,16 @@ from pvp.common.loggers import init_logger
 
 class Alarm_Bar(QtWidgets.QFrame):
     """
-    Holds and manages a collection of :class:`Alarm_Card` s
-    """
+    Holds and manages a collection of :class:`Alarm_Card` s and communicates
+    requests for dismissal to the :class:`.Alarm_Manager`
 
-    # message_cleared = QtCore.Signal()
-    # level_changed = QtCore.Signal()
-    alarm_dismissed = QtCore.Signal()
-    """
-    Wraps :attr:`.Alarm_Card.alarm_dismissed`
+    The alarm bar also manages the :class:`.Alarm_Sound_Player`
+
+    Attributes:
+        alarms (typing.List[Alarm]): A list of active alarms
+        alarm_cards ( typing.List[Alarm_Card]): A list of active alarm cards
+        sound_player ( :class:`.Alarm_Sound_Player` ): Class that plays alarm sounds!
+        icons (dict): Dictionary of pixmaps with icons for different alarm levels
     """
 
     def __init__(self):
@@ -30,10 +37,7 @@ class Alarm_Bar(QtWidgets.QFrame):
         self.icons = {}
         self.alarms = [] # type: typing.List[Alarm]
         self.alarm_cards = [] # type: typing.List[Alarm_Card]
-        self.current_alarm = None
         self._alarm_level = AlarmSeverity.OFF
-        self._sound_silenced = False
-        #self._changing_alarms = threading.Lock()
         self.setContentsMargins(0,0,0,0)
 
         self.sound_player = Alarm_Sound_Player()
@@ -42,6 +46,11 @@ class Alarm_Bar(QtWidgets.QFrame):
 
 
     def make_icons(self):
+        """
+        Create pixmaps from standard icons to display for different alarm types
+
+        Store in :attr:`.Alarm_Bar.icons`
+        """
 
         style = self.style()
         size = style.pixelMetric(QtWidgets.QStyle.PM_MessageBoxIconSize, None, self)
@@ -60,9 +69,14 @@ class Alarm_Bar(QtWidgets.QFrame):
         self.icons[AlarmSeverity.MEDIUM] = warning_icon
         self.icons[AlarmSeverity.HIGH] = alarm_icon
 
-
-
     def init_ui(self):
+        """
+        Initialize the UI
+
+        * Create layout
+        * Set icon
+        * Create mute button
+        """
 
         self.layout = QtWidgets.QHBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
@@ -105,8 +119,14 @@ class Alarm_Bar(QtWidgets.QFrame):
         """
         Add an alarm created by the :class:`.Alarm_Manager` to the bar.
 
+        If an alarm alreaady exists with that same :class:`.AlarmType` , :meth:`.Alarm_Bar.clear_alarm`
+
+        Insert new alarm in order the prioritizes alarm severity with highest severity on right
+
+        Set alarm sound and begin playing if not already.
+
         Args:
-            alarm:
+            alarm (:class:`.Alarm` ): Alarm to be added
 
         """
         for existing_alarm in self.alarms:
@@ -115,7 +135,6 @@ class Alarm_Bar(QtWidgets.QFrame):
 
         # make new alarm widget
         alarm_card = Alarm_Card(alarm)
-        alarm_card.alarm_dismissed.connect(self.alarm_dismissed)
 
         # alarm priority should go low on left, high on right
         # newer alarms should be on the right of older alarms of same severity
@@ -151,14 +170,20 @@ class Alarm_Bar(QtWidgets.QFrame):
         self.update_icon()
 
     def clear_alarm(self, alarm:Alarm=None, alarm_type:AlarmType=None):
-        # with self._changing_alarms:
+        """
+        Remove an alarm card, update appearance and sound player to reflect current max severity
+
+        Must pass one of either ``alarm`` or ``alarm_type``
+
+        Args:
+            alarm ( :class:`.Alarm` ): Alarm to be cleared
+            alarm_type ( :class:`.AlarmType` ): Alarm type to be cleared
+        """
         if (alarm is None) and (alarm_type is None):
             raise ValueError('Need to provide either alarm object or alarm id to clear')
 
-
         if alarm:
             alarm_type = alarm.alarm_type
-
 
         for existing_alarm, alarm_card in zip(self.alarms, self.alarm_cards):
             if alarm_type == existing_alarm.alarm_type:
@@ -199,96 +224,33 @@ class Alarm_Bar(QtWidgets.QFrame):
 
     def set_icon(self, state: AlarmSeverity=None):
         """
-        Change the icon to reflect the alarm severity
+        Change the icon and bar appearance to reflect the alarm severity
 
         Args:
-            state:
-
-        Returns:
-
+            state ( :class:`.AlarmSeverity` ): Alarm Severity to display, if None change to default display
         """
 
         if state == AlarmSeverity.LOW:
             self.setStyleSheet(styles.STATUS_NORMAL)
             self.icon.setPixmap(self.icons[AlarmSeverity.LOW])
-            #self.clear_button.setVisible(True)
         elif state == AlarmSeverity.MEDIUM:
             self.setStyleSheet(styles.STATUS_WARN)
             self.icon.setPixmap(self.icons[AlarmSeverity.MEDIUM])
-            #self.clear_button.setVisible(True)
         elif state == AlarmSeverity.HIGH:
             self.setStyleSheet(styles.STATUS_ALARM)
             self.icon.setPixmap(self.icons[AlarmSeverity.HIGH])
-            #self.clear_button.setVisible(True)
         else:
             self.setStyleSheet(styles.STATUS_NORMAL)
-            #self.clear_button.setVisible(False)
             self.icon.clear()
-
-
-    # @QtCore.Slot(Alarm)
-    # def update_message(self, alarm):
-    #     """
-    #     Arguments:
-    #         alarm (:class:`~.message.Alarm`)
-    #
-    #     """
-    #
-    #     if alarm is None:
-    #         # clear
-    #         self.current_alarm = None
-    #         self.set_icon()
-    #         self.message.setText("")
-    #         return
-    #
-    #     self.alarms[alarm.id] = alarm
-    #
-    #     if self.current_alarm:
-    #         # see if we are outranked by current message
-    #         if alarm.severity >= self.current_alarm.severity:
-    #             self.set_icon(alarm.severity)
-    #             self.message.setText(alarm.message)
-    #             self.current_alarm = alarm
-    #             self.alarm_level = alarm.severity
-    #         else:
-    #             return
-    #
-    #     else:
-    #         self.set_icon(alarm.severity)
-    #         self.message.setText(alarm.message)
-    #         self.current_alarm = alarm
-    #         self.alarm_level = alarm.severity
-    #
-    #     # delete old messages from same value
-    #     self.alarms = {a_key: a_val for a_key, a_val in self.alarms.items() if
-    #                    (a_val.alarm_name != alarm.alarm_name) or
-    #                    (a_val.id == alarm.id)}
-
-    # def clear_message(self):
-    #     if not self.current_alarm:
-    #         return
-    #
-    #     self.message_cleared.emit(self.current_alarm)
-    #     del self.alarms[self.current_alarm.id]
-    #
-    #
-    #     # check if we have another message to display
-    #     if len(self.alarms)>0:
-    #         # get message priorities
-    #         paired_priorities = [(alarm.id, alarm.severity) for alarm in self.alarmss()]
-    #         priorities = np.array([msg[1] for msg in paired_priorities])
-    #         # find the max priority
-    #         max_ind = np.argmax(priorities)
-    #         self.current_alarm = None
-    #         new_alarm = self.alarms[paired_priorities[max_ind][0]]
-    #         self.update_message(new_alarm)
-    #         self.alarm_level = new_alarm.severity
-    #     else:
-    #         self.update_message(None)
-    #         self.alarm_level = AlarmSeverity.OFF
 
     @property
     def alarm_level(self):
+        """
+        Current maximum :class:`.AlarmSeverity`
+
+        Returns:
+            :class:`.AlarmSeverity`
+        """
         return self._alarm_level
 
     @alarm_level.setter
@@ -302,21 +264,42 @@ class Alarm_Card(QtWidgets.QFrame):
     """
     Representation of an alarm raised by :class:`.Alarm_Manager` in GUI.
 
-    If allowed by alarm, allows user to dismiss/silence alarm
+    If allowed by alarm (by ``latch`` setting) , allows user to dismiss/silence alarm.
+
+    Otherwise request to dismiss is logged by :class:`.Alarm_Manager` and the card is dismissed when
+    the conditions that generated the alarm are no longer met.
+
+    Args:
+        alarm ( :class:`.Alarm` ): Alarm to represent
+
+    Attributes:
+        alarm ( :class:`.Alarm` ): The represented alarm
+        severity ( :class:`.AlarmSeverity` ): The severity of the represented alarm
+        close_button ( :class:`PySide2.QtWidgets.QPushButton` ): Button that requests an alarm be dismissed
+
+
     """
-    alarm_dismissed = QtCore.Signal()
 
     def __init__(self, alarm: Alarm):
         super(Alarm_Card, self).__init__()
 
         assert isinstance(alarm, Alarm)
-        self.alarm = alarm
-        self.severity = self.alarm.severity
-
+        self.alarm = alarm # type: Alarm
+        self.severity = self.alarm.severity # type: AlarmSeverity
 
         self.init_ui()
 
     def init_ui(self):
+        """
+        Initialize graphical elements
+
+        * Create labels
+        * Set stylesheets
+        * Create and connect dismiss button
+
+        Returns:
+
+        """
         self.setStyleSheet(styles.ALARM_CARD_STYLES[self.severity])
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
                            QtWidgets.QSizePolicy.Expanding)
@@ -335,12 +318,6 @@ class Alarm_Card(QtWidgets.QFrame):
         self.timestamp_label.setStyleSheet(styles.ALARM_CARD_TIMESTAMP)
         self.timestamp_label.setFont(mono_font())
 
-        # close button
-        # style = self.style()
-        # size = style.pixelMetric(QtWidgets.QStyle.PM_MessageBoxIconSize, None, self)
-        # close_icon = style.standardIcon(QtWidgets.QStyle.SP_TitleBarCloseButton, None, self)
-        # close_icon = close_icon.pixmap(size, size)
-        #
         self.close_button = QtWidgets.QPushButton('X')
         self.close_button.setSizePolicy(
             QtWidgets.QSizePolicy.Maximum,
@@ -355,25 +332,56 @@ class Alarm_Card(QtWidgets.QFrame):
         self.setLayout(self.layout)
 
     def _dismiss(self):
+        """
+        Gets the :class:`.Alarm_Manager` instance and calls :meth:`.Alarm_Manager.dismiss_alarm`
+
+        Also change appearance of close button to reflect requested dismissal
+        """
 
         Alarm_Manager().dismiss_alarm(self.alarm.alarm_type)
         self.close_button.setStyleSheet(styles.ALARM_CARD_BUTTON_INACTIVE)
         self.close_button.setText('...')
 
 class Alarm_Sound_Player(QtWidgets.QWidget):
+    """
+    Plays alarm sounds to reflect current alarm severity and active duration with :class:`PySide2.QtMultimedia.QSoundEffect` objects
+
+    Alarm sounds indicate severity with the number and pitch of tones in a repeating tone cluster
+    (eg. low severity sounds have a single repeating tone, but high-severity alarms have three repeating tones)
+
+    They indicate active duration by incrementally removing a low-pass filter and making tones have
+    a sharper attack and decay.
+
+    When an alarm of any severity is started the ``<severity_0.wav`` file begins playing, and
+    a timer is started to call :meth:`.Alarm_Sound_Player.increment_level`
+
+    Args:
+        increment_delay (int): Delay between calling :meth:`.Alarm_Sound_Player.increment_level`
+        *args, **kwargs: passed to :class:`PySide2.QtWidgets.QWidget`
+
+    Attributes:
+        idx (dict): Dictionary of dictionaries allowing sounds to be accessed like ``self.idx[AlarmSeverity][level]``
+        files (list): list of sound file paths
+        increment_delay (int): Time between calling :meth:`.Alarm_Sound_Player.increment_level`` in ms
+        playing (bool): Whether or not a sound is playing
+        _increment_timer ( :class:`PySide2.QtCore.QTimer` ): Timer that increments alarm sound level
+        _changing_track ( :class:`threading.Lock` ): used to ensure single sound changing call happens at a time.
+    """
 
     severity_map = {
         'low': AlarmSeverity.LOW,
         'medium': AlarmSeverity.MEDIUM,
         'high': AlarmSeverity.HIGH
     }
+    """
+    mapping between string representations of severities used by filenames and :class:`.AlarmSeverity`
+    """
 
-    def __init__(self, increment_delay=10000, *args, **kwargs):
+    def __init__(self, increment_delay:int=10000, *args, **kwargs):
         super(Alarm_Sound_Player, self).__init__(*args, **kwargs)
 
-        self.player = None
-        self.playlist = None
-        self.idx = {}
+
+        self.idx = {} # type: dict
         self.idx[AlarmSeverity.LOW] = {}
         self.idx[AlarmSeverity.MEDIUM] = {}
         self.idx[AlarmSeverity.HIGH] = {}
@@ -398,9 +406,10 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
 
         self.init_audio()
 
-
-
     def init_audio(self):
+        """
+        Load audio files in ``pvp/external/audio`` and add to :attr:`.Alarm_Sound_Player.idx`
+        """
 
         # init audio objects
         # self.player = QtMultimedia.QMediaPlayer(self)
@@ -443,6 +452,15 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
         # self.player.mediaStatusChanged.connect(self._update_player)
 
     def play(self):
+        """
+        Start sound playback
+
+        Play sound listed as :attr:`.Alarm_Sound_Player._current_sound`
+
+        .. note::
+
+            :meth:`.Alarm_Sound_Player.set_sound` must be called first.
+        """
 
         # self.playlist.setPlaybackMode(QtMultimedia.QMediaPlaylist.CurrentItemInLoop)
         if self.playing:
@@ -455,11 +473,14 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
             self._increment_timer.start()
             self.logger.debug('Playback Started')
         else:
+            self.playing = False
             self.logger.exception("No sound selected before using play method")
         # self.player.play()
 
-
     def stop(self):
+        """
+        Stop sound playback
+        """
         self.logger.debug('Playback Stopped')
         self.playing = False
         self._current_sound.stop()
@@ -468,33 +489,17 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
         self._severity = AlarmSeverity.OFF
         self._level = 0
         self._muted = False
-    #
-    # def set_severity(self, severity: AlarmSeverity):
-    #     with self._changing_track:
-    #         if severity != self._severity:
-    #             if severity in self.idx.keys():
-    #                 new_sound = self.idx[severity][self._level]
-    #                 if self._current_sound is not None:
-    #                     self._current_sound.stop()
-    #                 new_sound.start()
-    #                 self._current_sound = new_sound
-    #                 self._severity = severity
-    #             else:
-    #                 # an alarm type we dont have, like OFF
-    #                 self.logger.warning(f"Tried to set alarm severity to {severity} but no sound was found")
-    #
-    # def set_level(self, level: int):
-    #     with self._changing_track:
-    #         if level != self._level:
-    #             new_sound = self.idx[self._severity][level]
-    #             if self._current_sound is not None:
-    #                 self._current_sound.stop()
-    #             new_sound.start()
-    #             self._current_sound = new_sound
-    #             self._level = level
-    #
 
     def set_sound(self, severity: AlarmSeverity = None, level: int = None):
+        """
+        Set sound to be played
+
+        At least an :class:`.AlarmSeverity` must be provided.
+
+        Args:
+            severity ( :class:`.AlarmSeverity` ): Severity of alarm sound to play
+            level (int): level (corresponding to active duration) of sound to play
+        """
         with self._changing_track:
             if severity is None:
                 severity = self._severity
@@ -507,7 +512,7 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
                 if self._current_sound is not None:
                     self._current_sound.stop()
 
-                if not self._muted:
+                if not self._muted and self.playing:
                     new_sound.play()
 
                 self._current_sound = new_sound
@@ -519,12 +524,22 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
             else:
                 self.logger.exception(f"{severity} doesnt have an alarm sound!")
 
-
     def increment_level(self):
+        """
+        If current level is below the maximum level, increment with :meth:`.Alarm_Sound_Player.set_sound`
+        Returns:
+
+        """
         if self._level < self._max_level:
             self.set_sound(level=self._level + 1)
 
-    def set_mute(self, mute):
+    def set_mute(self, mute: bool):
+        """
+        Set mute state
+
+        Args:
+            mute (bool): if True, mute. if False, unmute.
+        """
         if mute:
             self._muted = True
             if self._current_sound:
@@ -534,16 +549,5 @@ class Alarm_Sound_Player(QtWidgets.QWidget):
             self._muted = False
             if self._current_sound:
                 self._current_sound.play()
-
-
-
-    # def _update_player(self, status: QtMultimedia.QMediaPlayer.MediaStatus):
-    #     print(status)
-    #     if status == QtMultimedia.QMediaPlayer.MediaStatus.EndOfMedia:
-    #         if self._change_to is not None:
-    #             self.playlist.setCurrentIndex(self._change_to)
-    #             self.player.play()
-    #             self._current_idx = self._change_to
-    #             self._change_to = None
 
 

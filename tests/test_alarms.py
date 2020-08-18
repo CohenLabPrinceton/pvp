@@ -43,7 +43,6 @@ def fake_sensors():
 def fake_rule():
     def _fake_rule(alarm_type = AlarmType.HIGH_PRESSURE,
                    latch = False,
-                   persistent = False,
                    conditions = None):
 
         if not conditions:
@@ -76,7 +75,6 @@ def fake_rule():
         rule = Alarm_Rule(
             name=alarm_type,
             latch=latch,
-            persistent=persistent,
             conditions=conditions
         )
 
@@ -237,7 +235,6 @@ def test_alarm_rule(fake_sensors):
     rule = Alarm_Rule(
         name=AlarmType.HIGH_PRESSURE,
         latch=False,
-        persistent=False,
         conditions=(
             (
                 AlarmSeverity.LOW,
@@ -389,7 +386,7 @@ def test_alarm_manager_escalation(fake_sensors, fake_rule):
 
     #
     # create alarm rule for testing
-    rule = fake_rule(latch=False, persistent=False)
+    rule = fake_rule(latch=False)
     manager.load_rule(rule)
 
     assert manager.rules[rule.name] is rule
@@ -465,7 +462,7 @@ def test_alarm_manager_latch(fake_sensors, fake_rule):
     assert len(manager.active_alarms) == 0
 
     # create alarm rule for testing
-    rule = fake_rule(latch=True, persistent=False)
+    rule = fake_rule(latch=True)
     manager.load_rule(rule)
     assert manager.rules[rule.name] is rule
 
@@ -549,7 +546,7 @@ def test_alarm_manager_dismiss(fake_sensors, fake_rule):
     assert len(manager.active_alarms) == 0
 
     # create alarm rule for testing
-    rule = fake_rule(latch=False, persistent=False)
+    rule = fake_rule(latch=False)
     manager.load_rule(rule)
     assert manager.rules[rule.name] is rule
 
@@ -645,7 +642,7 @@ def test_alarm_manager_logged_alarms(fake_sensors, fake_rule):
     assert len(manager.active_alarms) == 0
 
     # create alarm rule for testing
-    rule = fake_rule(latch=False, persistent=False)
+    rule = fake_rule(latch=False)
     manager.load_rule(rule)
     assert manager.rules[rule.name] is rule
 

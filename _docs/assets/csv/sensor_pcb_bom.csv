@@ -11,4 +11,4 @@ U2,"INA126, DIP8",Instrumentation amplifier for oxygen sensor output
 U3,Amphenol 1 PSI-D-4V-MINI,Airway pressure sensor
 U4,Adafruit ADS1115,4x 12-bit ADC
 U5,Amphenol 5 INCH-D2-P4V-MINI,Differential pressure sensor (for flow measurement)
-U6,-,Auxiliary analog output sensor slot
+U6, ,Auxiliary analog output sensor slot

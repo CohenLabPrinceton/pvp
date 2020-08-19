@@ -9,6 +9,3 @@ C2,"6.8 uF, 50V",24V rail filter cap
 C3,"100 uF, 16V",5V rail filter cap
 U1,ULN2003A,Darlington BJT array to drive solenoids
 U2,CUI PDQ15-Q24-S5-D,24-to-5V DC-DC converter
-,,
-,,
-,,

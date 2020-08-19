@@ -199,6 +199,10 @@ def test_gui_controls(qtbot, spawn_gui, test_value, test_units):
     value_name = test_value[0]
     value_params = test_value[1]
 
+    # mercifully skip pointless tests
+    if test_units == "hPa" and value_name not in (ValueName.PIP, ValueName.PEEP):
+        return
+
     app, vent_gui = spawn_gui
 
     # if one of the cycle variables, make sure we click the other one as being autocalculated
@@ -207,9 +211,7 @@ def test_gui_controls(qtbot, spawn_gui, test_value, test_units):
     elif value_name == values.ValueName.BREATHS_PER_MINUTE:
         vent_gui.control_panel.cycle_buttons[values.ValueName.INSPIRATION_TIME_SEC].click()
 
-    # mercifully skip pointless tests
-    if test_units == "hPa" and test_value not in (ValueName.PIP, ValueName.PEEP):
-        return
+
 
     vent_gui.control_panel.pressure_buttons[test_units].click()
 

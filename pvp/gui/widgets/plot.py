@@ -253,7 +253,7 @@ class Plot(pg.PlotWidget):
         """
         if self.name in ('Pressure',):
             if units == 'cmH2O':
-                self.decimals = 1
+                #self.decimals = 1
                 self.units = units
                 self._convert_in = None
                 self._convert_out = None
@@ -263,7 +263,7 @@ class Plot(pg.PlotWidget):
                         a_line.setPos(unit_conversion.hPa_to_cmH2O(a_line.getPos()[1]))
 
             elif units == 'hPa':
-                self.decimals = 0
+                #self.decimals = 0
                 self.units = units
                 self._convert_in = unit_conversion.cmH2O_to_hPa
                 self._convert_out = unit_conversion.hPa_to_cmH2O

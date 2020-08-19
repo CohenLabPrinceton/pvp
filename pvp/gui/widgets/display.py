@@ -84,7 +84,7 @@ class Display(QtWidgets.QWidget):
         self.name = value.name
         self.units = value.units
         self.abs_range = value.abs_range
-        if not value.safe_range:
+        if not value.safe_range: # pragma: no cover
             self.safe_range = (0, 0)
         else:
             self.safe_range = value.safe_range
@@ -404,7 +404,7 @@ class Display(QtWidgets.QWidget):
         Args:
             state (bool): Whether to show or hide the slider
         """
-        if self.control != 'slider':
+        if self.control != 'slider': # pragma: no cover
             return
         if state == True:
             self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
@@ -427,7 +427,7 @@ class Display(QtWidgets.QWidget):
                 when started, start storing new sensor values in a list.
                 when stopped, average thgem and emit new value.
         """
-        if self.control != 'record':
+        if self.control != 'record': # pragma: no cover
             return
         if state:
             self._log_values = True
@@ -690,14 +690,14 @@ class Display(QtWidgets.QWidget):
         if self.name in (ValueName.PIP.name, ValueName.PEEP.name, "Pressure") or \
                 self.enum_name in (ValueName.PIP, ValueName.PEEP, ValueName.PRESSURE):
             if units == 'cmH2O':
-                self.decimals = 1
+                #self.decimals = 1
                 self._convert_in = None
                 self._convert_out = None
                 self.sensor_plot._convert_in = None
                 self.sensor_plot._convert_out = None
 
             elif units == 'hPa':
-                self.decimals = 0
+                #self.decimals = 0
                 self._convert_in = unit_conversion.cmH2O_to_hPa
                 self._convert_out = unit_conversion.hPa_to_cmH2O
                 self.sensor_plot._convert_in = unit_conversion.cmH2O_to_hPa

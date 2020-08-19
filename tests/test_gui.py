@@ -176,8 +176,9 @@ def test_gui_launch(qtbot):
 # test user interaction
 #
 # @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.CONTROL.items() if k == values.ValueName.PIP] )
+@pytest.mark.parametrize('test_units', ('cmH2O', 'hPa'))
 @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.DISPLAY_CONTROL.items() if k!=values.ValueName.IE_RATIO])
-def test_gui_controls(qtbot, spawn_gui, test_value):
+def test_gui_controls(qtbot, spawn_gui, test_value, test_units):
     """
     test setting controls in all the ways available to the GUI
 
@@ -206,6 +207,7 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
     elif value_name == values.ValueName.BREATHS_PER_MINUTE:
         vent_gui.control_panel.cycle_buttons[values.ValueName.INSPIRATION_TIME_SEC].click()
 
+    vent_gui.control_panel.pressure_buttons[test_units].click()
 
     vent_gui.start()
     vent_gui.timer.stop()
@@ -232,27 +234,16 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
     for i in range(n_samples):
         test_value = gen_test_value()
 
-        # qtbot.mouseMove(control_widget.set_value_label, click_pos, delay=100)
-        # qtbot.mouseClick(control_widget.set_value_label.label, QtCore.Qt.LeftButton, delay=10)
-        # qtbot.mouseRelease(control_widget.set_value_label, QtCore.Qt.LeftButton)
-
-        # qtbot.keyPress(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Escape, delay=10)
-        # qtbot.keyRelease(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Escape)
-
-        # qtbot.mouseClick(control_widget.set_value_label.label, QtCore.Qt.LeftButton, delay=100)
-
-
         control_widget.set_value_label.setLabelEditableAction()
         control_widget.set_value_label.lineEdit.setText(str(test_value))
 
         qtbot.keyPress(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
         qtbot.keyRelease(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
 
-        # control_widget.set_value_label.returnPressedAction()
-        # should call labelUpdatedAction and send to controller
-
         control_value = vent_gui.coordinator.get_control(value_name)
 
+        if control_widget._convert_out:
+            test_value = control_widget._convert_out(test_value)
         assert(control_value.value == test_value)
 
     # from slider if we've got one
@@ -268,7 +259,10 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
             control_widget.slider.setValue(test_value)
 
             control_value = vent_gui.coordinator.get_control(value_name)
-            assert(control_value.value == test_value)
+            if control_widget._convert_out:
+                test_value = control_widget._convert_out(test_value)
+            # we expect some slop from the slider
+            assert np.isclose(control_value.value, test_value, rtol=.1)
 
     # or from the recorder if we've got one
     elif value_params.control_type == "record":
@@ -288,7 +282,10 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
             control_widget.toggle_button.click()
             assert(control_widget.toggle_button.isChecked() == False)
             control_value = vent_gui.coordinator.get_control(value_name)
-            assert control_value.value == np.mean(test_values)
+            test_value = np.mean(test_values)
+            # if control_widget._convert_out:
+            #     test_value = control_widget._convert_out(test_value)
+            assert np.isclose(control_value.value, test_value)
 
     # should be one or the other
     else:

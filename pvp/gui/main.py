@@ -683,7 +683,8 @@ class PVP_Gui(QtWidgets.QMainWindow):
                 self.toggle_lock(False)
                 self.control_panel.runtime.stop_timer()
                 self.control_panel.heartbeat.stop_timer()
-            return
+            else: # pragma: no cover
+                return
 
         self.state_changed.emit(state)
 

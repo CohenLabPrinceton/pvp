@@ -6,9 +6,9 @@ def cmH2O_to_hPa(pressure: float) -> float:
         pressure (float): Pressure in cmH2O
 
     Returns:
-        float: Pressure in hPa (pressure*98.0665)
+        float: Pressure in hPa (pressure / 1.0197162129779)
     """
-    return pressure*98.0665
+    return pressure / 1.0197162129779
 
 def hPa_to_cmH2O(pressure: float) -> float:
     """
@@ -18,9 +18,9 @@ def hPa_to_cmH2O(pressure: float) -> float:
         pressure (float): Pressure in hPa
 
     Returns:
-        float: Pressure in cmH2O (pressure/98.0665)
+        float: Pressure in cmH2O (pressure * 1.0197162129779)
     """
-    return pressure / 98.0665
+    return pressure * 1.0197162129779
 
 
 def rounded_string(value: float, decimals: int = 0) -> str:

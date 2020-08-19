@@ -84,7 +84,7 @@ class Display(QtWidgets.QWidget):
         self.name = value.name
         self.units = value.units
         self.abs_range = value.abs_range
-        if not value.safe_range:
+        if not value.safe_range: # pragma: no cover
             self.safe_range = (0, 0)
         else:
             self.safe_range = value.safe_range
@@ -404,7 +404,7 @@ class Display(QtWidgets.QWidget):
         Args:
             state (bool): Whether to show or hide the slider
         """
-        if self.control != 'slider':
+        if self.control != 'slider': # pragma: no cover
             return
         if state == True:
             self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
@@ -427,7 +427,7 @@ class Display(QtWidgets.QWidget):
                 when started, start storing new sensor values in a list.
                 when stopped, average thgem and emit new value.
         """
-        if self.control != 'record':
+        if self.control != 'record': # pragma: no cover
             return
         if state:
             self._log_values = True
@@ -493,7 +493,7 @@ class Display(QtWidgets.QWidget):
 
                 dialog = pop_dialog(
                     message = f'Confirm setting potentially unsafe {self.name} value',
-                    sub_message= f'Values of {self.name} outside of {self.safe_range[0]}-{self.safe_range[1]} {self.units} are usually unsafe.\n\nAre you sure you want to set {self.name} to {orig_value} {self.units}',
+                    sub_message= f'Values of {self.name} outside of {safe_range[0]}-{safe_range[1]} {self.units} are usually unsafe.\n\nAre you sure you want to set {self.name} to {orig_value} {self.units}',
                     buttons =  QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok,
                     default_button =  QtWidgets.QMessageBox.Cancel
                 )
@@ -508,7 +508,7 @@ class Display(QtWidgets.QWidget):
 
         else:
             # reset _confirmed_unsafe if back in range
-            if self._confirmed_unsafe:
+            if self._confirmed_unsafe: # pragma: no cover -- dont to confirmations in travis
                 self._confirmed_unsafe = False
 
             # set firstset flag if we're going in safe range for the first time
@@ -527,7 +527,7 @@ class Display(QtWidgets.QWidget):
             new_value (float): new value to set!
         """
 
-        if isinstance(new_value, str):
+        if isinstance(new_value, str): # pragma: no cover
             new_value = float(new_value)
 
         # don't convert value here,
@@ -577,7 +577,7 @@ class Display(QtWidgets.QWidget):
         Args:
             control (:class:`~.ControlSetting`): control setting with min_value or max_value
         """
-        if self.control is None:
+        if self.control is None: # pragma: no cover
             return
 
         if control.min_value:
@@ -603,7 +603,7 @@ class Display(QtWidgets.QWidget):
         # convert some guaranteed values
         abs_range = self.abs_range
         if self._convert_in:
-            abs_range = (self._convert_in(x) for x in abs_range)
+            abs_range = [self._convert_in(x) for x in abs_range]
 
         # sensor value
         if self.sensor_value:
@@ -632,12 +632,15 @@ class Display(QtWidgets.QWidget):
                 if self.control == "slider":
                     try:
                         self.slider.blockSignals(True)
-                        self.slider.setValue(set_value)
                         self.slider.setMinimum(abs_range[0])
                         self.slider.setMaximum(abs_range[1])
                         self.slider.setDecimals(self.decimals)
+                        self.slider.setValue(set_value)
+                        self.slider.update()
                         self.slider_min.setText(unit_conversion.rounded_string(abs_range[0], self.decimals))
                         self.slider_max.setText(unit_conversion.rounded_string(abs_range[1], self.decimals))
+                    except Exception as e: # pragma: no cover
+                        self.logger.exception(e)
                     finally:
                         self.slider.blockSignals(False)
 
@@ -645,7 +648,7 @@ class Display(QtWidgets.QWidget):
         if self.alarm_range:
             alarm_range = self.alarm_range
             if self._convert_in:
-                alarm_range = (self._convert_in(x) for x in alarm_range)
+                alarm_range = [self._convert_in(x) for x in alarm_range]
             self.sensor_plot.update_value(min=alarm_range[0], max=alarm_range[1])
 
 
@@ -662,7 +665,7 @@ class Display(QtWidgets.QWidget):
                     sensor_value = self.sensor_value
                 value_str = unit_conversion.rounded_string(sensor_value, self.decimals)
                 self.sensor_label.setText(value_str)
-        except Exception as e:
+        except Exception as e: # pragma: no cover
             self.logger.exception(f"{self.name} - error in timed update - {e}")
         finally:
             QtCore.QTimer.singleShot(round(self.update_period*1000), self.timed_update)
@@ -684,22 +687,23 @@ class Display(QtWidgets.QWidget):
         Args:
             units ('cmH2O', 'hPa'): new units to display
         """
-        if self.name in (ValueName.PIP.name, ValueName.PEEP.name):
+        if self.name in (ValueName.PIP.name, ValueName.PEEP.name, "Pressure") or \
+                self.enum_name in (ValueName.PIP, ValueName.PEEP, ValueName.PRESSURE):
             if units == 'cmH2O':
-                self.decimals = 1
+                #self.decimals = 1
                 self._convert_in = None
                 self._convert_out = None
                 self.sensor_plot._convert_in = None
                 self.sensor_plot._convert_out = None
 
             elif units == 'hPa':
-                self.decimals = 0
+                #self.decimals = 0
                 self._convert_in = unit_conversion.cmH2O_to_hPa
                 self._convert_out = unit_conversion.hPa_to_cmH2O
                 self.sensor_plot._convert_in = unit_conversion.cmH2O_to_hPa
                 self.sensor_plot._convert_out = unit_conversion.hPa_to_cmH2O
 
-            else:
+            else: # pragma: no cover
                 self.logger.exception(f'couldnt set units {units}')
                 return
 

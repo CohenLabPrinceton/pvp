@@ -64,8 +64,8 @@ class Plot(pg.PlotWidget):
 
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, name, buffer_size = 4092,
-                 plot_duration = 10,
+    def __init__(self, name: str, buffer_size: int = 4092,
+                 plot_duration: float = 10,
                  plot_limits: tuple = None,
                  color=None,
                  units='',
@@ -89,6 +89,8 @@ class Plot(pg.PlotWidget):
         self.getPlotItem().titleLabel.setAttr('justify', 'left')
 
         self.name = name
+
+        self.logger = init_logger(__name__)
 
         # pdb.set_trace()
 
@@ -204,11 +206,8 @@ class Plot(pg.PlotWidget):
             except IndexError:
                 self.early_curve.setData(plot_timestamps, plot_values)
                 self.late_curve.clear()
-        except:
-            # FIXME: Log this lol
-            print('error plotting value: {}, timestamp: {}'.format(new_value[1], new_value[0]))
-
-        #self._last_time = this_time
+        except Exception as e:  # pragma: no cover
+            self.logger.exception('{}: error plotting value: {}, {}'.format(self.name, new_value[1], e))
 
     # @QtCore.Slot(tuple)
     def set_safe_limits(self, limits: ControlSetting):
@@ -218,19 +217,19 @@ class Plot(pg.PlotWidget):
         Args:
             limits ( :class:`.ControlSetting` ): Controlsetting that has either a ``min_value`` or ``max_value`` defined
         """
-        if self._plot_limits is None:
+        if self._plot_limits is None: # pragma: no cover
             return
 
         if limits.name in self._plot_limits.keys():
 
             if limits.min_value:
-                if self._convert_out:
-                    self._plot_limits[limits.name][0].setPos(self._convert_out(limits.min_value))
+                if self._convert_in:
+                    self._plot_limits[limits.name][0].setPos(self._convert_in(limits.min_value))
                 else:
                     self._plot_limits[limits.name][0].setPos(limits.min_value)
             if limits.max_value:
-                if self._convert_out:
-                    self._plot_limits[limits.name][1].setPos(self._convert_out(limits.max_value))
+                if self._convert_in:
+                    self._plot_limits[limits.name][1].setPos(self._convert_in(limits.max_value))
                 else:
                     self._plot_limits[limits.name][1].setPos(limits.max_value)
 
@@ -254,7 +253,7 @@ class Plot(pg.PlotWidget):
         """
         if self.name in ('Pressure',):
             if units == 'cmH2O':
-                self.decimals = 1
+                #self.decimals = 1
                 self.units = units
                 self._convert_in = None
                 self._convert_out = None
@@ -264,7 +263,7 @@ class Plot(pg.PlotWidget):
                         a_line.setPos(unit_conversion.hPa_to_cmH2O(a_line.getPos()[1]))
 
             elif units == 'hPa':
-                self.decimals = 0
+                #self.decimals = 0
                 self.units = units
                 self._convert_in = unit_conversion.cmH2O_to_hPa
                 self._convert_out = unit_conversion.hPa_to_cmH2O
@@ -416,7 +415,7 @@ class Plot_Container(QtWidgets.QGroupBox):
             if hasattr(vals, plot_key):
                 try:
                     plot.update_value((time.time(), getattr(vals, 'breath_count'), getattr(vals, plot_key)))
-                except Exception as e:
+                except Exception as e: # pragma: no cover
                     self.logger.exception(f'Couldnt update plot with {plot_key}, got error {e}')
 
     def toggle_plot(self, state: bool):
@@ -462,7 +461,7 @@ class Plot_Container(QtWidgets.QGroupBox):
         Returns:
 
         """
-        if isinstance(duration, str):
+        if isinstance(duration, str): # pragma: no cover
             duration = float(duration)
 
         self.time_box.setText(str(duration))
@@ -477,6 +476,14 @@ class Plot_Container(QtWidgets.QGroupBox):
         """
         for plot in self.plots.values():
             plot.reset_start_time()
+
+    def set_units(self, units: str):
+        """
+        Call :meth:`.Plot.set_units` for all contained plots
+        """
+        for plot in self.plots.values():
+            plot.set_units(units)
+
 
     def set_plot_mode(self):
         """

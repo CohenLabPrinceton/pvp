@@ -45,6 +45,9 @@ class CoordinatorBase:
     def set_breath_detection(self, breath_detection: bool):
         pass
 
+    def get_breath_detection(self) -> bool:
+        pass
+
     def get_target_waveform(self):
         pass
 
@@ -91,6 +94,9 @@ class CoordinatorLocal(CoordinatorBase):
 
     def set_breath_detection(self, breath_detection: bool):
         self.control_module.set_breath_detection(breath_detection)
+
+    def get_breath_detection(self) -> bool:
+        return self.control_module.get_breath_detection()
 
     def get_target_waveform(self):
         return self.control_module.get_target_waveform()
@@ -149,6 +155,9 @@ class CoordinatorRemote(CoordinatorBase):
     def set_breath_detection(self, breath_detection: bool):
         pickled_args = pickle.dumps(breath_detection)
         self.rpc_client.set_breath_detection(pickled_args)
+
+    def get_breath_detection(self) -> bool:
+        return pickle.loads(self.rpc_client.get_breath_detection().data)
 
     def get_target_waveform(self):
         pickled_res = self.rpc_client.get_target_waveform().data

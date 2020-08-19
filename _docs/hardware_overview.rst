@@ -9,7 +9,7 @@ Mechanical Diagram
     :figwidth: 100%
     :width: 100%
 
-    Schematic diagram of main mechanical components
+    Schematic diagram of main mechanical components <- THIS NEEDS TO BE UPDATED
 
 Flow actuators
 -------------------    
@@ -25,15 +25,7 @@ Sensors
 - Expiratory pressure sensor (PS2)
 - Expiratory flow sensor (FS1)
 
-Safety Components
--------------------
-- 50 psi, high pressure relief valve (PRV1)
-- Safety check valve (CV)
-- 70 cmH2O patient-side pressure relief valve (PRV2)
-- Filters (F1, F2)
-- PEEP valve (PEEP) (include the design bifurcation in this module description)
-
-Bill of Materials (need to think about what goes in this table, probably separate BoMs into tables by category, but here's a sample table)
+Bill of Materials
 -------------------
 
 .. list-table:: 

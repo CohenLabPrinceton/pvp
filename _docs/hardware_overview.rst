@@ -11,15 +11,6 @@ Mechanical Diagram
 
     Schematic diagram of main mechanical components
 
-.. toctree::
-   :maxdepth: 4
-   :caption: Hardware:
-
-   Flow Actuators <hardware.actuators>
-   Sensors <hardware.sensors>
-   Safety Components <hardware.safety>
-   Tubing and adapters <hardware.tubing>
-   
 Flow actuators
 -------------------    
 - Actuator PCB/overview (link to PCB with BoM, schematic, layout, etc.)    
@@ -41,12 +32,6 @@ Safety Components
 - 70 cmH2O patient-side pressure relief valve (PRV2)
 - Filters (F1, F2)
 - PEEP valve (PEEP) (include the design bifurcation in this module description)
-
-Tubing and Adapters
--------------------
-- Manifold 1
-- Manifold 2
-- Mounting Bracket 1... etc.
 
 Bill of Materials (need to think about what goes in this table, probably separate BoMs into tables by category, but here's a sample table)
 -------------------

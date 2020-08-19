@@ -508,7 +508,7 @@ class Display(QtWidgets.QWidget):
 
         else:
             # reset _confirmed_unsafe if back in range
-            if self._confirmed_unsafe:
+            if self._confirmed_unsafe: # pragma: no cover -- dont to confirmations in travis
                 self._confirmed_unsafe = False
 
             # set firstset flag if we're going in safe range for the first time
@@ -527,7 +527,7 @@ class Display(QtWidgets.QWidget):
             new_value (float): new value to set!
         """
 
-        if isinstance(new_value, str):
+        if isinstance(new_value, str): # pragma: no cover
             new_value = float(new_value)
 
         # don't convert value here,
@@ -577,7 +577,7 @@ class Display(QtWidgets.QWidget):
         Args:
             control (:class:`~.ControlSetting`): control setting with min_value or max_value
         """
-        if self.control is None:
+        if self.control is None: # pragma: no cover
             return
 
         if control.min_value:
@@ -639,7 +639,7 @@ class Display(QtWidgets.QWidget):
                         self.slider.update()
                         self.slider_min.setText(unit_conversion.rounded_string(abs_range[0], self.decimals))
                         self.slider_max.setText(unit_conversion.rounded_string(abs_range[1], self.decimals))
-                    except Exception as e:
+                    except Exception as e: # pragma: no cover
                         self.logger.exception(e)
                     finally:
                         self.slider.blockSignals(False)
@@ -665,7 +665,7 @@ class Display(QtWidgets.QWidget):
                     sensor_value = self.sensor_value
                 value_str = unit_conversion.rounded_string(sensor_value, self.decimals)
                 self.sensor_label.setText(value_str)
-        except Exception as e:
+        except Exception as e: # pragma: no cover
             self.logger.exception(f"{self.name} - error in timed update - {e}")
         finally:
             QtCore.QTimer.singleShot(round(self.update_period*1000), self.timed_update)
@@ -703,7 +703,7 @@ class Display(QtWidgets.QWidget):
                 self.sensor_plot._convert_in = unit_conversion.cmH2O_to_hPa
                 self.sensor_plot._convert_out = unit_conversion.hPa_to_cmH2O
 
-            else:
+            else: # pragma: no cover
                 self.logger.exception(f'couldnt set units {units}')
                 return
 

@@ -48,7 +48,7 @@ A set of additional header pins allows for digital output sensors (such as the S
     Sensor PCB schematic
 	
 .. csv-table:: Sensor PCB bill of materials
-   :file: /csv/sensor_pcb_bom.csv
+   :file: csv/sensor_pcb_bom.csv
    :widths: 10,30,60
    :header-rows: 1
 
@@ -71,7 +71,7 @@ The purpose of the actuator board is twofold:
     Actuator PCB schematic
 
 .. csv-table:: Actuator PCB bill of materials
-   :file: /csv/actuator_pcb_bom.csv
+   :file: csv/actuator_pcb_bom.csv
    :widths: 10,30,60
    :header-rows: 1
   

@@ -1,14 +1,14 @@
 ﻿Ref,Part,Purpose
-J1,40-pin stackable RPi header,Connects board to RPi
-J2,"4-pin 0.1"" header",I2C connector if desired
-J3,2-pin header,Connects ALRT pin from ADS1115 to RPi if needed
-J4,"3-pin 0.1"" header or 3 pin fan extension cable",Connects board to oxygen sensor
-R1,330 Ohm resistor,Sets gain for INA126
-C1,"10 uF, 25V",Cap for TL7660
-C2,"10 uF, 25V",Cap for TL7660
-U1,"TL7660, DIP8",Rail splitter for INA126
-U2,"INA126, DIP8",Instrumentation amplifier for oxygen sensor output
-U3,Amphenol 1 PSI-D-4V-MINI,Airway pressure sensor
-U4,Adafruit ADS1115,4x ADC
-U5,Amphenol 5 INCH-D2-P4V-MINI,Differential pressure sensor (for flow measurement)
-U6,-,Auxiliary analog output sensor slot
+J2,"2-pin screw terminal, 5.08 mm pitch, PCB mount",Connects to 24V supply
+J3,"2-pin screw terminal, 5.08 mm pitch, PCB mount",Connects to on/off expiratory valve
+J4,"2-pin screw terminal, 5.08 mm pitch, PCB mount","Connects to inspiratory valve, driven by PWM"
+J5,40-pin stackable RPi header,Connects board to RPi
+J6,"2-pin 0.1"" header",Jumper between 5V and Raspberry Pi
+C1,"6.8 uF, 50V",24V rail filter cap
+C2,"6.8 uF, 50V",24V rail filter cap
+C3,"100 uF, 16V",5V rail filter cap
+U1,ULN2003A,Darlington BJT array to drive solenoids
+U2,CUI PDQ15-Q24-S5-D,24-to-5V DC-DC converter
+,,
+,,
+,,

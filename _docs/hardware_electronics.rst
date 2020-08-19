@@ -71,7 +71,7 @@ The purpose of the actuator board is twofold:
     Actuator PCB schematic
 
 .. csv-table:: Actuator PCB bill of materials
-   :url: csv/actuator_pcb_bom.csv
+   :file: assets/csv/actuator_pcb_bom.csv
    :widths: 10,30,60
    :header-rows: 1
   

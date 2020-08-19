@@ -242,9 +242,10 @@ def test_gui_controls(qtbot, spawn_gui, test_value, test_units):
 
         control_widget.set_value_label.setLabelEditableAction()
         control_widget.set_value_label.lineEdit.setText(str(test_value))
-
-        qtbot.keyPress(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
-        qtbot.keyRelease(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
+        control_widget.set_value_label.returnPressedAction()
+        #
+        # qtbot.keyPress(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
+        # qtbot.keyRelease(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
 
         control_value = vent_gui.coordinator.get_control(value_name)
 

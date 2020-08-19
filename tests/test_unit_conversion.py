@@ -12,8 +12,8 @@ def test_pressure_unit_conversion():
     # test converting to cmH2O and hpa
     for i in range(n_samples):
         test_val = (np.random.rand()-0.5)*1000
-        assert unit_conversion.cmH2O_to_hPa(test_val) == test_val*98.0665
-        assert unit_conversion.hPa_to_cmH2O(test_val) == test_val/98.0665
+        assert unit_conversion.cmH2O_to_hPa(test_val) == test_val / 1.0197162129779
+        assert unit_conversion.hPa_to_cmH2O(test_val) == test_val * 1.0197162129779
 
 def test_rounded_string():
     """

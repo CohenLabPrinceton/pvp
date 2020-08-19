@@ -611,8 +611,8 @@ def test_doubleslider_minmax(qtbot, generic_minmax):
         # test that values were set correctly
         assert(doubleslider.minimum() == min)
         assert(doubleslider.maximum() == max)
-        assert doubleslider._minimum() == int(doubleslider.minimum() * doubleslider._multi)
-        assert doubleslider._maximum() == int(doubleslider.maximum() * doubleslider._multi)
+        assert doubleslider._minimum() == int(np.round(doubleslider.minimum() * doubleslider._multi))
+        assert doubleslider._maximum() == int(np.round(doubleslider.maximum() * doubleslider._multi))
 
         # test below min and above max
         test_min = min - np.random.rand()*multiplier

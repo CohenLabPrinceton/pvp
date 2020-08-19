@@ -26,7 +26,7 @@ Power and I/O
 The main power to the systems is supplied by a DIN rail-mounted 150W 24V supply, which drives the inspiratory valve (4W) and expiratory valves (13W). This voltage is converted to 5V by a switched mode PCB-mounted regulated to power the Raspberry Pi and sensors.
 This power is transmitted across the PCBs through the stacked headers when required.
 
-<ADD COMPONENT TABLE>
+
 
 Sensor PCB
 ----------------
@@ -44,6 +44,11 @@ A set of additional header pins allows for digital output sensors (such as the S
     :width: 100%
 
 	Sensor PCB schematic
+	
+.. csv-table:: Sensor PCB bill of materials
+   :file: /csv/sensor_pcb_bom.csv
+   :widths: 10,30,60
+   :header-rows: 1
 
 <ADD SCHEMATIC AND COMPONENT TABLE AND PCB FILES>
 

@@ -17,6 +17,7 @@ The modularity of this system enables individual boards to be revised or modifie
 
 .. toctree::
    :caption: Electronics:
+   
    Power and I/O <hardware.powerio>
    Sensor PCB <hardware.actuators>
    Actuator PCB <hardware.sensors>

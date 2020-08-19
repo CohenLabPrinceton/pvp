@@ -494,7 +494,7 @@ class HeartBeat(QtWidgets.QFrame):
         Stop timer and clear text
         """
         self.timer.stop()
-        self.setText("")
+        self.set_indicator('OFF')
 
     @QtCore.Slot(float)
     def beatheart(self, heartbeat_time):

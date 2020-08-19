@@ -421,8 +421,6 @@ def test_raise_alarm_card(qtbot, spawn_gui, fake_sensors):
 
     assert any([a.alarm_type == AlarmType.HIGH_PRESSURE for a in vent_gui.alarm_bar.alarms])
 
-
-
 def test_gui_main_etc(qtbot, spawn_gui):
 
     app, vent_gui = spawn_gui
@@ -443,8 +441,6 @@ def test_gui_main_etc(qtbot, spawn_gui):
     vent_gui.plot_box.selection_buttons[plot_key.name].click()
     how_about_now = vent_gui.plot_box.plots[plot_key.name].isVisible()
     assert plot_visible == how_about_now
-
-
 
 #########################
 # Test control panel
@@ -489,10 +485,6 @@ def test_set_breath_detection(qtbot, spawn_gui):
 
     assert vent_gui.get_breath_detection() == breath_detection
     assert vent_gui.control_panel.breath_detection_button.isChecked() == breath_detection
-
-
-
-
 
 #######################
 # alarm bar
@@ -576,9 +568,6 @@ def test_alarm_bar(qtbot, fake_rule):
     alarm_manager.dependencies = {}
     alarm_manager.load_rules()
 
-
-
-
 ###################################
 # Test base components
 
@@ -605,7 +594,6 @@ def test_doubleslider(qtbot):
 
         assert(doubleslider.value() == test_val)
         assert(blocker.args == test_val)
-
 
 def test_doubleslider_minmax(qtbot, generic_minmax):
 
@@ -685,169 +673,4 @@ def test_editable_label(qtbot):
     assert not label._editing
     assert not label.label.isHidden()
     assert label.lineEdit.isHidden()
-
-
-
-#
-# #################
-# # RangeSlider
-#
-# def test_rangeslider(qtbot, generic_minmax, generic_saferange):
-#     abs_range = generic_minmax()
-#     safe_range = generic_saferange()
-#     print(safe_range)
-#     orientation = QtCore.Qt.Orientation.Horizontal
-#
-#
-#     rangeslider = widgets.components.RangeSlider(
-#         abs_range,
-#         safe_range,
-#         decimals=decimals,
-#         orientation=orientation)
-#     rangeslider.show()
-#     qtbot.addWidget(rangeslider)
-#
-#     # test ranges & values
-#     assert(rangeslider.minimum() == abs_range[0])
-#     assert(rangeslider.maximum() == abs_range[1])
-#     assert(rangeslider.low == safe_range[0])
-#     assert(rangeslider.high == safe_range[1])
-#
-#     for i in range(n_samples):
-#         min, max = generic_saferange()
-#         print(min, max)
-#
-#         with qtbot.waitSignal(rangeslider.valueChanged, timeout=1000) as blocker:
-#             rangeslider.setHigh(max)
-#             assert(rangeslider.high == max)
-#
-#             rangeslider.setLow(min)
-#             assert(rangeslider.low == min)
-#
-# def test_rangeslider_minmax(qtbot, generic_minmax, generic_saferange):
-#     abs_range = generic_minmax()
-#     safe_range = generic_saferange()
-#     decimals = 5
-#     orientation = QtCore.Qt.Orientation.Horizontal
-#
-#     rangeslider = widgets.components.RangeSlider(
-#         abs_range,
-#         safe_range,
-#         decimals=decimals,
-#         orientation=orientation)
-#     rangeslider.show()
-#     qtbot.addWidget(rangeslider)
-#
-#     for i in range(n_samples):
-#         abs_min, abs_max = generic_minmax()
-#         safe_min, safe_max = generic_saferange()
-#
-#         #pdb.set_trace()
-#         # Set min and max and test they were set correctly
-#         rangeslider.setMinimum(abs_min)
-#         assert(rangeslider.minimum() == abs_min)
-#
-#         rangeslider.setMaximum(abs_max)
-#         assert(rangeslider.maximum() == abs_max)
-#
-#         # set low and high and test they were set correctly
-#         rangeslider.setHigh(safe_max)
-#         assert(rangeslider.high == safe_max)
-#
-#         rangeslider.setLow(safe_min)
-#         assert(rangeslider.low == safe_min)
-#
-#         # try to set low and high outside of max
-#         rangeslider.setHigh(abs_max + 1)
-#         assert(rangeslider.high == rangeslider.maximum())
-#
-#         rangeslider.setLow(abs_min - 1)
-#         assert(rangeslider.low == rangeslider.minimum())
-#
-#         # try to set low higher and high and vice versa
-#         midpoint = np.round(np.mean([abs_min, abs_max]), decimals)
-#         highpoint = np.round(midpoint-1, decimals)
-#         lowpoint = np.round(midpoint-1-(10**-decimals), decimals)
-#
-#         rangeslider.setLow(midpoint)
-#         rangeslider.setHigh(highpoint)
-#
-#         assert(rangeslider.high == highpoint)
-#         assert(rangeslider.low == lowpoint)
-#
-#         highpoint = np.round(midpoint+1+(10**-decimals), decimals)
-#         lowpoint = np.round(midpoint + 1, decimals)
-#
-#         rangeslider.setHigh(midpoint)
-#         rangeslider.setLow(lowpoint)
-#
-#         assert(rangeslider.low == lowpoint)
-#         assert(rangeslider.high == highpoint)
-#
-
-
-##########################
-# keeping for good pytest-qt exmaples
-
-# @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.SENSOR.items()])
-# def test_gui_monitor(qtbot, spawn_gui, test_value):
-
-
-#     app, vent_gui = spawn_gui
-
-#     vent_gui.start()
-#     vent_gui.timer.stop()
-
-
-#     value_name = test_value[0]
-#     value_params = test_value[1]
-#     abs_range = value_params.abs_range
-
-#     # generate target value
-#     def gen_test_values():
-#         test_value = np.random.rand(2)*(abs_range[1]-abs_range[0]) + abs_range[0]
-#         test_value = np.round(test_value, value_params.decimals)
-#         return np.min(test_value), np.max(test_value)
-
-#     monitor_widget = vent_gui.monitor[value_name.name]
-
-#     # open the control
-#     assert(monitor_widget.slider_frame.isVisible() == False)
-#     monitor_widget.toggle_button.click()
-#     assert (monitor_widget.slider_frame.isVisible() == True)
-
-#     # set handles to abs_min and max so are on absolute right and left sides
-#     monitor_widget.range_slider.setValue(abs_range)
-#     assert(monitor_widget.range_slider.low == monitor_widget.range_slider.minimum())
-#     assert (monitor_widget.range_slider.high == monitor_widget.range_slider.maximum())
-#     #
-#     # # move left a quarter of the way to the right
-#     # widget_size = monitor_widget.range_slider.size()
-#     #
-#     # # get low box position
-#     # low_pos = monitor_widget.range_slider.get_handle_rect(0)
-#     # click_pos = low_pos.center()
-#     # move_pos = copy(click_pos)
-#     # move_pos.setX(move_pos.x() + (widget_size.width()/4))
-#     #
-#     # qtbot.mouseMove(monitor_widget.range_slider, click_pos, delay=100)
-#     # qtbot.mousePress(monitor_widget.range_slider, QtCore.Qt.LeftButton, delay=200)
-#     # qtbot.mouseMove(monitor_widget.range_slider, move_pos)
-#     # qtbot.mouseRelease(monitor_widget.range_slider, QtCore.Qt.LeftButton, pos=move_pos, delay=200)
-
-
-#     # set with range_slider
-#     # for i in range(n_samples):
-#     #     test_min, test_max = gen_test_values()
-#     #
-#     #
-#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-#     #         monitor_widget.range_slider.setLow(test_min)
-#     #         sleep(0.01)
-#     #         assert(blocker.args[0][0]==test_min)
-#     #
-#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-#     #         monitor_widget.range_slider.setHigh(test_max)
-#     #         sleep(0.01)
-#     #         assert(blocker.args[0][1]==test_max)
 

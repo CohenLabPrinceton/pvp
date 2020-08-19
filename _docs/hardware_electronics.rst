@@ -8,8 +8,8 @@ Overview
     :align: center
     :figwidth: 100%
     :width: 100%
-
-	PVP block diagram for main electrical components
+    
+    PVP block diagram for main electrical components
 
 The PVP is coordinated by a Raspberry Pi 4 board, which runs the graphical user interface, administers the alarm system, monitors sensor values, and sends actuation commands to the valves.
 The core electrical system consists of two modular PCB 'hats', a sensor PCB and an actuator PCB, that stack onto the Raspberry Pi via 40-pin stackable headers.
@@ -44,7 +44,7 @@ A set of additional header pins allows for digital output sensors (such as the S
     :figwidth: 100%
     :width: 100%
 
-	Sensor PCB schematic
+    Sensor PCB schematic
 	
 .. csv-table:: Sensor PCB bill of materials
    :file: ../assets/csv/sensor_pcb_bom.csv
@@ -67,7 +67,7 @@ The purpose of the actuator board is twofold:
     :figwidth: 100%
     :width: 100%
 
-	Actuator PCB schematic
+    Actuator PCB schematic
 
 .. csv-table:: Actuator PCB bill of materials
    :file: ../assets/csv/actuator_pcb_bom.csv

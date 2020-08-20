@@ -6,7 +6,7 @@ Overview
 
 .. figure:: /images/electronics_diagram.png
     :align: center
-    :figwidth: 100%
+    :figwidth: 50%
     :width: 100%
     
     PVP block diagram for main electrical components

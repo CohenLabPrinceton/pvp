@@ -27,7 +27,10 @@ Power and I/O
 The main power to the systems is supplied by a DIN rail-mounted 150W 24V supply, which drives the inspiratory valve (4W) and expiratory valves (13W). This voltage is converted to 5V by a switched mode PCB-mounted regulated to power the Raspberry Pi and sensors.
 This power is transmitted across the PCBs through the stacked headers when required.
 
-
+.. csv-table:: Power and I/O bill of materials
+   :file: assets/csv/powerio_bom.csv
+   :widths: 40,60
+   :header-rows: 1
 
 Sensor PCB
 ----------------

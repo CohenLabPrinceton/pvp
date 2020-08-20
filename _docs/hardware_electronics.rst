@@ -15,13 +15,6 @@ The PVP is coordinated by a Raspberry Pi 4 board, which runs the graphical user 
 The core electrical system consists of two modular PCB 'hats', a sensor PCB and an actuator PCB, that stack onto the Raspberry Pi via 40-pin stackable headers.
 The modularity of this system enables individual boards to be revised or modified to adapt to component substitutions if required.
 
-.. toctree::
-   :caption: Electronics:
-   
-   Power and I/O <hardware.powerio>
-   Sensor PCB <hardware.actuators>
-   Actuator PCB <hardware.sensors>
-
 Power and I/O
 ----------------
 The main power to the systems is supplied by a DIN rail-mounted 150W 24V supply, which drives the inspiratory valve (4W) and expiratory valves (13W). This voltage is converted to 5V by a switched mode PCB-mounted regulated to power the Raspberry Pi and sensors.
@@ -43,6 +36,8 @@ The sensor board interfaces four analog output sensors with the Raspberry Pi via
 
 A set of additional header pins allows for digital output sensors (such as the Sensiron SFM3300 flow sensor) to be interfaced with the Pi directly via I2C if desired. 
 
+`get-started/hello_world`
+
 .. figure:: /images/pressure_rev2_schematic_image.png
     :align: center
     :figwidth: 100%
@@ -54,8 +49,6 @@ A set of additional header pins allows for digital output sensors (such as the S
    :file: assets/csv/sensor_pcb_bom.csv
    :widths: 10,30,60
    :header-rows: 1
-
-<ADD SCHEMATIC AND COMPONENT TABLE AND PCB FILES>
 
 Actuator PCB
 ----------------

@@ -36,6 +36,8 @@ The sensor board interfaces four analog output sensors with the Raspberry Pi via
 
 A set of additional header pins allows for digital output sensors (such as the Sensiron SFM3300 flow sensor) to be interfaced with the Pi directly via I2C if desired. 
 
+KiCad project link
+
 .. figure:: /images/pressure_rev2_schematic_image.png
     :align: center
     :figwidth: 100%
@@ -55,7 +57,7 @@ The purpose of the actuator board is twofold:
 1. regulate the 24V power supply to 5V (CUI Inc PDQE15-Q24-S5-D DC-DC converter)
 2. interface the Raspberry Pi with the inspiratory and expiratory valves through an array of solenoid drivers (ULN2003A Darlington transistor array)
 
-KiCad project
+KiCad project link
 
 .. figure:: /images/actuators_rev2_schematic_image.png
     :align: center

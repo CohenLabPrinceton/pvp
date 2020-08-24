@@ -1,9 +1,6 @@
 Electronics
 =============
 
-Overview
-----------------
-
 .. figure:: /images/electronics_diagram.png
     :align: center
     :figwidth: 75%
@@ -14,6 +11,14 @@ Overview
 The PVP is coordinated by a Raspberry Pi 4 board, which runs the graphical user interface, administers the alarm system, monitors sensor values, and sends actuation commands to the valves.
 The core electrical system consists of two modular PCB 'hats', a sensor PCB and an actuator PCB, that stack onto the Raspberry Pi via 40-pin stackable headers.
 The modularity of this system enables individual boards to be revised or modified to adapt to component substitutions if required.
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Hardware:
+
+   Power and I/O <electronics.powerio>
+   Sensor PCB <electronics.sensorpcb>
+   Actuator PCB <hardware.actuatorpcb>
 
 Power and I/O
 ----------------

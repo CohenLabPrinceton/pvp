@@ -16,6 +16,7 @@ The **People's Ventilator Project (PVP)** is an open-source, low-cost pressure-c
 
    Hardware <overview.hardware>
    Software <overview.software>
+   Performance <performance>
 
 Hardware
 =========

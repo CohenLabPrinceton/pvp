@@ -6,6 +6,14 @@ Below, we provide justifications for selecting all actuators and sensors as guid
 
 .. raw:: html
     :file: assets/images/schematic_v2.svg
+	
+.. toctree::
+   :maxdepth: 4
+   :caption: Hardware:
+
+   Hardware Design <components.design>
+   Actuator Selection <components.actuators>
+   Sensor Selection <components.sensors>
 
 Hardware Design
 -------------------

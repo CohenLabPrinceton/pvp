@@ -13,16 +13,12 @@
    </div>
 
 The global COVID-19 pandemic has highlighted the need for a low-cost, rapidly-deployable ventilator, for the current as well as future respiratory virus outbreaks.
-While safe and robust ventilation technology exists in the commercial sector, the small number of capable suppliers cannot meet the severe demands for ventilators during a pandemic. 
-
-**<Statement of cost>** Moreover, the specialized and proprietary equipment developed by medical device manufacturers is expensive and inaccessible in low-resource areas.
-Compounding the issue during an emergency, manufacturing time...
+While safe and robust ventilation technology exists in the commercial sector, the small number of capable suppliers cannot meet the severe demands for ventilators during a pandemic.
+Moreover, the specialized, proprietary equipment developed by medical device manufacturers is expensive and inaccessible in low-resource areas.
 
 The **People's Ventilator Project (PVP)** is an open-source, low-cost pressure-control ventilator designed with minimal reliance on specialized medical parts to better adapt to supply chain shortages.
 The **PVP** largely follows established design conventions, most importantly active and computer-controlled inhalation, together with passive exhalation.
 It supports pressure-controlled ventilation, combined with standard-features like autonomous breath detection, and the suite of FDA required alarms.
-
-**<Statement of purpose>**
 
 .. raw:: html
 
@@ -108,11 +104,7 @@ PVP Modules
    :caption: Hardware:
 
    Hardware Overview <hardware_overview>
-   Sensors <hardware_sensors>
-   Actuators <hardware_actuators>
    Electronics <hardware_electronics>
-   Safety <hardware_safety>
-   Enclosure <hardware_enclosure>
 
 .. toctree::
    :hidden:

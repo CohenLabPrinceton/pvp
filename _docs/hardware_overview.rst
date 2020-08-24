@@ -9,6 +9,20 @@ Mechanical Diagram
 
     Schematic diagram of main mechanical components
 
+Flow actuators
+-------------------    
+- Actuator PCB/overview (link to PCB with BoM, schematic, layout, etc.)    
+- Proportional solenoid valve (V1) (link to doc with crit specs, driving circuit, part spec, datasheet, alternatives, etc.)
+- Expiratory valve (V2) (link to doc with crit specs, driving circuit, part spec, datasheet, etc.)
+    
+Sensors
+-------------------
+- Sensor PCB/overview (link to PCB with BoM, schematic, layout, etc.)
+- Oxygen sensor (O2S) (link to doc with crit specs, interface circuit, part spec, datasheet, alternatives, etc.)
+- Proximal pressure sensor (PS1)
+- Expiratory pressure sensor (PS2)
+- Expiratory flow sensor (FS1)
+
 .. raw:: html
 
     <div class="software-summary">

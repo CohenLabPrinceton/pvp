@@ -4,27 +4,29 @@ System Overview
 Hardware
 =========
 
-PVP is a pressure-controlled ventilator that uses a minimal set of inexpensive, off-the-self hardware components.
-An inexpensive proportional valve controls inspiratory flow, and a relay valve controls expiratory flow.
-A gauge pressure sensor monitors airway pressure, and an inexpensive D-lite spirometer used in conjunction with a differential pressure sensor monitors expiratory flow.
+.. raw:: html
+    :file: assets/images/schematic_v2.svg
+
+The device components were selected to enable a **minimalistic and relatively low-cost ventilator design, 
+to avoid supply chain limitations, and to facilitate rapid and easy assembly**. 
+Most parts in the PVP are not medical-specific devices, and those that are specialized components 
+are readily available and standardized across ventilator platforms, such as standard respiratory 
+circuits and HEPA filters. We provide complete assembly of the PVP, 
+including 3D-printable components, as well as justifications for selecting all actuators and sensors,
+as guidance to those who cannot source an exact match to components used here.
+
+PVP Hardware
+--------------
 
 .. raw:: html
-    <object type="image/svg+xml" data="images/Schematic_v2.svg">
-    Hardware schematic for People's Ventilator Project
-    </object>
 
-PVP's components are coordinated by a Raspberry Pi 4 board, which runs the graphical user interface, administers the alarm system, monitors sensor values, and sends actuation commands to the valves.
-The core electrical system consists of two modular board 'hats', a sensor board and an actuator board, that stack onto the Raspberry Pi via 40-pin stackable headers.
-The modularity of this system enables individual boards to be revised or modified to substitute components in the case of part scarcity.
+    <div class="software-summary">
+	    <a href="components.html"><h2>Components</h2></a> <p>Justifcation behind the components sensors and actuators selected for the PVP.</p>
+		<a href="assembly.html"><h2>Assembly</h2></a> <p>Solidworks model of the system assembly, description of enclosure, and models for 3D printed components.</p>
+        <a href="electronics.html"><h2>Electronics</h2></a> <p>Modular PCBs that interface the PVP valves and sensors with the Raspberry Pi.</p>
+		<a href="bom.html"><h2>Bill of Materials</h2></a> <p>Itemized PVP parts list with costs.</p>
+	</div>
 
-.. raw:: html
-
-    <img src="images/electronics_diagram.png" alt="Electronics diagram for People's Ventilator Project">
-    </img>
-
-Links to system:
-... Mechanical overview
-... Electronics overview
 
 Software
 ========

@@ -40,7 +40,9 @@ It supports pressure-controlled ventilation, combined with standard-features lik
    :caption: Hardware:
 
    Hardware Overview <hardware_overview>
-   Electronics <hardware_electronics>
+   Components <components>
+   Assembly <assembly>
+   Electronics <electronics>
 
 .. toctree::
    :hidden:

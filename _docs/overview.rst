@@ -10,14 +10,6 @@ The **People's Ventilator Project (PVP)** is an open-source, low-cost pressure-c
     Video of a rotating ventilator
     </video>
 
-.. toctree::
-   :maxdepth: 4
-   :caption: Hardware:
-
-   Hardware <overview.hardware>
-   Software <overview.software>
-   Performance <performance>
-
 Hardware
 =========
 

@@ -33,8 +33,6 @@ It supports pressure-controlled ventilation, combined with standard-features lik
    :caption: Overview
 
    System Overview <overview>
-   Hardware <overview.hardware>
-   Software <overview.software>
    Performance <performance>
 
 .. toctree::

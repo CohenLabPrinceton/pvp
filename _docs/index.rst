@@ -33,6 +33,7 @@ It supports pressure-controlled ventilation, combined with standard-features lik
    :caption: Overview
 
    System Overview <overview>
+   Performance <performance>
 
 .. toctree::
    :hidden:
@@ -43,6 +44,7 @@ It supports pressure-controlled ventilation, combined with standard-features lik
    Components <components>
    Assembly <assembly>
    Electronics <electronics>
+   Bill of Materials <bom>
 
 .. toctree::
    :hidden:

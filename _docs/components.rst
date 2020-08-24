@@ -5,7 +5,7 @@ The device components were selected to enable a **minimalistic and relatively lo
 Below, we provide justifications for selecting all actuators and sensors as guidance to those who cannot source an exact match to components used in the PVP.
 
 .. raw:: html
-    :file: assets/images/schematic_v2.svg
+    :file: /images/schematic_v2.svg
 	
 .. toctree::
    :maxdepth: 4
@@ -19,7 +19,7 @@ Hardware Design
 -------------------
 
 The following is a guided walk through the main hardware components that comprise the respiratory circuit,
-roughly following the flow of gas from the system inlet, to the patient, then out the expiratory valve.
+roughly following the flow of gas from the system inlet, to the patient, then out through the expiratory valve.
 
 **Hospital gas bleder.**
 At the inlet to the system, we assume the presence of a commercial-off-the-shelf (COTS) gas blender. These devices mix air from U.S. standard medical air and O2 as supplied at the hospital wall at a pressure of around 50 psig. The device outlet fitting may vary, but we assume a male O2 DISS fitting (NIST standard). In field hospitals, compressed air and O2 cylinders may be utilized in conjunction with a gas blender, or a low-cost Venturi-based gas blender. We additionally assume that the oxygen concentration of gas supplied by the blender can be manually adjusted. Users will be able to monitor the oxygen concentration level in real-time on the device GUI. 

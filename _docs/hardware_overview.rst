@@ -1,27 +1,23 @@
 Hardware Overview
 ==================
 
-Mechanical Diagram
-----------------
-
 .. raw:: html
-    :file: assets/images/schematic_v2.svg
+    :file: /images/schematic_v2.svg
 
     Schematic diagram of main mechanical components
 
-Flow actuators
+The PVP components were selected to enable a **minimalistic and relatively low-cost ventilator design**, to avoid supply chain limitations, and to facilitate rapid and easy assembly. Most parts in the PVP are not medical-specific devices, and those that are specialized components are readily available and standardized across ventilator platforms, such as standard respiratory circuits and HEPA filters. We provide complete assembly of the PVP, including 3D-printable components, as well as justifications for selecting all actuators and sensors, as guidance to those who cannot source an exact match to components used in the Bill of Materials.
+
+Actuators
 -------------------    
-- Actuator PCB/overview (link to PCB with BoM, schematic, layout, etc.)    
-- Proportional solenoid valve (V1) (link to doc with crit specs, driving circuit, part spec, datasheet, alternatives, etc.)
-- Expiratory valve (V2) (link to doc with crit specs, driving circuit, part spec, datasheet, etc.)
+- Proportional solenoid valve
+- Expiratory valve
     
 Sensors
 -------------------
-- Sensor PCB/overview (link to PCB with BoM, schematic, layout, etc.)
-- Oxygen sensor (O2S) (link to doc with crit specs, interface circuit, part spec, datasheet, alternatives, etc.)
-- Proximal pressure sensor (PS1)
-- Expiratory pressure sensor (PS2)
-- Expiratory flow sensor (FS1)
+- Oxygen sensor
+- Proximal pressure sensor
+- Expiratory flow sensor
 
 .. raw:: html
 

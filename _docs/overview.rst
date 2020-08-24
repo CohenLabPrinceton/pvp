@@ -1,6 +1,15 @@
 System Overview
 =================
 
+The **People's Ventilator Project (PVP)** is an open-source, low-cost pressure-control ventilator designed for minimal reliance on specialized medical parts to better adapt to supply chain shortages.
+
+.. raw:: html
+
+    <video width="100%" autoplay loop>
+      <source src="images/ventilator_rotate.mp4" type="video/mp4">
+    Video of a rotating ventilator
+    </video>
+
 Hardware
 =========
 
@@ -13,7 +22,7 @@ Most parts in the PVP are not medical-specific devices, and those that are speci
 are readily available and standardized across ventilator platforms, such as standard respiratory 
 circuits and HEPA filters. We provide complete assembly of the PVP, 
 including 3D-printable components, as well as justifications for selecting all actuators and sensors,
-as guidance to those who cannot source an exact match to components used here.
+as guidance to those who cannot source an exact match to components used in the Bill of Materials.
 
 PVP Hardware
 --------------
@@ -24,7 +33,7 @@ PVP Hardware
 	    <a href="components.html"><h2>Components</h2></a> <p>Justifcation behind the components sensors and actuators selected for the PVP.</p>
 		<a href="assembly.html"><h2>Assembly</h2></a> <p>Solidworks model of the system assembly, description of enclosure, and models for 3D printed components.</p>
         <a href="electronics.html"><h2>Electronics</h2></a> <p>Modular PCBs that interface the PVP valves and sensors with the Raspberry Pi.</p>
-		<a href="bom.html"><h2>Bill of Materials</h2></a> <p>Itemized PVP parts list with costs.</p>
+		<a href="bom.html"><h2>Bill of Materials</h2></a> <p>Itemized PVP parts list.</p>
 	</div>
 
 

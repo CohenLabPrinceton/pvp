@@ -38,7 +38,7 @@ the compliance (C, mL/cm H2O), linear resistance (R, cm H2O/L/s), respiratory fr
 
 .. csv-table:: Standard test battery from Table 201.105 in ISO 80601-2-80-2018 for pressure controlled ventilators
    :file: assets/csv/eua_test.csv
-   :widths: 5,10,10,10,10,10,10,10,10
+   :widths: 3,5,5,5,5,5,5,5,5
    :header-rows: 1
 
 .. figure:: /images/waveform_battery_500mL.png

@@ -930,7 +930,8 @@ class ControlModuleDevice(ControlModuleBase):
                 else:
                     update_copies -= 1
 
-                time.sleep(self._LOOP_UPDATE_TIME)
+                if self._LOOP_UPDATE_TIME > 0:
+                    time.sleep(self._LOOP_UPDATE_TIME)
 
         # # get final values on stop
         finally:
@@ -988,7 +989,7 @@ class Balloon_Simulator:
         Qout_clip = np.min([Qout, 2])                    # Flows have to be positive, and reasonable. Nothing here is faster that 2 l/s
         Qout_clip = np.max([Qout_clip, 0])
         difference_pressure = self.current_pressure - 0  # Convention: outside is "0"
-        conductance = 0.05*Qout_clip                     # This should be in the range of ~1 liter/s for typical max pressure differences
+        conductance = 0.01*Qout_clip                     # This should be in the range of ~1 liter/s for typical max pressure differences
         if self.current_pressure > self.peep_valve:      # Action of the PEEP valve
             self.Qout = difference_pressure * conductance    # Target for flow out
         else:
@@ -1060,7 +1061,7 @@ class ControlModuleSimulator(ControlModuleBase):
             simulator_dt (float, optional): timestep between updates. Defaults to None.
             peep_valve_setting (int, optional): Simulates action of a PEEP valve. Pressure cannot fall below. Defaults to 5.
         """
-        ControlModuleBase.__init__(self, save_logs = False)
+        ControlModuleBase.__init__(self, save_logs = True)
         self.Balloon = Balloon_Simulator(peep_valve = peep_valve_setting)          # This is the simulation
         self._sensor_to_COPY()
         self._LOOP_UPDATE_TIME = prefs.get_pref('CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR')
@@ -1155,6 +1156,8 @@ class ControlModuleSimulator(ControlModuleBase):
             self.Balloon.set_flow_out(Qout, dt = dt)
 
             self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout
+            self.COPY_DATA_OXYGEN = self.Balloon.fio2               # And for logging the simulatede O2 concentration
+
             self._last_update = now
 
             if update_copies == 0:
@@ -1163,8 +1166,8 @@ class ControlModuleSimulator(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
-
-            time.sleep(self._LOOP_UPDATE_TIME)
+            if self._LOOP_UPDATE_TIME > 0:
+                time.sleep(self._LOOP_UPDATE_TIME)
 
         # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk

@@ -11,3 +11,7 @@ sandbox/data_1.npy
 *.ipynb_checkpoint*
 build
 dist
+*.log
+*.json
+*.h5
+*.mat

@@ -1,6 +1,9 @@
 import argparse
 import sys
 import os
+
+sys.path.append("../")
+
 from pvp import prefs
 from pvp.gui.main import launch_gui
 from pvp.coordinator.coordinator import get_coordinator

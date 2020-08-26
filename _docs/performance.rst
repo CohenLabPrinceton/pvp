@@ -68,7 +68,7 @@ For this reason, the system uses a low initial flow setting and allows the clini
 
 	Tidal volume performance for the ISO 80601-2-80-2018 pressure controlled ventilator standard tests, averaged across 30 breath cycles for each condition.
 
-The PVP integrates expiratory flow to monitor the tidal volume, which is not directly set in pressure controlled ventilation, but is an important parameter. Of the test conditions in the ISO standard, four that we tested intended a nominal delivered tidal volume of 500 mL, three intended 300 mL, and one intended 200 mL. For most cases, the estimated tidal volume has a tight spread clustered within 10% of the intended value.
+The PVP integrates expiratory flow to monitor the tidal volume, which is not directly set in pressure controlled ventilation, but is an important parameter. Of the test conditions in the ISO standard, four that we tested intended a nominal delivered tidal volume of 500 mL, three intended 300 mL, and one intended 200 mL. For most cases, the estimated tidal volume has a tight spread clustered within 20% of the intended value.
 
 Breath Detection
 ------------------

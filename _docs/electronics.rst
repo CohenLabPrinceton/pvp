@@ -1,19 +1,24 @@
 Electronics
 =============
 
-Overview
-----------------
-
 .. figure:: /images/electronics_diagram.png
     :align: center
-    :figwidth: 50%
-    :width: 50%
+    :figwidth: 75%
+    :width: 75%
     
     PVP block diagram for main electrical components
 
 The PVP is coordinated by a Raspberry Pi 4 board, which runs the graphical user interface, administers the alarm system, monitors sensor values, and sends actuation commands to the valves.
 The core electrical system consists of two modular PCB 'hats', a sensor PCB and an actuator PCB, that stack onto the Raspberry Pi via 40-pin stackable headers.
 The modularity of this system enables individual boards to be revised or modified to adapt to component substitutions if required.
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Hardware:
+
+   Power and I/O <electronics.powerio>
+   Sensor PCB <electronics.sensorpcb>
+   Actuator PCB <hardware.actuatorpcb>
 
 Power and I/O
 ----------------
@@ -36,7 +41,7 @@ The sensor board interfaces four analog output sensors with the Raspberry Pi via
 
 A set of additional header pins allows for digital output sensors (such as the Sensiron SFM3300 flow sensor) to be interfaced with the Pi directly via I2C if desired. 
 
-`get-started/hello_world`
+* :download:`Sensor PCB - [KiCad project .zip] <../assets/pcbs/pressure-rev2.zip>`
 
 .. figure:: /images/pressure_rev2_schematic_image.png
     :align: center
@@ -57,7 +62,7 @@ The purpose of the actuator board is twofold:
 1. regulate the 24V power supply to 5V (CUI Inc PDQE15-Q24-S5-D DC-DC converter)
 2. interface the Raspberry Pi with the inspiratory and expiratory valves through an array of solenoid drivers (ULN2003A Darlington transistor array)
 
-<ADD SCHEMATIC AND COMPONENT TABLE AND PCB FILES>
+* :download:`Actuator PCB - [KiCad project .zip] <../assets/pcbs/actuators-rev2.zip>`
 
 .. figure:: /images/actuators_rev2_schematic_image.png
     :align: center

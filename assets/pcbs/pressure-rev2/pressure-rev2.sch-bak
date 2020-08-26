@@ -142,14 +142,6 @@ F 3 "~" H 5250 4900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6350 5000 6100 5000
-Wire Wire Line
-	6100 5000 6100 3500
-Wire Wire Line
-	6350 5100 5950 5100
-Wire Wire Line
-	5950 5100 5950 3500
-Wire Wire Line
 	7400 2500 7400 2950
 Wire Wire Line
 	7400 2950 6100 2950
@@ -661,4 +653,12 @@ Text Notes 8350 1700 0    100  ~ 20
 Auxiliary\nPressure\nSensor (unused)
 Text Notes 7700 7800 0    100  ~ 20
 People's Ventilator Project\nSensor PCB v2\nAugust 19, 2020
+Wire Wire Line
+	6100 5100 6350 5100
+Wire Wire Line
+	6100 3500 6100 5100
+Wire Wire Line
+	6350 5000 5950 5000
+Wire Wire Line
+	5950 5000 5950 3500
 $EndSCHEMATC

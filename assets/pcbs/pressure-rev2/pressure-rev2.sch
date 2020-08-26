@@ -278,8 +278,6 @@ Wire Wire Line
 	6100 5200 6100 6250
 Text Label 2050 3700 2    50   ~ 0
 J_ALRT
-Text Notes 1200 2950 0    50   ~ 0
-(BCM17/BCM27)\n
 NoConn ~ 2050 2600
 NoConn ~ 2050 3000
 NoConn ~ 2050 3200
@@ -407,8 +405,6 @@ F 3 "" H 1450 4300 50  0001 C CNN
 	1    1450 4300
 	1    0    0    -1  
 $EndComp
-Text Notes 950  2850 0    50   ~ 0
-11 & 13 to Solenoid relais
 NoConn ~ 2050 2900
 NoConn ~ 2050 2800
 $Comp

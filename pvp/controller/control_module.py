@@ -238,6 +238,27 @@ class ControlModuleBase:
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
 
+    def __comptest(self, phase, ls, selector):
+        """Helper function to identify the index the first occurence of a number in `list` exceeding `threshold`, and returns phase[idx]
+
+        Args:
+            phase (array): a list of numbers
+            list (array): array of bools with same length as phase
+            selector (string): 'first' or 'last' whichever is wanted
+
+        Returns:
+            float: phase[idx] where `idx` is first, or last point where numbers in list exceed threshold
+        """
+        if np.sum(ls)>0: 
+            if selector == 'first':
+                value_at_point = phase[np.min(np.where(ls))]               # Make sure there is at least one occurance
+            elif selector == 'last':
+                value_at_point = phase[np.max(np.where(ls))]
+        else:
+            value_at_point = 0
+
+        return value_at_point
+
     def __analyze_last_waveform(self):
         """
         This goes through the last waveform, and updates the internal variables:
@@ -259,9 +280,15 @@ class ControlModuleBase:
                 self._DATA_PEEP = np.percentile(pressure[ pressure < mean_pressure], 20 )
                 self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > mean_pressure], 80 )
                 self._DATA_PIP  = np.percentile(pressure[ pressure > mean_pressure], 95 )             #PIP is defined as the maximum, here 95% to account for outliers
-                self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
-                self._DATA_PEEP_TIME = phase[np.min(np.where(pressure < self._DATA_PEEP))]
-                self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
+                
+                #self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
+                self._DATA_PIP_TIME = self.__comptest(phase, pressure > self._DATA_PIP_PLATEAU*0.9, 'first')
+
+                #self._DATA_PEEP_TIME = phase[np.min(np.where(pressure < self._DATA_PEEP))]
+                self._DATA_PEEP_TIME = self.__comptest(phase,pressure < self._DATA_PEEP, 'first')
+
+                # self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
+                self._DATA_I_PHASE = self.__comptest(phase, pressure > self._DATA_PIP_PLATEAU*0.9, 'last')
             else:
                 self._DATA_PEEP = np.nan
                 self._DATA_PIP_PLATEAU  = np.nan

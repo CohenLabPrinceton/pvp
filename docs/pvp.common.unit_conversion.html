@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>unit conversion &mdash; PVP 0.0.0 documentation</title>
+  <title>Unit Conversion &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="_static/pvp_logo_favicon.png"/>
   
   
   
@@ -38,7 +41,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="utils" href="pvp.common.utils.html" />
-    <link rel="prev" title="prefs" href="pvp.common.prefs.html" /> 
+    <link rel="prev" title="Prefs" href="pvp.common.prefs.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -56,13 +59,16 @@
           
 
           
+            
+            <img src="_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -89,29 +95,34 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="common.html">common</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">values</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">loggers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">message</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.prefs.html">prefs</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">unit conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_overview.html">Software Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">Controller</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="common.html">Common</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">Loggers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.prefs.html">Prefs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Unit Conversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pvp.common.utils.html">utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pvp.common.fashion.html">fashion</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -122,8 +133,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meta_index.html">Index</a></li>
 </ul>
 
             
@@ -172,7 +185,7 @@
         
           <li><a href="common.html">common module</a> &raquo;</li>
         
-      <li>unit conversion</li>
+      <li>Unit Conversion</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -191,9 +204,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-pvp.common.unit_conversion">
-<span id="unit-conversion"></span><h1>unit conversion<a class="headerlink" href="#module-pvp.common.unit_conversion" title="Permalink to this headline">¶</a></h1>
-<p><strong>Functions</strong></p>
+  <div class="section" id="unit-conversion">
+<h1>Unit Conversion<a class="headerlink" href="#unit-conversion" title="Permalink to this headline">¶</a></h1>
+<p>Functions that convert between units</p>
+<p>Each function should accept a single float as an argument and return a single float</p>
+<p>Used by the GUI to display values in different units. Widgets use these as</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_convert_in</span></code> functions to convert units from the base unit to the displayed unit and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_convert_out</span></code> functions to convert units from the displayed unit to the base unit.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unit conversions are cosmetic – values are always kept as the base unit internally (ie. cmH2O for pressure)
+and all that is changed is the displayed value in the GUI.</p>
+</div>
+<span class="target" id="module-pvp.common.unit_conversion"></span><p><strong>Functions</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -201,30 +226,68 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.unit_conversion.cmH2O_to_hPa" title="pvp.common.unit_conversion.cmH2O_to_hPa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cmH2O_to_hPa</span></code></a>(pressure)</p></td>
-<td><p></p></td>
+<td><p>Convert cmH2O to hPa</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.unit_conversion.hPa_to_cmH2O" title="pvp.common.unit_conversion.hPa_to_cmH2O"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hPa_to_cmH2O</span></code></a>(pressure)</p></td>
-<td><p></p></td>
+<td><p>Convert hPa to cmH2O</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.unit_conversion.rounded_string" title="pvp.common.unit_conversion.rounded_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rounded_string</span></code></a>(value[, decimals])</p></td>
-<td><p>create a rounded string of a number that doesnt have trailing .0 when decimals = 0</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.unit_conversion.rounded_string" title="pvp.common.unit_conversion.rounded_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rounded_string</span></code></a>(value, decimals)</p></td>
+<td><p>Create a rounded string of a number that doesnt have trailing .0 when decimals = 0</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt id="pvp.common.unit_conversion.cmH2O_to_hPa">
-<code class="sig-prename descclassname">pvp.common.unit_conversion.</code><code class="sig-name descname">cmH2O_to_hPa</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pressure</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/unit_conversion.html#cmH2O_to_hPa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.unit_conversion.cmH2O_to_hPa" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">pvp.common.unit_conversion.</code><code class="sig-name descname">cmH2O_to_hPa</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pressure</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><a class="reference internal" href="_modules/pvp/common/unit_conversion.html#cmH2O_to_hPa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.unit_conversion.cmH2O_to_hPa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert cmH2O to hPa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pressure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – Pressure in cmH2O</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pressure in hPa (pressure*98.0665)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="pvp.common.unit_conversion.hPa_to_cmH2O">
-<code class="sig-prename descclassname">pvp.common.unit_conversion.</code><code class="sig-name descname">hPa_to_cmH2O</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pressure</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/unit_conversion.html#hPa_to_cmH2O"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.unit_conversion.hPa_to_cmH2O" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">pvp.common.unit_conversion.</code><code class="sig-name descname">hPa_to_cmH2O</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pressure</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><a class="reference internal" href="_modules/pvp/common/unit_conversion.html#hPa_to_cmH2O"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.unit_conversion.hPa_to_cmH2O" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert hPa to cmH2O</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pressure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – Pressure in hPa</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pressure in cmH2O (pressure/98.0665)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="pvp.common.unit_conversion.rounded_string">
-<code class="sig-prename descclassname">pvp.common.unit_conversion.</code><code class="sig-name descname">rounded_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/unit_conversion.html#rounded_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.unit_conversion.rounded_string" title="Permalink to this definition">¶</a></dt>
-<dd><p>create a rounded string of a number that doesnt have trailing .0 when decimals = 0</p>
+<code class="sig-prename descclassname">pvp.common.unit_conversion.</code><code class="sig-name descname">rounded_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></span></em>, <em class="sig-param"><span class="n">decimals</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="_modules/pvp/common/unit_conversion.html#rounded_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.unit_conversion.rounded_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rounded string of a number that doesnt have trailing .0 when decimals = 0</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – Value to stringify</p></li>
+<li><p><strong>decimals</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Number of decimal places to round to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Clean rounded string version of number</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -240,7 +303,7 @@
         <a href="pvp.common.utils.html" class="btn btn-neutral float-right" title="utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="pvp.common.prefs.html" class="btn btn-neutral float-left" title="prefs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pvp.common.prefs.html" class="btn btn-neutral float-left" title="Prefs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

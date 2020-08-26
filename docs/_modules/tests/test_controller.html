@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tests.test_controller &mdash; PVP 0.0.0 documentation</title>
+  <title>tests.test_controller &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -182,12 +195,12 @@
 <span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
-<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="kn">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
-<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span>
-<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span>
-<span class="kn">from</span> <span class="nn">pvp.coordinator.coordinator</span> <span class="kn">import</span> <span class="n">get_coordinator</span>
-<span class="kn">from</span> <span class="nn">pvp.controller.control_module</span> <span class="kn">import</span> <span class="n">get_control_module</span>
-<span class="kn">from</span> <span class="nn">pvp</span> <span class="kn">import</span> <span class="n">prefs</span>
+<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="k">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="k">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span>
+<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="k">import</span> <span class="n">ValueName</span>
+<span class="kn">from</span> <span class="nn">pvp.coordinator.coordinator</span> <span class="k">import</span> <span class="n">get_coordinator</span>
+<span class="kn">from</span> <span class="nn">pvp.controller.control_module</span> <span class="k">import</span> <span class="n">get_control_module</span>
+<span class="kn">from</span> <span class="nn">pvp</span> <span class="k">import</span> <span class="n">prefs</span>
 <span class="n">prefs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
 
 <span class="c1">######################################################################</span>
@@ -358,12 +371,20 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">Controller</span> <span class="o">=</span> <span class="n">get_control_module</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+    <span class="c1"># set _LOOP_UPDATE_TIME to zero and use simulator_dt so that the test actually runs good</span>
+    <span class="n">Controller</span><span class="o">.</span><span class="n">_LOOP_UPDATE_TIME</span> <span class="o">=</span> <span class="mi">0</span>
+
     <span class="n">Controller</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
     <span class="n">ls</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span><span class="mf">0.05</span><span class="p">):</span>
-        <span class="n">Controller</span><span class="o">.</span><span class="n">_LOOP_UPDATE_TIME</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span>  <span class="c1"># updates anywhere between 0ms and 100ms</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="n">test_cycles</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">last_cycle</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">test_cycles</span><span class="p">):</span>
+        <span class="n">Controller</span><span class="o">.</span><span class="n">simulator_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span>  <span class="c1"># updates anywhere between 0ms and 100ms</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">get_sensors</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">vals</span><span class="o">.</span><span class="n">breath_count</span> <span class="o">&lt;=</span> <span class="n">last_cycle</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">Controller</span><span class="o">.</span><span class="n">get_sensors</span><span class="p">()</span>
+        <span class="n">last_cycle</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">breath_count</span>
         <span class="n">ls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
     <span class="n">Controller</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 

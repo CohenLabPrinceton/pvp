@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.gui.widgets.control_panel &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.gui.widgets.control_panel &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -161,8 +174,6 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-          <li><a href="../../gui.html">pvp.gui</a> &raquo;</li>
-        
       <li>pvp.gui.widgets.control_panel</li>
     
     
@@ -181,37 +192,61 @@
   <h1>Source code for pvp.gui.widgets.control_panel</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 
-<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="k">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
 
-<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">styles</span><span class="p">,</span> <span class="n">mono_font</span>
-<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">get_gui_instance</span>
-<span class="kn">from</span> <span class="nn">pvp.gui.widgets.components</span> <span class="kn">import</span> <span class="n">QHLine</span><span class="p">,</span> <span class="n">OnOffButton</span>
-<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">Alarm</span><span class="p">,</span> <span class="n">AlarmType</span>
-<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="kn">import</span> <span class="n">prefs</span><span class="p">,</span> <span class="n">values</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="k">import</span> <span class="n">styles</span><span class="p">,</span> <span class="n">mono_font</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="k">import</span> <span class="n">get_gui_instance</span>
+<span class="kn">from</span> <span class="nn">pvp.gui.widgets.components</span> <span class="k">import</span> <span class="n">QHLine</span><span class="p">,</span> <span class="n">OnOffButton</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="k">import</span> <span class="n">Alarm</span><span class="p">,</span> <span class="n">AlarmType</span>
+<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="k">import</span> <span class="n">prefs</span><span class="p">,</span> <span class="n">values</span>
+<span class="kn">import</span> <span class="nn">pvp</span>
 
-<div class="viewcode-block" id="Control_Panel"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Control_Panel">[docs]</a><span class="k">class</span> <span class="nc">Control_Panel</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">):</span>
+<div class="viewcode-block" id="Control_Panel"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.Control_Panel">[docs]</a><span class="k">class</span> <span class="nc">Control_Panel</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The control panel starts and stops ventilation and controls runtime settings</span>
+
+<span class="sd">    It creates:</span>
+
 <span class="sd">    * Start/stop button</span>
 <span class="sd">    * Status indicator - a clock that increments with heartbeats,</span>
 <span class="sd">        or some other visual indicator that things are alright</span>
-<span class="sd">    * Status bar - most recent alarm or notification w/ means of clearing</span>
-<span class="sd">    * Override to give 100% oxygen and silence all alarms</span>
+<span class="sd">    * Version indicator</span>
+<span class="sd">    * Buttons to select options like cycle autoset and automatic breath detection</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        start_button ( :class:`.Start_Button` ): Button to start and stop ventilation</span>
+<span class="sd">        lock_button ( :class:`.Lock_Button` ): Button used to lock controls</span>
+<span class="sd">        heartbeat ( :class:`.HeartBeat` ): Widget to keep track of communication with controller</span>
+<span class="sd">        runtime ( :class:`.StopWatch` ): Widget used to display time since start of ventilation</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">pressure_units_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-    <span class="n">cycle_autoset_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Signal emitted when pressure units have been changed.</span>
+<span class="sd">    </span>
+<span class="sd">    Contains str of current pressure units</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">cycle_autoset_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Signal emitted when a different breath cycle control value is set to be autocalculated</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Control_Panel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;Control Panel&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_autocalc_cycle</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">ValueName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Control_Panel.init_ui"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Control_Panel.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Control_Panel.init_ui"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.Control_Panel.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize all graphical elements and buttons!&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_PANEL</span><span class="p">)</span>
 
@@ -234,6 +269,7 @@
         <span class="c1"># Status indicators</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">()</span>
 
+        <span class="c1"># heartbeat indicator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat</span> <span class="o">=</span> <span class="n">HeartBeat</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat</span><span class="o">.</span><span class="n">start_timer</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;Control System&#39;</span><span class="p">),</span>
@@ -241,6 +277,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">status_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heartbeat</span><span class="p">,</span>
                                      <span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
 
+        <span class="c1"># runtime clock</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span> <span class="o">=</span> <span class="n">StopWatch</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;Runtime (s)&#39;</span><span class="p">),</span>
                                      <span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignLeft</span><span class="p">)</span>
@@ -248,9 +285,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">status_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span>
                                      <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
 
+
+
+        <span class="c1"># version indicator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;PVP Version&#39;</span><span class="p">),</span>
+                                     <span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignLeft</span><span class="p">)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">pvp</span><span class="o">.</span><span class="n">__version__</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># get git version</span>
+            <span class="n">git_version</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;describe&#39;</span><span class="p">,</span> <span class="s1">&#39;--always&#39;</span><span class="p">],</span>
+                                                  <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot; - &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">version</span><span class="p">,</span> <span class="n">git_version</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># no problem, just use package version</span>
+            <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">status_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="n">version</span><span class="p">),</span>
+                                     <span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+
+
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status_layout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QHLine</span><span class="p">())</span>
-
         <span class="c1">############</span>
         <span class="c1"># controls</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">control_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">()</span>
@@ -349,28 +404,32 @@
         <span class="c1"># self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,</span>
         <span class="c1">#                    QtWidgets.QSizePolicy.Expanding)</span>
 
-<div class="viewcode-block" id="Control_Panel.add_alarm"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Control_Panel.add_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">add_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span> <span class="n">Alarm</span><span class="p">):</span>
+<div class="viewcode-block" id="Control_Panel._pressure_units_changed"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.Control_Panel._pressure_units_changed">[docs]</a>    <span class="k">def</span> <span class="nf">_pressure_units_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Wraps  :meth:`.Alarm_Bar.add_alarm`</span>
+<span class="sd">        Emit the str of the current pressure units</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            alarm (:class:`.Alarm`): passed to :class:`Alarm_Bar`</span>
+<span class="sd">            button ( :class:`PySide2.QtWidgets.QPushButton` ): Button that was clicked</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_bar</span><span class="o">.</span><span class="n">add_alarm</span><span class="p">(</span><span class="n">alarm</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Control_Panel.clear_alarm"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Control_Panel.clear_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">clear_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span> <span class="n">Alarm</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alarm_type</span><span class="p">:</span> <span class="n">AlarmType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Wraps :meth:`.Alarm_Bar.clear_alarm`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_bar</span><span class="o">.</span><span class="n">clear_alarm</span><span class="p">(</span><span class="n">alarm</span><span class="p">,</span> <span class="n">alarm_type</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Control_Panel._pressure_units_changed"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Control_Panel._pressure_units_changed">[docs]</a>    <span class="k">def</span> <span class="nf">_pressure_units_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pressure_units_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">text</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="Start_Button"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Start_Button">[docs]</a><span class="k">class</span> <span class="nc">Start_Button</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QToolButton</span><span class="p">):</span>
+<div class="viewcode-block" id="Start_Button"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.Start_Button">[docs]</a><span class="k">class</span> <span class="nc">Start_Button</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QToolButton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Button to start and stop Ventilation, created by :class:`.Control_Panel`</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        pixmaps (dict): Dictionary containing pixmaps used to draw start/stop state</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;OFF&#39;</span><span class="p">,</span> <span class="s1">&#39;ON&#39;</span><span class="p">,</span> <span class="s1">&#39;ALARM&#39;</span><span class="p">]</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Possible states of Start_Button</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Start_Button</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span>
                            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">)</span>
@@ -387,7 +446,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s1">&#39;OFF&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Start_Button.load_pixmaps"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Start_Button.load_pixmaps">[docs]</a>    <span class="k">def</span> <span class="nf">load_pixmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Start_Button.load_pixmaps"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.Start_Button.load_pixmaps">[docs]</a>    <span class="k">def</span> <span class="nf">load_pixmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load pixmaps to :attr:`.Start_Button.pixmaps`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">gui_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
         <span class="n">power_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gui_dir</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="s1">&#39;power&#39;</span><span class="p">)</span>
 
@@ -395,13 +457,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pixmaps</span><span class="p">[</span><span class="s1">&#39;ON&#39;</span><span class="p">]</span> <span class="o">=</span>  <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">power_dir</span><span class="p">,</span> <span class="s1">&#39;start_button_on.png&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pixmaps</span><span class="p">[</span><span class="s1">&#39;ALARM&#39;</span><span class="p">]</span> <span class="o">=</span>  <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">power_dir</span><span class="p">,</span> <span class="s1">&#39;start_button_alarm.png&#39;</span><span class="p">))</span></div>
 
-
-<div class="viewcode-block" id="Start_Button.set_state"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Start_Button.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<div class="viewcode-block" id="Start_Button.set_state"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.Start_Button.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set state of button</span>
+
 <span class="sd">        Should only be called by other objects (as there are checks to whether it&#39;s ok to start/stop that we shouldn&#39;t be aware of)</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            state (str): ``(&#39;OFF&#39;, &#39;ON&#39;, &#39;ALARM&#39;)``</span>
+<span class="sd">            state (str): one of ``(&#39;OFF&#39;, &#39;ON&#39;, &#39;ALARM&#39;)``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;OFF&quot;</span><span class="p">:</span>
@@ -419,10 +482,23 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">START_BUTTON_ALARM</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div></div>
 
-<div class="viewcode-block" id="Lock_Button"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Lock_Button">[docs]</a><span class="k">class</span> <span class="nc">Lock_Button</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QToolButton</span><span class="p">):</span>
+<div class="viewcode-block" id="Lock_Button"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.Lock_Button">[docs]</a><span class="k">class</span> <span class="nc">Lock_Button</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QToolButton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Button to lock and unlock controls</span>
+
+<span class="sd">    Created by :class:`.Control_Panel`</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        pixmaps (dict): Dictionary containing pixmaps used to draw locked/unlocked state</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DISABLED&#39;</span><span class="p">,</span> <span class="s1">&#39;UNLOCKED&#39;</span><span class="p">,</span> <span class="s1">&#39;LOCKED&#39;</span><span class="p">]</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Possible states of Lock Button</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Lock_Button</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span>
                            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">)</span>
@@ -438,7 +514,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">setFixedHeight</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">BUTTON_MAX_HEIGHT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s1">&#39;DISABLED&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Lock_Button.load_pixmaps"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Lock_Button.load_pixmaps">[docs]</a>    <span class="k">def</span> <span class="nf">load_pixmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Lock_Button.load_pixmaps"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.Lock_Button.load_pixmaps">[docs]</a>    <span class="k">def</span> <span class="nf">load_pixmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load pixmaps used to display lock state to :attr:`.Lock_Button.pixmaps`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">gui_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
         <span class="n">lock_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gui_dir</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="s1">&#39;lock&#39;</span><span class="p">)</span>
 
@@ -446,8 +525,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pixmaps</span><span class="p">[</span><span class="s1">&#39;UNLOCKED&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">,</span> <span class="s1">&#39;unlocked.png&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pixmaps</span><span class="p">[</span><span class="s1">&#39;LOCKED&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">,</span> <span class="s1">&#39;locked.png&#39;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Lock_Button.set_state"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Lock_Button.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<div class="viewcode-block" id="Lock_Button.set_state"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.Lock_Button.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set lock state of button</span>
+
 <span class="sd">        Should only be called by other objects (as there are checks to whether it&#39;s ok to start/stop that we shouldn&#39;t be aware of)</span>
 
 <span class="sd">        Args:</span>
@@ -469,20 +550,39 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="HeartBeat"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.HeartBeat">[docs]</a><span class="k">class</span> <span class="nc">HeartBeat</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
+<div class="viewcode-block" id="HeartBeat"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.HeartBeat">[docs]</a><span class="k">class</span> <span class="nc">HeartBeat</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Track state of connection with Controller</span>
+
+<span class="sd">    Check when we last had contact with controller every :attr:`.HeartBeat.update_interval` ms,</span>
+<span class="sd">    if longer than :attr:`.HeartBeat.timeout_dur` then emit a timeout signal</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        update_interval (int): How often to do the heartbeat, in ms</span>
+<span class="sd">        timeout (int): how long to wait before hearing from control process, in ms</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _state (bool): whether the system is running or not</span>
+<span class="sd">        _last_heartbeat (float): Timestamp of last contact with controller</span>
+<span class="sd">        start_time (float): Time that ventilation was started</span>
+<span class="sd">        timer ( :class:`PySide2.QtCore.QTimer` ): Timer that checks for last contact</span>
+<span class="sd">        update_interval (int): How often to do the heartbeat, in ms</span>
+<span class="sd">        timeout (int): how long to wait before hearing from control process, in ms</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">timeout</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Signal that a timeout has occurred -- too long between contact with controller.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">heartbeat</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Signal that requests to affirm contact with controller if no message has been received in timeout duration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="HeartBeat.__init__"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.HeartBeat.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">timeout_dur</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Attributes:</span>
-<span class="sd">            _state (bool): whether the system is running or not</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            update_interval (int): How often to do the heartbeat, in ms</span>
-<span class="sd">            timeout (int): how long to wait before hearing from control process</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">timeout_dur</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">HeartBeat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -498,9 +598,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_heartbeat</span><span class="p">)</span>
 
-        <span class="n">get_gui_instance</span><span class="p">()</span><span class="o">.</span><span class="n">gui_closing</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span></div>
+        <span class="n">get_gui_instance</span><span class="p">()</span><span class="o">.</span><span class="n">gui_closing</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
 
-<div class="viewcode-block" id="HeartBeat.init_ui"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.HeartBeat.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HeartBeat.init_ui"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.HeartBeat.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize labels and status indicator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
 
@@ -524,15 +627,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span>
                            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HeartBeat.set_state"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.HeartBeat.set_state">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<div class="viewcode-block" id="HeartBeat.set_state"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.HeartBeat.set_state">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set running state</span>
+
+<span class="sd">        if just starting reset :attr:`.HeartBeat._last_heartbeat`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state (bool): Whether we are starting (True) or stopping (False)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># if current state is false and turning on, reset _last_heartbeat so we don&#39;t</span>
         <span class="c1"># jump immediately into timeout</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="ow">and</span> <span class="n">state</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_last_heartbeat</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">state</span></div>
 
-<div class="viewcode-block" id="HeartBeat.set_indicator"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.HeartBeat.set_indicator">[docs]</a>    <span class="k">def</span> <span class="nf">set_indicator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="HeartBeat.set_indicator"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.HeartBeat.set_indicator">[docs]</a>    <span class="k">def</span> <span class="nf">set_indicator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set visual indicator</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state (&#39;ALARM&#39;, &#39;OFF&#39;, &#39;NORMAL&#39;): Current state of connection with controller</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indicator</span> <span class="o">==</span> <span class="n">state</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -549,10 +666,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">HEARTBEAT_NORMAL</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;CONNECTED&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HeartBeat.start_timer"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.HeartBeat.start_timer">[docs]</a>    <span class="k">def</span> <span class="nf">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="HeartBeat.start_timer"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.HeartBeat.start_timer">[docs]</a>    <span class="k">def</span> <span class="nf">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start :attr:`.HeartBeat.timer` to check for contact with controller</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            update_interval (float): How often (in ms) the timer should be updated.</span>
+<span class="sd">            update_interval (int): How often (in ms) the timer should be updated. if None, use ``self.update_interval``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_heartbeat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
@@ -562,18 +681,24 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_interval</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HeartBeat.stop_timer"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.HeartBeat.stop_timer">[docs]</a>    <span class="k">def</span> <span class="nf">stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HeartBeat.stop_timer"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.HeartBeat.stop_timer">[docs]</a>    <span class="k">def</span> <span class="nf">stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        you can read the sign ya punk</span>
+<span class="sd">        Stop timer and clear text</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HeartBeat.beatheart"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.HeartBeat.beatheart">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<div class="viewcode-block" id="HeartBeat.beatheart"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.HeartBeat.beatheart">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">beatheart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">heartbeat_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Slot that receives timestamps of last contact with controller</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            heartbeat_time (float): timestamp of last contact with controller</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_heartbeat</span> <span class="o">=</span> <span class="n">heartbeat_time</span></div>
 
-<div class="viewcode-block" id="HeartBeat._heartbeat"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.HeartBeat._heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">_heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HeartBeat._heartbeat"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.HeartBeat._heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">_heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called every (update_interval) milliseconds to set the check the status of the heartbeat.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -598,16 +723,15 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
-
-
-<div class="viewcode-block" id="StopWatch"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.StopWatch">[docs]</a><span class="k">class</span> <span class="nc">StopWatch</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
-<div class="viewcode-block" id="StopWatch.__init__"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.StopWatch.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="StopWatch"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.StopWatch">[docs]</a><span class="k">class</span> <span class="nc">StopWatch</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
+<div class="viewcode-block" id="StopWatch.__init__"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.StopWatch.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simple widget to display ventilation time!</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            update_interval (float): update clock every n seconds</span>
-<span class="sd">            *args:</span>
-<span class="sd">            **kwargs:</span>
+<span class="sd">            *args: passed to :class:`PySide2.QtWidgets.QLabel`</span>
+<span class="sd">            **kwargs: passed to :class:`PySide2.QtWidgets.QLabel`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StopWatch</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -620,11 +744,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_interval</span> <span class="o">=</span> <span class="n">update_interval</span></div>
 
-<div class="viewcode-block" id="StopWatch.init_ui"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.StopWatch.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StopWatch.init_ui"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.StopWatch.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="StopWatch.start_timer"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.StopWatch.start_timer">[docs]</a>    <span class="k">def</span> <span class="nf">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="StopWatch.start_timer"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.StopWatch.start_timer">[docs]</a>    <span class="k">def</span> <span class="nf">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            update_interval (float): How often (in ms) the timer should be updated.</span>
@@ -636,32 +760,18 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_interval</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StopWatch.stop_timer"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.StopWatch.stop_timer">[docs]</a>    <span class="k">def</span> <span class="nf">stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StopWatch.stop_timer"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.StopWatch.stop_timer">[docs]</a>    <span class="k">def</span> <span class="nf">stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        you can read the sign ya punk</span>
+<span class="sd">        Stop timer and reset label</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="StopWatch._update_time"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.StopWatch._update_time">[docs]</a>    <span class="k">def</span> <span class="nf">_update_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StopWatch._update_time"><a class="viewcode-back" href="../../../../gui.widgets.control_panel.html#pvp.gui.widgets.control_panel.StopWatch._update_time">[docs]</a>    <span class="k">def</span> <span class="nf">_update_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">secs_elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:02d}</span><span class="s2">:</span><span class="si">{:02d}</span><span class="s2">:</span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">secs_elapsed</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">),</span> <span class="nb">int</span><span class="p">((</span><span class="n">secs_elapsed</span> <span class="o">/</span> <span class="mi">60</span><span class="p">))</span> <span class="o">%</span> <span class="mi">60</span><span class="p">,</span> <span class="n">secs_elapsed</span> <span class="o">%</span> <span class="mi">60</span><span class="p">))</span></div></div>
-
-
-
-
-
-<div class="viewcode-block" id="Power_Button"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Power_Button">[docs]</a><span class="k">class</span> <span class="nc">Power_Button</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">Power_Button</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
-
-<div class="viewcode-block" id="Power_Button.init_ui"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.control_panel.Power_Button.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span></div></div>
 
 </pre></div>
 

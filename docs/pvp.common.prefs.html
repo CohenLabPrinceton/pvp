@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>prefs &mdash; PVP 0.0.0 documentation</title>
+  <title>Prefs &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="_static/pvp_logo_favicon.png"/>
   
   
   
@@ -37,8 +40,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="unit conversion" href="pvp.common.unit_conversion.html" />
-    <link rel="prev" title="message" href="pvp.common.message.html" /> 
+    <link rel="next" title="Unit Conversion" href="pvp.common.unit_conversion.html" />
+    <link rel="prev" title="Loggers" href="pvp.common.loggers.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -56,13 +59,16 @@
           
 
           
+            
+            <img src="_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -89,29 +95,34 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="common.html">common</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">values</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">loggers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">message</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">prefs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">unit conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_overview.html">Software Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">Controller</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="common.html">Common</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">Loggers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Prefs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">Unit Conversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pvp.common.utils.html">utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pvp.common.fashion.html">fashion</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -122,8 +133,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meta_index.html">Index</a></li>
 </ul>
 
             
@@ -172,7 +185,7 @@
         
           <li><a href="common.html">common module</a> &raquo;</li>
         
-      <li>prefs</li>
+      <li>Prefs</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -191,10 +204,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-pvp.common.prefs">
-<span id="prefs"></span><h1>prefs<a class="headerlink" href="#module-pvp.common.prefs" title="Permalink to this headline">¶</a></h1>
-<p>System preferences are stored in ~/pvp/prefs.json</p>
-<p><strong>Data</strong></p>
+  <div class="section" id="prefs">
+<span id="prefs-overview"></span><h1>Prefs<a class="headerlink" href="#prefs" title="Permalink to this headline">¶</a></h1>
+<p>Prefs set configurable parameters used throughout PVP.</p>
+<p>See <a class="reference internal" href="#pvp.common.prefs._DEFAULTS" title="pvp.common.prefs._DEFAULTS"><code class="xref py py-data docutils literal notranslate"><span class="pre">prefs._DEFAULTS</span></code></a> for description of all available parameters</p>
+<p>Prefs are stored in a .json file, by default located at <code class="docutils literal notranslate"><span class="pre">~/pvp/prefs.json</span></code> . Prefs can be manually
+changed by editing this file (when the system is not running, when the system is running use <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefs.set_pref()</span></code></a> ).</p>
+<p>When any module in pvp is first imported, the <a class="reference internal" href="#pvp.common.prefs.init" title="pvp.common.prefs.init"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefs.init()</span></code></a> function is called
+that</p>
+<ul class="simple">
+<li><p>Makes any directories listed in <a class="reference internal" href="#pvp.common.prefs._DIRECTORIES" title="pvp.common.prefs._DIRECTORIES"><code class="xref py py-data docutils literal notranslate"><span class="pre">prefs._DIRECTORIES</span></code></a></p></li>
+<li><p>Declares all prefs as their default values from <a class="reference internal" href="#pvp.common.prefs._DEFAULTS" title="pvp.common.prefs._DEFAULTS"><code class="xref py py-data docutils literal notranslate"><span class="pre">prefs._DEFAULTS</span></code></a> to ensure they are always defined</p></li>
+<li><p>Loads the existing <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file and updates values from their defaults</p></li>
+</ul>
+<p>Prefs can be gotten and set from anywhere in the system with <a class="reference internal" href="#pvp.common.prefs.get_pref" title="pvp.common.prefs.get_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefs.get_pref()</span></code></a> and <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefs.set_pref()</span></code></a> .
+Prefs are stored in a <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Manager</span></code> dictionary which makes these methods both thread- and process-safe.
+Whenever a pref is set, the <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file is updated to reflect the new value, so preferences
+are durable between runtimes.</p>
+<p>Additional <code class="docutils literal notranslate"><span class="pre">prefs</span></code> should be added by adding an entry in the <a class="reference internal" href="#pvp.common.prefs._DEFAULTS" title="pvp.common.prefs._DEFAULTS"><code class="xref py py-data docutils literal notranslate"><span class="pre">prefs._DEFAULTS</span></code></a> dict rather than hardcoding them elsewhere in the program.</p>
+<span class="target" id="module-pvp.common.prefs"></span><p><strong>Data</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -202,7 +230,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.prefs.LOADED" title="pvp.common.prefs.LOADED"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LOADED</span></code></a></p></td>
-<td><p>bool: flag to indicate whether prefs have been loaded (and thus <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_pref()</span></code></a> should write to disk.</p></td>
+<td><p>bool: flag to indicate whether prefs have been loaded (and thus <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_pref()</span></code></a> should write to disk).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.prefs._DEFAULTS" title="pvp.common.prefs._DEFAULTS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_DEFAULTS</span></code></a></p></td>
 <td><p>Declare all available parameters and set default values.</p></td>
@@ -212,6 +240,15 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.prefs._LOCK" title="pvp.common.prefs._LOCK"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_LOCK</span></code></a></p></td>
 <td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">mp.Lock</span></code> : Locks access to <cite>prefs_fn</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.prefs._LOGGER" title="pvp.common.prefs._LOGGER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_LOGGER</span></code></a></p></td>
+<td><p>A <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a> to log pref init and setting events</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.prefs._PREFS" title="pvp.common.prefs._PREFS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PREFS</span></code></a></p></td>
+<td><p>The dict created by <a class="reference internal" href="#pvp.common.prefs._PREF_MANAGER" title="pvp.common.prefs._PREF_MANAGER"><code class="xref py py-data docutils literal notranslate"><span class="pre">prefs._PREF_MANAGER</span></code></a> to store prefs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.prefs._PREF_MANAGER" title="pvp.common.prefs._PREF_MANAGER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PREF_MANAGER</span></code></a></p></td>
+<td><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Manager</span></code> that stores prefs during system operation</p></td>
 </tr>
 </tbody>
 </table>
@@ -235,13 +272,31 @@
 <td><p>ensures _DIRECTORIES are created and added to prefs.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.prefs.save_prefs" title="pvp.common.prefs.save_prefs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_prefs</span></code></a>(prefs_fn)</p></td>
-<td><p></p></td>
+<td><p>Dumps loaded prefs to <code class="docutils literal notranslate"><span class="pre">PREFS_FN</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_pref</span></code></a>(key, val)</p></td>
-<td><p></p></td>
+<td><p>Sets a pref in the manager and, if <a class="reference internal" href="#pvp.common.prefs.LOADED" title="pvp.common.prefs.LOADED"><code class="xref py py-data docutils literal notranslate"><span class="pre">prefs.LOADED</span></code></a> is True, calls <a class="reference internal" href="#pvp.common.prefs.save_prefs" title="pvp.common.prefs.save_prefs"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefs.save_prefs()</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py data">
+<dt id="pvp.common.prefs._PREF_MANAGER">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_PREF_MANAGER</code><em class="property"> = &lt;multiprocessing.managers.SyncManager object&gt;</em><a class="headerlink" href="#pvp.common.prefs._PREF_MANAGER" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Manager</span></code> that stores prefs during system operation</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.prefs._PREFS">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_PREFS</code><em class="property"> = &lt;DictProxy object, typeid 'dict'&gt;</em><a class="headerlink" href="#pvp.common.prefs._PREFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dict created by <a class="reference internal" href="#pvp.common.prefs._PREF_MANAGER" title="pvp.common.prefs._PREF_MANAGER"><code class="xref py py-data docutils literal notranslate"><span class="pre">prefs._PREF_MANAGER</span></code></a> to store prefs.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="pvp.common.prefs._LOGGER">
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_LOGGER</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)">logging.Logger</a></em><em class="property"> = &lt;Logger pvp.common.prefs (WARNING)&gt;</em><a class="headerlink" href="#pvp.common.prefs._LOGGER" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a> to log pref init and setting events</p>
+</dd></dl>
+
 <dl class="py data">
 <dt id="pvp.common.prefs._LOCK">
 <code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_LOCK</code><em class="property"> = &lt;Lock(owner=unknown)&gt;</em><a class="headerlink" href="#pvp.common.prefs._LOCK" title="Permalink to this definition">¶</a></dt>
@@ -255,7 +310,7 @@
 
 <dl class="py data">
 <dt id="pvp.common.prefs._DIRECTORIES">
-<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_DIRECTORIES</code><em class="property"> = {'DATA_DIR': '/Users/jonny/pvp/logs', 'LOG_DIR': '/Users/jonny/pvp/logs', 'VENT_DIR': '/Users/jonny/pvp'}</em><a class="headerlink" href="#pvp.common.prefs._DIRECTORIES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_DIRECTORIES</code><em class="property"> = {'DATA_DIR': '/Users/ms81/pvp/logs', 'LOG_DIR': '/Users/ms81/pvp/logs', 'VENT_DIR': '/Users/ms81/pvp'}</em><a class="headerlink" href="#pvp.common.prefs._DIRECTORIES" title="Permalink to this definition">¶</a></dt>
 <dd><p>Directories to ensure are created and added to prefs.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">VENT_DIR</span></code>: ~/pvp - base directory for user storage</p></li>
@@ -267,7 +322,8 @@
 <dl class="py data">
 <dt id="pvp.common.prefs.LOADED">
 <code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">LOADED</code><em class="property"> = &lt;Synchronized wrapper for c_bool(True)&gt;</em><a class="headerlink" href="#pvp.common.prefs.LOADED" title="Permalink to this definition">¶</a></dt>
-<dd><p>flag to indicate whether prefs have been loaded (and thus <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_pref()</span></code></a> should write to disk.</p>
+<dd><p>flag to indicate whether prefs have been loaded (and thus <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_pref()</span></code></a> should write to disk).</p>
+<p>uses a <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Value</span></code> to be thread and process safe.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
@@ -277,7 +333,7 @@
 
 <dl class="py data">
 <dt id="pvp.common.prefs._DEFAULTS">
-<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_DEFAULTS</code><em class="property"> = {'BREATH_DETECTION': True, 'BREATH_PRESSURE_DROP': 4, 'CONTROLLER_LOOPS_UNTIL_UPDATE': 1, 'CONTROLLER_LOOP_UPDATE_TIME': 0.0, 'CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR': 0.005, 'CONTROLLER_MAX_FLOW': 10, 'CONTROLLER_MAX_PRESSURE': 100, 'CONTROLLER_MAX_STUCK_SENSOR': 0.2, 'CONTROLLER_RINGBUFFER_SIZE': 100, 'COUGH_DURATION': 0.1, 'ENABLE_DIALOGS': True, 'ENABLE_WARNINGS': True, 'GUI_STATE_FN': 'gui_state.json', 'HEARTBEAT_TIMEOUT': 0.02, 'LOGGING_MAX_BYTES': 2147483648, 'LOGGING_MAX_FILES': 5, 'LOGLEVEL': 'WARNING', 'PREFS_FN': None, 'TIMEOUT': 0.05, 'TIME_FIRST_START': None}</em><a class="headerlink" href="#pvp.common.prefs._DEFAULTS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">_DEFAULTS</code><em class="property"> = {'BREATH_DETECTION': True, 'BREATH_PRESSURE_DROP': 4, 'CONTROLLER_LOOPS_UNTIL_UPDATE': 1, 'CONTROLLER_LOOP_UPDATE_TIME': 0.0, 'CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR': 0.005, 'CONTROLLER_MAX_FLOW': 10, 'CONTROLLER_MAX_PRESSURE': 100, 'CONTROLLER_MAX_STUCK_SENSOR': 0.2, 'CONTROLLER_RINGBUFFER_SIZE': 100, 'COUGH_DURATION': 0.1, 'ENABLE_DIALOGS': True, 'ENABLE_WARNINGS': True, 'GUI_STATE_FN': 'gui_state.json', 'GUI_UPDATE_TIME': 0.05, 'HEARTBEAT_TIMEOUT': 0.02, 'LOGGING_MAX_BYTES': 2147483648, 'LOGGING_MAX_FILES': 5, 'LOGLEVEL': 'WARNING', 'PREFS_FN': None, 'TIMEOUT': 0.05, 'TIME_FIRST_START': None}</em><a class="headerlink" href="#pvp.common.prefs._DEFAULTS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Declare all available parameters and set default values. If no default, set as None.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">PREFS_FN</span></code> - absolute path to the prefs file</p></li>
@@ -285,21 +341,41 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">VENT_DIR</span></code>: ~/pvp - base directory for user storage</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">LOG_DIR</span></code>: ~/pvp/logs - for storage of event and alarm logs</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DATA_DIR</span></code>: ~/pvp/data - for storage of waveform data</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">LOGGING_MAX_BYTES</span></code> : the <strong>total</strong> storage space for all loggers – each logger gets <code class="docutils literal notranslate"><span class="pre">LOGGING_MAX_BYTES/len(loggers)</span></code> space</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">LOGGING_MAX_FILES</span></code> : number of files to split each logger’s logs across</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GUI_STATE_FN</span></code>: Filename of gui control state file, relative to <code class="docutils literal notranslate"><span class="pre">VENT_DIR</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">BREATH_PRESSURE_DROP</span></code> : pressure drop below peep that is detected as an attempt to breath.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">BREATH_DETECTION</span></code>: (bool) whether the controller allows autonomous breaths (measured pressure is <code class="docutils literal notranslate"><span class="pre">BREATH_PRESSURE_DROP</span></code> below set PEEP)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_MAX_FLOW</span></code>: If flows above that, hardware cannot be correct.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_MAX_PRESSURE</span></code>: If pressure above that, hardware cannot be correct.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_MAX_STUCK_SENSOR</span></code>: Max amount of time (in s) before considering a sensor stuck</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LOGGING_MAX_BYTES</span></code> : the <strong>total</strong> storage space for all loggers – each logger gets <code class="docutils literal notranslate"><span class="pre">LOGGING_MAX_BYTES/len(loggers)</span></code> space (2GB by default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LOGGING_MAX_FILES</span></code> : number of files to split each logger’s logs across (default: 5)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LOGLEVEL</span></code>: One of <code class="docutils literal notranslate"><span class="pre">('DEBUG',</span> <span class="pre">'INFO',</span> <span class="pre">'WARNING',</span> <span class="pre">'EXCEPTION')</span></code> that sets the minimum log level that is printed and written to disk</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code>: timeout used for timeout decorators on time-sensitive operations (in seconds, default 0.05)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HEARTBEAT_TIMEOUT</span></code>: Time between heartbeats between GUI and controller after which contact is assumed to be lost (in seconds, default 0.02)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GUI_STATE_FN</span></code>: Filename of gui control state file, relative to <code class="docutils literal notranslate"><span class="pre">VENT_DIR</span></code> (default: gui_state.json)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GUI_UPDATE_TIME</span></code>: Time between calls of <a class="reference internal" href="gui.main.html#pvp.gui.main.PVP_Gui.update_gui" title="pvp.gui.main.PVP_Gui.update_gui"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PVP_Gui.update_gui()</span></code></a> (in seconds, default: 0.05)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ENABLE_DIALOGS</span></code>: Enable all GUI dialogs – set as False when testing on virtual frame buffer that doesn’t support them (default: True and should stay that way)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ENABLE_WARNINGS</span></code>: Enable user warnings and value change confirmations (default: True)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_MAX_FLOW</span></code>: Maximum flow, above which the controller considers a sensor error (default: 10)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_MAX_PRESSURE</span></code>: Maximum pressure, above which the controller considers a sensor error (default: 100)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_MAX_STUCK_SENSOR</span></code>: Max amount of time (in s) before considering a sensor stuck (default: 0.2)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_LOOP_UPDATE_TIME</span></code>: Amount of time to sleep in between controller update times when using <a class="reference internal" href="controller.html#pvp.controller.control_module.ControlModuleDevice" title="pvp.controller.control_module.ControlModuleDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlModuleDevice</span></code></a> (default: 0.0)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR</span></code>: Amount of time to sleep in between controller updates when using <a class="reference internal" href="controller.html#pvp.controller.control_module.ControlModuleSimulator" title="pvp.controller.control_module.ControlModuleSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ControlModuleSimulator</span></code></a> (default: 0.005)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_LOOPS_UNTIL_UPDATE</span></code>: Number of controller loops in between updating its externally-available <code class="docutils literal notranslate"><span class="pre">COPY</span></code> attributes retrieved by <code class="xref py py-meth docutils literal notranslate"><span class="pre">ControlModuleBase.get_sensor()</span></code> et al</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CONTROLLER_RINGBUFFER_SIZE</span></code>: Maximum number of breath cycle records to be kept in memory (default: 100)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">COUGH_DURATION</span></code>: Amount of time the high-pressure alarm limit can be exceeded and considered a cough (in seconds, default: 0.1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BREATH_PRESSURE_DROP</span></code>: Amount pressure can drop below set PEEP before being considered an autonomous breath when in breath detection mode</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BREATH_DETECTION</span></code>: Whether the controller should detect autonomous breaths in order to reset ventilation cycles (default: True)</p></li>
 </ul>
 </dd></dl>
 
 <dl class="py function">
 <dt id="pvp.common.prefs.set_pref">
 <code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">set_pref</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/prefs.html#set_pref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.prefs.set_pref" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets a pref in the manager and, if <a class="reference internal" href="#pvp.common.prefs.LOADED" title="pvp.common.prefs.LOADED"><code class="xref py py-data docutils literal notranslate"><span class="pre">prefs.LOADED</span></code></a> is True, calls <a class="reference internal" href="#pvp.common.prefs.save_prefs" title="pvp.common.prefs.save_prefs"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefs.save_prefs()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Name of pref key</p></li>
+<li><p><strong>val</strong> – Value to set</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="pvp.common.prefs.get_pref">
@@ -317,6 +393,8 @@ if <code class="docutils literal notranslate"><span class="pre">None</span></cod
 <dt id="pvp.common.prefs.load_prefs">
 <code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">load_prefs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prefs_fn</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/prefs.html#load_prefs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.prefs.load_prefs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load prefs from a .json prefs file, combining (and overwriting) any existing prefs, and then saves.</p>
+<p>Called on pvp import by <a class="reference internal" href="#pvp.common.prefs.init" title="pvp.common.prefs.init"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefs.init()</span></code></a></p>
+<p>Also initializes <a class="reference internal" href="#pvp.common.prefs._LOGGER" title="pvp.common.prefs._LOGGER"><code class="xref py py-data docutils literal notranslate"><span class="pre">prefs._LOGGER</span></code></a></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>once this function is called, <a class="reference internal" href="#pvp.common.prefs.set_pref" title="pvp.common.prefs.set_pref"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_pref()</span></code></a> will update the prefs file on disk.
@@ -332,7 +410,13 @@ So if <a class="reference internal" href="#pvp.common.prefs.load_prefs" title="p
 <dl class="py function">
 <dt id="pvp.common.prefs.save_prefs">
 <code class="sig-prename descclassname">pvp.common.prefs.</code><code class="sig-name descname">save_prefs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prefs_fn</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/prefs.html#save_prefs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.prefs.save_prefs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Dumps loaded prefs to <code class="docutils literal notranslate"><span class="pre">PREFS_FN</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prefs_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Location to dump prefs. if None, use existing <code class="docutils literal notranslate"><span class="pre">PREFS_FN</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="pvp.common.prefs.make_dirs">
@@ -356,10 +440,10 @@ So if <a class="reference internal" href="#pvp.common.prefs.load_prefs" title="p
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pvp.common.unit_conversion.html" class="btn btn-neutral float-right" title="unit conversion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pvp.common.unit_conversion.html" class="btn btn-neutral float-right" title="Unit Conversion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="pvp.common.message.html" class="btn btn-neutral float-left" title="message" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pvp.common.loggers.html" class="btn btn-neutral float-left" title="Loggers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

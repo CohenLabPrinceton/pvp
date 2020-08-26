@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Overview: module code &mdash; PVP 0.0.0 documentation</title>
+  <title>Overview: module code &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -177,6 +190,7 @@
   <h1>All modules for which code is available</h1>
 <ul><li><a href="PySide2/QtCore.html">PySide2.QtCore</a></li>
 <li><a href="logging.html">logging</a></li>
+<li><a href="multiprocessing/managers.html">multiprocessing.managers</a></li>
 <li><a href="multiprocessing/sharedctypes.html">multiprocessing.sharedctypes</a></li>
 <li><a href="multiprocessing/synchronize.html">multiprocessing.synchronize</a></li>
 <li><a href="pvp/alarm.html">pvp.alarm</a></li>
@@ -195,8 +209,7 @@
 <li><a href="pvp/coordinator/coordinator.html">pvp.coordinator.coordinator</a></li>
 <li><a href="pvp/coordinator/process_manager.html">pvp.coordinator.process_manager</a></li>
 <li><a href="pvp/coordinator/rpc.html">pvp.coordinator.rpc</a></li>
-<li><a href="pvp/gui.html">pvp.gui</a></li>
-<ul><li><a href="pvp/gui/main.html">pvp.gui.main</a></li>
+<li><a href="pvp/gui/main.html">pvp.gui.main</a></li>
 <li><a href="pvp/gui/styles.html">pvp.gui.styles</a></li>
 <li><a href="pvp/gui/widgets/alarm_bar.html">pvp.gui.widgets.alarm_bar</a></li>
 <li><a href="pvp/gui/widgets/components.html">pvp.gui.widgets.components</a></li>
@@ -204,12 +217,7 @@
 <li><a href="pvp/gui/widgets/dialog.html">pvp.gui.widgets.dialog</a></li>
 <li><a href="pvp/gui/widgets/display.html">pvp.gui.widgets.display</a></li>
 <li><a href="pvp/gui/widgets/plot.html">pvp.gui.widgets.plot</a></li>
-</ul><li><a href="pvp/io/devices/base.html">pvp.io.devices.base</a></li>
-<li><a href="pvp/io/devices/pins.html">pvp.io.devices.pins</a></li>
-<li><a href="pvp/io/devices/sensors.html">pvp.io.devices.sensors</a></li>
-<li><a href="pvp/io/devices/valves.html">pvp.io.devices.valves</a></li>
 <li><a href="pvp/io/hal.html">pvp.io.hal</a></li>
-<li><a href="pvp/main.html">pvp.main</a></li>
 <li><a href="tests/pigpio_mocks.html">tests.pigpio_mocks</a></li>
 <li><a href="tests/test_alarms.html">tests.test_alarms</a></li>
 <li><a href="tests/test_controller.html">tests.test_controller</a></li>

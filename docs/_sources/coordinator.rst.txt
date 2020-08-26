@@ -1,3 +1,5 @@
+.. _coordinator_overview:
+
 coordinator module
 ========================
 

@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.common.loggers &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.common.loggers &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -180,8 +193,10 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Logging functionality</span>
 
-<span class="sd">There are two types of loggers: a standard :class:`logging.Logger` -based logging system for debugging and recording system events,</span>
-<span class="sd">and a :mod:`tables` - based :class:`.DataLogger` class to store continuously measured sensor values.</span>
+<span class="sd">There are two types of loggers:</span>
+
+<span class="sd">* :func:`.loggers.init_logger` creates a standard :class:`logging.Logger` -based logging system for debugging and recording system events, and a</span>
+<span class="sd">* :class:`.loggers.DataLogger` - a :mod:`tables` - based class to store continuously measured sensor values.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">typing</span>
@@ -190,8 +205,8 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">handlers</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">handlers</span>
 <span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">sio</span>
 
 
@@ -199,14 +214,12 @@
 <span class="kn">import</span> <span class="nn">tables</span> <span class="k">as</span> <span class="nn">pytb</span>
 
 <span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="c1"># only import when type checking to avoid cyclical imports</span>
     <span class="c1"># from pvp.common.message import SensorValues, ControlValues, ControlSetting</span>
-    <span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="kn">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlValues</span><span class="p">,</span> <span class="n">DerivedValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
+    <span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="k">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlValues</span><span class="p">,</span> <span class="n">DerivedValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
 
 
-<span class="c1"># some global stack param</span>
-<span class="n">MAX_STACK_DEPTH</span> <span class="o">=</span> <span class="mi">20</span>
-
-<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="kn">import</span> <span class="n">prefs</span>
+<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="k">import</span> <span class="n">prefs</span>
 
 <span class="n">_LOGGERS</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -220,7 +233,17 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize a logger for logging events.</span>
 
-<span class="sd">    If a logger has already been initialized, return that.</span>
+<span class="sd">    To keep logs sensible, you should usually initialize the logger with the name of the module that&#39;s using it, eg::</span>
+
+<span class="sd">        logger = init_logger(__name__)</span>
+
+<span class="sd">    If a logger has already been initialized (ie. its name is in :data:`.loggers._LOGGERS`, return that.</span>
+
+<span class="sd">    otherwise configure and return the logger such that</span>
+
+<span class="sd">    * its ``LOGLEVEL`` is set to ``prefs.LOGLEVEL``</span>
+<span class="sd">    * It formats logging messages with logger name, time, and logging level</span>
+<span class="sd">    * if a file handler is specified (default), create a :class:`logging.RotatingFileHandler` according to params set in ``prefs``</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        module_name (str): module name used to generate filename and name logger</span>
@@ -291,21 +314,6 @@
                 <span class="n">handler</span><span class="o">.</span><span class="n">maxBytes</span> <span class="o">=</span> <span class="n">new_max_bytes</span></div>
 
 
-
-
-<div class="viewcode-block" id="log_exception"><a class="viewcode-back" href="../../../pvp.common.loggers.html#pvp.common.loggers.log_exception">[docs]</a><span class="k">def</span> <span class="nf">log_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;  # TODO: Stub exception logger. Prints exception type &amp; traceback</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        e: Exception to log</span>
-<span class="sd">        tb: TraceBack associated with Exception e</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught the following exception:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="s2">&quot; but I don&#39;t know what to do with it.&quot;</span><span class="p">)</span>
-    <span class="c1"># print(traceback.print_tb(tb, limit=MAX_STACK_DEPTH))</span>
-    <span class="k">raise</span></div>
-
-
 <span class="k">class</span> <span class="nc">ContinuousData</span><span class="p">(</span><span class="n">pytb</span><span class="o">.</span><span class="n">IsDescription</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Structure for the hdf5-table for continuous waveform data; measured once per controller loop.</span>
@@ -367,7 +375,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DataLogger.__init__"><a class="viewcode-back" href="../../../pvp.common.loggers.html#pvp.common.loggers.DataLogger.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compression_level</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span><span class="p">):</span>
+<div class="viewcode-block" id="DataLogger.__init__"><a class="viewcode-back" href="../../../pvp.common.loggers.html#pvp.common.loggers.DataLogger.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compression_level</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialized the coontinuous numerical logger class.</span>
 
@@ -404,7 +412,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">h5file</span> <span class="o">=</span> <span class="n">pytb</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>      <span class="c1"># Open logfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compression_level</span> <span class="o">=</span> <span class="n">compression_level</span> <span class="c1"># From 1 to 9, see tables documentation</span></div>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_logfile</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DataLogger._open_logfile"><a class="viewcode-back" href="../../../pvp.common.loggers.html#pvp.common.loggers.DataLogger._open_logfile">[docs]</a>    <span class="k">def</span> <span class="nf">_open_logfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -539,12 +547,12 @@
         <span class="n">max_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">total_space_hd</span><span class="o">*</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1e10</span><span class="p">])</span>      <span class="c1"># Limit to whatever is smaller, 20% of the file system or 10 GB</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Too many logfiles in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span><span class="si">}</span><span class="s1"> (&gt;1000 files). There are &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span><span class="p">)))</span> <span class="o">+</span> <span class="s1">&#39; files. Delete some.&#39;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Too many logfiles in </span><span class="si">{self.log_dir}</span><span class="s1"> (&gt;1000 files). There are &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span><span class="p">)))</span> <span class="o">+</span> <span class="s1">&#39; files. Delete some.&#39;</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="c1"># self.logger.exception(message)  # Log a warning</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data_save_allowed</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># Stop data saving</span>
         <span class="k">elif</span> <span class="n">total_size</span><span class="o">&gt;</span><span class="n">max_size</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Logfiles in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span><span class="si">}</span><span class="s1"> are too large. Max allowed is &#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{0:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_size</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;GB, used is &#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{0:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_size</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">)</span> <span class="o">+</span>  <span class="s1">&#39;GB. Free disk space.&#39;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Logfiles in </span><span class="si">{self.log_dir}</span><span class="s1"> are too large. Max allowed is &#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{0:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_size</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;GB, used is &#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{0:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_size</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">)</span> <span class="o">+</span>  <span class="s1">&#39;GB. Free disk space.&#39;</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>  <span class="c1"># Log a warning</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data_save_allowed</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># Stop data saving</span>

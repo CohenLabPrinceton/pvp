@@ -650,8 +650,8 @@ class ControlModuleBase:
         self._DATA_PRESSURE = np.median(self._DATA_PRESSURE_LIST)    # Catch some of the noise, if any.
 
         if cycle_phase < self.__SET_I_PHASE:
-            self.__KP = 2*(self.__SET_PIP_GAIN-0.95)
-            self.__KI = 2.0
+            self.__KP = 2.0*(self.__SET_PIP_GAIN-1)
+            self.__KI = 2
             self.__KD = 0
 
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.3)

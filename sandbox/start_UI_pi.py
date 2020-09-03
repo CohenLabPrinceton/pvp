@@ -11,7 +11,7 @@ from pvp.coordinator.coordinator import get_coordinator
 import pvp.io as io
 import time
 
-sim_mode = True
+sim_mode = False
 def main():
 
     try:

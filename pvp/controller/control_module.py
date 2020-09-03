@@ -533,8 +533,6 @@ class ControlModuleBase:
 
             # check if time elapsed is greater than cough duration.
             if time.time() - self.hapa_crossing_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
-                self.__SET_PIP = 30                 # Default: PIP to 30
-                self.COPY_SET_PIP = 30
                 if self.__control_signal_in != 0 and self.__control_signal_out != 1:
                     self.__control_signal_out = 1
                     self.__control_signal_in  = 0

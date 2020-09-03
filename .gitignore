@@ -15,3 +15,10 @@ dist
 *.json
 *.h5
 *.mat
+*.1
+*.2
+*.3
+sandbox/data/pvp.gui.main.log.4
+*.5
+sandbox/Untitled.ipynb
+*.svg

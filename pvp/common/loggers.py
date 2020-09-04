@@ -139,7 +139,7 @@ class ControlCommand(pytb.IsDescription):
     """
     Structure for the hdf5-table to store control commands. Appended whenever a control command is received.
     """
-    name      = pytb.StringCol(16)   # Control setting name
+    name      = pytb.StringCol(32)   # Control setting name
     value     = pytb.Float64Col()    # double (double-precision)
     min_value = pytb.Float64Col()    # double (double-precision)
     max_value = pytb.Float64Col()    # double (double-precision)
@@ -248,8 +248,8 @@ class DataLogger:
             self.control_table = self.h5file.create_table(group, 'readout', ControlCommand, "Control Commands",
                                                           filters = pytb.Filters(
                                                               complevel=self.compression_level,
-                                                              complib='zlib')
-                                                          )
+                                                              complib='zlib'),
+                                                          expectedrows=1000000)
         else:
             self.control_table = self.h5file.root.controls.readout
 
@@ -259,8 +259,8 @@ class DataLogger:
             self.derived_table = self.h5file.create_table(group, 'readout', CycleData, "Derived Values",
                                                           filters = pytb.Filters(
                                                               complevel=self.compression_level,
-                                                              complib='zlib')
-                                                          )
+                                                              complib='zlib'),
+                                                          expectedrows=1000000)
         else:
             self.derived_table = self.h5file.root.derived_quantities.readout
 
@@ -268,7 +268,7 @@ class DataLogger:
         """
         Flushes & closes the open hdf file.
         """
-        print("Saving in..." + self.file)
+        self.logger.info("Logger terminated; in..." + self.file)
         self.h5file.close() # Also flushes the remaining buffers
 
     def store_waveform_data(self, sensor_values: 'SensorValues', control_values: 'ControlValues'):
@@ -446,7 +446,6 @@ class DataLogger:
         sio.savemat(new_filename, matlab_data)
         # except:
             # print(filename + " not found.")
-
 
     def log2csv(self, filename = None):
         """

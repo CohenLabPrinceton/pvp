@@ -1086,7 +1086,7 @@ class ControlModuleSimulator(ControlModuleBase):
             simulator_dt (float, optional): timestep between updates. Defaults to None.
             peep_valve_setting (int, optional): Simulates action of a PEEP valve. Pressure cannot fall below. Defaults to 5.
         """
-        ControlModuleBase.__init__(self, save_logs = True)
+        ControlModuleBase.__init__(self, save_logs = False)
         self.Balloon = Balloon_Simulator(peep_valve = peep_valve_setting)          # This is the simulation
         self._sensor_to_COPY()
         self._LOOP_UPDATE_TIME = prefs.get_pref('CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR')

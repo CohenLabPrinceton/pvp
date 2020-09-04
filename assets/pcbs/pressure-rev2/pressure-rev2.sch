@@ -641,9 +641,9 @@ J_ALRT
 Wire Wire Line
 	5950 6250 6100 6250
 Connection ~ 6100 6250
-Text Notes 5600 1700 0    100  ~ 20
+Text Notes 7050 1700 0    100  ~ 20
 Airway\nPressure\nSensor
-Text Notes 6900 1700 0    100  ~ 20
+Text Notes 5550 1700 0    100  ~ 20
 Differential\nPressure\nSensor (flow)
 Text Notes 8350 1700 0    100  ~ 20
 Auxiliary\nPressure\nSensor (unused)

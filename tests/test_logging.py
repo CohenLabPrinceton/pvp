@@ -79,6 +79,7 @@ def test_sensor_storage():
 
 def test_derived_storage():
 
+    # Store stuff
     dl = DataLogger()  
     derived_values = DerivedValues(
         timestamp        = time.time(),
@@ -113,10 +114,7 @@ def test_derived_storage():
 
 def test_checks():
 
-    # ######################################################################
-    # ### Test 2: Make sure that >1000 files, maxsize, no more saving
-
-
+    #Make sure the rotation system works
     dl = DataLogger()
     sensor_values =  SensorValues(vals={
             ValueName.PIP.name                  : np.random.random(),
@@ -151,5 +149,6 @@ def test_checks():
         new_filename = parts[0] + '.' + str(i) + '.' + parts[1]
         assert os.path.exists(new_filename)
 
+    # Check file sizes 
     dl.check_files()
 

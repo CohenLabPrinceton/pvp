@@ -134,7 +134,6 @@ class ContinuousData(pytb.IsDescription):
     oxygen       = pytb.Float64Col()
     cycle_number = pytb.UInt32Col()     # Max is 2147483647 Breath Cycles (~78 years)
 
-
 class ControlCommand(pytb.IsDescription):
     """
     Structure for the hdf5-table to store control commands. Appended whenever a control command is received.

@@ -90,12 +90,7 @@ class ControlModuleBase:
         self.__SET_I_PHASE   = CONTROL[ValueName.INSPIRATION_TIME_SEC].default    # Target duration of inspiratory phase
 
         # Derived internal control variables - fully defined by numbers above
-        try:
-            self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
-        except Exception as e:
-            # TODO: raise alert
-            self.logger.exception(f'Couldnt set cycle duration, setting to 20. __SET_BPM: {self.__SET_BPM}\nGot exception:\n    {e}')
-            self.__SET_CYCLE_DURATION = 20
+        self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
 
         self.__SET_E_PHASE        = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PEEP         = self.__SET_E_PHASE - self.__SET_PEEP_TIME
@@ -277,9 +272,14 @@ class ControlModuleBase:
             # 20/80 percentile of pressure values below/above mean
             # Assumption: waveform is mostly between both plateaus
             if np.isfinite(mean_pressure):
-                self._DATA_PEEP = np.percentile(pressure[ pressure < mean_pressure], 20 )
-                self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > mean_pressure], 80 )
-                self._DATA_PIP  = np.percentile(pressure[ pressure > mean_pressure], 95 )             #PIP is defined as the maximum, here 95% to account for outliers
+                if np.sum(pressure > mean_pressure) == 0:
+                    self._DATA_PEEP = 0
+                    self._DATA_PIP_PLATEAU = 0
+                    self._DATA_PIP = 0
+                else:
+                    self._DATA_PEEP = np.percentile(pressure[ pressure < mean_pressure], 20 )
+                    self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > mean_pressure], 80 )
+                    self._DATA_PIP  = np.percentile(pressure[ pressure > mean_pressure], 95 )             #PIP is defined as the maximum, here 95% to account for outliers
                 
                 #self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
                 self._DATA_PIP_TIME = self.__comptest(phase, pressure > self._DATA_PIP_PLATEAU*0.9, 'first')
@@ -575,6 +575,7 @@ class ControlModuleBase:
                         AlarmType.SENSORS_STUCK,
                         AlarmSeverity.TECHNICAL,
                     ))
+                    print("Inputs don't change; raised alarm.")
         else:
             self.TECHA = [a for a in self.TECHA if a.alarm_type != AlarmType.SENSORS_STUCK]
             self.sensor_stuck_since = None                           # If ok, reset sensor_stuck
@@ -589,6 +590,7 @@ class ControlModuleBase:
                     AlarmType.BAD_SENSOR_READINGS,
                     AlarmSeverity.TECHNICAL,
                 ))
+            print("Implausible values; raised alarm.")
 
         #### Third: Make sure that updates are coming in in a regular basis
         #
@@ -829,7 +831,21 @@ class ControlModuleDevice(ControlModuleBase):
             config_file (str, optional): Path to device config file, e.g. 'pvp/io/config/dinky-devices.ini'. Defaults to None.
         """
         ControlModuleBase.__init__(self, save_logs, flush_every)
-        self.HAL = io.Hal(config_file)
+
+        # Handler for HAL timeout handler for the timeout
+        def handler(signum, frame):
+            print("TIMEOUT - HAL not initialized")
+            raise Exception("HAL timeout")
+
+        signal.signal(signal.SIGALRM, handler)
+        signal.alarm(5)
+
+        try:
+            self.HAL = io.Hal(config_file)
+        except Exception: 
+            self.HAL = HALMock() 
+            #TODO: Raise technical alert
+
         self._sensor_to_COPY()
 
         # Current settings of the valves to avoid unneccesary hardware queries
@@ -964,6 +980,17 @@ class ControlModuleDevice(ControlModuleBase):
             self._sensor_to_COPY()  # Copy sensor values to COPY
             self.set_valves_standby()
 
+class HALMock():
+    """
+    A HAL mock class to fall back to, if io.HAL times out. Unclear what the software is to do, if hardware is available...
+    Decision: Start up with a technical alert.
+    """
+    def __init__(self):
+        self.setpoint_in = 0
+        self.setpoint_ex = 0
+        self.pressure    = 0
+        self.oxygen      = 0
+        self.flow_ex     = 0
 
 class Balloon_Simulator:
     """
@@ -1078,11 +1105,12 @@ class ControlModuleSimulator(ControlModuleBase):
     Controlling Simulation.
     """
     # Implement ControlModuleBase functions
-    def __init__(self, simulator_dt = None, peep_valve_setting = 5):
+    def __init__(self, save_logs: bool = False, simulator_dt = None, peep_valve_setting = 5):
         """
         Initializes the ControlModuleBase with the simple simulation (for testing/dev).
 
         Args:
+            save_logs (bool, optional): should logs be saved? (Useful for testing)
             simulator_dt (float, optional): timestep between updates. Defaults to None.
             peep_valve_setting (int, optional): Simulates action of a PEEP valve. Pressure cannot fall below. Defaults to 5.
         """
@@ -1213,6 +1241,6 @@ def get_control_module(sim_mode=False, simulator_dt = None):
         ControlModule-Object: Either configured for simulation, or physical device.
     """
     if sim_mode == True:
-        return ControlModuleSimulator(simulator_dt = simulator_dt)
+        return ControlModuleSimulator(save_logs = True, simulator_dt = simulator_dt)
     else:
         return ControlModuleDevice(save_logs = True, flush_every = 1, config_file = 'pvp/io/config/devices.ini')

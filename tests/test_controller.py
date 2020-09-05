@@ -1,12 +1,11 @@
 import time
 import numpy as np
 import pytest
+from unittest.mock import patch, Mock
 import random
 
-# from pvp import prefs
-# prefs.init()
-
-import pytest
+from pvp import prefs
+prefs.init()
 
 from pvp.common import values
 from pvp.common.message import ControlSetting, SensorValues
@@ -15,22 +14,6 @@ from pvp.common.values import ValueName
 from pvp.controller.control_module import ControlModuleBase, get_control_module
 from pvp.coordinator import rpc
 from pvp.coordinator.coordinator import get_coordinator
-
-
-
-# class HALMock(HAL):
-#     def __init__(self):
-#         super(HAL:, self).__init__()
-#         self.control_setting = {name: ControlSetting(name, -1, -1, -1, -1) for name in (ValueName.PIP,
-#                                                                                         ValueName.PIP_TIME,
-#                                                                                         ValueName.PEEP,
-#                                                                                         ValueName.BREATHS_PER_MINUTE,
-#                                                                                         ValueName.INSPIRATION_TIME_SEC)}
-#         self._running = threading.Event()
-#     def is_running(self):
-#         return self._running.is_set()
-# def mock_get_HAL(sim_mode):
-#     return HALMock()
 
 
 
@@ -174,27 +157,70 @@ def test_control_dynamical():
 
 
 
-# ######################################################################
-# #########################   TEST 3  ##################################
-# ######################################################################
-# #
-# # tests the logging abilits
-# # 
-# #
-# # Test BPM to 0; shouldn't crash code shouldn't be a problem
-# # Test savelogs: self._save_logs = True
-# # Test bad HAL values, e.g. set pressure to inf, shouldn't break the code
+######################################################################
+#########################   TEST 3  ##################################
+######################################################################
+#
+# Make sure that after timeout, software starts with MockHAL to display 
+#      technical alert  
+# Make sure the Controller is not broken by random, or stuck HAL values
+#   
+#
+
+def test_random_HAL():
+    Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
+    pressures  = []
+    oxygens    = []
+    flows      = []
+
+    Controller.start()
+    time.sleep(0.1)
+    temp_vals = Controller.get_sensors()
+    while temp_vals.breath_count < 5:
+        Controller.HAL.pressure    = 100*np.random.random()-50
+        Controller.HAL.flow_ex     = 100*np.random.random()-50
+        Controller.HAL.setpoint_in = 100*np.random.random()-50
+        Controller.HAL.setpoint_ex = 100*np.random.random()-50
+        Controller.HAL.oxygen      = 100*np.random.random()-50
+        time.sleep(0.1)
+        temp_vals = Controller.get_sensors()
+        
+        pressures = np.append(pressures, temp_vals.PRESSURE)
+        oxygens = np.append(oxygens, temp_vals.FIO2)
+        flows = np.append(flows, temp_vals.FLOWOUT)
+    Controller.stop() # consecutive stops should be ignored
+
+    assert np.isfinite( np.mean(pressures) )
+    assert np.isfinite( np.mean(oxygens) )
+    assert np.isfinite( np.mean(flows) )
+
+def test_stuck_HAL():
+
+    Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
+    Controller.start()
+    time.sleep(0.1)
+    temp_vals = Controller.get_sensors()
+
+    while temp_vals.breath_count < 10:
+        Controller.HAL.pressure = 0
+        Controller.HAL.flow_ex = 0
+        Controller.HAL.oxygen = -10
+        time.sleep(0.1)
+        temp_vals = Controller.get_sensors()
+
+    Controller.stop() # consecutive stops should be ignored
+
+    assert temp_vals.breath_count == 10
+
+
 # # test get_alarms() method
-# # remove peep_time
 # # test breath detection
 # # test _control_reset()
-# # make data_implausible by feeding const values, raise alarm
 # # make missed_heartbeat by no querying anything for a critical time
 # # test (or remove) get past waveforms
 # # test interrupt
 # # test is_running
 # # remove/test _reset for balloon
-# # test control_module device 
 
 
 # ######################################################################

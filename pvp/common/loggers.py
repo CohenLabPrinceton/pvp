@@ -335,6 +335,7 @@ class DataLogger:
         To be executed every other second, e.g. at the end of breath cycle.
         """
         if self._data_save_allowed:
+            self._open_logfile()
             self.data_table.flush()
             self.control_table.flush()
 

@@ -10,6 +10,8 @@ from pvp.common.message import SensorValues, ControlValues, DerivedValues, Contr
 from pvp.common.values import ValueName
 from pvp.common import values
 
+from pvp import prefs
+prefs.init()
 
 @pytest.mark.parametrize("control_setting_name", values.CONTROL.keys())
 def test_control_storage(control_setting_name):

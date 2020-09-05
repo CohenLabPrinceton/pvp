@@ -575,7 +575,7 @@ class ControlModuleBase:
                         AlarmType.SENSORS_STUCK,
                         AlarmSeverity.TECHNICAL,
                     ))
-                    print("Inputs don't change; raised alarm.")
+                    self.logger.warning(f'Inputs do not change; raised alarm.')
         else:
             self.TECHA = [a for a in self.TECHA if a.alarm_type != AlarmType.SENSORS_STUCK]
             self.sensor_stuck_since = None                           # If ok, reset sensor_stuck
@@ -590,7 +590,7 @@ class ControlModuleBase:
                     AlarmType.BAD_SENSOR_READINGS,
                     AlarmSeverity.TECHNICAL,
                 ))
-            print("Implausible values; raised alarm.")
+            self.logger.warning(f'Implausible values; raised alarm.')
 
         #### Third: Make sure that updates are coming in in a regular basis
         #

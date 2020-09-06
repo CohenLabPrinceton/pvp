@@ -8,6 +8,7 @@ from collections import deque
 import pdb
 from itertools import count
 import signal
+import pytest
 
 import pvp.io as io
 

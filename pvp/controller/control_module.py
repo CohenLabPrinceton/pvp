@@ -206,6 +206,7 @@ class ControlModuleBase:
             self.COPY_SET_I_PHASE   = self.__SET_I_PHASE
 
     def _sensor_to_COPY(self):
+        # pragma: no cover
         # These variables have to come from the hardware
         # Make sure you have acquire and release!
         pass
@@ -736,6 +737,7 @@ class ControlModuleBase:
         return archive
 
     def _start_mainloop(self):
+        # pragma: no cover
         """
         Prototype method to start main PID loop. Will depend on simulation or device, specified below.
         """
@@ -996,9 +998,6 @@ class Balloon_Simulator:
 
     def get_pressure(self):
         return self.current_pressure
-
-    def get_volume(self):
-        return self.current_volume
 
     def set_flow_in(self, Qin, dt):
         self.set_Qin = Qin

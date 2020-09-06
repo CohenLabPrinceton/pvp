@@ -31,36 +31,47 @@ class CoordinatorBase:
 
 
     def get_sensors(self) -> SensorValues:
+        # pragma: no cover
         pass
 
     def get_alarms(self) -> typing.Union[None, typing.Tuple[Alarm]]:
+        # pragma: no cover
         pass
 
     def set_control(self, control_setting: ControlSetting):
+        # pragma: no cover
         pass
 
     def get_control(self, control_setting_name: ValueName) -> ControlSetting:
+        # pragma: no cover
         pass
 
     def set_breath_detection(self, breath_detection: bool):
+        # pragma: no cover
         pass
 
     def get_breath_detection(self) -> bool:
+        # pragma: no cover
         pass
 
     def get_target_waveform(self):
+        # pragma: no cover
         pass
 
     def start(self):
+        # pragma: no cover
         pass
 
     def is_running(self) -> bool:
+        # pragma: no cover
         pass
 
     def kill(self):
+        # pragma: no cover
         pass
 
     def stop(self):
+        # pragma: no cover
         pass
 
 class CoordinatorLocal(CoordinatorBase):
@@ -123,6 +134,7 @@ class CoordinatorLocal(CoordinatorBase):
 
     def kill(self):
         # dont need to do anything since should just go away on its own
+        # pragma: no cover
         pass
 
 

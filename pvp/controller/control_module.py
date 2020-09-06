@@ -46,7 +46,6 @@ class ControlModuleBase:
         - `start()`:                           Starts the main-loop of the controller
         - `stop()`:                            Stops the main-loop of the controller
         - `set_control()`:                     Set the control
-        - `interrupt()`:                       Interrupt the controller, and re-spawns the thread. Used to restart a stuck controller
         - `is_running()`:                      Returns a bool whether the main-thread is running
         - `get_heartbeat()`:                   Returns a heartbeat, more specifically, the continuously increasing iteration-number of the main control loop.
     """
@@ -208,7 +207,7 @@ class ControlModuleBase:
 
     def _sensor_to_COPY(self):
         # These variables have to come from the hardware
-        # Make sure you use lock acquire and release!
+        # Make sure you have acquire and release!
         pass
 
     def _controls_from_COPY(self):
@@ -998,6 +997,9 @@ class Balloon_Simulator:
     def get_pressure(self):
         return self.current_pressure
 
+    def get_volume(self):
+        return self.current_volume
+
     def set_flow_in(self, Qin, dt):
         self.set_Qin = Qin
 
@@ -1156,6 +1158,12 @@ class ControlModuleSimulator(ControlModuleBase):
                 dt = self.simulator_dt
             else:
                 dt = now - self._last_update                            # Time sincle last cycle of main-loop
+                if dt > 0.2:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
+                    self.logger.warning("MainLoop: Update too long: " + str(dt))
+                    print("Restarted cycle.")
+                    self._control_reset()
+                    self.Balloon._reset()
+                    dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
             self._DATA_PRESSURE_LIST.append(self.Balloon.get_pressure()) # Get a pressure measurement from balloon and tell controller

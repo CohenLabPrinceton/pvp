@@ -207,10 +207,11 @@ def test_random_HAL():
     """
     Simulates a broken HAL, providing (physiologically unreasonable) random numbers to infinity
     """
-    Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
+    with pytest.raises(Exception):
+        Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
     pressures  = []
     oxygens    = []
-    flows      = []
+    flows      = [] 
 
     Controller.start()
     time.sleep(0.1)

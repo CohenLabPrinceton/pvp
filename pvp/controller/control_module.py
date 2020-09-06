@@ -208,9 +208,7 @@ class ControlModuleBase:
 
     def _sensor_to_COPY(self):
         # These variables have to come from the hardware
-        self._lock.acquire()
-        # Make sure you have acquire and release!
-        self._lock.release()
+        # Make sure you use lock acquire and release!
         pass
 
     def _controls_from_COPY(self):
@@ -768,34 +766,6 @@ class ControlModuleBase:
 
         if self._save_logs:               # If we kept records, flush the data
             self.dl.close_logfile()
-
-    # def interrupt(self):
-    #     """
-    #     If the controller seems stuck, this generates a new thread, and starts the main loop.
-    #     No parameters have changed.
-    #     """
-    #     # try to clear existing threading event first to kill thread.
-    #     self._running.clear()
-    #     # try releasing existing lock first in case it was stuck
-    #     if self._lock.locked():
-    #         self._lock.release()
-
-    #     # make new threading objects
-    #     self._running = threading.Event()           # New thread
-    #     self._running.clear()
-    #     self._lock = threading.Lock()
-    #     self._running.set()
-
-    #     if self.__thread.is_alive():
-    #         self.logger.exception('tried to kill thread and failed')
-    #         return
-
-    #     self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
-    #     try:
-    #         self.__thread.start()
-    #     except:
-    #         pass
-    #         #TODO RAISE ALERT FOR UI
 
     def is_running(self):
         """

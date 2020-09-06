@@ -253,6 +253,20 @@ def test_random_HAL():
     assert temp_vals.breath_count == 10
 
 
+    Controller.set_control(command)
+    command = ControlSetting(name=ValueName.PIP, value=20)
+    Controller.set_control(command)
+    command = ControlSetting(name=ValueName.PEEP, value=20)
+
+    while temp_vals.breath_count < 12:                    # NAN HAL
+        Controller.HAL.pressure = np.nan
+        Controller.HAL.flow_ex = np.nan
+        Controller.HAL.oxygen = np.nan
+        time.sleep(0.1)
+        temp_vals = Controller.get_sensors()
+        
+    Controller.stop()
+
 # # test breath detection
 
 ######################################################################

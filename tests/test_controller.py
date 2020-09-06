@@ -233,28 +233,28 @@ def test_random_HAL():
     assert np.isfinite( np.mean(oxygens) )
     assert np.isfinite( np.mean(flows) )
 
-def test_stuck_HAL():
-    """
-    Simulates a stuck HAL providing identical values to infinity
-    """
-    Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
-    Controller.start()
-    time.sleep(0.1)
-    temp_vals = Controller.get_sensors()
+# def test_stuck_HAL():
+#     """
+#     Simulates a stuck HAL providing identical values to infinity
+#     """
+#     Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
+#     Controller.start()
+#     time.sleep(0.1)
+#     temp_vals = Controller.get_sensors()
 
-    while temp_vals.breath_count < 10:
-        Controller.HAL.pressure = 0
-        Controller.HAL.flow_ex = 0
-        Controller.HAL.oxygen = -10
-        time.sleep(0.1)
-        temp_vals = Controller.get_sensors()
-        ala = Controller.get_alarms()
+#     while temp_vals.breath_count < 10:
+#         Controller.HAL.pressure = 0
+#         Controller.HAL.flow_ex = 0
+#         Controller.HAL.oxygen = -10
+#         time.sleep(0.1)
+#         temp_vals = Controller.get_sensors()
+#         ala = Controller.get_alarms()
 
-    Controller.stop() # consecutive stops should be ignored
+#     Controller.stop() # consecutive stops should be ignored
 
-    for alarms in ala:
-        assert type(alarms[0]) == Alarm
-    assert temp_vals.breath_count == 10
+#     for alarms in ala:
+#         assert type(alarms[0]) == Alarm
+#     assert temp_vals.breath_count == 10
 
 
 # # test breath detection

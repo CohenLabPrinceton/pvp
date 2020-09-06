@@ -837,7 +837,8 @@ class ControlModuleDevice(ControlModuleBase):
         def handler(signum, frame):
             print("TIMEOUT - HAL not initialized")
             self.logger.warning("TIMEOUT - HAL not initialized. Using MockHAL")
-            raise Exception("HAL timeout")
+            with pytest.raises( Exception ):
+                raise Exception("HAL timeout")
 
         signal.signal(signal.SIGALRM, handler)
         signal.alarm(5)

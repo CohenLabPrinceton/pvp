@@ -205,8 +205,7 @@ class ControlModuleBase:
             self.COPY_SET_BPM       = self.__SET_BPM
             self.COPY_SET_I_PHASE   = self.__SET_I_PHASE
 
-    def _sensor_to_COPY(self):
-        # pragma: no cover
+    def _sensor_to_COPY(self):        # pragma: no cover
         # These variables have to come from the hardware
         # Make sure you have acquire and release!
         pass
@@ -736,8 +735,7 @@ class ControlModuleBase:
         self._time_last_contact = time.time()
         return archive
 
-    def _start_mainloop(self):
-        # pragma: no cover
+    def _start_mainloop(self):        # pragma: no cover
         """
         Prototype method to start main PID loop. Will depend on simulation or device, specified below.
         """
@@ -1157,12 +1155,12 @@ class ControlModuleSimulator(ControlModuleBase):
                 dt = self.simulator_dt
             else:
                 dt = now - self._last_update                            # Time sincle last cycle of main-loop
-                if dt > 0.2:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
-                    self.logger.warning("MainLoop: Update too long: " + str(dt))
-                    print("Restarted cycle.")
-                    self._control_reset()
-                    self.Balloon._reset()
-                    dt = self._LOOP_UPDATE_TIME
+                # if dt > 0.2:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
+                #     self.logger.warning("MainLoop: Update too long: " + str(dt))
+                #     print("Restarted cycle.")
+                #     self._control_reset()
+                #     self.Balloon._reset()
+                #     dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
             self._DATA_PRESSURE_LIST.append(self.Balloon.get_pressure()) # Get a pressure measurement from balloon and tell controller

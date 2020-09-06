@@ -254,19 +254,36 @@ def test_random_HAL():
     assert temp_vals.breath_count == 10
 
 
+
+def test_nan_HAL():
+    """
+    nan should work to, make PEEP et al. nan
+    """
+    Controller = get_control_module(sim_mode=True, simulator_dt=0.01)
     Controller.start()
-    time.sleep(0.1)
-    Controller.set_control(command)
+
     command = ControlSetting(name=ValueName.PIP, value=20)
     Controller.set_control(command)
     command = ControlSetting(name=ValueName.PEEP, value=5)
-    time.sleep(0.1)
-    while temp_vals.breath_count < 12:                    # NAN HAL
-        Controller.HAL.pressure = np.nan
+    Controller.set_control(command)
+    temp_vals = Controller.get_sensors()
+
+        
+    while temp_vals.breath_count < 2:                    # NAN HAL
         time.sleep(0.1)
         temp_vals = Controller.get_sensors()
+        Controller._DATA_PRESSURE_LIST.append(np.nan)  #inject a nan into pressures
+        
     Controller.stop()
     Controller.stop()
+
+    assert np.isnan(Controller._DATA_PEEP)
+    assert np.isnan(Controller._DATA_PIP_PLATEAU)
+    assert np.isnan(Controller._DATA_PIP)
+    assert np.isnan(Controller._DATA_PIP_TIME)
+    assert np.isnan(Controller._DATA_PEEP_TIME)
+    assert np.isnan(Controller._DATA_I_PHASE)
+
 
 # # test breath detection
 

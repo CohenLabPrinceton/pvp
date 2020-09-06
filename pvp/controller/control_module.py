@@ -221,7 +221,7 @@ class ControlModuleBase:
             self.__SET_BPM       = self.COPY_SET_BPM
             self.__SET_I_PHASE   = self.COPY_SET_I_PHASE
 
-            if self.__SET_BPM > 0
+            if self.__SET_BPM > 0:
                 self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
 
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
@@ -293,7 +293,7 @@ class ControlModuleBase:
 
             # and measure the breaths per minute
             self._DATA_BPM = np.nan
-            if phase[-1] > 0
+            if phase[-1] > 0:
                 self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform, exception if this was 0.
 
             if self._save_logs:

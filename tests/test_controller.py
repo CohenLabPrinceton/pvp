@@ -30,6 +30,11 @@ def test_control_settings(control_setting_name):
     '''
     Controller = get_control_module(sim_mode=True)
     Controller.start()
+    time.sleep(0.1)
+    Controller.start()
+    time.sleep(0.1)
+    Controller.stop()
+    time.sleep(0.1)
     Controller.stop()
 
     v = random.randint(10, 100)
@@ -91,6 +96,8 @@ def test_control_dynamical():
     Controller = get_control_module(sim_mode=True, simulator_dt=0.01)
     Controller._LOOP_UPDATE_TIME = 0.01
 
+    Controller.set_breath_detection(False)
+    assert Controller.get_breath_detection() == False
     Controller.set_breath_detection(True)
     assert Controller.get_breath_detection() == True
 

@@ -135,6 +135,7 @@ def test_control_dynamical():
     Controller.stop()
 
     vals_stop = Controller.get_sensors()
+    alarms_stop = Controller.get_alarms()
 
     # Test whether get_sensors() return the right values
     COPY_peep     = Controller.COPY_sensor_values.PEEP
@@ -223,7 +224,7 @@ def test_random_HAL():
     time.sleep(0.1)
     temp_vals = Controller.get_sensors()
     while temp_vals.breath_count < 5:                    # Random HAL
-        Controller.HAL.pressure    = 100*np.random.random()-50
+        Controller.HAL.pressure    = 1000*np.random.random()-50  #gat a nice stream of HAPA alerts
         Controller.HAL.flow_ex     = 100*np.random.random()-50
         Controller.HAL.setpoint_in = 100*np.random.random()-50
         Controller.HAL.setpoint_ex = 100*np.random.random()-50
@@ -253,20 +254,19 @@ def test_random_HAL():
     assert temp_vals.breath_count == 10
 
 
-    # Controller.start()
-
-    # Controller.set_control(command)
-    # command = ControlSetting(name=ValueName.PIP, value=20)
-    # Controller.set_control(command)
-    # command = ControlSetting(name=ValueName.PEEP, value=5)
-
-    # while temp_vals.breath_count < 12:                    # NAN HAL
-    #     Controller.HAL.pressure = np.nan
-    #     time.sleep(0.1)
-    #     temp_vals = Controller.get_sensors()
-
-    # Controller.stop()
-    # Controller.stop()
+    Controller.start()
+    time.sleep(0.1)
+    Controller.set_control(command)
+    command = ControlSetting(name=ValueName.PIP, value=20)
+    Controller.set_control(command)
+    command = ControlSetting(name=ValueName.PEEP, value=5)
+    time.sleep(0.1)
+    while temp_vals.breath_count < 12:                    # NAN HAL
+        Controller.HAL.pressure = np.nan
+        time.sleep(0.1)
+        temp_vals = Controller.get_sensors()
+    Controller.stop()
+    Controller.stop()
 
 # # test breath detection
 

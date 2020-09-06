@@ -594,7 +594,7 @@ class ControlModuleBase:
 
         #### Third: Make sure that updates are coming in in a regular basis
         #
-        last_contact = self._time_last_contact - time.time()
+        last_contact = np.abs(self._time_last_contact - time.time())
         if last_contact > self._critical_time:
             if not any([a.alarm_type == AlarmType.MISSED_HEARTBEAT for a in self.TECHA]):
                 self.TECHA.append(Alarm(
@@ -768,32 +768,33 @@ class ControlModuleBase:
         if self._save_logs:               # If we kept records, flush the data
             self.dl.close_logfile()
 
-    def interrupt(self):
-        """
-        If the controller seems stuck, this generates a new thread, and starts the main loop.
-        No parameters have changed.
-        """
-        # try to clear existing threading event first to kill thread.
-        self._running.clear()
-        # try releasing existing lock first in case it was stuck
-        self._lock.release()
+    # def interrupt(self):
+    #     """
+    #     If the controller seems stuck, this generates a new thread, and starts the main loop.
+    #     No parameters have changed.
+    #     """
+    #     # try to clear existing threading event first to kill thread.
+    #     self._running.clear()
+    #     # try releasing existing lock first in case it was stuck
+    #     if self._lock.locked():
+    #         self._lock.release()
 
-        # make new threading objects
-        self._running = threading.Event()           # New thread
-        self._running.clear()
-        self._lock = threading.Lock()
-        self._running.set()
+    #     # make new threading objects
+    #     self._running = threading.Event()           # New thread
+    #     self._running.clear()
+    #     self._lock = threading.Lock()
+    #     self._running.set()
 
-        if self.__thread.is_alive():
-            self.logger.exception('tried to kill thread and failed')
-            return
+    #     if self.__thread.is_alive():
+    #         self.logger.exception('tried to kill thread and failed')
+    #         return
 
-        self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
-        try:
-            self.__thread.start()
-        except:
-            pass
-            #TODO RAISE ALERT FOR UI
+    #     self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
+    #     try:
+    #         self.__thread.start()
+    #     except:
+    #         pass
+    #         #TODO RAISE ALERT FOR UI
 
     def is_running(self):
         """
@@ -835,6 +836,7 @@ class ControlModuleDevice(ControlModuleBase):
         # Handler for HAL timeout handler for the timeout
         def handler(signum, frame):
             print("TIMEOUT - HAL not initialized")
+            self.logger.warning("TIMEOUT - HAL not initialized. Using MockHAL")
             raise Exception("HAL timeout")
 
         signal.signal(signal.SIGALRM, handler)
@@ -932,7 +934,6 @@ class ControlModuleDevice(ControlModuleBase):
         This returns valves back to normal setting (in: closed, out: open)
         """
         self.logger.info('Valves to stand-by.')
-        print("Valve settings back to stand-by.")
         self._set_HAL(valve_open_in = 0, valve_open_out = 1)  # Defined state to make sure that it does not pop up.
 
     def _start_mainloop(self):
@@ -1064,7 +1065,6 @@ class Balloon_Simulator:
             self.fio2 = self.OUupdate(self.fio2, dt=dt, mu=60, sigma=5, tau=1)
         else:
             self._reset()
-            print(self.current_pressure)
 
 
     def OUupdate(self, variable, dt, mu, sigma, tau):

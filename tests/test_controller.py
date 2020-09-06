@@ -1,19 +1,16 @@
 import time
 import numpy as np
 import pytest
-from unittest.mock import patch, Mock
 import random
 
 from pvp import prefs
 prefs.init()
 
 from pvp.common import values
-from pvp.common.message import ControlSetting, SensorValues
-from pvp.alarm import AlarmSeverity, Alarm
+from pvp.common.message import ControlSetting
+from pvp.alarm import Alarm, AlarmType
 from pvp.common.values import ValueName
-from pvp.controller.control_module import ControlModuleBase, get_control_module
-from pvp.coordinator import rpc
-from pvp.coordinator.coordinator import get_coordinator
+from pvp.controller.control_module import get_control_module
 
 
 
@@ -22,7 +19,7 @@ from pvp.coordinator.coordinator import get_coordinator
 ######################################################################
 #
 #   Make sure the controller remembers settings, and can be started
-#   and stopped repeatedly a couple of times.
+#   and stopped repeatedly a couple of times, and performs resets as intended
 #
 
 @pytest.mark.parametrize("control_setting_name", values.CONTROL.keys())
@@ -67,6 +64,16 @@ def test_restart_controller():
         assert vals_stop.loop_counter > vals_start.loop_counter
 
 
+def test_reset_controller():
+    """
+    Tests the reset functionality
+    """
+    Controller = get_control_module(sim_mode=True, simulator_dt=1.5)  # dt>1 tests the physics_reset
+    Controller.start()
+    time.sleep(1)
+    Controller._control_reset()
+    assert np.abs(Controller._cycle_start - time.time()) < 0.05       # tests control_reset
+    Controller.stop()
 
 ######################################################################
 #########################   TEST 2  ##################################
@@ -83,6 +90,9 @@ def test_control_dynamical():
     '''
     Controller = get_control_module(sim_mode=True, simulator_dt=0.01)
     Controller._LOOP_UPDATE_TIME = 0.01
+
+    Controller.set_breath_detection(True)
+    assert Controller.get_breath_detection() == True
 
     vals_start = Controller.get_sensors()
 
@@ -111,6 +121,7 @@ def test_control_dynamical():
     while temp_vals.breath_count < 5:
         time.sleep(0.1)
         temp_vals = Controller.get_sensors()
+        assert Controller.is_running() == True
 
     Controller.stop() # consecutive stops should be ignored
     Controller.stop() 
@@ -154,8 +165,33 @@ def test_control_dynamical():
     assert hb1 > 0                                 # Test the heartbeat
     assert np.abs(hb1 - COPY_lc) < Controller._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE + 2  # true heart-beat should be close to the sensor loop counter
 
+    archive = Controller.get_past_waveforms()     # Test archive
+    assert type(archive) == list
+    for i in range(len(archive)):
+        print(i)
+        assert type(archive[i]) == np.ndarray
+        columns, rows = archive[0].shape
+        assert rows == 3
 
 
+def test_missed_heartbeat_alarm():
+
+    Controller = get_control_module(sim_mode=True, simulator_dt=0.01)
+    Controller.start()
+    Controller._critical_time = 4.5  # Make sure that we get a warning after 5 seconds 
+
+    t0 = time.time()
+    time.sleep(5)
+
+    assert np.abs(Controller._time_last_contact - t0 ) < 0.01
+    assert np.abs(Controller._time_last_contact - time.time() + 5 ) < 0.01
+
+    Controller.stop()
+    t1 = time.time()
+    assert np.abs(Controller._time_last_contact - t1) < 0.01
+
+    a = Controller.get_alarms()[0][0]
+    assert a.alarm_type == AlarmType.MISSED_HEARTBEAT
 
 ######################################################################
 #########################   TEST 3  ##################################
@@ -168,6 +204,9 @@ def test_control_dynamical():
 #
 
 def test_random_HAL():
+    """
+    Simulates a broken HAL, providing (physiologically unreasonable) random numbers to infinity
+    """
     Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
     pressures  = []
     oxygens    = []
@@ -195,7 +234,9 @@ def test_random_HAL():
     assert np.isfinite( np.mean(flows) )
 
 def test_stuck_HAL():
-
+    """
+    Simulates a stuck HAL providing identical values to infinity
+    """
     Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
     Controller.start()
     time.sleep(0.1)
@@ -207,69 +248,56 @@ def test_stuck_HAL():
         Controller.HAL.oxygen = -10
         time.sleep(0.1)
         temp_vals = Controller.get_sensors()
+        ala = Controller.get_alarms()
 
     Controller.stop() # consecutive stops should be ignored
 
+    for alarms in ala:
+        assert type(alarms[0]) == Alarm
     assert temp_vals.breath_count == 10
 
 
-# # test get_alarms() method
 # # test breath detection
-# # test _control_reset()
-# # make missed_heartbeat by no querying anything for a critical time
-# # test (or remove) get past waveforms
-# # test interrupt
-# # test is_running
-# # remove/test _reset for balloon
 
+######################################################################
+#########################   TEST 4  ##################################
+######################################################################
+#
+#   More involved test, randomized waittimes and make sure the system works
+#
+def test_erratic_dt():
+    '''
+        This is a function to test whether the controller works with random update times
+    '''
+    Controller = get_control_module(sim_mode=True)
 
-# ######################################################################
-# #########################   TEST 4  ##################################
-# ######################################################################
-# #
-# #   More involved test, randomized waittimes and make sure the system works
-# #
-# def test_erratic_dt():
-#     '''
-#         This is a function to test whether the controller works with random update times
-#     '''
-#     Controller = get_control_module(sim_mode=True)
+    command = ControlSetting(name=ValueName.PEEP, value=5)
+    Controller.set_control(command)
+    command = ControlSetting(name=ValueName.PIP, value=20)
+    Controller.set_control(command)
+    command = ControlSetting(name=ValueName.PIP_TIME, value=1)
+    Controller.set_control(command)
 
-#     v_peep = 5
-#     command = ControlSetting(name=ValueName.PEEP, value=v_peep)
-#     Controller.set_control(command)
+    Controller.start()
+    ls = []
+    test_loops = 500
+    for t in range(test_loops):
+        Controller._LOOP_UPDATE_TIME = np.random.randint(100)/1000  # updates anywhere between 0ms and 500ms
+        time.sleep(0.05)
+        vals = Controller.get_sensors()
+        ls.append(vals)
+    Controller.stop()
 
-#     v_pip = 30
-#     command = ControlSetting(name=ValueName.PIP, value=v_pip)
-#     Controller.set_control(command)
+    cc = Controller.get_control(control_setting_name = ValueName.PEEP)
+    target_peep = cc.value
+    cc = Controller.get_control(control_setting_name = ValueName.PIP)
+    target_pip = cc.value
 
-#     # # set _LOOP_UPDATE_TIME to zero and use simulator_dt so that the test actually runs good
-#     # Controller._LOOP_UPDATE_TIME = 0
+    peeps = np.unique([np.abs(s.PEEP - target_peep)  for s in ls if s.PEEP is not None])
+    pips = np.unique([np.abs(s.PIP - target_pip)  for s in ls if s.PIP is not None])
+    print(target_peep)
+    print(target_pip)
 
-#     Controller.start()
-#     ls = []
-#     test_cycles = 10
-#     last_cycle = 0
-#     for t in range(test_cycles):
-#         Controller.simulator_dt = np.random.randint(100)/1000  # updates anywhere between 0ms and 100ms
-#         vals = Controller.get_sensors()
-#         while vals.breath_count <= last_cycle:
-#             time.sleep(0.05)
-#             vals = Controller.get_sensors()
-#         last_cycle = vals.breath_count
-#         ls.append(vals)
-#     Controller.stop()
-
-#     cc = Controller.get_control(control_setting_name = ValueName.PEEP)
-#     target_peep = cc.value
-#     cc = Controller.get_control(control_setting_name = ValueName.PIP)
-#     target_pip = cc.value
-
-#     peeps = np.unique([np.abs(s.PEEP - target_peep)  for s in ls if s.PEEP is not None])
-#     pips = np.unique([np.abs(s.PIP - target_pip)  for s in ls if s.PIP is not None])
-#     print(target_peep)
-#     print(target_pip)
-
-#     assert np.mean(peeps) < 8
-#     assert np.mean(pips) < 8
+    assert np.mean(peeps) < 8
+    assert np.mean(pips) < 8
 

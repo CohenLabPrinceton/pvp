@@ -203,35 +203,35 @@ def test_missed_heartbeat_alarm():
 #   
 #
 
-# def test_random_HAL():
-#     """
-#     Simulates a broken HAL, providing (physiologically unreasonable) random numbers to infinity
-#     """
-#     Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
-#     pressures  = []
-#     oxygens    = []
-#     flows      = []
+def test_random_HAL():
+    """
+    Simulates a broken HAL, providing (physiologically unreasonable) random numbers to infinity
+    """
+    Controller = get_control_module(sim_mode=False, simulator_dt=0.01)
+    pressures  = []
+    oxygens    = []
+    flows      = []
 
-#     Controller.start()
-#     time.sleep(0.1)
-#     temp_vals = Controller.get_sensors()
-#     while temp_vals.breath_count < 5:
-#         Controller.HAL.pressure    = 100*np.random.random()-50
-#         Controller.HAL.flow_ex     = 100*np.random.random()-50
-#         Controller.HAL.setpoint_in = 100*np.random.random()-50
-#         Controller.HAL.setpoint_ex = 100*np.random.random()-50
-#         Controller.HAL.oxygen      = 100*np.random.random()-50
-#         time.sleep(0.1)
-#         temp_vals = Controller.get_sensors()
+    Controller.start()
+    time.sleep(0.1)
+    temp_vals = Controller.get_sensors()
+    while temp_vals.breath_count < 5:
+        Controller.HAL.pressure    = 100*np.random.random()-50
+        Controller.HAL.flow_ex     = 100*np.random.random()-50
+        Controller.HAL.setpoint_in = 100*np.random.random()-50
+        Controller.HAL.setpoint_ex = 100*np.random.random()-50
+        Controller.HAL.oxygen      = 100*np.random.random()-50
+        time.sleep(0.1)
+        temp_vals = Controller.get_sensors()
         
-#         pressures = np.append(pressures, temp_vals.PRESSURE)
-#         oxygens = np.append(oxygens, temp_vals.FIO2)
-#         flows = np.append(flows, temp_vals.FLOWOUT)
-#     Controller.stop() # consecutive stops should be ignored
+        pressures = np.append(pressures, temp_vals.PRESSURE)
+        oxygens = np.append(oxygens, temp_vals.FIO2)
+        flows = np.append(flows, temp_vals.FLOWOUT)
+    Controller.stop() # consecutive stops should be ignored
 
-#     assert np.isfinite( np.mean(pressures) )
-#     assert np.isfinite( np.mean(oxygens) )
-#     assert np.isfinite( np.mean(flows) )
+    assert np.isfinite( np.mean(pressures) )
+    assert np.isfinite( np.mean(oxygens) )
+    assert np.isfinite( np.mean(flows) )
 
 # def test_stuck_HAL():
 #     """

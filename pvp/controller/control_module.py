@@ -221,12 +221,8 @@ class ControlModuleBase:
             self.__SET_BPM       = self.COPY_SET_BPM
             self.__SET_I_PHASE   = self.COPY_SET_I_PHASE
 
-        #Update derived values
-        try:
-            self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
-            #TODO: raise alert
-        except:
-            self.__SET_CYCLE_DURATION = 20
+            if self.__SET_BPM > 0
+                self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
 
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
@@ -296,11 +292,9 @@ class ControlModuleBase:
                 self._DATA_I_PHASE = np.nan
 
             # and measure the breaths per minute
-            try:
+            self._DATA_BPM = np.nan
+            if phase[-1] > 0
                 self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform, exception if this was 0.
-            except:
-                self.logger.warning(f'Couldnt calculate BPM, phase was {phase[-1]}. setting as nan')
-                self._DATA_BPM = np.nan
 
             if self._save_logs:
                 #And the control value instance

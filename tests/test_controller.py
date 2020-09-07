@@ -292,6 +292,11 @@ def test_nan_HAL():
     assert np.isnan(Controller._DATA_I_PHASE)
 
     # While we're at it: make sure all alarms are returned correctly
+    Controller.HAPA = None
+    Controller.TECHA = []
+    assert Controller.get_alarms() == None
+    time.sleep(0.1)
+
     Controller.HAPA = Alarm(AlarmType.HIGH_PRESSURE, AlarmSeverity.HIGH, time.time(), value=100)
     Controller.TECHA = [Alarm( AlarmType.SENSORS_STUCK, AlarmSeverity.TECHNICAL, )]
     assert len(Controller.get_alarms()) == 2

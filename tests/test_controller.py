@@ -223,6 +223,9 @@ def test_random_HAL():
 
     Controller.start()
     time.sleep(0.1)
+    command = ControlSetting(name=ValueName.PIP, value=30)  # Test of set_control for hal
+    Controller.set_control(command)
+    time.sleep(0.1)
     temp_vals = Controller.get_sensors()
     while temp_vals.breath_count < 5:                    # Random HAL
         Controller.HAL.pressure    = 1000*np.random.random()-50  #gat a nice stream of HAPA alerts
@@ -244,6 +247,9 @@ def test_random_HAL():
         time.sleep(0.1)
         temp_vals = Controller.get_sensors()
         
+    time.sleep(0.1)
+    Controller._maxdt = 0
+    time.sleep(0.5)
     Controller.stop()
 
     assert np.isfinite( np.mean(pressures) )

@@ -73,7 +73,7 @@ class ControlModuleBase:
         self._RINGBUFFER_SIZE                    = prefs.get_pref('CONTROLLER_RINGBUFFER_SIZE')     # Maximum number of breath cycles kept in memory
         self._save_logs                          = save_logs   # Keep logs in a file
         self._FLUSH_EVERY                        = flush_every
-
+        self._maxdt                              = CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4 #Maximum allowed time between updates before reset is triggered
         #########################  Control management  #########################
 
         # This is what the machine has controll over:
@@ -91,7 +91,6 @@ class ControlModuleBase:
 
         # Derived internal control variables - fully defined by numbers above
         self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
-
         self.__SET_E_PHASE        = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PEEP         = self.__SET_E_PHASE - self.__SET_PEEP_TIME
 
@@ -916,7 +915,7 @@ class ControlModuleDevice(ControlModuleBase):
                 now = time.time()
                 dt = now - self._last_update                            # Time sincle last cycle of main-loop
 
-                if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
+                if dt > self._maxdt:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
                     self.logger.warning("MainLoop: Update too long: " + str(dt))
                     print("Restarted cycle.")
                     self._control_reset()

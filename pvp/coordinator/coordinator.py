@@ -48,9 +48,6 @@ class CoordinatorBase:
     def get_breath_detection(self) -> bool:  # pragma: no cover
         pass
 
-    def get_target_waveform(self):           # pragma: no cover
-        pass
-
     def start(self):                         # pragma: no cover
         pass
 
@@ -97,9 +94,6 @@ class CoordinatorLocal(CoordinatorBase):
 
     def get_breath_detection(self) -> bool:
         return self.control_module.get_breath_detection()
-
-    def get_target_waveform(self):
-        return self.control_module.get_target_waveform()
 
     def start(self):
         """
@@ -158,10 +152,6 @@ class CoordinatorRemote(CoordinatorBase):
 
     def get_breath_detection(self) -> bool:
         return pickle.loads(self.rpc_client.get_breath_detection().data)
-
-    def get_target_waveform(self):
-        pickled_res = self.rpc_client.get_target_waveform().data
-        return pickle.loads(pickled_res)
 
     def start(self):
         """

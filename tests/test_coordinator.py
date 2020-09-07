@@ -159,6 +159,10 @@ def test_local_sensors():
     #while not coordinator.is_running():
     #    pass
 
+    alarms = coordinator.get_alarms()
+    coordinator.set_breath_detection(True)
+    assert coordinator.get_breath_detection()
+
     sensor_values = coordinator.get_sensors()
     assert isinstance(sensor_values, SensorValues)
 
@@ -169,6 +173,9 @@ def test_local_sensors():
     for k, v in values_dict.items():
         assert isinstance(k, ValueName) or (k in sensor_values.additional_values)
         assert isinstance(v, int) or isinstance(v, float) or v is None
+
+    assert coordinator.is_running()
+    coordinator.stop()
 
 @pytest.mark.timeout(10)
 def test_remote_sensors():

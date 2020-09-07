@@ -8,7 +8,7 @@ prefs.init()
 
 from pvp.common import values
 from pvp.common.message import ControlSetting
-from pvp.alarm import Alarm, AlarmType
+from pvp.alarm import Alarm, AlarmType, AlarmSeverity
 from pvp.common.values import ValueName
 from pvp.controller.control_module import get_control_module
 
@@ -291,8 +291,24 @@ def test_nan_HAL():
     assert np.isnan(Controller._DATA_PEEP_TIME)
     assert np.isnan(Controller._DATA_I_PHASE)
 
+    # While we're at it: make sure all alarms are returned correctly
+    Controller.HAPA = Alarm(AlarmType.HIGH_PRESSURE, AlarmSeverity.HIGH, time.time(), value=100)
+    Controller.TECHA = [Alarm( AlarmType.SENSORS_STUCK, AlarmSeverity.TECHNICAL, )]
+    assert len(Controller.get_alarms()) == 2
+    time.sleep(0.1)
 
-# # test breath detection
+    Controller.HAPA = None
+    Controller.TECHA = [Alarm( AlarmType.SENSORS_STUCK, AlarmSeverity.TECHNICAL, )]
+    assert len(Controller.get_alarms()) == 1
+    a = Controller.get_alarms()[0][0]
+    assert(a.alarm_type == AlarmType.SENSORS_STUCK)
+    time.sleep(0.1)
+
+    Controller.HAPA = Alarm(AlarmType.HIGH_PRESSURE, AlarmSeverity.HIGH, time.time(), value=100)
+    Controller.TECHA = []
+    assert len(Controller.get_alarms()) == 1
+    a = Controller.get_alarms()[0]
+    assert(a.alarm_type == AlarmType.HIGH_PRESSURE)
 
 ######################################################################
 #########################   TEST 4  ##################################

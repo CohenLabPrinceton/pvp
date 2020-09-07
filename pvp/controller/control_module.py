@@ -175,7 +175,7 @@ class ControlModuleBase:
         if self._save_logs:
             try:
                 self.dl = DataLogger()
-            except OSError as e:
+            except OSError as e:  # pragma: no cover
                 # raised if not enough space
                 self.logger.exception(f'couldnt start data logger, not saving logs. Got exception\n    {e}')
                 self._save_logs = False

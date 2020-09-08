@@ -26,8 +26,9 @@ def test_control_storage(control_setting_name):
     dl.log2mat()
     dl.log2csv()
     filepath = dl.file
+    dl.load_file()
 
-    # Load stuff
+    # Load stuff with a second instance of DataLogger
     dl2 = DataLogger()  
     tt = dl2.load_file(filepath)
     dl2.log2mat(filepath)
@@ -35,7 +36,6 @@ def test_control_storage(control_setting_name):
 
     dl2.log2csv('ladida') # Should not crash
     dl2.log2mat('ladida') # Should not crash
-
 
     st = tt['control_data']['name'][0]
     assert str(control_setting.name) == st.decode('utf-8') 

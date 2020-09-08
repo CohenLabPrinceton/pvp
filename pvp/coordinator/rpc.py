@@ -43,9 +43,6 @@ def get_breath_detection():
     res = remote_controller.get_breath_detection()
     return pickle.dumps(res)
 
-def get_target_waveform():
-    res = remote_controller.get_target_waveform()
-    return pickle.dumps(res)
 
 
 def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port):
@@ -59,11 +56,8 @@ def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port)
     remote_controller = control_module.get_control_module(sim_mode)
     server = SimpleXMLRPCServer((addr, port), allow_none=True, logRequests=False)
     server.register_function(get_sensors, "get_sensors")
-    # server.register_function(get_active_alarms, "get_active_alarms")
-    # server.register_function(get_logged_alarms, "get_logged_alarms")
     server.register_function(set_control, "set_control")
     server.register_function(get_control, "get_control")
-    server.register_function(get_target_waveform, "get_target_waveform")
     server.register_function(remote_controller.start, "start")
     server.register_function(remote_controller.is_running, "is_running")
     server.register_function(remote_controller.stop, "stop")

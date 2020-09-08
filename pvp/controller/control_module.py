@@ -99,10 +99,9 @@ class ControlModuleBase:
         # Alarm management; controller can only react to High airway pressure alarm, and report Hardware problems
         self.HAPA = None
         self.hapa_crossing_time = None # time that the pressure first crosses the threshold
-        self.TECHA = [] # type: typing.List[Alarm]
+        self.TECHA = [] # A List as there can be multiplee technical alerts at the same time
         self.limit_hapa = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0][1].limit # TODO: Jonny write method to get limits from alarm manager
         self.cough_duration = prefs.get_pref('COUGH_DURATION') # type: typing.Union[float, int]
-        #self.breath_pressure_drop = 4 #prefs.get_pref('XXXXX')   #pressure drop below peep that is detected as an attempt to breath.
         self.breath_pressure_drop = prefs.get_pref('BREATH_PRESSURE_DROP') # type: typing.Union[float, int]
         self.breath_detection = prefs.get_pref('BREATH_DETECTION') # type: bool
 
@@ -165,8 +164,6 @@ class ControlModuleBase:
         self._lock = threading.Lock()
         self._initialize_set_to_COPY()
 
-        # self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
-        # self.__thread.start()
         self.__thread = None
 
         ############################# Logging ################################
@@ -274,14 +271,9 @@ class ControlModuleBase:
                     self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > mean_pressure], 80 )
                     self._DATA_PIP  = np.percentile(pressure[ pressure > mean_pressure], 95 )             #PIP is defined as the maximum, here 95% to account for outliers
                 
-                #self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
-                self._DATA_PIP_TIME = self.__comptest(phase, pressure > self._DATA_PIP_PLATEAU*0.9, 'first')
-
-                #self._DATA_PEEP_TIME = phase[np.min(np.where(pressure < self._DATA_PEEP))]
-                self._DATA_PEEP_TIME = self.__comptest(phase,pressure < self._DATA_PEEP, 'first')
-
-                # self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
-                self._DATA_I_PHASE = self.__comptest(phase, pressure > self._DATA_PIP_PLATEAU*0.9, 'last')
+                self._DATA_PIP_TIME  = self.__comptest(phase, pressure > self._DATA_PIP_PLATEAU*0.9, 'first')
+                self._DATA_PEEP_TIME = self.__comptest(phase, pressure < self._DATA_PEEP, 'first')
+                self._DATA_I_PHASE   = self.__comptest(phase, pressure > self._DATA_PIP_PLATEAU*0.9, 'last')
             else:
                 self._DATA_PEEP = np.nan
                 self._DATA_PIP_PLATEAU  = np.nan
@@ -511,7 +503,6 @@ class ControlModuleBase:
         """
         # for now, assume UI will send updates, we init from the default value
         # jonny will implement means of getting limits from alarm manager
-        #limit_hapa =
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.
         limit_max_pressure = 100        # TODO: If pressure above that, hardware cannot be correct. Should find central storge site for hardware limits
         limit_max_stuck_sensor = 0.2    # TODO: 200 ms, jonny, wherever you want this number to live
@@ -922,7 +913,7 @@ class ControlModuleDevice(ControlModuleBase):
                     dt = self._LOOP_UPDATE_TIME
 
                 self._get_HAL()                                          # Update pressure and flow measurement
-                self._PID_update(dt = dt)                            # With that, calculate controls
+                self._PID_update(dt = dt)                                # With that, calculate controls
                 valve_open_in  = self._get_control_signal_in()           #    -> Inspiratory side: get control signal for PropValve
                 valve_open_out = self._get_control_signal_out()          #    -> Expiratory side: get control signal for Solenoid
                 self._set_HAL(valve_open_in, valve_open_out)             # And set values.
@@ -1148,12 +1139,6 @@ class ControlModuleSimulator(ControlModuleBase):
                 dt = self.simulator_dt
             else:
                 dt = now - self._last_update                            # Time sincle last cycle of main-loop
-                # if dt > 0.2:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
-                #     self.logger.warning("MainLoop: Update too long: " + str(dt))
-                #     print("Restarted cycle.")
-                #     self._control_reset()
-                #     self.Balloon._reset()
-                #     dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
             self._DATA_PRESSURE_LIST.append(self.Balloon.get_pressure()) # Get a pressure measurement from balloon and tell controller

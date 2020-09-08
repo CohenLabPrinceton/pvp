@@ -33,6 +33,10 @@ def test_control_storage(control_setting_name):
     dl2.log2mat(filepath)
     dl2.log2csv(filepath)
 
+    dl2.log2csv('ladida') # Should not crash
+    dl2.log2mat('ladida') # Should not crash
+
+
     st = tt['control_data']['name'][0]
     assert str(control_setting.name) == st.decode('utf-8') 
     assert control_setting.value     == tt['control_data']['value'][0]
@@ -152,4 +156,18 @@ def test_checks():
 
     # Check file sizes 
     dl.check_files()
+    assert dl._data_save_allowed
+
+    dl._MAX_FILE_DRIVE = -1         # Produce
+    dl.check_files()
+    assert not dl._data_save_allowed
+
+    dl._MAX_NUMBER_FILES = -1 
+    dl.check_files()
+    assert not dl._data_save_allowed
+
+    file = dl.file
+    assert type(dl.load_file(file)) is dict
+
+    dl._open_logfile()  # Should be closed, so reopen
 

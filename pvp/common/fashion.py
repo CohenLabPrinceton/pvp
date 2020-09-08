@@ -9,37 +9,37 @@ import functools
 MAX_STACK_DEPTH = 20
 
 
-def locked(func):
-    """
-    Wrapper to use as decorator, handle lock logic for a
-    @property
+# def locked(func):
+#     """
+#     Wrapper to use as decorator, handle lock logic for a
+#     @property
 
-    Arguments:
-        func (callable): function to wrap
-    """
+#     Arguments:
+#         func (callable): function to wrap
+#     """
 
-    # define a function to return that wraps the inner
-    # function around some standardized error handling
-    # logic
+#     # define a function to return that wraps the inner
+#     # function around some standardized error handling
+#     # logic
 
-    # use .wraps to preserve inner method identity
-    @functools.wraps(func)
-    def lock_wrapper(self, *args, **kwargs):
-        ret = None
+#     # use .wraps to preserve inner method identity
+#     @functools.wraps(func)
+#     def lock_wrapper(self, *args, **kwargs):
+#         ret = None
 
-        try:
-            self.lock.acquire()
-            ret = func(self, *args, **kwargs)
-        except Exception as e:
-            init_logger(__name__).exception(
-                traceback.TracebackException.from_exception(e, limit=MAX_STACK_DEPTH)
-            )
-        finally:
-            self.lock.release()
+#         try:
+#             self.lock.acquire()
+#             ret = func(self, *args, **kwargs)
+#         except Exception as e:
+#             init_logger(__name__).exception(
+#                 traceback.TracebackException.from_exception(e, limit=MAX_STACK_DEPTH)
+#             )
+#         finally:
+#             self.lock.release()
 
-        return ret
+#         return ret
 
-    return lock_wrapper
+#     return lock_wrapper
 
 
 def pigpio_command(func):

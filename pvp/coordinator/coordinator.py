@@ -30,37 +30,34 @@ class CoordinatorBase:
     #     return last_message_timestamp
 
 
-    def get_sensors(self) -> SensorValues:
+    def get_sensors(self) -> SensorValues:                                  # pragma: no cover
         pass
 
-    def get_alarms(self) -> typing.Union[None, typing.Tuple[Alarm]]:
+    def get_alarms(self) -> typing.Union[None, typing.Tuple[Alarm]]:        # pragma: no cover
         pass
 
-    def set_control(self, control_setting: ControlSetting):
+    def set_control(self, control_setting: ControlSetting):                 # pragma: no cover
         pass
 
-    def get_control(self, control_setting_name: ValueName) -> ControlSetting:
+    def get_control(self, control_setting_name: ValueName) -> ControlSetting:  # pragma: no cover
         pass
 
-    def set_breath_detection(self, breath_detection: bool):
+    def set_breath_detection(self, breath_detection: bool):                 # pragma: no cover
         pass
 
-    def get_breath_detection(self) -> bool:
+    def get_breath_detection(self) -> bool:  # pragma: no cover
         pass
 
-    def get_target_waveform(self):
+    def start(self):                         # pragma: no cover
         pass
 
-    def start(self):
+    def is_running(self) -> bool:            # pragma: no cover
         pass
 
-    def is_running(self) -> bool:
+    def kill(self):                          # pragma: no cover
         pass
 
-    def kill(self):
-        pass
-
-    def stop(self):
+    def stop(self):                          # pragma: no cover
         pass
 
 class CoordinatorLocal(CoordinatorBase):
@@ -98,9 +95,6 @@ class CoordinatorLocal(CoordinatorBase):
     def get_breath_detection(self) -> bool:
         return self.control_module.get_breath_detection()
 
-    def get_target_waveform(self):
-        return self.control_module.get_target_waveform()
-
     def start(self):
         """
         Start the coordinator.
@@ -121,7 +115,7 @@ class CoordinatorLocal(CoordinatorBase):
         """
         self.control_module.stop()
 
-    def kill(self):
+    def kill(self): # pragma: no cover
         # dont need to do anything since should just go away on its own
         pass
 
@@ -158,10 +152,6 @@ class CoordinatorRemote(CoordinatorBase):
 
     def get_breath_detection(self) -> bool:
         return pickle.loads(self.rpc_client.get_breath_detection().data)
-
-    def get_target_waveform(self):
-        pickled_res = self.rpc_client.get_target_waveform().data
-        return pickle.loads(pickled_res)
 
     def start(self):
         """

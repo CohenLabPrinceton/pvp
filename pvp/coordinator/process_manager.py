@@ -51,7 +51,7 @@ class ProcessManager:
         self.try_stop_process()
         self.start_process()
 
-    def heartbeat(self, timestamp):
+    def heartbeat(self, timestamp):         # pragma: no cover
         # TODO: if no heartbeat in maxInterval restart
         pass
 

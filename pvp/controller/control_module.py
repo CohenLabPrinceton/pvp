@@ -8,6 +8,7 @@ from collections import deque
 import pdb
 from itertools import count
 import signal
+import pytest
 
 import pvp.io as io
 
@@ -45,7 +46,6 @@ class ControlModuleBase:
         - `start()`:                           Starts the main-loop of the controller
         - `stop()`:                            Stops the main-loop of the controller
         - `set_control()`:                     Set the control
-        - `interrupt()`:                       Interrupt the controller, and re-spawns the thread. Used to restart a stuck controller
         - `is_running()`:                      Returns a bool whether the main-thread is running
         - `get_heartbeat()`:                   Returns a heartbeat, more specifically, the continuously increasing iteration-number of the main control loop.
     """
@@ -73,7 +73,7 @@ class ControlModuleBase:
         self._RINGBUFFER_SIZE                    = prefs.get_pref('CONTROLLER_RINGBUFFER_SIZE')     # Maximum number of breath cycles kept in memory
         self._save_logs                          = save_logs   # Keep logs in a file
         self._FLUSH_EVERY                        = flush_every
-
+        self._maxdt                              = CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4 #Maximum allowed time between updates before reset is triggered
         #########################  Control management  #########################
 
         # This is what the machine has controll over:
@@ -90,13 +90,7 @@ class ControlModuleBase:
         self.__SET_I_PHASE   = CONTROL[ValueName.INSPIRATION_TIME_SEC].default    # Target duration of inspiratory phase
 
         # Derived internal control variables - fully defined by numbers above
-        try:
-            self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
-        except Exception as e:
-            # TODO: raise alert
-            self.logger.exception(f'Couldnt set cycle duration, setting to 20. __SET_BPM: {self.__SET_BPM}\nGot exception:\n    {e}')
-            self.__SET_CYCLE_DURATION = 20
-
+        self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
         self.__SET_E_PHASE        = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PEEP         = self.__SET_E_PHASE - self.__SET_PEEP_TIME
 
@@ -105,10 +99,9 @@ class ControlModuleBase:
         # Alarm management; controller can only react to High airway pressure alarm, and report Hardware problems
         self.HAPA = None
         self.hapa_crossing_time = None # time that the pressure first crosses the threshold
-        self.TECHA = [] # type: typing.List[Alarm]
+        self.TECHA = [] # A List as there can be multiplee technical alerts at the same time
         self.limit_hapa = ALARM_RULES[AlarmType.HIGH_PRESSURE].conditions[0][1].limit # TODO: Jonny write method to get limits from alarm manager
         self.cough_duration = prefs.get_pref('COUGH_DURATION') # type: typing.Union[float, int]
-        #self.breath_pressure_drop = 4 #prefs.get_pref('XXXXX')   #pressure drop below peep that is detected as an attempt to breath.
         self.breath_pressure_drop = prefs.get_pref('BREATH_PRESSURE_DROP') # type: typing.Union[float, int]
         self.breath_detection = prefs.get_pref('BREATH_DETECTION') # type: bool
 
@@ -171,8 +164,6 @@ class ControlModuleBase:
         self._lock = threading.Lock()
         self._initialize_set_to_COPY()
 
-        # self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
-        # self.__thread.start()
         self.__thread = None
 
         ############################# Logging ################################
@@ -181,7 +172,7 @@ class ControlModuleBase:
         if self._save_logs:
             try:
                 self.dl = DataLogger()
-            except OSError as e:
+            except OSError as e:  # pragma: no cover
                 # raised if not enough space
                 self.logger.exception(f'couldnt start data logger, not saving logs. Got exception\n    {e}')
                 self._save_logs = False
@@ -210,11 +201,9 @@ class ControlModuleBase:
             self.COPY_SET_BPM       = self.__SET_BPM
             self.COPY_SET_I_PHASE   = self.__SET_I_PHASE
 
-    def _sensor_to_COPY(self):
+    def _sensor_to_COPY(self):        # pragma: no cover
         # These variables have to come from the hardware
-        self._lock.acquire()
         # Make sure you have acquire and release!
-        self._lock.release()
         pass
 
     def _controls_from_COPY(self):
@@ -228,15 +217,32 @@ class ControlModuleBase:
             self.__SET_BPM       = self.COPY_SET_BPM
             self.__SET_I_PHASE   = self.COPY_SET_I_PHASE
 
-        #Update derived values
-        try:
-            self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
-            #TODO: raise alert
-        except:
-            self.__SET_CYCLE_DURATION = 20
+            if self.__SET_BPM > 0:
+                self.__SET_CYCLE_DURATION = 60 / self.__SET_BPM
 
         self.__SET_E_PHASE = self.__SET_CYCLE_DURATION - self.__SET_I_PHASE
         self.__SET_T_PEEP = self.__SET_E_PHASE - self.__SET_PEEP_TIME
+
+    def __comptest(self, phase, ls, selector):
+        """Helper function to identify the index the first occurence of a number in `list` exceeding `threshold`, and returns phase[idx]
+
+        Args:
+            phase (array): a list of numbers
+            list (array): array of bools with same length as phase
+            selector (string): 'first' or 'last' whichever is wanted
+
+        Returns:
+            float: phase[idx] where `idx` is first, or last point where numbers in list exceed threshold
+        """
+        if np.sum(ls)>0: 
+            if selector == 'first':
+                value_at_point = phase[np.min(np.where(ls))]               # Make sure there is at least one occurance
+            elif selector == 'last':
+                value_at_point = phase[np.max(np.where(ls))]
+        else:
+            value_at_point = 0
+
+        return value_at_point
 
     def __analyze_last_waveform(self):
         """
@@ -256,12 +262,18 @@ class ControlModuleBase:
             # 20/80 percentile of pressure values below/above mean
             # Assumption: waveform is mostly between both plateaus
             if np.isfinite(mean_pressure):
-                self._DATA_PEEP = np.percentile(pressure[ pressure < mean_pressure], 20 )
-                self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > mean_pressure], 80 )
-                self._DATA_PIP  = np.percentile(pressure[ pressure > mean_pressure], 95 )             #PIP is defined as the maximum, here 95% to account for outliers
-                self._DATA_PIP_TIME = phase[np.min(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
-                self._DATA_PEEP_TIME = phase[np.min(np.where(pressure < self._DATA_PEEP))]
-                self._DATA_I_PHASE = phase[np.max(np.where(pressure > self._DATA_PIP_PLATEAU*0.9))]
+                if np.sum(pressure > mean_pressure) == 0:
+                    self._DATA_PEEP = 0
+                    self._DATA_PIP_PLATEAU = 0
+                    self._DATA_PIP = 0
+                else:
+                    self._DATA_PEEP = np.percentile(pressure[ pressure < mean_pressure], 20 )
+                    self._DATA_PIP_PLATEAU  = np.percentile(pressure[ pressure > mean_pressure], 80 )
+                    self._DATA_PIP  = np.percentile(pressure[ pressure > mean_pressure], 95 )             #PIP is defined as the maximum, here 95% to account for outliers
+                
+                self._DATA_PIP_TIME  = self.__comptest(phase, pressure > self._DATA_PIP_PLATEAU*0.9, 'first')
+                self._DATA_PEEP_TIME = self.__comptest(phase, pressure < self._DATA_PEEP, 'first')
+                self._DATA_I_PHASE   = self.__comptest(phase, pressure > self._DATA_PIP_PLATEAU*0.9, 'last')
             else:
                 self._DATA_PEEP = np.nan
                 self._DATA_PIP_PLATEAU  = np.nan
@@ -271,11 +283,9 @@ class ControlModuleBase:
                 self._DATA_I_PHASE = np.nan
 
             # and measure the breaths per minute
-            try:
+            self._DATA_BPM = np.nan
+            if phase[-1] > 0:
                 self._DATA_BPM = 60. / phase[-1]  # 60 sec divided by the duration of last waveform, exception if this was 0.
-            except:
-                self.logger.warning(f'Couldnt calculate BPM, phase was {phase[-1]}. setting as nan')
-                self._DATA_BPM = np.nan
 
             if self._save_logs:
                 #And the control value instance
@@ -493,7 +503,6 @@ class ControlModuleBase:
         """
         # for now, assume UI will send updates, we init from the default value
         # jonny will implement means of getting limits from alarm manager
-        #limit_hapa =
         limit_max_flows = 10            # If flows above that, hardware cannot be correct.
         limit_max_pressure = 100        # TODO: If pressure above that, hardware cannot be correct. Should find central storge site for hardware limits
         limit_max_stuck_sensor = 0.2    # TODO: 200 ms, jonny, wherever you want this number to live
@@ -506,8 +515,6 @@ class ControlModuleBase:
 
             # check if time elapsed is greater than cough duration.
             if time.time() - self.hapa_crossing_time > self.cough_duration:       # 100 ms active to avoid being triggered by coughs
-                self.__SET_PIP = 30                 # Default: PIP to 30
-                self.COPY_SET_PIP = 30
                 if self.__control_signal_in != 0 and self.__control_signal_out != 1:
                     self.__control_signal_out = 1
                     self.__control_signal_in  = 0
@@ -550,6 +557,7 @@ class ControlModuleBase:
                         AlarmType.SENSORS_STUCK,
                         AlarmSeverity.TECHNICAL,
                     ))
+                    self.logger.warning(f'Inputs do not change; raised alarm.')
         else:
             self.TECHA = [a for a in self.TECHA if a.alarm_type != AlarmType.SENSORS_STUCK]
             self.sensor_stuck_since = None                           # If ok, reset sensor_stuck
@@ -564,10 +572,11 @@ class ControlModuleBase:
                     AlarmType.BAD_SENSOR_READINGS,
                     AlarmSeverity.TECHNICAL,
                 ))
+            self.logger.warning(f'Implausible values; raised alarm.')
 
         #### Third: Make sure that updates are coming in in a regular basis
         #
-        last_contact = self._time_last_contact - time.time()
+        last_contact = np.abs(self._time_last_contact - time.time())
         if last_contact > self._critical_time:
             if not any([a.alarm_type == AlarmType.MISSED_HEARTBEAT for a in self.TECHA]):
                 self.TECHA.append(Alarm(
@@ -623,8 +632,8 @@ class ControlModuleBase:
         self._DATA_PRESSURE = np.median(self._DATA_PRESSURE_LIST)    # Catch some of the noise, if any.
 
         if cycle_phase < self.__SET_I_PHASE:
-            self.__KP = 2*(self.__SET_PIP_GAIN-0.95)
-            self.__KI = 2.0
+            self.__KP = 2.0*(self.__SET_PIP_GAIN-1)
+            self.__KI = 2
             self.__KD = 0
 
             self.__get_PID_error(yis = self._DATA_PRESSURE, ytarget = self.__SET_PIP, dt = dt, RC = 0.3)
@@ -710,7 +719,7 @@ class ControlModuleBase:
         self._time_last_contact = time.time()
         return archive
 
-    def _start_mainloop(self):
+    def _start_mainloop(self):        # pragma: no cover
         """
         Prototype method to start main PID loop. Will depend on simulation or device, specified below.
         """
@@ -740,33 +749,6 @@ class ControlModuleBase:
 
         if self._save_logs:               # If we kept records, flush the data
             self.dl.close_logfile()
-
-    def interrupt(self):
-        """
-        If the controller seems stuck, this generates a new thread, and starts the main loop.
-        No parameters have changed.
-        """
-        # try to clear existing threading event first to kill thread.
-        self._running.clear()
-        # try releasing existing lock first in case it was stuck
-        self._lock.release()
-
-        # make new threading objects
-        self._running = threading.Event()           # New thread
-        self._running.clear()
-        self._lock = threading.Lock()
-        self._running.set()
-
-        if self.__thread.is_alive():
-            self.logger.exception('tried to kill thread and failed')
-            return
-
-        self.__thread = threading.Thread(target=self._start_mainloop, daemon=True)
-        try:
-            self.__thread.start()
-        except:
-            pass
-            #TODO RAISE ALERT FOR UI
 
     def is_running(self):
         """
@@ -804,7 +786,23 @@ class ControlModuleDevice(ControlModuleBase):
             config_file (str, optional): Path to device config file, e.g. 'pvp/io/config/dinky-devices.ini'. Defaults to None.
         """
         ControlModuleBase.__init__(self, save_logs, flush_every)
-        self.HAL = io.Hal(config_file)
+
+        # Handler for HAL timeout handler for the timeout
+        def handler(signum, frame):
+            print("TIMEOUT - HAL not initialized")
+            self.logger.warning("TIMEOUT - HAL not initialized. Using MockHAL")
+            with pytest.raises( Exception ):
+                raise Exception("HAL timeout")
+
+        signal.signal(signal.SIGALRM, handler)
+        signal.alarm(5)
+
+        try:
+            self.HAL = io.Hal(config_file)
+        except Exception: 
+            self.HAL = HALMock() 
+            #TODO: Raise technical alert
+
         self._sensor_to_COPY()
 
         # Current settings of the valves to avoid unneccesary hardware queries
@@ -891,7 +889,6 @@ class ControlModuleDevice(ControlModuleBase):
         This returns valves back to normal setting (in: closed, out: open)
         """
         self.logger.info('Valves to stand-by.')
-        print("Valve settings back to stand-by.")
         self._set_HAL(valve_open_in = 0, valve_open_out = 1)  # Defined state to make sure that it does not pop up.
 
     def _start_mainloop(self):
@@ -909,14 +906,14 @@ class ControlModuleDevice(ControlModuleBase):
                 now = time.time()
                 dt = now - self._last_update                            # Time sincle last cycle of main-loop
 
-                if dt > CONTROL[ValueName.BREATHS_PER_MINUTE].default / 4:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
+                if dt > self._maxdt:                                                      # TODO: RAISE HARDWARE ALARM, no update should be so long
                     self.logger.warning("MainLoop: Update too long: " + str(dt))
                     print("Restarted cycle.")
                     self._control_reset()
                     dt = self._LOOP_UPDATE_TIME
 
                 self._get_HAL()                                          # Update pressure and flow measurement
-                self._PID_update(dt = dt)                            # With that, calculate controls
+                self._PID_update(dt = dt)                                # With that, calculate controls
                 valve_open_in  = self._get_control_signal_in()           #    -> Inspiratory side: get control signal for PropValve
                 valve_open_out = self._get_control_signal_out()          #    -> Expiratory side: get control signal for Solenoid
                 self._set_HAL(valve_open_in, valve_open_out)             # And set values.
@@ -930,7 +927,8 @@ class ControlModuleDevice(ControlModuleBase):
                 else:
                     update_copies -= 1
 
-                time.sleep(self._LOOP_UPDATE_TIME)
+                if self._LOOP_UPDATE_TIME > 0:
+                    time.sleep(self._LOOP_UPDATE_TIME)
 
         # # get final values on stop
         finally:
@@ -938,6 +936,17 @@ class ControlModuleDevice(ControlModuleBase):
             self._sensor_to_COPY()  # Copy sensor values to COPY
             self.set_valves_standby()
 
+class HALMock():
+    """
+    A HAL mock class to fall back to, if io.HAL times out. Unclear what the software is to do, if hardware is available...
+    Decision: Start up with a technical alert.
+    """
+    def __init__(self):
+        self.setpoint_in = 0
+        self.setpoint_ex = 0
+        self.pressure    = 0
+        self.oxygen      = 0
+        self.flow_ex     = 0
 
 class Balloon_Simulator:
     """
@@ -972,9 +981,6 @@ class Balloon_Simulator:
     def get_pressure(self):
         return self.current_pressure
 
-    def get_volume(self):
-        return self.current_volume
-
     def set_flow_in(self, Qin, dt):
         self.set_Qin = Qin
 
@@ -988,7 +994,7 @@ class Balloon_Simulator:
         Qout_clip = np.min([Qout, 2])                    # Flows have to be positive, and reasonable. Nothing here is faster that 2 l/s
         Qout_clip = np.max([Qout_clip, 0])
         difference_pressure = self.current_pressure - 0  # Convention: outside is "0"
-        conductance = 0.05*Qout_clip                     # This should be in the range of ~1 liter/s for typical max pressure differences
+        conductance = 0.01*Qout_clip                     # This should be in the range of ~1 liter/s for typical max pressure differences
         if self.current_pressure > self.peep_valve:      # Action of the PEEP valve
             self.Qout = difference_pressure * conductance    # Target for flow out
         else:
@@ -1011,7 +1017,6 @@ class Balloon_Simulator:
             self.fio2 = self.OUupdate(self.fio2, dt=dt, mu=60, sigma=5, tau=1)
         else:
             self._reset()
-            print(self.current_pressure)
 
 
     def OUupdate(self, variable, dt, mu, sigma, tau):
@@ -1052,11 +1057,12 @@ class ControlModuleSimulator(ControlModuleBase):
     Controlling Simulation.
     """
     # Implement ControlModuleBase functions
-    def __init__(self, simulator_dt = None, peep_valve_setting = 5):
+    def __init__(self, save_logs: bool = False, simulator_dt = None, peep_valve_setting = 5):
         """
         Initializes the ControlModuleBase with the simple simulation (for testing/dev).
 
         Args:
+            save_logs (bool, optional): should logs be saved? (Useful for testing)
             simulator_dt (float, optional): timestep between updates. Defaults to None.
             peep_valve_setting (int, optional): Simulates action of a PEEP valve. Pressure cannot fall below. Defaults to 5.
         """
@@ -1133,12 +1139,6 @@ class ControlModuleSimulator(ControlModuleBase):
                 dt = self.simulator_dt
             else:
                 dt = now - self._last_update                            # Time sincle last cycle of main-loop
-                if dt > 0.2:                                            # TODO: RAISE HARDWARE ALARM, no update should take longer than 0.5 sec
-                    self.logger.warning("MainLoop: Update too long: " + str(dt))
-                    print("Restarted cycle.")
-                    self._control_reset()
-                    self.Balloon._reset()
-                    dt = self._LOOP_UPDATE_TIME
 
             self.Balloon.update(dt = dt)                            # Update the state of the balloon simulation
             self._DATA_PRESSURE_LIST.append(self.Balloon.get_pressure()) # Get a pressure measurement from balloon and tell controller
@@ -1155,6 +1155,8 @@ class ControlModuleSimulator(ControlModuleBase):
             self.Balloon.set_flow_out(Qout, dt = dt)
 
             self._DATA_Qout = self.Balloon.Qout                     # Tell controller the expiratory flow rate, _DATA_Qout
+            self.COPY_DATA_OXYGEN = self.Balloon.fio2               # And for logging the simulatede O2 concentration
+
             self._last_update = now
 
             if update_copies == 0:
@@ -1163,8 +1165,8 @@ class ControlModuleSimulator(ControlModuleBase):
                 update_copies = self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
             else:
                 update_copies -= 1
-
-            time.sleep(self._LOOP_UPDATE_TIME)
+            if self._LOOP_UPDATE_TIME > 0:
+                time.sleep(self._LOOP_UPDATE_TIME)
 
         # get final values on stop
         self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
@@ -1185,6 +1187,6 @@ def get_control_module(sim_mode=False, simulator_dt = None):
         ControlModule-Object: Either configured for simulation, or physical device.
     """
     if sim_mode == True:
-        return ControlModuleSimulator(simulator_dt = simulator_dt)
+        return ControlModuleSimulator(save_logs = True, simulator_dt = simulator_dt)
     else:
         return ControlModuleDevice(save_logs = True, flush_every = 1, config_file = 'pvp/io/config/devices.ini')

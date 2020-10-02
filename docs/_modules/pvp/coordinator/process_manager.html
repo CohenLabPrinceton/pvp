@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.coordinator.process_manager &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.coordinator.process_manager &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -180,12 +193,12 @@
 <span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">pvp.coordinator</span> <span class="kn">import</span> <span class="n">rpc</span>
+<span class="kn">from</span> <span class="nn">pvp.coordinator</span> <span class="k">import</span> <span class="n">rpc</span>
 
 
-<div class="viewcode-block" id="ProcessManager"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.process_manager.ProcessManager">[docs]</a><span class="k">class</span> <span class="nc">ProcessManager</span><span class="p">:</span>
+<div class="viewcode-block" id="ProcessManager"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.process_manager.ProcessManager">[docs]</a><span class="k">class</span> <span class="nc">ProcessManager</span><span class="p">:</span>
     <span class="c1"># Functions:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_mode</span><span class="p">,</span> <span class="n">startCommandLine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxHeartbeatInterval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_mode</span><span class="p">,</span> <span class="n">startCommandLine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxHeartbeatInterval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode</span> <span class="o">=</span> <span class="n">sim_mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">command_line</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># TODO: what is this?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_heartbeat_interval</span> <span class="o">=</span> <span class="kc">None</span>
@@ -198,10 +211,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_process</span><span class="p">()</span>
         <span class="c1">#time.sleep(1)</span>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">try_stop_process</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ProcessManager.start_process"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.process_manager.ProcessManager.start_process">[docs]</a>    <span class="k">def</span> <span class="nf">start_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessManager.start_process"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.process_manager.ProcessManager.start_process">[docs]</a>    <span class="k">def</span> <span class="nf">start_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">child_process</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Child process already started</span>
             <span class="k">return</span>
@@ -217,7 +230,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">child_pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">child_process</span><span class="o">.</span><span class="n">pid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">serve_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProcessManager.try_stop_process"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.process_manager.ProcessManager.try_stop_process">[docs]</a>    <span class="k">def</span> <span class="nf">try_stop_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessManager.try_stop_process"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.process_manager.ProcessManager.try_stop_process">[docs]</a>    <span class="k">def</span> <span class="nf">try_stop_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">child_process</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># print(f&#39;kill process {self.child_pid}&#39;)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">child_process</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
@@ -226,15 +239,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">child_process</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">child_pid</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="ProcessManager.restart_process"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.process_manager.ProcessManager.restart_process">[docs]</a>    <span class="k">def</span> <span class="nf">restart_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessManager.restart_process"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.process_manager.ProcessManager.restart_process">[docs]</a>    <span class="k">def</span> <span class="nf">restart_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">try_stop_process</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_process</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ProcessManager.heartbeat"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.process_manager.ProcessManager.heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessManager.heartbeat"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.process_manager.ProcessManager.heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">):</span>
         <span class="c1"># TODO: if no heartbeat in maxInterval restart</span>
         <span class="k">pass</span></div>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_process</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>

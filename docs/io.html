@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.io package &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.io package &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="_static/pvp_logo_favicon.png"/>
   
   
   
@@ -37,8 +40,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="pvp.io.devices package" href="pvp.io.devices.html" />
-    <link rel="prev" title="gui" href="gui.html" /> 
+    <link rel="next" title="Alarm" href="alarm.html" />
+    <link rel="prev" title="fashion" href="pvp.common.fashion.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -56,13 +59,16 @@
           
 
           
+            
+            <img src="_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -89,21 +95,24 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">io</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pvp.io.devices.html">pvp.io.devices package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Common</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">I/O</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
@@ -111,7 +120,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-pvp.io">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -122,8 +132,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meta_index.html">Index</a></li>
 </ul>
 
             
@@ -194,17 +206,6 @@
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="pvp.io.devices.html">pvp.io.devices package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pvp.io.devices.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.base">pvp.io.devices.base module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.pins">pvp.io.devices.pins module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.sensors">pvp.io.devices.sensors module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.valves">pvp.io.devices.valves module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices">Module contents</a></li>
-</ul>
-</li>
-</ul>
 </div>
 </div>
 <div class="section" id="submodules">
@@ -220,7 +221,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="pvp.io.html#pvp.io.hal.Hal" title="pvp.io.hal.Hal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hal</span></code></a>([config_file])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.io.hal.Hal" title="pvp.io.hal.Hal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hal</span></code></a>([config_file])</p></td>
 <td><p>Hardware Abstraction Layer for ventilator hardware.</p></td>
 </tr>
 </tbody>
@@ -283,7 +284,7 @@ correctly, nor does it know ‘adc’ -&gt; self._adc; therefore, these special 
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="pvp.io.html#pvp.io.hal.Hal.__init__" title="pvp.io.hal.Hal.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([config_file])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.io.hal.Hal.__init__" title="pvp.io.hal.Hal.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([config_file])</p></td>
 <td><p>Initializes HAL from config_file.</p></td>
 </tr>
 </tbody>
@@ -295,25 +296,25 @@ correctly, nor does it know ‘adc’ -&gt; self._adc; therefore, these special 
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="pvp.io.html#pvp.io.hal.Hal.aux_pressure" title="pvp.io.hal.Hal.aux_pressure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aux_pressure</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.io.hal.Hal.aux_pressure" title="pvp.io.hal.Hal.aux_pressure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aux_pressure</span></code></a></p></td>
 <td><p>Returns the pressure from the auxiliary pressure sensor, if so equipped.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pvp.io.html#pvp.io.hal.Hal.flow_ex" title="pvp.io.hal.Hal.flow_ex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flow_ex</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.io.hal.Hal.flow_ex" title="pvp.io.hal.Hal.flow_ex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flow_ex</span></code></a></p></td>
 <td><p>The measured flow rate expiratory side.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pvp.io.html#pvp.io.hal.Hal.flow_in" title="pvp.io.hal.Hal.flow_in"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flow_in</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.io.hal.Hal.flow_in" title="pvp.io.hal.Hal.flow_in"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flow_in</span></code></a></p></td>
 <td><p>The measured flow rate inspiratory side.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pvp.io.html#pvp.io.hal.Hal.oxygen" title="pvp.io.hal.Hal.oxygen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">oxygen</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.io.hal.Hal.oxygen" title="pvp.io.hal.Hal.oxygen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">oxygen</span></code></a></p></td>
 <td><p>Returns the oxygen concentration from the primary oxygen sensor.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pvp.io.html#pvp.io.hal.Hal.pressure" title="pvp.io.hal.Hal.pressure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pressure</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.io.hal.Hal.pressure" title="pvp.io.hal.Hal.pressure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pressure</span></code></a></p></td>
 <td><p>Returns the pressure from the primary pressure sensor.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="pvp.io.html#pvp.io.hal.Hal.setpoint_ex" title="pvp.io.hal.Hal.setpoint_ex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setpoint_ex</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.io.hal.Hal.setpoint_ex" title="pvp.io.hal.Hal.setpoint_ex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setpoint_ex</span></code></a></p></td>
 <td><p>The currently requested flow on the expiratory side as a proportion of the maximum.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="pvp.io.html#pvp.io.hal.Hal.setpoint_in" title="pvp.io.hal.Hal.setpoint_in"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setpoint_in</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.io.hal.Hal.setpoint_in" title="pvp.io.hal.Hal.setpoint_in"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setpoint_in</span></code></a></p></td>
 <td><p>The currently requested flow for the inspiratory proportional control valve as a proportion of maximum.</p></td>
 </tr>
 </tbody>
@@ -438,10 +439,10 @@ If a secondary pressure sensor is not defined, raises a RuntimeWarning.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pvp.io.devices.html" class="btn btn-neutral float-right" title="pvp.io.devices package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="alarm.html" class="btn btn-neutral float-right" title="Alarm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gui.html" class="btn btn-neutral float-left" title="gui" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pvp.common.fashion.html" class="btn btn-neutral float-left" title="fashion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.alarm.alarm_manager &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.alarm.alarm_manager &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -181,27 +194,42 @@
   <h1>Source code for pvp.alarm.alarm_manager</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pformat</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pformat</span>
 <span class="kn">import</span> <span class="nn">pdb</span>
 
-<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">AlarmType</span>
-<span class="kn">from</span> <span class="nn">pvp.alarm.condition</span> <span class="kn">import</span> <span class="n">Condition</span>
-<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="kn">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
-<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="kn">import</span> <span class="n">init_logger</span>
-<span class="kn">from</span> <span class="nn">pvp.alarm.alarm</span> <span class="kn">import</span> <span class="n">Alarm</span>
-<span class="kn">from</span> <span class="nn">pvp.alarm.rule</span> <span class="kn">import</span> <span class="n">Alarm_Rule</span>
-<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">condition</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="k">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">AlarmType</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm.condition</span> <span class="k">import</span> <span class="n">Condition</span>
+<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="k">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
+<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="k">import</span> <span class="n">init_logger</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm.alarm</span> <span class="k">import</span> <span class="n">Alarm</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm.rule</span> <span class="k">import</span> <span class="n">Alarm_Rule</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="k">import</span> <span class="n">condition</span>
 
 <span class="kn">import</span> <span class="nn">typing</span>
 
-<div class="viewcode-block" id="Alarm_Manager"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager">[docs]</a><span class="k">class</span> <span class="nc">Alarm_Manager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager">[docs]</a><span class="k">class</span> <span class="nc">Alarm_Manager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Alarm Manager</span>
+
+<span class="sd">    The alarm manager receives :class:`.SensorValues` from the GUI via :meth:`.Alarm_Manager.update` and emits</span>
+<span class="sd">    :class:`.Alarm` s to methods given by :meth:`.Alarm_Manager.add_callback` . When alarm limits are</span>
+<span class="sd">    updated (ie. the :class:`.Alarm_Rule` has :attr:`~.Alarm_Rule.depends` ), it emits them to methods registered</span>
+<span class="sd">    with :meth:`.Alarm_Manager.add_dependency_callback` .</span>
+
+<span class="sd">    On initialization, the alarm manager calls :meth:`.Alarm_Manager.load_rules` , which</span>
+<span class="sd">    loads all rules defined in :data:`.alarm.ALARM_RULES` .</span>
+
 <span class="sd">    Attributes:</span>
 <span class="sd">        active_alarms (dict): {:class:`.AlarmType`: :class:`.Alarm`}</span>
+<span class="sd">        logged_alarms (list): A list of deactivated alarms.</span>
+<span class="sd">        dependencies (dict): A dictionary mapping :class:`.ValueName` s to the alarm threshold dependencies they update</span>
 <span class="sd">        pending_clears (list): [:class:`.AlarmType`] list of alarms that have been requested to be cleared</span>
 <span class="sd">        callbacks (list): list of callables that accept `Alarm` s when they are raised/altered.</span>
 <span class="sd">        cleared_alarms (list): of :class:`.AlarmType` s, alarms that have been cleared but have not dropped back into the &#39;off&#39; range to enable re-raising</span>
 <span class="sd">        snoozed_alarms (dict): of :class:`.AlarmType` s : times, alarms that should not be raised because they have been silenced for a period of time</span>
+<span class="sd">        callbacks (list): list of callables to send :class:`.Alarm` objects to</span>
+<span class="sd">        depends_callbacks (list): When we :meth:`.update_dependencies`, we send back a :class:`.ControlSetting` with the new min/max</span>
+<span class="sd">        rules (dict): A dict mapping :class:`.AlarmType` to :class:`.Alarm_Rule` .</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -217,15 +245,12 @@
     <span class="n">snoozed_alarms</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">depends_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    When we :meth:`.update_dependencies`, we send back a :class:`.ControlSetting` with the new min/max</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rules</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If an Alarm_Manager already exists, when initing just return that one</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -236,13 +261,16 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_rules</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Alarm_Manager.load_rules"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.load_rules">[docs]</a>    <span class="k">def</span> <span class="nf">load_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">ALARM_RULES</span>
+<div class="viewcode-block" id="Alarm_Manager.load_rules"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.load_rules">[docs]</a>    <span class="k">def</span> <span class="nf">load_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy alarms from :data:`.alarm.ALARM_RULES` and call :meth:`.Alarm_Manager.load_rule` for each</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="k">import</span> <span class="n">ALARM_RULES</span>
         <span class="n">rules</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ALARM_RULES</span><span class="p">)</span>
 
         <span class="c1"># register dependencies</span>
@@ -250,7 +278,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">load_rule</span><span class="p">(</span><span class="n">alarm_rule</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Alarm_Manager.load_rule"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.load_rule">[docs]</a>    <span class="k">def</span> <span class="nf">load_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_rule</span><span class="p">:</span> <span class="n">Alarm_Rule</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.load_rule"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.load_rule">[docs]</a>    <span class="k">def</span> <span class="nf">load_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_rule</span><span class="p">:</span> <span class="n">Alarm_Rule</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add the Alarm Rule to :attr:`.Alarm_Manager.rules` and register any dependencies they have with :meth:`.Alarm_Manager.register_dependency`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            alarm_rule ( :class:`.Alarm_Rule` ): Alarm rule to be loaded</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">alarm_rule</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">alarm_rule</span>
 
         <span class="k">for</span> <span class="n">severity</span><span class="p">,</span> <span class="n">condition</span> <span class="ow">in</span> <span class="n">alarm_rule</span><span class="o">.</span><span class="n">conditions</span><span class="p">:</span>
@@ -261,17 +295,37 @@
                 <span class="k">for</span> <span class="n">depend</span> <span class="ow">in</span> <span class="n">condition</span><span class="o">.</span><span class="n">depends</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">register_dependency</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">depend</span><span class="p">,</span> <span class="n">severity</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Registered rule:</span><span class="se">\n</span><span class="si">{</span><span class="n">pformat</span><span class="p">(</span><span class="n">alarm_rule</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Registered rule:</span><span class="se">\n</span><span class="s1">{pformat(alarm_rule.__dict__)}&#39;</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="Alarm_Manager.update"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">:</span> <span class="n">SensorValues</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.update"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">:</span> <span class="n">SensorValues</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call :meth:`.Alarm_Manager.check_rule` for all rules in :attr:`.Alarm_Manager.rules`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sensor_values ( :class:`.SensorValues` ): New sensor values from the GUI</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">alarm_name</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">)</span></div>
             <span class="c1"># don&#39;t want to do alarm emission here because any _check_,</span>
             <span class="c1"># not any full update should trigger an alarm</span>
 
-<div class="viewcode-block" id="Alarm_Manager.check_rule"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.check_rule">[docs]</a>    <span class="k">def</span> <span class="nf">check_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">Alarm_Rule</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">:</span> <span class="n">SensorValues</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.check_rule"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.check_rule">[docs]</a>    <span class="k">def</span> <span class="nf">check_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">Alarm_Rule</span><span class="p">,</span> <span class="n">sensor_values</span><span class="p">:</span> <span class="n">SensorValues</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :meth:`~.Alarm_Rule.check` the alarm rule, handle logic of raising, emitting, or lowering an alarm.</span>
+
+<span class="sd">        When alarms are dismissed, an :class:`.alarm.Alarm` is emitted with ``AlarmSeverity.OFF`` .</span>
+
+<span class="sd">        * If the alarm severity has increased, emit a new alarm.</span>
+<span class="sd">        * If the alarm severity has decreased and the alarm is not latched, emit a new alarm</span>
+<span class="sd">        * If the alarm severity has decreased and the alarm is latched, check if the alarm has been manually dismissed, if it has emit a new alarm.</span>
+<span class="sd">        * If a latched alarm has been manually dismissed previously and the alarm condition is now no longer met, dismiss the alarm.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rule ( :class:`.Alarm_Rule` ): Alarm rule to check</span>
+<span class="sd">            sensor_values ( :class:`.SensorValues` ): sent by the GUI to check against alarm rule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current_severity</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">sensor_values</span><span class="p">)</span>
 
         <span class="c1">##################</span>
@@ -321,7 +375,7 @@
 
 
 
-<div class="viewcode-block" id="Alarm_Manager.emit_alarm"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.emit_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">emit_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_type</span><span class="p">:</span> <span class="n">AlarmType</span><span class="p">,</span> <span class="n">severity</span><span class="p">:</span> <span class="n">AlarmSeverity</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.emit_alarm"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.emit_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">emit_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_type</span><span class="p">:</span> <span class="n">AlarmType</span><span class="p">,</span> <span class="n">severity</span><span class="p">:</span> <span class="n">AlarmSeverity</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Emit alarm (by calling all callbacks with it).</span>
 
@@ -330,8 +384,8 @@
 <span class="sd">            This method emits *and* clears alarms -- a cleared alarm is emitted with :attr:`AlarmSeverity.OFF`</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            alarm_type (:class:`.AlarmType`):</span>
-<span class="sd">            severity (:class:`.AlarmSeverity`):</span>
+<span class="sd">            alarm_type ( :class:`.AlarmType` ):</span>
+<span class="sd">            severity ( :class:`.AlarmSeverity` ):</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">alarm_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="c1"># if another alarm is currently active, deactivate it</span>
@@ -344,7 +398,7 @@
                 <span class="n">severity</span>   <span class="o">=</span> <span class="n">severity</span><span class="p">,</span>
                 <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
                 <span class="n">latch</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">alarm_type</span><span class="p">]</span><span class="o">.</span><span class="n">latch</span><span class="p">,</span>
-                <span class="n">persistent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">alarm_type</span><span class="p">]</span><span class="o">.</span><span class="n">persistent</span>
+                <span class="n">cause</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">alarm_type</span><span class="p">]</span><span class="o">.</span><span class="n">value_names</span>
             <span class="p">)</span>
 
             <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
@@ -359,9 +413,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No  rule found for alarm type </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alarm_type</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Alarm_Manager.deactivate_alarm"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.deactivate_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span> <span class="p">(</span><span class="n">AlarmType</span><span class="p">,</span> <span class="n">Alarm</span><span class="p">)):</span>
+<div class="viewcode-block" id="Alarm_Manager.deactivate_alarm"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.deactivate_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span> <span class="p">(</span><span class="n">AlarmType</span><span class="p">,</span> <span class="n">Alarm</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mark an alarm&#39;s internal active flags and remove from :attr:`.active_alarms`</span>
+
+<span class="sd">        Typically called internally when an alarm is being replaced by one of the same type but a different severity.</span>
 
 <span class="sd">        .. note::</span>
 
@@ -369,10 +425,7 @@
 <span class="sd">            for that emit an alarm with AlarmSeverity.OFF</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            alarm:</span>
-
-<span class="sd">        Returns:</span>
-
+<span class="sd">            alarm ( :class:`.AlarmType` , :class:`.Alarm` ): Alarm to deactivate</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alarm</span><span class="p">,</span> <span class="n">Alarm</span><span class="p">):</span>
@@ -382,7 +435,7 @@
             <span class="n">alarm_type</span> <span class="o">=</span> <span class="n">alarm</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;alarm must be AlarmType or Alarm, got </span><span class="si">{</span><span class="n">alarm</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;alarm must be AlarmType or Alarm, got </span><span class="si">{alarm}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">alarm_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alarm</span><span class="p">,</span> <span class="n">Alarm</span><span class="p">):</span>
@@ -397,7 +450,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span></div>
 
-<div class="viewcode-block" id="Alarm_Manager.dismiss_alarm"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.dismiss_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">dismiss_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Alarm_Manager.dismiss_alarm"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.dismiss_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">dismiss_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                       <span class="n">alarm_type</span><span class="p">:</span> <span class="n">AlarmType</span><span class="p">,</span>
                       <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -438,16 +491,27 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cleared_alarms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alarm_type</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">emit_alarm</span><span class="p">(</span><span class="n">alarm_type</span><span class="p">,</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">OFF</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Alarm_Manager.get_alarm_severity"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.get_alarm_severity">[docs]</a>    <span class="k">def</span> <span class="nf">get_alarm_severity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_type</span><span class="p">:</span> <span class="n">AlarmType</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.get_alarm_severity"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.get_alarm_severity">[docs]</a>    <span class="k">def</span> <span class="nf">get_alarm_severity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_type</span><span class="p">:</span> <span class="n">AlarmType</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the severity of an Alarm</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            alarm_type ( :class:`.AlarmType` ): Alarm type to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`.AlarmSeverity`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">alarm_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="p">[</span><span class="n">alarm_type</span><span class="p">]</span><span class="o">.</span><span class="n">severity</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">OFF</span></div>
 
 
-<div class="viewcode-block" id="Alarm_Manager.register_alarm"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.register_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">register_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span> <span class="n">Alarm</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.register_alarm"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.register_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">register_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span> <span class="n">Alarm</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add alarm to registry.</span>
+<span class="sd">        Be given an already created alarm and emit to callbacks.</span>
+
+<span class="sd">        Mostly used during testing for programmatically created alarms. Creating alarms outside of the Alarm_Manager is generally discouraged.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            alarm (:class:`.Alarm`)</span>
@@ -461,22 +525,26 @@
             <span class="k">if</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="p">[</span><span class="n">alarm</span><span class="o">.</span><span class="n">alarm_type</span><span class="p">]</span><span class="o">.</span><span class="n">severity</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">deactivate_alarm</span><span class="p">(</span><span class="n">alarm</span><span class="o">.</span><span class="n">alarm_type</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="p">[</span><span class="n">alarm</span><span class="o">.</span><span class="n">alarm_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">alarm</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+                    <span class="n">callback</span><span class="p">(</span><span class="n">alarm</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span>
                 <span class="c1"># TODO: currently just bouncing redundant alarms, is that what we want?</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="p">[</span><span class="n">alarm</span><span class="o">.</span><span class="n">alarm_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">alarm</span></div>
+            <span class="k">if</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span> <span class="o">&gt;</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">OFF</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="p">[</span><span class="n">alarm</span><span class="o">.</span><span class="n">alarm_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">alarm</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+                    <span class="n">callback</span><span class="p">(</span><span class="n">alarm</span><span class="p">)</span></div>
 
-        <span class="c1"># TODO: Emit evidence of this new alarm</span>
 
-<div class="viewcode-block" id="Alarm_Manager.register_dependency"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.register_dependency">[docs]</a>    <span class="k">def</span> <span class="nf">register_dependency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="n">Condition</span><span class="p">,</span>
+<div class="viewcode-block" id="Alarm_Manager.register_dependency"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.register_dependency">[docs]</a>    <span class="k">def</span> <span class="nf">register_dependency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="n">Condition</span><span class="p">,</span>
                             <span class="n">dependency</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                             <span class="n">severity</span><span class="p">:</span> <span class="n">AlarmSeverity</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add dependency in a Condition object to be updated when values are changed</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            condition:</span>
+<span class="sd">            condition (dict): Condition as defined in an :class:`.Alarm_Rule`</span>
 <span class="sd">            dependency (dict): either a (ValueName, attribute_name) or optionally also + transformation callable</span>
 <span class="sd">            severity (:class:`.AlarmSeverity`): severity of dependency</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -491,15 +559,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Alarm_Manager.update_dependencies"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.update_dependencies">[docs]</a>    <span class="k">def</span> <span class="nf">update_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.update_dependencies"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.update_dependencies">[docs]</a>    <span class="k">def</span> <span class="nf">update_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update Condition objects that update their value according to some control parameter</span>
 
+<span class="sd">        Call any ``transform`` functions on the attribute of the control setting specified in the depencency.</span>
+
+<span class="sd">        Emit another :class:`.ControlSetting` describing the new max or min or the value.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            control_setting (:class:`.ControlSetting`):</span>
-
-<span class="sd">        Returns:</span>
-
+<span class="sd">            control_setting (:class:`.ControlSetting`): Control setting that was changed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="c1"># dependencies have</span>
@@ -538,23 +607,41 @@
                         <span class="n">cb</span><span class="p">(</span><span class="n">control_out</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Alarm_Manager.add_callback"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.add_callback">[docs]</a>    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.add_callback"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.add_callback">[docs]</a>    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assert we&#39;re being given a callable and add it to our list of callbacks.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback (typing.Callable): Callback that accepts a single argument of an :class:`.Alarm`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Alarm_Manager.add_dependency_callback"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.add_dependency_callback">[docs]</a>    <span class="k">def</span> <span class="nf">add_dependency_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.add_dependency_callback"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.add_dependency_callback">[docs]</a>    <span class="k">def</span> <span class="nf">add_dependency_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assert we&#39;re being given a callable and add it to our list of dependency_callbacks</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback (typing.Callable): Callback that accepts a :class:`.ControlSetting`</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">depends_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Alarm_Manager.clear_all_alarms"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.clear_all_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">clear_all_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.clear_all_alarms"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.clear_all_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">clear_all_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        call :meth:`.Alarm_Manager.deactivate_alarm` for all active alarms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># make separate list because dict will be cleared during iteration</span>
         <span class="n">alarm_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_alarms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">alarm_type</span> <span class="ow">in</span> <span class="n">alarm_keys</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">deactivate_alarm</span><span class="p">(</span><span class="n">alarm_type</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Alarm_Manager.reset"><a class="viewcode-back" href="../../../pvp.alarm.html#pvp.alarm.alarm_manager.Alarm_Manager.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Manager.reset"><a class="viewcode-back" href="../../../alarm.alarm_manager.html#pvp.alarm.alarm_manager.Alarm_Manager.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        reset all conditions, callbacks, and other stateful attributes and clear alarms</span>
+<span class="sd">        Reset all conditions, callbacks, and other stateful attributes and clear alarms</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">pending_clears</span> <span class="o">=</span> <span class="p">[]</span>

@@ -1,0 +1,11 @@
+﻿Ref,Part,Purpose
+J2,"2-pin screw terminal, 5.08 mm pitch, PCB mount",Connects to 24V supply
+J3,"2-pin screw terminal, 5.08 mm pitch, PCB mount",Connects to on/off expiratory valve
+J4,"2-pin screw terminal, 5.08 mm pitch, PCB mount","Connects to inspiratory valve, driven by PWM"
+J5,40-pin stackable RPi header,Connects board to RPi
+J6,"2-pin 0.1"" header",Jumper between 5V and Raspberry Pi
+C1,"6.8 uF, 50V",24V rail filter cap
+C2,"6.8 uF, 50V",24V rail filter cap
+C3,"100 uF, 16V",5V rail filter cap
+U1,ULN2003A,Darlington BJT array to drive solenoids
+U2,CUI PDQ15-Q24-S5-D,24-to-5V DC-DC converter

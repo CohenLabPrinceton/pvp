@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.common.utils &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.common.utils &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -179,9 +192,9 @@
   <h1>Source code for pvp.common.utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="kn">import</span> <span class="n">init_logger</span>
-<span class="kn">from</span> <span class="nn">pvp</span> <span class="kn">import</span> <span class="n">prefs</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="k">import</span> <span class="n">init_logger</span>
+<span class="kn">from</span> <span class="nn">pvp</span> <span class="k">import</span> <span class="n">prefs</span>
 
 <div class="viewcode-block" id="TimeoutException"><a class="viewcode-back" href="../../../pvp.common.utils.html#pvp.common.utils.TimeoutException">[docs]</a><span class="k">class</span> <span class="nc">TimeoutException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span> <span class="k">pass</span></div>
 
@@ -214,7 +227,7 @@
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">ret</span>
         <span class="k">except</span> <span class="n">TimeoutException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">log_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Method call timed out - Method: </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">log_str</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Method call timed out - Method: </span><span class="si">{func}</span><span class="s1">&#39;</span>
             <span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="s1">&#39;timeouts&#39;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">log_str</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span>

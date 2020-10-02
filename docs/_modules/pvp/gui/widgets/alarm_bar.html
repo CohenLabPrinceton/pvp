@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.gui.widgets.alarm_bar &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.gui.widgets.alarm_bar &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -161,8 +174,6 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-          <li><a href="../../gui.html">pvp.gui</a> &raquo;</li>
-        
       <li>pvp.gui.widgets.alarm_bar</li>
     
     
@@ -179,42 +190,59 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pvp.gui.widgets.alarm_bar</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The :class:`.Alarm_Bar` displays :class:`.Alarm` status with :class:`.Alarm_Card` widgets</span>
+<span class="sd">and plays alarm sounds with the :class:`.Alarm_Sound_Player`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">threading</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="k">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtMultimedia</span><span class="p">,</span> <span class="n">QtGui</span>
 
-<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span><span class="p">,</span> <span class="n">AlarmType</span><span class="p">,</span> <span class="n">Alarm_Manager</span>
-<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">styles</span><span class="p">,</span> <span class="n">mono_font</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="k">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span><span class="p">,</span> <span class="n">AlarmType</span><span class="p">,</span> <span class="n">Alarm_Manager</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="k">import</span> <span class="n">styles</span><span class="p">,</span> <span class="n">mono_font</span>
+<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="k">import</span> <span class="n">init_logger</span>
 
 
-<div class="viewcode-block" id="Alarm_Bar"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Bar">[docs]</a><span class="k">class</span> <span class="nc">Alarm_Bar</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Bar"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Bar">[docs]</a><span class="k">class</span> <span class="nc">Alarm_Bar</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Holds and manages a collection of :class:`Alarm_Card` s</span>
+<span class="sd">    Holds and manages a collection of :class:`Alarm_Card` s and communicates</span>
+<span class="sd">    requests for dismissal to the :class:`.Alarm_Manager`</span>
+
+<span class="sd">    The alarm bar also manages the :class:`.Alarm_Sound_Player`</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        alarms (typing.List[Alarm]): A list of active alarms</span>
+<span class="sd">        alarm_cards ( typing.List[Alarm_Card]): A list of active alarm cards</span>
+<span class="sd">        sound_player ( :class:`.Alarm_Sound_Player` ): Class that plays alarm sounds!</span>
+<span class="sd">        icons (dict): Dictionary of pixmaps with icons for different alarm levels</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">message_cleared</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
-    <span class="n">level_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
-    <span class="n">alarm_dismissed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wraps :attr:`.Alarm_Card.alarm_dismissed`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Alarm_Bar</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">icons</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># type: typing.List[Alarm]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alarm_cards</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># type: typing.List[Alarm_Card]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alarm_level</span> <span class="o">=</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">OFF</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">sound_player</span> <span class="o">=</span> <span class="n">Alarm_Sound_Player</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">make_icons</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Alarm_Bar.make_icons"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.make_icons">[docs]</a>    <span class="k">def</span> <span class="nf">make_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Alarm_Bar.make_icons"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.make_icons">[docs]</a>    <span class="k">def</span> <span class="nf">make_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create pixmaps from standard icons to display for different alarm types</span>
+
+<span class="sd">        Store in :attr:`.Alarm_Bar.icons`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span>
         <span class="n">size</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">pixelMetric</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PM_MessageBoxIconSize</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
@@ -233,9 +261,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">icons</span><span class="p">[</span><span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MEDIUM</span><span class="p">]</span> <span class="o">=</span> <span class="n">warning_icon</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">icons</span><span class="p">[</span><span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">HIGH</span><span class="p">]</span> <span class="o">=</span> <span class="n">alarm_icon</span></div>
 
+<div class="viewcode-block" id="Alarm_Bar.init_ui"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the UI</span>
 
-
-<div class="viewcode-block" id="Alarm_Bar.init_ui"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="sd">        * Create layout</span>
+<span class="sd">        * Set icon</span>
+<span class="sd">        * Create mute button</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
@@ -254,20 +287,38 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="o">.</span><span class="n">setFixedHeight</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
 
+        <span class="c1"># mute button</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Mute&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">TOGGLE_BUTTON</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sound_player</span><span class="o">.</span><span class="n">set_mute</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">MUTE_BUTTON_WIDTH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">,</span>
+                           <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">)</span>
+
         <span class="c1">#self.layout.addWidget(self.message, 6)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarm_layout</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># self.layout.addWidget(self.clear_button,1)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setFrameStyle</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">StyledPanel</span> <span class="o">|</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">Raised</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setFixedHeight</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">ALARM_BAR_HEIGHT</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Alarm_Bar.add_alarm"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.add_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">add_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span><span class="n">Alarm</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Bar.add_alarm"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.add_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">add_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span><span class="n">Alarm</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add an alarm created by the :class:`.Alarm_Manager` to the bar.</span>
 
+<span class="sd">        If an alarm alreaady exists with that same :class:`.AlarmType` , :meth:`.Alarm_Bar.clear_alarm`</span>
+
+<span class="sd">        Insert new alarm in order the prioritizes alarm severity with highest severity on right</span>
+
+<span class="sd">        Set alarm sound and begin playing if not already.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            alarm:</span>
+<span class="sd">            alarm (:class:`.Alarm` ): Alarm to be added</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">existing_alarm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="p">:</span>
@@ -276,34 +327,55 @@
 
         <span class="c1"># make new alarm widget</span>
         <span class="n">alarm_card</span> <span class="o">=</span> <span class="n">Alarm_Card</span><span class="p">(</span><span class="n">alarm</span><span class="p">)</span>
-        <span class="n">alarm_card</span><span class="o">.</span><span class="n">alarm_dismissed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarm_dismissed</span><span class="p">)</span>
 
         <span class="c1"># alarm priority should go low on left, high on right</span>
         <span class="c1"># newer alarms should be on the right of older alarms of same severity</span>
+        <span class="n">added_alarm</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">existing_alarm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span> <span class="o">&lt;</span> <span class="n">existing_alarm</span><span class="o">.</span><span class="n">severity</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">alarm</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">alarm_cards</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">alarm_card</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">alarm_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">alarm_card</span><span class="p">)</span>
+                <span class="n">added_alarm</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">break</span>
 
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">added_alarm</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># we just started, enable the mute button</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
             <span class="c1"># no alarm was greater than us, we should go at the end</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alarm</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">alarm_cards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alarm_card</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">alarm_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">alarm_card</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alarm_level</span> <span class="o">=</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span>
+
+            <span class="c1"># also start playing sound if havent already</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sound_player</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sound_player</span><span class="o">.</span><span class="n">set_sound</span><span class="p">(</span><span class="n">severity</span><span class="o">=</span><span class="n">alarm</span><span class="o">.</span><span class="n">severity</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sound_player</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sound_player</span><span class="o">.</span><span class="n">set_sound</span><span class="p">(</span><span class="n">severity</span><span class="o">=</span><span class="n">alarm</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
 
         <span class="c1"># update our icon</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_icon</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Alarm_Bar.clear_alarm"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.clear_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">clear_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span><span class="n">Alarm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alarm_type</span><span class="p">:</span><span class="n">AlarmType</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">alarm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">alarm_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Need to provide either alarm object or alarm id to clear&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="Alarm_Bar.clear_alarm"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.clear_alarm">[docs]</a>    <span class="k">def</span> <span class="nf">clear_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span><span class="n">Alarm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alarm_type</span><span class="p">:</span><span class="n">AlarmType</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove an alarm card, update appearance and sound player to reflect current max severity</span>
 
+<span class="sd">        Must pass one of either ``alarm`` or ``alarm_type``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            alarm ( :class:`.Alarm` ): Alarm to be cleared</span>
+<span class="sd">            alarm_type ( :class:`.AlarmType` ): Alarm type to be cleared</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">alarm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">alarm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Need to provide either alarm object or alarm id to clear&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">alarm</span><span class="p">:</span>
             <span class="n">alarm_type</span> <span class="o">=</span> <span class="n">alarm</span><span class="o">.</span><span class="n">alarm_type</span>
-
 
         <span class="k">for</span> <span class="n">existing_alarm</span><span class="p">,</span> <span class="n">alarm_card</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm_cards</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">alarm_type</span> <span class="o">==</span> <span class="n">existing_alarm</span><span class="o">.</span><span class="n">alarm_type</span><span class="p">:</span>
@@ -312,9 +384,25 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">alarm_cards</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">alarm_card</span><span class="p">)</span>
                 <span class="n">alarm_card</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
 
+        <span class="c1"># get max severity to update internal state</span>
+        <span class="n">max_severity</span> <span class="o">=</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">OFF</span>
+        <span class="k">for</span> <span class="n">alarm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span> <span class="o">&gt;</span> <span class="n">max_severity</span><span class="p">:</span>
+                <span class="n">max_severity</span> <span class="o">=</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span>
+
+        <span class="k">if</span> <span class="n">max_severity</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm_level</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alarm_level</span> <span class="o">=</span> <span class="n">max_severity</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sound_player</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">max_severity</span> <span class="o">==</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">OFF</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sound_player</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mute_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sound_player</span><span class="o">.</span><span class="n">set_sound</span><span class="p">(</span><span class="n">severity</span><span class="o">=</span><span class="n">max_severity</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">update_icon</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Alarm_Bar.update_icon"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.update_icon">[docs]</a>    <span class="k">def</span> <span class="nf">update_icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Bar.update_icon"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.update_icon">[docs]</a>    <span class="k">def</span> <span class="nf">update_icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call :meth:`.set_icon` with highest severity in :attr:`Alarm_Bar.alarms`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -326,126 +414,84 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_icon</span><span class="p">(</span><span class="n">severity</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Alarm_Bar.set_icon"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.set_icon">[docs]</a>    <span class="k">def</span> <span class="nf">set_icon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">AlarmSeverity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Bar.set_icon"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.set_icon">[docs]</a>    <span class="k">def</span> <span class="nf">set_icon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">AlarmSeverity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Change the icon to reflect the alarm severity</span>
+<span class="sd">        Change the icon and bar appearance to reflect the alarm severity</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            state:</span>
-
-<span class="sd">        Returns:</span>
-
+<span class="sd">            state ( :class:`.AlarmSeverity` ): Alarm Severity to display, if None change to default display</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">LOW</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">STATUS_NORMAL</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">icons</span><span class="p">[</span><span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">LOW</span><span class="p">])</span>
-            <span class="c1">#self.clear_button.setVisible(True)</span>
         <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MEDIUM</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">STATUS_WARN</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">icons</span><span class="p">[</span><span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MEDIUM</span><span class="p">])</span>
-            <span class="c1">#self.clear_button.setVisible(True)</span>
         <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">HIGH</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">STATUS_ALARM</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">icons</span><span class="p">[</span><span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">HIGH</span><span class="p">])</span>
-            <span class="c1">#self.clear_button.setVisible(True)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">STATUS_NORMAL</span><span class="p">)</span>
-            <span class="c1">#self.clear_button.setVisible(False)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="Alarm_Bar.update_message"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.update_message">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="n">Alarm</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">update_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Arguments:</span>
-<span class="sd">            alarm (:class:`~.message.Alarm`)</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="n">alarm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># clear</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_icon</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="p">[</span><span class="n">alarm</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">alarm</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span><span class="p">:</span>
-            <span class="c1"># see if we are outranked by current message</span>
-            <span class="k">if</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span><span class="o">.</span><span class="n">severity</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">set_icon</span><span class="p">(</span><span class="n">alarm</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">alarm</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span> <span class="o">=</span> <span class="n">alarm</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">alarm_level</span> <span class="o">=</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_icon</span><span class="p">(</span><span class="n">alarm</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">alarm</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span> <span class="o">=</span> <span class="n">alarm</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">alarm_level</span> <span class="o">=</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span>
-
-        <span class="c1"># delete old messages from same value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span> <span class="o">=</span> <span class="p">{</span><span class="n">a_key</span><span class="p">:</span> <span class="n">a_val</span> <span class="k">for</span> <span class="n">a_key</span><span class="p">,</span> <span class="n">a_val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span>
-                       <span class="p">(</span><span class="n">a_val</span><span class="o">.</span><span class="n">alarm_name</span> <span class="o">!=</span> <span class="n">alarm</span><span class="o">.</span><span class="n">alarm_name</span><span class="p">)</span> <span class="ow">or</span>
-                       <span class="p">(</span><span class="n">a_val</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">alarm</span><span class="o">.</span><span class="n">id</span><span class="p">)}</span></div>
-
-<div class="viewcode-block" id="Alarm_Bar.clear_message"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Bar.clear_message">[docs]</a>    <span class="k">def</span> <span class="nf">clear_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">message_cleared</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span><span class="p">)</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-
-
-        <span class="c1"># check if we have another message to display</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># get message priorities</span>
-            <span class="n">paired_priorities</span> <span class="o">=</span> <span class="p">[(</span><span class="n">alarm</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">alarm</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span> <span class="k">for</span> <span class="n">alarm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarmss</span><span class="p">()]</span>
-            <span class="n">priorities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">msg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">paired_priorities</span><span class="p">])</span>
-            <span class="c1"># find the max priority</span>
-            <span class="n">max_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">priorities</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">current_alarm</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">new_alarm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarms</span><span class="p">[</span><span class="n">paired_priorities</span><span class="p">[</span><span class="n">max_ind</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_message</span><span class="p">(</span><span class="n">new_alarm</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">alarm_level</span> <span class="o">=</span> <span class="n">new_alarm</span><span class="o">.</span><span class="n">severity</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_message</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">alarm_level</span> <span class="o">=</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">OFF</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">alarm_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Current maximum :class:`.AlarmSeverity`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`.AlarmSeverity`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alarm_level</span>
 
     <span class="nd">@alarm_level</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">alarm_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_level</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">alarm_level</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alarm_level</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">level_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">alarm_level</span><span class="p">)</span>
+            <span class="c1"># self.level_changed.emit(alarm_level)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_alarm_level</span> <span class="o">=</span> <span class="n">alarm_level</span></div>
 
 
-<div class="viewcode-block" id="Alarm_Card"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Card">[docs]</a><span class="k">class</span> <span class="nc">Alarm_Card</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Card"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Card">[docs]</a><span class="k">class</span> <span class="nc">Alarm_Card</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Representation of an alarm raised by :class:`.Alarm_Manager` in GUI.</span>
 
-<span class="sd">    If allowed by alarm, allows user to dismiss/silence alarm</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">alarm_dismissed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+<span class="sd">    If allowed by alarm (by ``latch`` setting) , allows user to dismiss/silence alarm.</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span> <span class="n">Alarm</span><span class="p">):</span>
+<span class="sd">    Otherwise request to dismiss is logged by :class:`.Alarm_Manager` and the card is dismissed when</span>
+<span class="sd">    the conditions that generated the alarm are no longer met.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        alarm ( :class:`.Alarm` ): Alarm to represent</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        alarm ( :class:`.Alarm` ): The represented alarm</span>
+<span class="sd">        severity ( :class:`.AlarmSeverity` ): The severity of the represented alarm</span>
+<span class="sd">        close_button ( :class:`PySide2.QtWidgets.QPushButton` ): Button that requests an alarm be dismissed</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm</span><span class="p">:</span> <span class="n">Alarm</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Alarm_Card</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alarm</span><span class="p">,</span> <span class="n">Alarm</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alarm</span> <span class="o">=</span> <span class="n">alarm</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">severity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm</span><span class="o">.</span><span class="n">severity</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm</span> <span class="o">=</span> <span class="n">alarm</span> <span class="c1"># type: Alarm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">severity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm</span><span class="o">.</span><span class="n">severity</span> <span class="c1"># type: AlarmSeverity</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Alarm_Card.init_ui"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Card.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Card.init_ui"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Card.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize graphical elements</span>
+
+<span class="sd">        * Create labels</span>
+<span class="sd">        * Set stylesheets</span>
+<span class="sd">        * Create and connect dismiss button</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">ALARM_CARD_STYLES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">severity</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span>
                            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">)</span>
@@ -464,12 +510,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">timestamp_label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">ALARM_CARD_TIMESTAMP</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestamp_label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">mono_font</span><span class="p">())</span>
 
-        <span class="c1"># close button</span>
-        <span class="c1"># style = self.style()</span>
-        <span class="c1"># size = style.pixelMetric(QtWidgets.QStyle.PM_MessageBoxIconSize, None, self)</span>
-        <span class="c1"># close_icon = style.standardIcon(QtWidgets.QStyle.SP_TitleBarCloseButton, None, self)</span>
-        <span class="c1"># close_icon = close_icon.pixmap(size, size)</span>
-        <span class="c1">#</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_button</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span>
             <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span>
@@ -483,11 +523,226 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Alarm_Card._dismiss"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.alarm_bar.Alarm_Card._dismiss">[docs]</a>    <span class="k">def</span> <span class="nf">_dismiss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Alarm_Card._dismiss"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Card._dismiss">[docs]</a>    <span class="k">def</span> <span class="nf">_dismiss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the :class:`.Alarm_Manager` instance and calls :meth:`.Alarm_Manager.dismiss_alarm`</span>
+
+<span class="sd">        Also change appearance of close button to reflect requested dismissal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">Alarm_Manager</span><span class="p">()</span><span class="o">.</span><span class="n">dismiss_alarm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alarm</span><span class="o">.</span><span class="n">alarm_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_button</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">ALARM_CARD_BUTTON_INACTIVE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;...&#39;</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="Alarm_Sound_Player"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Sound_Player">[docs]</a><span class="k">class</span> <span class="nc">Alarm_Sound_Player</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plays alarm sounds to reflect current alarm severity and active duration with :class:`PySide2.QtMultimedia.QSoundEffect` objects</span>
+
+<span class="sd">    Alarm sounds indicate severity with the number and pitch of tones in a repeating tone cluster</span>
+<span class="sd">    (eg. low severity sounds have a single repeating tone, but high-severity alarms have three repeating tones)</span>
+
+<span class="sd">    They indicate active duration by incrementally removing a low-pass filter and making tones have</span>
+<span class="sd">    a sharper attack and decay.</span>
+
+<span class="sd">    When an alarm of any severity is started the ``&lt;severity_0.wav`` file begins playing, and</span>
+<span class="sd">    a timer is started to call :meth:`.Alarm_Sound_Player.increment_level`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        increment_delay (int): Delay between calling :meth:`.Alarm_Sound_Player.increment_level`</span>
+<span class="sd">        *args, **kwargs: passed to :class:`PySide2.QtWidgets.QWidget`</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        idx (dict): Dictionary of dictionaries allowing sounds to be accessed like ``self.idx[AlarmSeverity][level]``</span>
+<span class="sd">        files (list): list of sound file paths</span>
+<span class="sd">        increment_delay (int): Time between calling :meth:`.Alarm_Sound_Player.increment_level`` in ms</span>
+<span class="sd">        playing (bool): Whether or not a sound is playing</span>
+<span class="sd">        _increment_timer ( :class:`PySide2.QtCore.QTimer` ): Timer that increments alarm sound level</span>
+<span class="sd">        _changing_track ( :class:`threading.Lock` ): used to ensure single sound changing call happens at a time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">severity_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;low&#39;</span><span class="p">:</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">LOW</span><span class="p">,</span>
+        <span class="s1">&#39;medium&#39;</span><span class="p">:</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MEDIUM</span><span class="p">,</span>
+        <span class="s1">&#39;high&#39;</span><span class="p">:</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">HIGH</span>
+    <span class="p">}</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    mapping between string representations of severities used by filenames and :class:`.AlarmSeverity`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">increment_delay</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Alarm_Sound_Player</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># type: dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">[</span><span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">LOW</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">[</span><span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MEDIUM</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">[</span><span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">HIGH</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">increment_delay</span> <span class="o">=</span> <span class="n">increment_delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sound_started</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_severity</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_level</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_level</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_change_to</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_muted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_increment_timer</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_increment_timer</span><span class="o">.</span><span class="n">setInterval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">increment_delay</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_increment_timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">increment_level</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_changing_track</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_audio</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Alarm_Sound_Player.init_audio"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Sound_Player.init_audio">[docs]</a>    <span class="k">def</span> <span class="nf">init_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load audio files in ``pvp/external/audio`` and add to :attr:`.Alarm_Sound_Player.idx`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># init audio objects</span>
+        <span class="c1"># self.player = QtMultimedia.QMediaPlayer(self)</span>
+        <span class="c1"># self.playlist = QtMultimedia.QMediaPlaylist(self.player)</span>
+
+        <span class="c1"># find audio files</span>
+        <span class="n">vent_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+        <span class="n">audio_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vent_dir</span><span class="p">,</span> <span class="s1">&#39;external&#39;</span><span class="p">,</span> <span class="s1">&#39;audio&#39;</span><span class="p">)</span>
+        <span class="n">audio_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">audio_dir</span><span class="p">,</span> <span class="s2">&quot;*.wav&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="n">audio_files</span>
+
+        <span class="c1"># current_index = 0</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">audio_files</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># parse filename into components</span>
+                <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">severity</span><span class="p">,</span> <span class="n">number</span> <span class="o">=</span> <span class="n">basename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+                <span class="n">severity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">severity_map</span><span class="p">[</span><span class="n">severity</span><span class="p">]</span>
+                <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">number</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_level</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_max_level</span> <span class="o">=</span> <span class="n">number</span>
+
+                <span class="c1"># load file and index</span>
+                <span class="n">file_url</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QUrl</span><span class="o">.</span><span class="n">fromLocalFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="n">sound</span> <span class="o">=</span> <span class="n">QtMultimedia</span><span class="o">.</span><span class="n">QSoundEffect</span><span class="p">()</span>
+                <span class="n">sound</span><span class="o">.</span><span class="n">setSource</span><span class="p">(</span><span class="n">file_url</span><span class="p">)</span>
+                <span class="n">sound</span><span class="o">.</span><span class="n">setLoopCount</span><span class="p">(</span><span class="n">QtMultimedia</span><span class="o">.</span><span class="n">QSoundEffect</span><span class="o">.</span><span class="n">Infinite</span><span class="p">)</span>
+
+                <span class="c1"># self.playlist.addMedia(QtMultimedia.QMediaContent(file_url))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">[</span><span class="n">severity</span><span class="p">][</span><span class="n">number</span><span class="p">]</span> <span class="o">=</span> <span class="n">sound</span>
+                <span class="c1"># current_index += 1</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+        <span class="c1"># finish configuring audio objects</span>
+        <span class="c1"># self.playlist.setPlaybackMode(QtMultimedia.QMediaPlaylist.CurrentItemInLoop)</span>
+        <span class="c1"># self.player.setPlaylist(self.playlist)</span>
+        <span class="c1"># self.playlist.setCurrentIndex(self._current_idx)</span>
+        <span class="c1"># self.player.mediaStatusChanged.connect(self._update_player)</span>
+
+<div class="viewcode-block" id="Alarm_Sound_Player.play"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Sound_Player.play">[docs]</a>    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start sound playback</span>
+
+<span class="sd">        Play sound listed as :attr:`.Alarm_Sound_Player._current_sound`</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            :meth:`.Alarm_Sound_Player.set_sound` must be called first.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># self.playlist.setPlaybackMode(QtMultimedia.QMediaPlaylist.CurrentItemInLoop)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;play method called for sounds but sounds are already playing&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_increment_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Playback Started&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;No sound selected before using play method&quot;</span><span class="p">)</span></div>
+        <span class="c1"># self.player.play()</span>
+
+<div class="viewcode-block" id="Alarm_Sound_Player.stop"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Sound_Player.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop sound playback</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Playback Stopped&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_increment_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_severity</span> <span class="o">=</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">OFF</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_level</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_muted</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Alarm_Sound_Player.set_sound"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Sound_Player.set_sound">[docs]</a>    <span class="k">def</span> <span class="nf">set_sound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">severity</span><span class="p">:</span> <span class="n">AlarmSeverity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set sound to be played</span>
+
+<span class="sd">        At least an :class:`.AlarmSeverity` must be provided.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            severity ( :class:`.AlarmSeverity` ): Severity of alarm sound to play</span>
+<span class="sd">            level (int): level (corresponding to active duration) of sound to play</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changing_track</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">severity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">severity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_severity</span>
+
+            <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_level</span>
+
+            <span class="k">if</span> <span class="n">severity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">new_sound</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">[</span><span class="n">severity</span><span class="p">][</span><span class="n">level</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_muted</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
+                    <span class="n">new_sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span> <span class="o">=</span> <span class="n">new_sound</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_severity</span> <span class="o">=</span> <span class="n">severity</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_level</span> <span class="o">=</span> <span class="n">level</span>
+                <span class="c1"># self.playlist.setCurrentIndex(self._current_idx)</span>
+                <span class="c1"># if self.playing:</span>
+                <span class="c1">#     self.player.play()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{severity}</span><span class="s2"> doesnt have an alarm sound!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Alarm_Sound_Player.increment_level"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Sound_Player.increment_level">[docs]</a>    <span class="k">def</span> <span class="nf">increment_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If current level is below the maximum level, increment with :meth:`.Alarm_Sound_Player.set_sound`</span>
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_level</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_level</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_sound</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Alarm_Sound_Player.set_mute"><a class="viewcode-back" href="../../../../gui.widgets.alarm_bar.html#pvp.gui.widgets.alarm_bar.Alarm_Sound_Player.set_mute">[docs]</a>    <span class="k">def</span> <span class="nf">set_mute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mute</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set mute state</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mute (bool): if True, mute. if False, unmute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mute</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_muted</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_muted</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_current_sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span></div></div>
+
+
 </pre></div>
 
            </div>

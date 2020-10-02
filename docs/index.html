@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>The People’s Ventilator Project &mdash; PVP 0.0.0 documentation</title>
+  <title>The People&#39;s Ventilator Project &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="_static/pvp_logo_favicon.png"/>
   
   
   
@@ -37,7 +40,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="pvp control pseudocode" href="control_overview.html" /> 
+    <link rel="next" title="System Overview" href="overview.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -55,13 +58,16 @@
           
 
           
+            
+            <img src="_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -88,20 +94,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -112,8 +123,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meta_index.html">Index</a></li>
 </ul>
 
             
@@ -160,7 +173,7 @@
     
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
-      <li>The People’s Ventilator Project</li>
+      <li>The People's Ventilator Project</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -179,169 +192,68 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="the-people-s-ventilator-project">
-<h1>The People’s Ventilator Project<a class="headerlink" href="#the-people-s-ventilator-project" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Overview</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="control_overview.html#pressure-control-parameters">Pressure control parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="control_overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="control_overview.html#pressure-control-loop">Pressure control loop</a></li>
-</ul>
-</li>
-</ul>
+  <div class="header-img" >
+   <img alt="People's Ventilator Project logo" src="images/pvp_logo_fulltext.png">
+   <div>
+      <h1>A fully-open</h1>
+      <h1>Supply-chain resilient</h1>
+      <h1>pressure-control ventilator</h1>
+      <h1 style="color: #fd2701;">for the people</h1>
+   </div>
+</div><p>The global COVID-19 pandemic has highlighted the need for a low-cost, rapidly-deployable ventilator, for the current as well as future respiratory virus outbreaks.
+While safe and robust ventilation technology exists in the commercial sector, the small number of capable suppliers cannot meet the severe demands for ventilators during a pandemic.</p>
+<p><strong>&lt;Statement of cost&gt;</strong> Moreover, the specialized and proprietary equipment developed by medical device manufacturers is expensive and inaccessible in low-resource areas.
+Compounding the issue during an emergency, manufacturing time…</p>
+<p>The <strong>People’s Ventilator Project (PVP)</strong> is an open-source, low-cost pressure-control ventilator designed with minimal reliance on specialized medical parts to better adapt to supply chain shortages.
+The <strong>PVP</strong> largely follows established design conventions, most importantly active and computer-controlled inhalation, together with passive exhalation.
+It supports pressure-controlled ventilation, combined with standard-features like autonomous breath detection, and the suite of FDA required alarms.</p>
+<p><strong>&lt;Statement of purpose&gt;</strong></p>
+<video width="100%" autoplay loop>
+  <source src="images/ventilator_rotate.mp4" type="video/mp4">
+Video of a rotating ventilator
+</video><div class="section" id="hardware">
+<h1>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h1>
+<p>PVP is a pressure-controlled ventilator that uses a minimal set of inexpensive, off-the-self hardware components.
+An inexpensive proportional valve controls inspiratory flow, and a relay valve controls expiratory flow.
+A gauge pressure sensor monitors airway pressure, and an inexpensive D-lite spirometer used in conjunction with a differential pressure sensor monitors expiratory flow.</p>
+<p>PVP’s components are coordinated by a Raspberry Pi 4 board, which runs the graphical user interface, administers the alarm system, monitors sensor values, and sends actuation commands to the valves.
+The core electrical system consists of two modular board ‘hats’, a sensor board and an actuator board, that stack onto the Raspberry Pi via 40-pin stackable headers.
+The modularity of this system enables individual boards to be revised or modified to substitute components in the case of part scarcity.</p>
+<img src="images/electronics_diagram.png" alt="Electronics diagram for People's Ventilator Project">
+</img><p>Links to system:
+… Mechanical overview
+… Electronics overview</p>
+</div>
+<div class="section" id="software">
+<h1>Software<a class="headerlink" href="#software" title="Permalink to this headline">¶</a></h1>
+<a class="reference internal image-reference" href="images/gui_overview_v1_1920px.png"><img alt="Gui Overview - modular design, alarm cards, multiple modalities of input, alarm limits represented consistently across ui" src="images/gui_overview_v1_1920px.png" style="width: 100%;" /></a>
+<p>PVP’s software was developed to bring the philosophy of free and open-source software to medical devices. PVP is not only
+open from top to bottom, but we have developed it as a framework for <strong>an adaptable, general-purpose, communally-developed ventilator.</strong></p>
+<p>PVP’s ventilation control system is fast, robust, and <strong>written entirely in high-level Python</strong> (3.7) – without the development
+and inspection bottlenecks of split computer/microprocessor systems that require users to read and write low-level hardware firmware.</p>
+<p>All of PVP’s components are <strong>modularly designed</strong>, allowing them to be reconfigured and expanded for new ventilation modes and
+hardware configurations.</p>
+<p>We provide complete <strong>API-level documentation</strong> and an <strong>automated testing suite</strong>
+to give everyone the freedom to inspect, understand, and expand PVP’s software framework.</p>
+<div class="section" id="pvp-modules">
+<h2>PVP Modules<a class="headerlink" href="#pvp-modules" title="Permalink to this headline">¶</a></h2>
+<div class="software-summary">
+    <a href="gui.html"><h2>GUI</h2></a> <p>A modular GUI with intuitive controls and a clear alarm system that can be configured to control any parameter or display values from any sensor.</p>
+    <a href="controller.html"><h2>Controller</h2></a> <p>... Manuel write this</p>
+    <a href="io.html"><h2>IO</h2></a> <p>A hardware abstraction layer powered by <a href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> that can read/write at [x Hz]</p>
+    <a href="alarm.html"><h2>Alarm</h2></a> <p>Define complex and responsive alarm triggering criteria with human-readable Alarm Rules</p>
+    <a href="common.html"><h2>Common</h2><a> <p>Modules that provide the API between the GUI and controller, user preferences, and other utilities</p>
+</div><div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Hardware:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="hardware.html#mechanical-diagram">Mechanical Diagram</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="hardware.sensors.html">Sensors</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#overview">Overview</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#sensor-pcb">Sensor PCB</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#flow-sensor">Flow sensor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#pressure-sensors">Pressure sensors</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hardware.sensors.html#oxygen-sensor">Oxygen sensor</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="hardware.html#flow-actuators">Flow actuators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hardware.html#sensors">Sensors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hardware.html#safety-components">Safety Components</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hardware.html#tubing-and-adapters">Tubing and Adapters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hardware.html#bill-of-materials-need-to-think-about-what-goes-in-this-table-probably-separate-boms-into-tables-by-category-but-here-s-a-sample-table">Bill of Materials (need to think about what goes in this table, probably separate BoMs into tables by category, but here’s a sample table)</a></li>
-</ul>
-</li>
-</ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Software:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="common.html">common</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">values</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">loggers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">message</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.prefs.html">prefs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">unit conversion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.utils.html">utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.fashion.html">fashion</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="coordinator.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="coordinator.html#module-pvp.coordinator.coordinator">coordinator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="coordinator.html#module-pvp.coordinator.rpc">ipc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="coordinator.html#module-pvp.coordinator.process_manager">process_manager</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gui.html#program-diagram">Program Diagram</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gui.html#design-requirements">Design Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gui.html#ui-notes-todo">UI Notes &amp; Todo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gui.html#jonny-questions">Jonny Questions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#jonny-todo">jonny todo</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="gui.html#gui-object-documentation">GUI Object Documentation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.display">Display</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.control_panel">Control Panel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.plot">Plot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.alarm_bar">Alarm Bar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.components">Components</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html#module-pvp.gui.widgets.dialog">Dialog</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="gui.html#module-pvp.gui.styles">GUI Stylesheets</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="io.html">io</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="io.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pvp.io.devices.html">pvp.io.devices package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.base">pvp.io.devices.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.pins">pvp.io.devices.pins module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.sensors">pvp.io.devices.sensors module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices.valves">pvp.io.devices.valves module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pvp.io.devices.html#module-pvp.io.devices">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="io.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="io.html#module-pvp.io.hal">pvp.io.hal module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="io.html#module-pvp.io">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-pvp.alarm">Main Alarm Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-pvp.alarm.alarm_manager">Alarm Manager</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alarm.html#id5">Alarm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-pvp.alarm.condition">Condition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-pvp.alarm.rule">Alarm Rule</a></li>
-</ul>
-</li>
-</ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Resources:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="requirements.html">Ventilator Requirements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datasheets.html">Datasheets &amp; Manuals</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="datasheets.html#manuals">Manuals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasheets.html#other-reference-material">Other Reference Material</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="specs.html">Specifications</a></li>
-</ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Meta:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-0">Version 0.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.0.2.html">v0.0.2 (April xxth, 2020)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.0.1.html">v0.0.1 (April 12th, 2020)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.0.0.html">v0.0.0 (April 12th, 2020)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="buildthedocs.html#local-build">Local Build</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="example_markdown.html#h2-heading">h2 Heading</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="example_markdown.html#h3-heading">h3 Heading</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="example_markdown.html#h4-heading">h4 Heading</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="example_markdown.html#horizontal-rules">Horizontal Rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_markdown.html#emphasis">Emphasis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_markdown.html#blockquotes">Blockquotes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_markdown.html#lists">Lists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_markdown.html#code">Code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_markdown.html#links">Links</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_markdown.html#images">Images</a></li>
-</ul>
-</li>
-</ul>
 </div>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
 </div>
 
 
@@ -352,7 +264,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="control_overview.html" class="btn btn-neutral float-right" title="pvp control pseudocode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="overview.html" class="btn btn-neutral float-right" title="System Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

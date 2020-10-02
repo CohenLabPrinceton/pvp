@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Hardware Overview &mdash; PVP 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/pvp_logo_favicon.png"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Sensors" href="hardware_sensors.html" />
+    <link rel="prev" title="System Overview" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PVP
+          
+
+          
+            
+            <img src="_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hardware Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mechanical-diagram">Mechanical Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flow-actuators">Flow actuators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bill-of-materials">Bill of Materials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_enclosure.html">Enclosure</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="software_overview.html">Software Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">Coordinator</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meta_index.html">Index</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Hardware Overview</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/hardware_overview.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="hardware-overview">
+<h1>Hardware Overview<a class="headerlink" href="#hardware-overview" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mechanical-diagram">
+<h2>Mechanical Diagram<a class="headerlink" href="#mechanical-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id1" style="width: 100%">
+<a class="reference internal image-reference" href="images/mechanical_diagram.png"><img alt="images/mechanical_diagram.png" src="images/mechanical_diagram.png" style="width: 100%;" /></a>
+<p class="caption"><span class="caption-text">Schematic diagram of main mechanical components &lt;- THIS NEEDS TO BE UPDATED</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="flow-actuators">
+<h2>Flow actuators<a class="headerlink" href="#flow-actuators" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Actuator PCB/overview (link to PCB with BoM, schematic, layout, etc.)</p></li>
+<li><p>Proportional solenoid valve (V1) (link to doc with crit specs, driving circuit, part spec, datasheet, alternatives, etc.)</p></li>
+<li><p>Expiratory valve (V2) (link to doc with crit specs, driving circuit, part spec, datasheet, etc.)</p></li>
+</ul>
+</div>
+<div class="section" id="sensors">
+<h2>Sensors<a class="headerlink" href="#sensors" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Sensor PCB/overview (link to PCB with BoM, schematic, layout, etc.)</p></li>
+<li><p>Oxygen sensor (O2S) (link to doc with crit specs, interface circuit, part spec, datasheet, alternatives, etc.)</p></li>
+<li><p>Proximal pressure sensor (PS1)</p></li>
+<li><p>Expiratory pressure sensor (PS2)</p></li>
+<li><p>Expiratory flow sensor (FS1)</p></li>
+</ul>
+</div>
+<div class="section" id="bill-of-materials">
+<h2>Bill of Materials<a class="headerlink" href="#bill-of-materials" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Ref</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Part</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>V1</p></td>
+<td><p>Inspiratory on/off valve</p></td>
+<td><p>red hat process valve</p></td>
+<td><p>completely cut off flow if required</p></td>
+</tr>
+<tr class="row-odd"><td><p>PRV1</p></td>
+<td><p>High pressure relief valve</p></td>
+<td><p>Sets to 50 psi</p></td>
+<td><p>regulates upstream pressure to 50 psi</p></td>
+</tr>
+<tr class="row-even"><td><p>CV</p></td>
+<td><p>Inspiratory check valve</p></td>
+<td><p>valve stat here</p></td>
+<td><p>In case of emergency power loss, allows patient to continue taking breaths from air</p></td>
+</tr>
+<tr class="row-odd"><td><p>PRV2</p></td>
+<td><p>Maximum pressure valve</p></td>
+<td><p>…</p></td>
+<td><p>Sets absolute maximum pressure at patient side to 53 cm H2O</p></td>
+</tr>
+<tr class="row-even"><td><p>F1/F2</p></td>
+<td><p>Filters</p></td>
+<td><p>HEPA filters?</p></td>
+<td><p>Keeps the system’s sensors from becoming contaminated</p></td>
+</tr>
+<tr class="row-odd"><td><p>O2S</p></td>
+<td><p>Oxygen sensor</p></td>
+<td><p>Sensiron …</p></td>
+<td><p>Checks FiO2 level</p></td>
+</tr>
+<tr class="row-even"><td><p>PS1/PS2</p></td>
+<td><p>Pressure sensors</p></td>
+<td><p>mini4v</p></td>
+<td><p>Uses gas takeoffs to measure pressure at each desired point</p></td>
+</tr>
+<tr class="row-odd"><td><p>FS1</p></td>
+<td><p>Flow sensor</p></td>
+<td><p>Sensiron flow sensor</p></td>
+<td><p>Measures expiratory flow to calculate tidal volume</p></td>
+</tr>
+<tr class="row-even"><td><p>M1/M2</p></td>
+<td><p>Manifolds</p></td>
+<td><p>3D printed parts</p></td>
+<td><p>Hubs to connect multiple components in one place</p></td>
+</tr>
+<tr class="row-odd"><td><p>V3</p></td>
+<td><p>Expiratory on/off valve</p></td>
+<td><p>Festo Electrical Air Directional Control Valve, 3/2 flow, Normally Closed, 8 mm Push-to-Connect</p></td>
+<td><p>Opens to initiation the expiratory cycle</p></td>
+</tr>
+<tr class="row-even"><td><p>PEEP</p></td>
+<td><p>PEEP backpressure valve</p></td>
+<td><p>PEEP valve</p></td>
+<td><p>Sets PEEP on expiratory cycle!</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hardware_sensors.html" class="btn btn-neutral float-right" title="Sensors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="overview.html" class="btn btn-neutral float-left" title="System Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.coordinator.rpc &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.coordinator.rpc &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -182,10 +195,10 @@
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">xmlrpc.client</span>
-<span class="kn">from</span> <span class="nn">xmlrpc.server</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span>
+<span class="kn">from</span> <span class="nn">xmlrpc.server</span> <span class="k">import</span> <span class="n">SimpleXMLRPCServer</span>
 
-<span class="kn">from</span> <span class="nn">pvp.controller</span> <span class="kn">import</span> <span class="n">control_module</span>
-<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="kn">import</span> <span class="n">init_logger</span>
+<span class="kn">from</span> <span class="nn">pvp.controller</span> <span class="k">import</span> <span class="n">control_module</span>
+<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="k">import</span> <span class="n">init_logger</span>
 
 <span class="n">default_addr</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span>
 <span class="n">default_port</span> <span class="o">=</span> <span class="mi">9533</span>
@@ -195,35 +208,35 @@
 <span class="n">remote_controller</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># type: typing.Union[None, control_module.ControlModuleBase]</span>
 
 
-<div class="viewcode-block" id="get_sensors"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.rpc.get_sensors">[docs]</a><span class="k">def</span> <span class="nf">get_sensors</span><span class="p">():</span>
+<div class="viewcode-block" id="get_sensors"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.rpc.get_sensors">[docs]</a><span class="k">def</span> <span class="nf">get_sensors</span><span class="p">():</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">remote_controller</span><span class="o">.</span><span class="n">get_sensors</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="get_alarms"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.rpc.get_alarms">[docs]</a><span class="k">def</span> <span class="nf">get_alarms</span><span class="p">():</span>
+<div class="viewcode-block" id="get_alarms"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.rpc.get_alarms">[docs]</a><span class="k">def</span> <span class="nf">get_alarms</span><span class="p">():</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">remote_controller</span><span class="o">.</span><span class="n">get_alarms</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="set_control"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.rpc.set_control">[docs]</a><span class="k">def</span> <span class="nf">set_control</span><span class="p">(</span><span class="n">control_setting</span><span class="p">):</span>
+<div class="viewcode-block" id="set_control"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.rpc.set_control">[docs]</a><span class="k">def</span> <span class="nf">set_control</span><span class="p">(</span><span class="n">control_setting</span><span class="p">):</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">control_setting</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="n">remote_controller</span><span class="o">.</span><span class="n">set_control</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_control"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.rpc.get_control">[docs]</a><span class="k">def</span> <span class="nf">get_control</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">):</span>
+<div class="viewcode-block" id="get_control"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.rpc.get_control">[docs]</a><span class="k">def</span> <span class="nf">get_control</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">):</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">control_setting_name</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">remote_controller</span><span class="o">.</span><span class="n">get_control</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="set_breath_detection"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.rpc.set_breath_detection">[docs]</a><span class="k">def</span> <span class="nf">set_breath_detection</span><span class="p">(</span><span class="n">breath_detection</span><span class="p">):</span>
+<div class="viewcode-block" id="set_breath_detection"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.rpc.set_breath_detection">[docs]</a><span class="k">def</span> <span class="nf">set_breath_detection</span><span class="p">(</span><span class="n">breath_detection</span><span class="p">):</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">breath_detection</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="n">remote_controller</span><span class="o">.</span><span class="n">set_breath_detection</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="get_target_waveform"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.rpc.get_target_waveform">[docs]</a><span class="k">def</span> <span class="nf">get_target_waveform</span><span class="p">():</span>
+<div class="viewcode-block" id="get_target_waveform"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.rpc.get_target_waveform">[docs]</a><span class="k">def</span> <span class="nf">get_target_waveform</span><span class="p">():</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">remote_controller</span><span class="o">.</span><span class="n">get_target_waveform</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rpc_server_main"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.rpc.rpc_server_main">[docs]</a><span class="k">def</span> <span class="nf">rpc_server_main</span><span class="p">(</span><span class="n">sim_mode</span><span class="p">,</span> <span class="n">serve_event</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="n">default_addr</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">default_port</span><span class="p">):</span>
+<div class="viewcode-block" id="rpc_server_main"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.rpc.rpc_server_main">[docs]</a><span class="k">def</span> <span class="nf">rpc_server_main</span><span class="p">(</span><span class="n">sim_mode</span><span class="p">,</span> <span class="n">serve_event</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="n">default_addr</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">default_port</span><span class="p">):</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;controller process init&#39;</span><span class="p">)</span>
     <span class="k">global</span> <span class="n">remote_controller</span>
@@ -249,13 +262,13 @@
 
 
 
-<div class="viewcode-block" id="get_rpc_client"><a class="viewcode-back" href="../../../pvp.coordinator.html#pvp.coordinator.rpc.get_rpc_client">[docs]</a><span class="k">def</span> <span class="nf">get_rpc_client</span><span class="p">():</span>
+<div class="viewcode-block" id="get_rpc_client"><a class="viewcode-back" href="../../../coordinator.html#pvp.coordinator.rpc.get_rpc_client">[docs]</a><span class="k">def</span> <span class="nf">get_rpc_client</span><span class="p">():</span>
     <span class="c1"># https://mail.python.org/pipermail/python-bugs-list/2015-January/260126.html</span>
     <span class="c1">#transport = xmlrpc.client.Transport()</span>
     <span class="c1">#con = transport.make_connection(f&quot;http://{default_addr}:{default_port}/&quot;)</span>
     <span class="c1">#con.timeout = 5</span>
     <span class="c1">#</span>
-    <span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpc</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">default_addr</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">default_port</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">)</span>
+    <span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpc</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;http://</span><span class="si">{default_addr}</span><span class="s2">:</span><span class="si">{default_port}</span><span class="s2">/&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">proxy</span></div>
 </pre></div>

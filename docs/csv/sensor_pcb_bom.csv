@@ -1,0 +1,14 @@
+﻿Ref,Part,Purpose
+J1,40-pin stackable RPi header,Connects board to RPi
+J2,"4-pin 0.1"" header",I2C connector if desired
+J3,"2-pin 0.1"" header",Connects ALRT pin from ADS1115 to RPi if needed
+J4,"3-pin 0.1"" header or 3 pin fan extension cable",Connects board to oxygen sensor
+R1,330 Ohm resistor,Sets gain for INA126
+C1,"10 uF, 25V",Cap for TL7660
+C2,"10 uF, 25V",Cap for TL7660
+U1,"TL7660, DIP8",Rail splitter for INA126
+U2,"INA126, DIP8",Instrumentation amplifier for oxygen sensor output
+U3,Amphenol 1 PSI-D-4V-MINI,Airway pressure sensor
+U4,Adafruit ADS1115,4x 12-bit ADC
+U5,Amphenol 5 INCH-D2-P4V-MINI,Differential pressure sensor (for flow measurement)
+U6, ,Auxiliary analog output sensor slot

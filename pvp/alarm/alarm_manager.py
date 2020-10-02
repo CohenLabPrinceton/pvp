@@ -51,7 +51,7 @@ class Alarm_Manager(object):
     snoozed_alarms = {}
     callbacks = []
     depends_callbacks = []
-    rules = {}
+    rules = {} # type: typing.Dict[AlarmType, Alarm_Rule]
 
     logger = init_logger(__name__)
 
@@ -97,7 +97,7 @@ class Alarm_Manager(object):
 
             if isinstance(condition.depends, dict):
                 self.register_dependency(condition, condition.depends, severity)
-            elif isinstance(condition.depends, list) or isinstance(condition.depends, tuple):
+            elif isinstance(condition.depends, list) or isinstance(condition.depends, tuple): # pragma: no cover -- same operation as the single dependency
                 for depend in condition.depends:
                     self.register_dependency(condition, depend, severity)
 
@@ -216,7 +216,7 @@ class Alarm_Manager(object):
 
             self.logger.info('Alarm Raised:\n    '+str(new_alarm))
 
-        else:
+        else: # pragma: no cover
             raise ValueError('No  rule found for alarm type {}'.format(alarm_type))
 
     def deactivate_alarm(self, alarm: (AlarmType, Alarm)):
@@ -240,11 +240,11 @@ class Alarm_Manager(object):
         elif isinstance(alarm, AlarmType):
             alarm_type = alarm
 
-        else:
+        else: # pragma: no cover
             raise ValueError(f'alarm must be AlarmType or Alarm, got {alarm}')
 
         if alarm_type in self.active_alarms.keys():
-            if isinstance(alarm, Alarm):
+            if isinstance(alarm, Alarm):  # pragma: no cover
                 if alarm is not self.active_alarms[alarm_type]:
                     # if we were passed an Alarm and
                     # if this alarm isn't the one that's active, don't deactivate
@@ -253,7 +253,7 @@ class Alarm_Manager(object):
             got_alarm.deactivate()
             self.logged_alarms.append(got_alarm)
             self.logger.info('Deactivated Alarm:\n    ' + str(got_alarm))
-        else:
+        else: # pragma: no cover
             return
 
     def dismiss_alarm(self,
@@ -324,22 +324,22 @@ class Alarm_Manager(object):
         """
 
         if alarm.alarm_type in self.active_alarms.keys():
-            if alarm is self.active_alarms[alarm.alarm_type]:
+            if alarm is self.active_alarms[alarm.alarm_type]: # pragma: no cover
                 return
             # if another alarm is already active,
             # check if this is a higher severity
             if alarm.severity > self.active_alarms[alarm.alarm_type].severity:
                 self.deactivate_alarm(alarm.alarm_type)
                 self.active_alarms[alarm.alarm_type] = alarm
-                for callback in self.callbacks:
+                for callback in self.callbacks: # pragma: no cover - this is a testing method
                     callback(alarm)
-            else:
+            else: # pragma: no cover - this is a testing method
                 return
                 # TODO: currently just bouncing redundant alarms, is that what we want?
         else:
             if alarm.severity > AlarmSeverity.OFF:
                 self.active_alarms[alarm.alarm_type] = alarm
-                for callback in self.callbacks:
+                for callback in self.callbacks: # pragma: no cover - this is a testing method
                     callback(alarm)
 
 

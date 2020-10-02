@@ -22,30 +22,6 @@ def limit_gui(limit=None):
         globals()['LIMIT_GUI_INSTANCE'] = limit
 
 
-PLOTS = odict({
-    ValueName.PRESSURE: SENSOR[ValueName.PRESSURE].to_dict(),
-    ValueName.FLOWOUT: SENSOR[ValueName.FLOWOUT].to_dict()
-})
-"""
-Values to plot.
-
-Should have the same key as some key in :data:`~.defaults.SENSOR`. If it does,
-it will be mutually connected to the resulting :class:`.gui.widgets.Monitor_Value`
-such that the set limit range is updated when the horizontal bars on the plot are updated.::
-
-    {
-        'name' (str): title of plot,
-        'abs_range' (tuple): absolute limit of plot range,
-        'safe_range' (tuple): safe range, will be discolored outside of this range,
-        'color' (str): hex color of line (like "#FF0000")
-    }
-"""
-
-# PLOTS[ValueName.PRESSURE]['color'] = styles.SUBWAY_COLORS['orange']
-# PLOTS[ValueName.FLOWOUT]['color'] = styles.SUBWAY_COLORS['blue']
-# PLOTS[ValueName.PRESSURE]['plot_limits'] = (ValueName.PIP, ValueName.PEEP)
-
-
 ########################
 
 _GUI_INSTANCE = None

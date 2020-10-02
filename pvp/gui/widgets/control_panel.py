@@ -104,7 +104,7 @@ class Control_Panel(QtWidgets.QGroupBox):
             git_version = subprocess.check_output(['git', 'describe', '--always'],
                                                   cwd=os.path.dirname(__file__)).strip().decode('utf-8')
             version = " - ".join([version, git_version])
-        except Exception:
+        except Exception: # pragma: no cover
             # no problem, just use package version
             pass
 
@@ -484,7 +484,7 @@ class HeartBeat(QtWidgets.QFrame):
         self.start_time = time.time()
         self._last_heartbeat = self.start_time
 
-        if update_interval:
+        if update_interval: # pragma: no cover
             self.update_interval = update_interval
 
         self.timer.start(self.update_interval)
@@ -494,7 +494,7 @@ class HeartBeat(QtWidgets.QFrame):
         Stop timer and clear text
         """
         self.timer.stop()
-        self.setText("")
+        self.set_indicator('OFF')
 
     @QtCore.Slot(float)
     def beatheart(self, heartbeat_time):
@@ -563,7 +563,7 @@ class StopWatch(QtWidgets.QLabel):
         """
         self.start_time = time.time()
 
-        if update_interval:
+        if update_interval: # pragma: no cover
             self.update_interval = update_interval
 
         self.timer.start(self.update_interval)

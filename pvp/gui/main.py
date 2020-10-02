@@ -173,7 +173,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
         if set_defaults:
             self.init_controls()
 
-        if screenshot:
+        if screenshot: # pragma: no cover -- just for testing
             self._screenshot()
 
         self.toggle_cycle_widget(values.ValueName.INSPIRATION_TIME_SEC)
@@ -208,9 +208,9 @@ class PVP_Gui(QtWidgets.QMainWindow):
             if vals.breath_count > 1:
                 # don't test this because we don't usually want the GUI just updating during tests
                 # and this method is really heavy, so we test each of the pieces separately
-                try:
-                    self.alarm_manager.update(vals) # pragma: no cover
-                except Exception as e:
+                try: # pragma: no cover
+                    self.alarm_manager.update(vals)
+                except Exception as e: # pragma: no cover
                     self.logger.exception(f"Couldnt update alarm manager: {e}")
 
             try:
@@ -368,7 +368,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
                                     QtWidgets.QSizePolicy.Maximum)
             self.display_layout.addWidget(self.logo, alignment=QtCore.Qt.AlignBottom)
 
-        except Exception as e:
+        except Exception as e: # pragma: no cover
             #nbd if we can't load logo
             self.logger.exception(f'Logo could not be loaded: {e}')
 
@@ -546,12 +546,21 @@ class PVP_Gui(QtWidgets.QMainWindow):
                 try:
                     self.monitor[cause.name].alarm_state = alarm.severity
                 except:
-                    # FIXME: will be fixed when values are displayed next to controls
                     pass
                 try:
                     self.controls[cause.name].alarm_state= alarm.severity
                 except:
                     pass
+
+        if self.running:
+            if len(self.alarm_bar.alarms) > 0:
+                self.control_panel.start_button.set_state('ALARM')
+            else:
+                self.control_panel.start_button.set_state('ON')
+
+
+
+
 
     @QtCore.Slot(ControlSetting)
     def limits_updated(self, control:ControlSetting):
@@ -644,7 +653,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
             #     'NotImplementedError.exe',
             # )
             # box.exec_()
-            if not self.running:
+            if not self.running: # pragma: no cover
                 return
 
             do_stop = False
@@ -669,11 +678,13 @@ class PVP_Gui(QtWidgets.QMainWindow):
 
             if do_stop:
                 self.coordinator.stop()
+                self.running = False
                 self.control_panel.start_button.set_state('OFF')
                 self.toggle_lock(False)
-                self.running = False
                 self.control_panel.runtime.stop_timer()
-            return
+                self.control_panel.heartbeat.stop_timer()
+            else: # pragma: no cover
+                return
 
         self.state_changed.emit(state)
 
@@ -841,7 +852,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
         Args:
             units (str): one of "cmH2O" or "hPa"
         """
-        if units not in ('cmH2O', 'hPa'):
+        if units not in ('cmH2O', 'hPa'): # pragma: no cover
             self.logger.exception(f'Couldnt set pressure units {units}')
             return
 
@@ -849,7 +860,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
         self.controls[ValueName.PEEP.name].set_units(units)
         # self.pressure_waveform.set_units(units)
         self.monitor[ValueName.PRESSURE.name].set_units(units)
-        self.plots[ValueName.PRESSURE.name].set_units(units)
+        self.plot_box.set_units(units)
 
     def set_breath_detection(self, breath_detection: bool):
         """
@@ -859,6 +870,15 @@ class PVP_Gui(QtWidgets.QMainWindow):
             breath_detection (bool): Whether the controller detects autonomous breaths and resets the breath cycle accordingly
         """
         self.coordinator.set_breath_detection(breath_detection)
+
+    def get_breath_detection(self) -> bool:
+        """
+        Get the current state of breath detection from the controller
+
+        Returns:
+            bool: if True, automatic breath detection is enabled
+        """
+        return self.coordinator.get_breath_detection()
 
     def _set_cycle_control(self, value_name: str, new_value: float):
         """
@@ -1017,7 +1037,7 @@ class PVP_Gui(QtWidgets.QMainWindow):
                 continue
             self.set_value(control_params.default, control_name)
 
-    def _screenshot(self):
+    def _screenshot(self): # pragma: no cover - just for testing
         """
         Raise each of the alarm severities to check if they work and to take a screenshot
 

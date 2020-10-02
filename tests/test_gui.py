@@ -20,6 +20,7 @@ import pdb
 import pytest
 from time import sleep, time
 
+from .test_alarms import fake_rule
 
 from pytestqt import qt_compat
 from pytestqt.qt_compat import qt_api
@@ -28,10 +29,10 @@ from pytestqt.qt_compat import qt_api
 from pvp import gui
 from pvp.gui import styles
 from pvp.gui import widgets
-from pvp.common import message, values
+from pvp.common import message, values, unit_conversion, prefs
 from pvp.common.values import ValueName
 from pvp.coordinator.coordinator import get_coordinator
-from pvp.alarm import AlarmType, AlarmSeverity
+from pvp.alarm import AlarmType, AlarmSeverity, Alarm, Alarm_Manager
 
 # from pvp.common import prefs
 # prefs.set_pref('ENABLE_DIALOGS', False)
@@ -45,6 +46,7 @@ import numpy as np
 
 # turn off gui limiting
 gui.limit_gui(False)
+assert gui.limit_gui() == False
 
 n_samples = 100
 decimals = 5
@@ -152,7 +154,12 @@ def test_gui_launch(qtbot):
     # now set defaults and try again
     vent_gui.init_controls()
     vent_gui.control_panel.start_button.click()
+    vent_gui.plot_box.set_duration(1)
     # wait for a second to let the simulation spin up and start spitting values
+    qtbot.wait(2000)
+
+    # flip the units and make sure nothing breaks
+    vent_gui.control_panel.pressure_buttons['hPa'].click()
     qtbot.wait(2000)
 
     assert vent_gui.isVisible()
@@ -169,8 +176,9 @@ def test_gui_launch(qtbot):
 # test user interaction
 #
 # @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.CONTROL.items() if k == values.ValueName.PIP] )
+@pytest.mark.parametrize('test_units', ('cmH2O', 'hPa'))
 @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.DISPLAY_CONTROL.items() if k!=values.ValueName.IE_RATIO])
-def test_gui_controls(qtbot, spawn_gui, test_value):
+def test_gui_controls(qtbot, spawn_gui, test_value, test_units):
     """
     test setting controls in all the ways available to the GUI
 
@@ -191,6 +199,10 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
     value_name = test_value[0]
     value_params = test_value[1]
 
+    # mercifully skip pointless tests
+    if test_units == "hPa" and value_name not in (ValueName.PIP, ValueName.PEEP):
+        return
+
     app, vent_gui = spawn_gui
 
     # if one of the cycle variables, make sure we click the other one as being autocalculated
@@ -200,9 +212,14 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
         vent_gui.control_panel.cycle_buttons[values.ValueName.INSPIRATION_TIME_SEC].click()
 
 
+
+    vent_gui.control_panel.pressure_buttons[test_units].click()
+
     vent_gui.start()
     vent_gui.timer.stop()
     vent_gui.control_panel.lock_button.click()
+    # stop controller because it will do funny things like change the PIP setting on us to correct for a HAPA with our random ass settings
+    vent_gui.coordinator.stop()
 
 
     abs_range = value_params.abs_range
@@ -226,10 +243,14 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
         control_widget.set_value_label.setLabelEditableAction()
         control_widget.set_value_label.lineEdit.setText(str(test_value))
         control_widget.set_value_label.returnPressedAction()
-        # should call labelUpdatedAction and send to controller
+        #
+        # qtbot.keyPress(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
+        # qtbot.keyRelease(control_widget.set_value_label.lineEdit, QtCore.Qt.Key_Enter, 1)
 
         control_value = vent_gui.coordinator.get_control(value_name)
 
+        if control_widget._convert_out:
+            test_value = control_widget._convert_out(test_value)
         assert(control_value.value == test_value)
 
     # from slider if we've got one
@@ -245,7 +266,10 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
             control_widget.slider.setValue(test_value)
 
             control_value = vent_gui.coordinator.get_control(value_name)
-            assert(control_value.value == test_value)
+            if control_widget._convert_out:
+                test_value = control_widget._convert_out(test_value)
+            # we expect some slop from the slider
+            assert np.isclose(control_value.value, test_value, rtol=.1)
 
     # or from the recorder if we've got one
     elif value_params.control_type == "record":
@@ -265,7 +289,10 @@ def test_gui_controls(qtbot, spawn_gui, test_value):
             control_widget.toggle_button.click()
             assert(control_widget.toggle_button.isChecked() == False)
             control_value = vent_gui.coordinator.get_control(value_name)
-            assert control_value.value == np.mean(test_values)
+            test_value = np.mean(test_values)
+            # if control_widget._convert_out:
+            #     test_value = control_widget._convert_out(test_value)
+            assert np.isclose(control_value.value, test_value)
 
     # should be one or the other
     else:
@@ -401,8 +428,6 @@ def test_raise_alarm_card(qtbot, spawn_gui, fake_sensors):
 
     assert any([a.alarm_type == AlarmType.HIGH_PRESSURE for a in vent_gui.alarm_bar.alarms])
 
-
-
 def test_gui_main_etc(qtbot, spawn_gui):
 
     app, vent_gui = spawn_gui
@@ -410,24 +435,145 @@ def test_gui_main_etc(qtbot, spawn_gui):
     # test setting update period
     vent_gui.update_period = 0.10
     assert vent_gui.update_period == 0.10
+    assert vent_gui.timer.interval() == 0.10 * 1000 # (in ms)
 
+    # test appearing and disappearing plots
+    plot_key = list(values.PLOTS.keys())[0]
+    plot_visible = vent_gui.plot_box.plots[plot_key.name].isVisible()
 
+    vent_gui.plot_box.selection_buttons[plot_key.name].click()
+    visible_now = vent_gui.plot_box.plots[plot_key.name].isVisible()
+    assert plot_visible != visible_now
 
+    vent_gui.plot_box.selection_buttons[plot_key.name].click()
+    how_about_now = vent_gui.plot_box.plots[plot_key.name].isVisible()
+    assert plot_visible == how_about_now
 
 #########################
 # Test control panel
-def test_pressure_unit_conversion():
-    # TODO: this
-    return
+def test_pressure_unit_conversion(qtbot, spawn_gui, fake_sensors):
+    app, vent_gui = spawn_gui
 
-def test_sliders_during_unit_convertion():
-    # TODO: this
-    return
+    vent_gui.control_panel.start_button.click()
+    vent_gui.timer.stop()
 
-def test_set_breath_detection():
-    # TODO: this
-    pass
+    sensor = fake_sensors({ValueName.PRESSURE: 10})
+    vent_gui.update_gui(sensor)
+    vent_gui.timer.stop()
 
+    assert vent_gui.monitor[ValueName.PRESSURE.name].sensor_value == 10
+    assert vent_gui.plot_box.plots[ValueName.PRESSURE.name]
+
+
+    vent_gui.control_panel.pressure_buttons['hPa'].click()
+
+    # get display text and compare
+    display_widget = vent_gui.monitor[ValueName.PRESSURE.name]
+    display_widget.timed_update()
+    display_text = display_widget.sensor_label.text()
+
+    assert display_text == unit_conversion.rounded_string(unit_conversion.cmH2O_to_hPa(10), display_widget.decimals)
+
+    vent_gui.control_panel.pressure_buttons['cmH2O'].click()
+
+    # TODO: test if shit is displayed like all back to normal like
+
+def test_set_breath_detection(qtbot, spawn_gui):
+    app, vent_gui = spawn_gui
+
+    breath_detection = prefs.get_pref('BREATH_DETECTION')
+
+    assert vent_gui.get_breath_detection() == breath_detection
+    assert vent_gui.control_panel.breath_detection_button.isChecked() == breath_detection
+
+    breath_detection = not breath_detection
+
+    vent_gui.control_panel.breath_detection_button.click()
+
+    assert vent_gui.get_breath_detection() == breath_detection
+    assert vent_gui.control_panel.breath_detection_button.isChecked() == breath_detection
+
+#######################
+# alarm bar
+
+def test_alarm_bar(qtbot, fake_rule):
+
+    alarm_bar = widgets.Alarm_Bar()
+
+    alarm_manager = Alarm_Manager()
+    alarm_manager.reset()
+    alarm_manager.rules = {}
+    alarm_manager.load_rule(fake_rule())
+
+    # make callback to catch emitted alarms
+    global alarms_emitted
+    alarms_emitted = []
+
+    def alarm_cb(alarm):
+        assert isinstance(alarm, Alarm)
+        global alarms_emitted
+        alarms_emitted.append(alarm)
+
+    alarm_manager.add_callback(alarm_cb)
+
+    qtbot.addWidget(alarm_bar)
+
+    # raise alarms
+    low = Alarm(alarm_type=AlarmType.HIGH_PRESSURE,
+                severity=AlarmSeverity.LOW, latch=False)
+    med = Alarm(alarm_type = AlarmType.LOW_PEEP,
+                severity=AlarmSeverity.MEDIUM, latch=False)
+    high = Alarm(alarm_type = AlarmType.LOW_VTE,
+                 severity=AlarmSeverity.HIGH, latch=False)
+
+    alarm_bar.add_alarm(med)
+    alarm_bar.add_alarm(low)
+    alarm_bar.add_alarm(high)
+
+    # test reordering
+    assert alarm_bar.alarms == [low, med, high]
+    assert alarm_bar.sound_player.playing
+
+    # clear alarms
+    alarm_bar.clear_alarm(alarm=med)
+    alarm_bar.clear_alarm(alarm_type=high.alarm_type)
+    alarm_bar.clear_alarm(alarm=low)
+
+    assert alarm_bar.alarms == []
+    assert alarm_bar.sound_player.playing == False
+
+    # add an alarm and replace it with another of the same type
+    med_hapa = Alarm(alarm_type=AlarmType.HIGH_PRESSURE,
+                severity=AlarmSeverity.MEDIUM, latch=False)
+    alarm_bar.add_alarm(low)
+    alarm_bar.add_alarm(med_hapa)
+    assert alarm_bar.alarms == [med_hapa]
+    assert alarm_bar.sound_player.playing == True
+
+    # get an error if try to clear nothing
+    with pytest.raises(ValueError):
+        alarm_bar.clear_alarm()
+
+    # mute the sound
+    alarm_bar.mute_button.click()
+    assert alarm_bar.sound_player._muted
+    assert not alarm_bar.sound_player.playing
+
+    alarm_bar.mute_button.click()
+    assert not alarm_bar.sound_player._muted
+    assert alarm_bar.sound_player.playing
+
+    # dismiss the alarm
+    alarm_bar.alarm_cards[0].close_button.click()
+    # check that we get an alarm with alarmseverity off.
+    # the GUI would clear this alarm if so
+    assert alarms_emitted[-1].alarm_type == AlarmType.HIGH_PRESSURE
+    assert alarms_emitted[-1].severity == AlarmSeverity.OFF
+
+    alarm_manager.reset()
+    alarm_manager.rules = {}
+    alarm_manager.dependencies = {}
+    alarm_manager.load_rules()
 
 ###################################
 # Test base components
@@ -456,7 +602,6 @@ def test_doubleslider(qtbot):
         assert(doubleslider.value() == test_val)
         assert(blocker.args == test_val)
 
-
 def test_doubleslider_minmax(qtbot, generic_minmax):
 
     doubleslider = widgets.components.DoubleSlider(decimals=decimals)
@@ -473,6 +618,8 @@ def test_doubleslider_minmax(qtbot, generic_minmax):
         # test that values were set correctly
         assert(doubleslider.minimum() == min)
         assert(doubleslider.maximum() == max)
+        assert doubleslider._minimum() == int(np.round(doubleslider.minimum() * doubleslider._multi))
+        assert doubleslider._maximum() == int(np.round(doubleslider.maximum() * doubleslider._multi))
 
         # test below min and above max
         test_min = min - np.random.rand()*multiplier
@@ -482,166 +629,55 @@ def test_doubleslider_minmax(qtbot, generic_minmax):
         assert(doubleslider.value() == doubleslider.minimum())
         doubleslider.setValue(test_max)
         assert(doubleslider.value() == doubleslider.maximum())
-#
-# #################
-# # RangeSlider
-#
-# def test_rangeslider(qtbot, generic_minmax, generic_saferange):
-#     abs_range = generic_minmax()
-#     safe_range = generic_saferange()
-#     print(safe_range)
-#     orientation = QtCore.Qt.Orientation.Horizontal
-#
-#
-#     rangeslider = widgets.components.RangeSlider(
-#         abs_range,
-#         safe_range,
-#         decimals=decimals,
-#         orientation=orientation)
-#     rangeslider.show()
-#     qtbot.addWidget(rangeslider)
-#
-#     # test ranges & values
-#     assert(rangeslider.minimum() == abs_range[0])
-#     assert(rangeslider.maximum() == abs_range[1])
-#     assert(rangeslider.low == safe_range[0])
-#     assert(rangeslider.high == safe_range[1])
-#
-#     for i in range(n_samples):
-#         min, max = generic_saferange()
-#         print(min, max)
-#
-#         with qtbot.waitSignal(rangeslider.valueChanged, timeout=1000) as blocker:
-#             rangeslider.setHigh(max)
-#             assert(rangeslider.high == max)
-#
-#             rangeslider.setLow(min)
-#             assert(rangeslider.low == min)
-#
-# def test_rangeslider_minmax(qtbot, generic_minmax, generic_saferange):
-#     abs_range = generic_minmax()
-#     safe_range = generic_saferange()
-#     decimals = 5
-#     orientation = QtCore.Qt.Orientation.Horizontal
-#
-#     rangeslider = widgets.components.RangeSlider(
-#         abs_range,
-#         safe_range,
-#         decimals=decimals,
-#         orientation=orientation)
-#     rangeslider.show()
-#     qtbot.addWidget(rangeslider)
-#
-#     for i in range(n_samples):
-#         abs_min, abs_max = generic_minmax()
-#         safe_min, safe_max = generic_saferange()
-#
-#         #pdb.set_trace()
-#         # Set min and max and test they were set correctly
-#         rangeslider.setMinimum(abs_min)
-#         assert(rangeslider.minimum() == abs_min)
-#
-#         rangeslider.setMaximum(abs_max)
-#         assert(rangeslider.maximum() == abs_max)
-#
-#         # set low and high and test they were set correctly
-#         rangeslider.setHigh(safe_max)
-#         assert(rangeslider.high == safe_max)
-#
-#         rangeslider.setLow(safe_min)
-#         assert(rangeslider.low == safe_min)
-#
-#         # try to set low and high outside of max
-#         rangeslider.setHigh(abs_max + 1)
-#         assert(rangeslider.high == rangeslider.maximum())
-#
-#         rangeslider.setLow(abs_min - 1)
-#         assert(rangeslider.low == rangeslider.minimum())
-#
-#         # try to set low higher and high and vice versa
-#         midpoint = np.round(np.mean([abs_min, abs_max]), decimals)
-#         highpoint = np.round(midpoint-1, decimals)
-#         lowpoint = np.round(midpoint-1-(10**-decimals), decimals)
-#
-#         rangeslider.setLow(midpoint)
-#         rangeslider.setHigh(highpoint)
-#
-#         assert(rangeslider.high == highpoint)
-#         assert(rangeslider.low == lowpoint)
-#
-#         highpoint = np.round(midpoint+1+(10**-decimals), decimals)
-#         lowpoint = np.round(midpoint + 1, decimals)
-#
-#         rangeslider.setHigh(midpoint)
-#         rangeslider.setLow(lowpoint)
-#
-#         assert(rangeslider.low == lowpoint)
-#         assert(rangeslider.high == highpoint)
-#
 
+def test_editable_label(qtbot):
+    label = widgets.components.EditableLabel()
+    qtbot.addWidget(label)
 
-##########################
-# keeping for good pytest-qt exmaples
+    test_val = str(1.0)
+    label.setText(test_val)
 
-# @pytest.mark.parametrize("test_value", [(k, v) for k, v in values.SENSOR.items()])
-# def test_gui_monitor(qtbot, spawn_gui, test_value):
+    assert label.text() == test_val
+    assert not label._editing
 
+    # click and edit label
+    qtbot.mouseClick(label.label, QtCore.Qt.LeftButton, delay=10)
+    assert label._editing
+    assert label.label.isHidden()
+    assert not label.lineEdit.isHidden()
+    assert label.lineEdit.text() == test_val
 
-#     app, vent_gui = spawn_gui
+    new_text = "2.0"
+    qtbot.keyClicks(label.lineEdit, new_text)
 
-#     vent_gui.start()
-#     vent_gui.timer.stop()
+    with qtbot.waitSignal(label.textChanged, timeout=1000) as emitted_text:
+        qtbot.keyClick(label.lineEdit, QtCore.Qt.Key_Enter, delay=10)
 
+    assert emitted_text.args == [new_text]
 
-#     value_name = test_value[0]
-#     value_params = test_value[1]
-#     abs_range = value_params.abs_range
+    assert label.text() == new_text
+    assert not label._editing
+    assert not label.label.isHidden()
+    assert label.lineEdit.isHidden()
 
-#     # generate target value
-#     def gen_test_values():
-#         test_value = np.random.rand(2)*(abs_range[1]-abs_range[0]) + abs_range[0]
-#         test_value = np.round(test_value, value_params.decimals)
-#         return np.min(test_value), np.max(test_value)
+    # test escape
+    qtbot.mouseClick(label.label, QtCore.Qt.LeftButton, delay=10)
+    assert label._editing
+    assert label.label.isHidden()
+    assert not label.lineEdit.isHidden()
 
-#     monitor_widget = vent_gui.monitor[value_name.name]
+    escape_text = "3.0"
+    qtbot.keyClicks(label.lineEdit, escape_text)
+    qtbot.keyClick(label.lineEdit, QtCore.Qt.Key_Escape, delay=10)
+    assert not label._editing
+    assert not label.label.isHidden()
+    assert label.lineEdit.isHidden()
+    assert label.text() == new_text
 
-#     # open the control
-#     assert(monitor_widget.slider_frame.isVisible() == False)
-#     monitor_widget.toggle_button.click()
-#     assert (monitor_widget.slider_frame.isVisible() == True)
-
-#     # set handles to abs_min and max so are on absolute right and left sides
-#     monitor_widget.range_slider.setValue(abs_range)
-#     assert(monitor_widget.range_slider.low == monitor_widget.range_slider.minimum())
-#     assert (monitor_widget.range_slider.high == monitor_widget.range_slider.maximum())
-#     #
-#     # # move left a quarter of the way to the right
-#     # widget_size = monitor_widget.range_slider.size()
-#     #
-#     # # get low box position
-#     # low_pos = monitor_widget.range_slider.get_handle_rect(0)
-#     # click_pos = low_pos.center()
-#     # move_pos = copy(click_pos)
-#     # move_pos.setX(move_pos.x() + (widget_size.width()/4))
-#     #
-#     # qtbot.mouseMove(monitor_widget.range_slider, click_pos, delay=100)
-#     # qtbot.mousePress(monitor_widget.range_slider, QtCore.Qt.LeftButton, delay=200)
-#     # qtbot.mouseMove(monitor_widget.range_slider, move_pos)
-#     # qtbot.mouseRelease(monitor_widget.range_slider, QtCore.Qt.LeftButton, pos=move_pos, delay=200)
-
-
-#     # set with range_slider
-#     # for i in range(n_samples):
-#     #     test_min, test_max = gen_test_values()
-#     #
-#     #
-#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-#     #         monitor_widget.range_slider.setLow(test_min)
-#     #         sleep(0.01)
-#     #         assert(blocker.args[0][0]==test_min)
-#     #
-#     #     with qtbot.waitSignal(monitor_widget.limits_changed, timeout=1000) as blocker:
-#     #         monitor_widget.range_slider.setHigh(test_max)
-#     #         sleep(0.01)
-#     #         assert(blocker.args[0][1]==test_max)
+    # test is_editable
+    label.setEditable(False)
+    qtbot.mouseClick(label.label, QtCore.Qt.LeftButton, delay=10)
+    assert not label._editing
+    assert not label.label.isHidden()
+    assert label.lineEdit.isHidden()
 

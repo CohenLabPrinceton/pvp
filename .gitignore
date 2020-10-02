@@ -11,3 +11,16 @@ sandbox/data_1.npy
 *.ipynb_checkpoint*
 build
 dist
+*.log
+*.json
+*.h5
+*.mat
+*.1
+*.2
+*.3
+sandbox/data/pvp.gui.main.log.4
+*.5
+sandbox/Untitled.ipynb
+*.svg
+sandbox/make_average_plots.ipynb
+sandbox/make_average_plots.ipynb

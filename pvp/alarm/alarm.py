@@ -101,7 +101,7 @@ class Alarm:
         Returns:
 
         """
-        if not self.active:
+        if not self.active: # pragma: no cover
             return
 
         self.end_time = time.time()

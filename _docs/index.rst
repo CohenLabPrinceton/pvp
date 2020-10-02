@@ -20,8 +20,6 @@ The **People's Ventilator Project (PVP)** is an open-source, low-cost pressure-c
 The **PVP** largely follows established design conventions, most importantly active and computer-controlled inhalation, together with passive exhalation.
 It supports pressure-controlled ventilation, combined with standard-features like autonomous breath detection, and the suite of FDA required alarms.
 
-`Read on here. <overview>`
-
 .. raw:: html
 
     <video width="100%" autoplay loop>
@@ -46,15 +44,6 @@ A gauge pressure sensor monitors airway pressure, and an inexpensive D-lite spir
 PVP's components are coordinated by a Raspberry Pi 4 board, which runs the graphical user interface, administers the alarm system, monitors sensor values, and sends actuation commands to the valves.
 The core electrical system consists of two modular board 'hats', a sensor board and an actuator board, that stack onto the Raspberry Pi via 40-pin stackable headers.
 The modularity of this system enables individual boards to be revised or modified to substitute components in the case of part scarcity.
-
-.. raw:: html
-
-    <img src="assets/images/electronics_diagram.png" alt="Electronics diagram for People's Ventilator Project">
-    </img>
-
-Links to system:
-... Mechanical overview
-... Electronics overview
 
 Software
 ========
@@ -100,6 +89,7 @@ PVP Modules
 
    System Overview <overview>
    Performance <performance>
+   Medical Disclaimer <disclaimer>
 
 .. toctree::
    :hidden:
@@ -146,3 +136,10 @@ PVP Modules
    Building the Docs <buildthedocs>
    Markdown Example <example_markdown>
    Index <meta_index>
+   
+Medical Disclaimer
+========
+PVP1 is not a regulated or clinically validated medical device. We have not yet performed testing for safety or efficacy on living organisms. All material describes herein should be used at your own risk and do not represent a medical recommendation. PVP1 is currently recommended only for research purposes.
+This website is not connected to, endorsed by, or representative of the view of Princeton University. Neither the authors nor Princeton University assume any liability or responsibility for any consequences, damages, or loss caused or alleged to be caused directly or indirectly for any action or inaction taken based on or made in reliance on the information or material discussed herein or linked to from this website.
+PVP1 is under continuous development and the information here may not be up to date, nor is any guarantee made as such. Neither the authors nor Princeton University are liable for  any damage or loss related to the accuracy, completeness or timeliness of any information describe or linked to from this website.
+By continuing to watch or read this, you are acknowledging and accepting this disclaimer.

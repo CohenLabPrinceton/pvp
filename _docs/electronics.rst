@@ -76,3 +76,7 @@ The purpose of the actuator board is twofold:
    :widths: 10,30,60
    :header-rows: 1
   
+  
+  We outsourced our PCB fabrication to Advanced Circuits, based out of Aurora, CO (for $33 each): https://www.4pcb.com/pcb-prototype-2-4-layer-boards-specials.html
+  If you would like to do the same, you can send them the Gerber .zip files we have provided directly. 
+  

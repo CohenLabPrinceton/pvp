@@ -21,6 +21,9 @@ The **People's Ventilator Project (PVP)** is an open-source, low-cost pressure-c
 The **PVP** largely follows established design conventions, most importantly active and computer-controlled inhalation, together with passive exhalation.
 It supports pressure-controlled ventilation, combined with standard-features like autonomous breath detection, and the suite of FDA required alarms.
 
+`See our medRxiv preprint here!
+<https://www.medrxiv.org/content/10.1101/2020.10.02.20206037v1>`_
+
 .. raw:: html
 
     <video width="100%" autoplay loop>

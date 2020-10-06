@@ -21,7 +21,7 @@ Hardware Design
 The following is a guided walk through the main hardware components that comprise the respiratory circuit,
 roughly following the flow of gas from the system inlet, to the patient, then out through the expiratory valve.
 
-**Hospital gas bleder.**
+**Hospital gas blender.**
 At the inlet to the system, we assume the presence of a commercial-off-the-shelf (COTS) gas blender. These devices mix air from U.S. standard medical air and O2 as supplied at the hospital wall at a pressure of around 50 psig. The device outlet fitting may vary, but we assume a male O2 DISS fitting (NIST standard). In field hospitals, compressed air and O2 cylinders may be utilized in conjunction with a gas blender, or a low-cost Venturi-based gas blender. We additionally assume that the oxygen concentration of gas supplied by the blender can be manually adjusted. Users will be able to monitor the oxygen concentration level in real-time on the device GUI. 
 
 **Fittings and 3D printed adapters.**
@@ -39,7 +39,7 @@ The system includes an oxygen sensor for monitoring oxygen concentration of the 
 **Pressure relief.**
 A critical safety component is the pressure relief valve (alternatively called the "pressure release valve", or "pressure safety valve"). The proportional valve is controlled to ensure that the pressure of the gas supplied to the patient never rises above a set maximum level. The relief valve acts as a backup safety mechanism and opens if the pressure exceeds a safe level, thereby dumping excess gas to atmosphere. Thus, the relief valve in this system is located between the proportional valve and the patient respiratory circuit. The pressure relief valve we source cracks at 1 psi (approx 70 cm H2O).
 
-**Standard repisratory circuit.**
+**Standard respiratory circuit.**
 The breathing circuit which connects the patient to the device is a standard respiratory circuit: the flexible, corrugated plastic tubing used in commercial ICU ventilators. Because this system assumes the use of an HME/F to maintain humidity levels of gas supplied to the patient, specialized heated tubing is not required. 
  
 **Anti-suffocation check valve.** 

@@ -9,6 +9,7 @@
          <h1>Supply-chain resilient</h1>
          <h1>pressure-control ventilator</h1>
          <h1 style="color: #fd2701;">for the people</h1>
+		 <h3>A project funded by Princeton University</h3>
       </div>
    </div>
 
@@ -90,6 +91,7 @@ PVP Modules
    System Overview <overview>
    Performance <performance>
    Medical Disclaimer <disclaimer>
+   Funding and Support <funding>
 
 .. toctree::
    :hidden:

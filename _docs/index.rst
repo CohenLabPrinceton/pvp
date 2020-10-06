@@ -9,7 +9,7 @@
          <h1>Supply-chain resilient</h1>
          <h1>pressure-control ventilator</h1>
          <h1 style="color: #fd2701;">for the people</h1>
-		 <h3>A project funded by Princeton University</h3>
+		 <h3>A project funded and supported by Princeton University</h3>
       </div>
    </div>
 

@@ -3,15 +3,13 @@
 Software Overview
 ==================
 
-.. image:: assets/images/gui_overview_v1_1920px.png
-   :width: 100%
-   :alt: Gui Overview - modular design, alarm cards, multiple modalities of input, alarm limits represented consistently across ui
+.. raw:: html
+   :file: assets/images/pvp_software_overview_clickable.svg
 
 
 PVP is modularly designed to facilitate future adaptation to new hardware configurations and ventilation modes. APIs were designed for each of the modules to a) make them easily inspected and configured and b) make it clear to future developers how to adapt the system to their needs. 
 
 PVP runs as multiple independent processes The GUI provides an interface to control and monitor ventilation, and the controller process handles the ventilation logic and interfaces with the hardware. Inter-process communication is mediated by a coordinator module via xml-rpc. Several ’common’ modules facilitate system configuration and constitute the inter-process API. We designed  the API around a uni-fied, configurablevaluesmodule that allow the GUI andcontroller to be reconfigured while also ensuring system robustness and simplicity.
-
 
 * The :ref:`GUI <gui_overview>` and :ref:`Coordinator <coordinator_overview>` run in the first process, receive user input, display system status, and relay :class:`~.message.ControlSetting` s to the :ref:`Controller <controller_overview>` .
 * At launch, the :ref:`Coordinator <coordinator_overview>` spawns a :ref:`Controller <controller_overview>` that runs the logic of the ventilator based on control values from the GUI.

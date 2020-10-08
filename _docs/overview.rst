@@ -11,7 +11,7 @@ The **People's Ventilator Project (PVP)** is an open-source, low-cost pressure-c
     </video>
 
 Hardware
-=========
+--------
 
 .. raw:: html
     :file: /images/schematic_v2.svg
@@ -25,7 +25,7 @@ including 3D-printable components, as well as justifications for selecting all a
 as guidance to those who cannot source an exact match to components used in the Bill of Materials.
 
 PVP Hardware
---------------
+_____________
 
 .. raw:: html
 
@@ -38,7 +38,7 @@ PVP Hardware
 
 
 Software
-========
+--------
 
 .. image:: /images/gui_overview_v1_1920px.png
    :width: 100%
@@ -60,7 +60,7 @@ to give everyone the freedom to inspect, understand, and expand PVP's software f
 
 
 PVP Modules
-------------
+____________
 
 .. raw:: html
 

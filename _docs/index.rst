@@ -124,22 +124,8 @@ PVP Modules
 .. toctree::
    :hidden:
    :maxdepth: 4
-   :caption: Resources:
-
-   Ventilator Requirements <requirements>
-   Datasheets & Manuals <datasheets>
-   Specifications <specs>
-
-
-.. toctree::
-   :hidden:
-   :maxdepth: 4
    :caption: Meta:
 
-   Changelog <changelog/index>
-   Contributing <contributing>
-   Building the Docs <buildthedocs>
-   Markdown Example <example_markdown>
    Index <meta_index>
    
 Medical Disclaimer

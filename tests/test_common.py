@@ -14,5 +14,6 @@ def test_control_settings(control_setting_name):
     assert ControlSetting(name=name, value=np.random.random(), min_value = np.random.random(), max_value = np.random.random())
     assert ControlSetting(name=name, value=None, min_value = None, max_value = None)
 
+    assert ControlSetting(name="doesnotexist", value=np.random.random(), min_value = np.random.random(), max_value = np.random.random())
 
     # assert c_read.timestamp == c.timestamp

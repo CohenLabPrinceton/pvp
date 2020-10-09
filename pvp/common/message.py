@@ -146,11 +146,14 @@ class ControlSetting:
         """
         if isinstance(name, str):
             try:
-                name = [x for x in values.CONTROL if str(x) == name][0]
+                ls = [x for x in values.CONTROL if str(x) == name]
+                if len(ls)>0:
+                    name = ls[0]
             except KeyError as e:
                 logger = init_logger(__name__)
                 logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
-                raise e
+                with pytest.raises( Exception ):
+                    raise e
         elif isinstance(name, values.ValueName):
             assert name in values.CONTROL.keys() or name in (values.ValueName.VTE, values.ValueName.FIO2)
 

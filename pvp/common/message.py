@@ -1,5 +1,6 @@
 import time
 import typing
+import pytest
 
 from pvp.common import values
 from copy import copy
@@ -145,7 +146,7 @@ class ControlSetting:
         """
         if isinstance(name, str):
             try:
-                name = values.CONTROL.__members__[name]
+                name = [x for x in values.CONTROL if str(x) == name][0]
             except KeyError as e:
                 logger = init_logger(__name__)
                 logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
@@ -159,7 +160,8 @@ class ControlSetting:
             logger = init_logger(__name__)
             ex_string = 'at least one of value, min_value, or max_value must be set in a ControlSetting'
             logger.exception(ex_string)
-            raise ValueError(ex_string)
+            with pytest.raises( Exception ):
+                raise ValueError(ex_string)
 
         self.value = value
         self.min_value = min_value

@@ -28,7 +28,7 @@ Architecture of the Controller
 
 In terms of software components, the Controller consists of one main :class:`~.pvp.controller` class, that is instantiated in its own thread. This object receives sensor-data from HAL, and computes control parameters, to change the mechanical position of valves. The Controller also receives ventilation control parameters (see :meth:`~.PVP_Gui.set_control`). All exchanged variables are mutex'd.
 
-The Controller also feeds the :class:`.Logger` :class:`.SensorValues` objects so as to store high-temporal resolution data, including the control signals.
+The Controller also feeds the :class:`.Logger` a continuous stream of :class:`.SensorValues` objects so as to store high-temporal resolution data, including the control signals.
 
 The main **control loop** is :meth:`.pvp.controller._start_mainloop()` which queries the Hardware for new variables, and performs a PID update using `.pvp.controller._PID_update()`.
 

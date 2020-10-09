@@ -145,15 +145,14 @@ class ControlSetting:
                 this attr, when present, specifies which is being set.
         """
         if isinstance(name, str):
-            try:
-                ls = [x for x in values.CONTROL if str(x) == name]
-                if len(ls)>0:
-                    name = ls[0]
-            except KeyError as e:
+            ls = [x for x in values.CONTROL if str(x) == name]
+            if len(ls)>0:
+                name = ls[0]
+            else:
                 logger = init_logger(__name__)
                 logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
                 with pytest.raises( Exception ):
-                    raise e
+                    raise KeyError
         elif isinstance(name, values.ValueName):
             assert name in values.CONTROL.keys() or name in (values.ValueName.VTE, values.ValueName.FIO2)
 

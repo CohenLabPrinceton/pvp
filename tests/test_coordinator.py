@@ -141,6 +141,7 @@ def test_process_manager():
         assert False
 
     coordinator.process_manager.start_process()
+    coordinator.process_manager.start_process() # Nothing should happen if called twice
 
     #time.sleep(1)
     assert coordinator.process_manager.child_pid is not None

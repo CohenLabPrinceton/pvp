@@ -142,6 +142,7 @@ class ControlModuleBase:
         self._DATA_OXYGEN   = 0
         self.COPY_DATA_OXYGEN  = 0        # Oxygen is not queried in every cycle. This is a copy of the value
         self._OXYGEN_LAST_READ = 0        # Last time the oxygen sensor was read.
+        self.OXYGEN_READ_FREQUENCY = prefs.get_pref('OXYGEN_READ_FREQUENCY')  # Frequency with with oxygen is read. usually ~2s
 
         self._DATA_Qout     = 0           # Measurement of the airflow out
         self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
@@ -877,7 +878,7 @@ class ControlModuleDevice(ControlModuleBase):
             self._DATA_Qout         = 0                                  # Flow out and oxygen are not measured
             self.COPY_DATA_OXYGEN   = self._DATA_OXYGEN
         else:
-            if time.time() - self._OXYGEN_LAST_READ > 5:                 # If the time has come, get an oxygen value.
+            if time.time() - self._OXYGEN_LAST_READ > self.OXYGEN_READ_FREQUENCY:                 # If the time has come, get an oxygen value.
                 self._DATA_OXYGEN = self.HAL.oxygen
                 self._OXYGEN_LAST_READ = time.time()
 

@@ -9,7 +9,7 @@ Purpose of the Controller
 
 .. image:: /images/single_waveform.png
    :width: 100%
-   :alt: Single Waveform 
+   :alt: Raw data for a single breath; blue is pressure and orange is flow-out.
 
 Shown above is a typical respiratory waveform (without averaging) as produced with PVP1. Blue is the recorded pressure, orange is the flow out of the system. Note that airflow (and also oxygen concentration) are only measured during expiration, so that the main control-loop during inspiration runs as fast as possible, and is not slowed down by communication delays. Pressure is recorded continuously. Empirically, the Raspberry pi allowed for the primary control loop to run at speeds of ~5ms per loop, which was considerably faster than all hardware delays (i.e. the time it takes for a mechanical, physical valve to open or close; see main manuscript).
 

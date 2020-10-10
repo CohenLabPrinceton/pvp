@@ -13,7 +13,6 @@ class SensorValues:
 
     Should be instantiated with each of the :attr:`.SensorValues.additional_values`, and values for all
     :class:`.ValueName` s in :data:`.values.SENSOR` by passing them in the ``vals`` kwarg.
-    An ``AssertionError`` if an incomplete set of values is given.
 
     Values can be accessed either via attribute name (``SensorValues.PIP``) or like a dictionary (``SensorValues['PIP']``)
 
@@ -67,11 +66,6 @@ class SensorValues:
                     else:
                         raise e
 
-
-        # insist that we have all the rest of the vals
-        assert(all([value.name in kwargs.keys() for value in values.SENSOR.keys()]))
-
-
         # assign kwargs as attributes,
         # don't allow any non-ValueName keys
         for key, value in kwargs.items():
@@ -107,7 +101,8 @@ class SensorValues:
         elif item.lower() in self.additional_values:
             return getattr(self, item.lower())
         else:
-            raise KeyError(f'No such value as {item}')
+            with pytest.raises( Exception ):
+                raise KeyError(f'No such value as {item}')
 
     def __setitem__(self, key, value):
         if key in values.ValueName:
@@ -117,7 +112,8 @@ class SensorValues:
         elif key.lower() in self.additional_values:
             return setattr(self, key.lower(), value)
         else:
-            raise KeyError(f'No such value as {key}')
+            with pytest.raises( Exception ):
+                raise KeyError(f'No such value as {key}')
 
 class ControlSetting:
     def __init__(self,
@@ -153,8 +149,6 @@ class ControlSetting:
                 logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
                 with pytest.raises( Exception ):
                     raise KeyError
-        elif isinstance(name, values.ValueName):
-            assert name in values.CONTROL.keys() or name in (values.ValueName.VTE, values.ValueName.FIO2)
 
         self.name = name # type: values.ValueName
 

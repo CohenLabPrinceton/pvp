@@ -64,7 +64,8 @@ class SensorValues:
                         # otherwise just make one
                         self.timestamp = time.time()
                     else:
-                        raise e
+                        with pytest.raises( Exception ):
+                            raise e
 
         # assign kwargs as attributes,
         # don't allow any non-ValueName keys
@@ -74,7 +75,7 @@ class SensorValues:
             elif key in self.additional_values:
                 continue
             else:
-                raise KeyError(f'value {key} not declared in pvp.values!!!')
+                raise KeyError(f'value {key} not declared in pvp.values!!!')  # pragma: no cover
 
     def to_dict(self) -> dict:
         """

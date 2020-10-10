@@ -19,8 +19,7 @@ def test_control_settings(control_setting_name):
 
 
 def test_sensor_values():
-
-    vals={      ValueName.PIP.name                  : 0,
+    vals  =  {  ValueName.PIP.name                  : 0,
                 ValueName.PEEP.name                 : 0,
                 ValueName.FIO2.name                 : 0,
                 ValueName.PRESSURE.name             : 0,
@@ -48,3 +47,16 @@ def test_sensor_values():
     sv.__setitem__('bla', 12)
     sv.__getitem__('bla')
 
+
+    vals  = {   ValueName.PIP.name                  : 0,
+                ValueName.PEEP.name                 : 0,
+                ValueName.FIO2.name                 : 0,
+                ValueName.PRESSURE.name             : 0,
+                ValueName.VTE.name                  : 0,
+                ValueName.BREATHS_PER_MINUTE.name   : 0,
+                ValueName.INSPIRATION_TIME_SEC.name : 0,
+                ValueName.FLOWOUT.name              : 0}
+
+    sv = SensorValues(vals=vals)
+    sv = SensorValues(timestamp=None, loop_counter=0, breath_count=0, vals=vals)
+    assert sv.timestamp > 0

@@ -1,6 +1,6 @@
 from .pigpio_mocks import patch_pigpio_base, patch_pigpio_i2c, patch_pigpio_gpio, mock_i2c_hardware
 from pvp.io.devices import ADS1015, ADS1115, PigpioConnection
-from pvp.io.devices.sensors import Sensor, AnalogSensor, SFM3200, SimSensor
+from pvp.io.devices.sensors import Sensor, AnalogSensor, SFM3200, SimSensor, DLiteSensor
 from secrets import token_bytes
 
 import numpy as np
@@ -77,6 +77,15 @@ def test_analog_sensor_single_read(patch_pigpio_i2c, mock_i2c_hardware, ads1x15,
         pig.mock_i2c[1][mock['i2c_address']].write_mock_hardware_register(0, conversion_bytes[i])
         result = a_sensor.get()
         assert round(result, 9) == round(expected[i], 9)
+
+    # A few lines to test dhe DLite
+    dlite = DLiteSensor(ads, **kwargs)
+    raw = 10*np.random.random()
+    converted_value = dlite._convert(raw)
+    assert type(converted_value) == float or type(converted_value) == np.float64
+    converted_value = dlite._convert(-1*raw)
+    assert type(converted_value) == float or type(converted_value) == np.float64
+    dlite.calibrate() # Just a return
     """__________________________________________________________________________________________________________
     """
 

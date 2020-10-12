@@ -801,7 +801,7 @@ class ControlModuleDevice(ControlModuleBase):
         try:
             self.HAL = io.Hal(config_file)
         except Exception: 
-            self.HAL = HALMock() 
+            self.HAL = io.HALMock()
             #TODO: Raise technical alert
 
         self._sensor_to_COPY()
@@ -936,18 +936,6 @@ class ControlModuleDevice(ControlModuleBase):
             self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
             self._sensor_to_COPY()  # Copy sensor values to COPY
             self.set_valves_standby()
-
-class HALMock():
-    """
-    A HAL mock class to fall back to, if io.HAL times out. Unclear what the software is to do, if hardware is available...
-    Decision: Start up with a technical alert.
-    """
-    def __init__(self):
-        self.setpoint_in = 0
-        self.setpoint_ex = 0
-        self.pressure    = 0
-        self.oxygen      = 0
-        self.flow_ex     = 0
 
 class Balloon_Simulator:
     """

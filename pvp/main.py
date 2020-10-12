@@ -10,7 +10,7 @@ from pvp.gui.main import launch_gui
 from pvp.coordinator.coordinator import get_coordinator
 
 
-def parse_cmd_args():
+def parse_cmd_args(arg):
     parser = argparse.ArgumentParser()
     # TODO: maybe we should add a mode without UI display, so this would only have command line interface?
     parser.add_argument('--simulation',
@@ -25,13 +25,16 @@ def parse_cmd_args():
     parser.add_argument('--screenshot',
                         help='raise dummy alarms to take a screenshot!',
                         action='store_true')
-    return parser.parse_args()
+    return parser.parse_args(arg)
 
-def set_valves_save_position(args):
+def set_valves_save_position(args, config_file = 'pvp/io/config/devices.ini'):
     if not args.simulation:
         print("Terminating program; closing vents...")
         time.sleep(0.01)
-        HAL = io.Hal( config_file = 'pvp/io/config/devices.ini')
+        if config_file == None:
+            HAL = io.HALMock()
+        else:
+            HAL = io.Hal(config_file)
         for i in range(10):
             HAL.setpoint_in = 0
             HAL.setpoint_ex = 1
@@ -40,7 +43,7 @@ def set_valves_save_position(args):
         print("Terminating simulation.")
 
 def main():
-    args = parse_cmd_args()
+    args = parse_cmd_args(sys.argv[1:])
     try:
         coordinator = get_coordinator(single_process=args.single_process, sim_mode=args.simulation)
         app, gui = launch_gui(coordinator, args.default_controls, screenshot=args.screenshot)

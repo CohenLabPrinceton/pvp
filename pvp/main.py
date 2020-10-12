@@ -34,7 +34,8 @@ def set_valves_save_position(args, config_file = 'pvp/io/config/devices.ini'):
         if config_file == None:
             HAL = io.HALMock()
         else:
-            HAL = io.Hal(config_file)
+            #Following line is tested in all the hal tests:
+            HAL = io.Hal(config_file) # pragma: no cover
         for i in range(10):
             HAL.setpoint_in = 0
             HAL.setpoint_ex = 1
@@ -42,8 +43,8 @@ def set_valves_save_position(args, config_file = 'pvp/io/config/devices.ini'):
     else:
         print("Terminating simulation.")
 
-def main():
-    args = parse_cmd_args(sys.argv[1:])
+def main(arg):
+    args = parse_cmd_args(arg)
     try:
         coordinator = get_coordinator(single_process=args.single_process, sim_mode=args.simulation)
         app, gui = launch_gui(coordinator, args.default_controls, screenshot=args.screenshot)
@@ -53,11 +54,10 @@ def main():
 
 
     # TODO: gui.main(ui_control_module)
-
-    # TODO: use signal for mor flexible termination, e.g.
+    # TODO: use signal for more flexible termination, e.g.
     # signal.signal(signal.SIGINT, set_valves_to_save_position)   # Keyboard interrupt
     # signal.signal(signal.SIGTERM, set_valves_to_save_position)  # Termination signal
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])

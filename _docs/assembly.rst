@@ -34,6 +34,13 @@ For PRUSA users, we provide an example project, demonstrating part orientation:
 
 * :download:`Sample Prusa project - [.3mf] <../assets/STLs/All_PVP1_Components.3mf>`
 
+.. figure:: /images/3D_Printed_Components.png
+    :align: center
+    :figwidth: 75%
+    :width: 75%
+    
+    Sample Prusa project with 3D printed components
+
 Enclosure
 ------------------------
 

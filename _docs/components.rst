@@ -3,8 +3,8 @@ Components
 
 .. figure:: /images/Schematic_v2.svg
     :align: center
-    :figwidth: 75%
-    :width: 75%
+    :figwidth: 100%
+    :width: 100%
     
     PVP hardware schematic
 	

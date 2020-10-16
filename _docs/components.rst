@@ -1,8 +1,12 @@
 Components
 ==================
 
-.. raw:: html
-    :file: /images/Schematic_v2.svg
+.. figure:: /images/Schematic_v2.svg
+    :align: center
+    :figwidth: 75%
+    :width: 75%
+    
+    PVP hardware schematic
 	
 .. toctree::
    :maxdepth: 4

@@ -1,11 +1,8 @@
 Components
 ==================
 
-The device components were selected to enable a **minimalistic and relatively low-cost ventilator design**, to avoid supply chain limitations, and to facilitate rapid and easy assembly. Most parts in our system are not medical-specific devices, and those that are specialized components are readily available and standardized across ventilator platforms, such as standard respiratory circuits and HEPA filters.
-Below, we provide justifications for selecting all actuators and sensors as guidance to those who cannot source an exact match to components used in the PVP.
-
 .. raw:: html
-    :file: /images/schematic_v2.svg
+    :file: /images/Schematic_v2.svg
 	
 .. toctree::
    :maxdepth: 4

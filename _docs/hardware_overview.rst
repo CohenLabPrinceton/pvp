@@ -8,6 +8,14 @@ Hardware Overview
 
 The PVP components were selected to enable a **minimalistic and relatively low-cost ventilator design**, to avoid supply chain limitations, and to facilitate rapid and easy assembly. Most parts in the PVP are not medical-specific devices, and those that are specialized components are readily available and standardized across ventilator platforms, such as standard respiratory circuits and HEPA filters. We provide complete assembly of the PVP, including 3D-printable components, as well as justifications for selecting all actuators and sensors, as guidance to those who cannot source an exact match to components used in the Bill of Materials.
 
+
+.. figure:: /images/Schematic_v2.svg
+    :align: center
+    :figwidth: 100%
+    :width: 100%
+    
+    PVP hardware schematic
+
 .. raw:: html
 
     <div class="software-summary">

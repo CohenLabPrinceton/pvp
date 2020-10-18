@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from pvp.io.devices.pins import Pin, PWMOutput
+import os
 
 import numpy as np
+from pvp.common.loggers import init_logger
 
 
 class SolenoidBase(ABC):
@@ -18,6 +20,7 @@ class SolenoidBase(ABC):
             form (str): The form of the solenoid; can be either `Normally Open` or `Normally Closed`
         """
         self.form = form
+        self.logger = init_logger(__name__)
 
     @property
     def form(self) -> str:
@@ -214,8 +217,24 @@ class PWMControlValve(SolenoidBase, PWMOutput):
             response_path: 'path/to/binary/response/file' - if response_path is None, defaults to `setpoint = duty`
         """
         if response_path is not None:
-            response_array = np.load(response_path)
+            if os.path.isabs(response_path):
+                response_array = np.load(response_path)
+            else:
+                # relative path, check if it's relative to the root of the package (ie. starts with pvp/)
+                base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+                combined_path = os.path.join(base_dir, response_path)
+                if os.path.exists(combined_path):
+                    response_array = np.load(combined_path)
+                else:
+                    # if it still can't be found, try loading it as given and otherwise give informative error message
+                    try:
+                        response_array = np.load(response_path)
+                    except FileNotFoundError as e:
+                        print(e)
+                        raise FileNotFoundError(f'Could not find valve response calibration file, path must either be an absolute path or a path relative to the directory containing the package (eg. pvp/io/config/calibration/...). Given {response_path}')
+
         else:
+            self.logger.exception('Response path was not passed, generating a linear response curve')
             response_array = np.linspace([0, 0, 0], [100, 1, 1], num=101)
         self._response_array = response_array
 

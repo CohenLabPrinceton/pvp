@@ -1,6 +1,7 @@
 from .pigpio_mocks import patch_pigpio_base, patch_pigpio_gpio, soft_frequencies
 from pvp.io.devices.valves import OnOffValve, PWMControlValve, SimOnOffValve, SimControlValve
 from secrets import token_bytes
+import os
 
 import pytest
 import random
@@ -63,10 +64,10 @@ def test_pwm_control_valve(patch_pigpio_gpio, seed):
     random.seed(seed)
     gpio = random.choice(PWMControlValve._HARDWARE_PWM_PINS)
     form = 'Normally Closed'
-    '''with pytest.raises(NotImplementedError):
-        PWMControlValve(gpio, form)'''
+
     with pytest.raises(NotImplementedError):
         PWMControlValve(gpio, 'Normally Open')
+
     if random.getrandbits(1):
         valve = PWMControlValve(gpio, form)
     else:
@@ -93,6 +94,19 @@ def test_pwm_control_valve(patch_pigpio_gpio, seed):
         valve.setpoint = -1
     """__________________________________________________________________________________________________________
     """
+
+def test_valve_paths(patch_pigpio_gpio):
+    gpio = random.choice(PWMControlValve._HARDWARE_PWM_PINS)
+    form = 'Normally Closed'
+
+    # abs path
+    try_path = os.path.abspath('pvp/io/config/calibration/SMC_PVQ31_5G_23_01N_response')
+    valve = PWMControlValve(gpio, form, response=try_path)
+
+    # bad path
+    with pytest.raises(FileNotFoundError):
+        valve = PWMControlValve(gpio, form, response='some/random/path/that/doesnt/exist')
+
 
 
 @pytest.mark.parametrize("gpio", random.sample(range(31), 16))

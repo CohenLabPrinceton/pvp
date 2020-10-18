@@ -67,7 +67,9 @@ setup(
     ],
     package_data={
         "*": ["data/*", "assets/*", ""],
-        "pvp": ["external/*", "gui/images/*"]
+        "pvp": ["external/*",
+                "gui/images/*",
+                "io/config/*"]
     },
     dependency_links=depend_links,
     python_requires='==3.7.*'

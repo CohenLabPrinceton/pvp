@@ -59,7 +59,7 @@ _DEFAULTS = {
     'ENABLE_WARNINGS': True, # enable user warnings and confirmations
     'CONTROLLER_MAX_FLOW': 10,
     'CONTROLLER_MAX_PRESSURE': 100,
-    'CONTROLLER_MAX_STUCK_SENSOR': 0.2,
+    'CONTROLLER_MAX_STUCK_SENSOR': 5,  # Choose such that O2 doesn't constantly trigger a stuck sensor; oxygen read every ~2 seconds; see 'OXYGEN_READ_FREQUENCY' below
     'CONTROLLER_LOOP_UPDATE_TIME': 0.0,
     'CONTROLLER_LOOP_UPDATE_TIME_SIMULATOR': 0.005,
     'CONTROLLER_LOOPS_UNTIL_UPDATE': 1,  # update copied values like get_sensor every n loops,
@@ -67,6 +67,7 @@ _DEFAULTS = {
     'COUGH_DURATION': 0.1,
     'BREATH_PRESSURE_DROP': 4,
     'BREATH_DETECTION': True,
+    'OXYGEN_READ_FREQUENCY': 2
 
 }
 """

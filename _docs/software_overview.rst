@@ -26,6 +26,19 @@ PVP is launched like::
 
 And launch options can be displayed with the ``--help`` flag.
 
+Folder Structure
+==================
+
+The repository is organized as follows:
+
+* `pvp/assets/` contains technical information like CAD drawings, circuit diagrams.
+* `pvp/data/`   contains information for calibrating sensors;  data and information.
+* `pvp/_docs` and pvp/docs is raw, and built documentation.
+* `pvp/tests` contains automated tests for all software modules.
+* `pvp/sandbox` is experimental code, that is not necessary to operate pvp. Place your toy programs here.
+* `pvp/pvp` is the main code. It contains individual files for all modules of PVP1. Binary files like audio/graphics are deposited with the respective module, and not collected in a central site. 
+
+
 PVP Modules
 ------------
 

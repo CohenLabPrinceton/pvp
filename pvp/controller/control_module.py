@@ -142,6 +142,7 @@ class ControlModuleBase:
         self._DATA_OXYGEN   = 0
         self.COPY_DATA_OXYGEN  = 0        # Oxygen is not queried in every cycle. This is a copy of the value
         self._OXYGEN_LAST_READ = 0        # Last time the oxygen sensor was read.
+        self.OXYGEN_READ_FREQUENCY = prefs.get_pref('OXYGEN_READ_FREQUENCY')  # Frequency with with oxygen is read. usually ~2s
 
         self._DATA_Qout     = 0           # Measurement of the airflow out
         self._DATA_dpdt     = 0           # Current sample of the rate of change of pressure dP/dt in cmH2O/sec
@@ -800,7 +801,7 @@ class ControlModuleDevice(ControlModuleBase):
         try:
             self.HAL = io.Hal(config_file)
         except Exception: 
-            self.HAL = HALMock() 
+            self.HAL = io.HALMock()
             #TODO: Raise technical alert
 
         self._sensor_to_COPY()
@@ -877,7 +878,7 @@ class ControlModuleDevice(ControlModuleBase):
             self._DATA_Qout         = 0                                  # Flow out and oxygen are not measured
             self.COPY_DATA_OXYGEN   = self._DATA_OXYGEN
         else:
-            if time.time() - self._OXYGEN_LAST_READ > 5:                 # If the time has come, get an oxygen value.
+            if time.time() - self._OXYGEN_LAST_READ > self.OXYGEN_READ_FREQUENCY:                 # If the time has come, get an oxygen value.
                 self._DATA_OXYGEN = self.HAL.oxygen
                 self._OXYGEN_LAST_READ = time.time()
 
@@ -935,18 +936,6 @@ class ControlModuleDevice(ControlModuleBase):
             self._controls_from_COPY()  # Update controls from possibly updated values as a chunk
             self._sensor_to_COPY()  # Copy sensor values to COPY
             self.set_valves_standby()
-
-class HALMock():
-    """
-    A HAL mock class to fall back to, if io.HAL times out. Unclear what the software is to do, if hardware is available...
-    Decision: Start up with a technical alert.
-    """
-    def __init__(self):
-        self.setpoint_in = 0
-        self.setpoint_ex = 0
-        self.pressure    = 0
-        self.oxygen      = 0
-        self.flow_ex     = 0
 
 class Balloon_Simulator:
     """

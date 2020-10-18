@@ -19,8 +19,8 @@ class ProcessManager:
         self.start_process()
         #time.sleep(1)
 
-    def __del__(self):
-        self.try_stop_process()
+    def __del__(self): #Destructor stop methode tested below:
+        self.try_stop_process()          # pragma: no cover
 
     def start_process(self):
         if self.child_process is not None:

@@ -293,10 +293,6 @@ class Value(object):
             assert all([isinstance(x, ValueName) for x in plot_limits])
         self._plot_limits = plot_limits
 
-
-    def __setitem__(self, key, value):
-        self.__setattr__(key, value)
-
     def __getitem__(self, key):
         return self.__getattribute__(key)
 

@@ -6,7 +6,6 @@ __pycache__*
 tmp
 *.egg-info
 .coverage
-sandbox/data_1.npy
 *.npy
 *.ipynb_checkpoint*
 build
@@ -18,9 +17,8 @@ dist
 *.1
 *.2
 *.3
-sandbox/data/pvp.gui.main.log.4
+*.4
 *.5
-sandbox/Untitled.ipynb
 *.svg
-sandbox/make_average_plots.ipynb
-sandbox/make_average_plots.ipynb
+
+sandbox/Untitled.ipynb

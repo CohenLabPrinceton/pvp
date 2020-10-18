@@ -16,36 +16,35 @@ socket.setdefaulttimeout(default_timeout)
 remote_controller = None # type: typing.Union[None, control_module.ControlModuleBase]
 
 
-def get_sensors():
+# General comment on the "# pragma: no cover":
+# These functions are extensively tested in the UI-tests, but not monitored by travis 
+
+def get_sensors():                                           # pragma: no cover
     res = remote_controller.get_sensors()
     return pickle.dumps(res)
 
-def get_alarms():
+def get_alarms():                                            # pragma: no cover
     res = remote_controller.get_alarms()
     return pickle.dumps(res)
 
-
-def set_control(control_setting):
+def set_control(control_setting):                            # pragma: no cover
     args = pickle.loads(control_setting.data)
     remote_controller.set_control(args)
 
-
-def get_control(control_setting_name):
+def get_control(control_setting_name):                       # pragma: no cover
     args = pickle.loads(control_setting_name.data)
     res = remote_controller.get_control(args)
     return pickle.dumps(res)
 
-def set_breath_detection(breath_detection):
+def set_breath_detection(breath_detection):                  # pragma: no cover
     args = pickle.loads(breath_detection.data)
     remote_controller.set_breath_detection(args)
 
-def get_breath_detection():
+def get_breath_detection():                                  # pragma: no cover
     res = remote_controller.get_breath_detection()
     return pickle.dumps(res)
 
-
-
-def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port):
+def rpc_server_main(sim_mode, serve_event, addr=default_addr, port=default_port):  # pragma: no cover
     logger = init_logger(__name__)
     logger.info('controller process init')
     global remote_controller

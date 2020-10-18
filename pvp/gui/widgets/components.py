@@ -1,3 +1,8 @@
+"""
+Very basic components used by other widgets.
+
+These are relatively sparsely documented because their operation is mostly self-explanatory
+"""
 import copy
 import pdb
 import typing
@@ -54,13 +59,13 @@ class DoubleSlider(QtWidgets.QSlider):
     def _maximum(self):
         return super(DoubleSlider, self).maximum()
 
-    def setSingleStep(self, value):
+    def setSingleStep(self, value): # pragma: no cover - don't care about this
         return super(DoubleSlider, self).setSingleStep(round(value * self._multi))
 
-    def singleStep(self):
+    def singleStep(self): # pragma: no cover - don't care about this
         return float(super(DoubleSlider, self).singleStep()) / self._multi
 
-    def _singleStep(self):
+    def _singleStep(self): # pragma: no cover - don't care about this
         return super(DoubleSlider, self).singleStep()
 
     def setValue(self, value):
@@ -96,6 +101,7 @@ class EditableLabel(QtWidgets.QWidget):
 
         self.is_editable = kwargs.get("editable", True)
         self.keyPressHandler = KeyPressHandler(self)
+        self._editing = False
 
         # self.setStyleSheet(styles.CONTROL_VALUE)
 
@@ -159,6 +165,7 @@ class EditableLabel(QtWidgets.QWidget):
         self.lineEdit.blockSignals(False)
         self.lineEdit.setFocus(QtCore.Qt.MouseFocusReason)
         self.lineEdit.selectAll()
+        self._editing = True
 
     def setEditable(self, editable: bool):
         self.is_editable = editable
@@ -175,6 +182,7 @@ class EditableLabel(QtWidgets.QWidget):
         self.lineEdit.setHidden(True)
         self.lineEdit.blockSignals(True)
         self.label.blockSignals(False)
+        self._editing = False
 
     def returnPressedAction(self):
         """Return/enter event handler"""
@@ -186,6 +194,7 @@ class EditableLabel(QtWidgets.QWidget):
         self.lineEdit.setHidden(True)
         self.lineEdit.blockSignals(True)
         self.label.blockSignals(False)
+        self._editing = False
 
 
 class QHLine(QtWidgets.QFrame):

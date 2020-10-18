@@ -15,12 +15,27 @@ import typing
 
 class Alarm_Manager(object):
     """
+    The Alarm Manager
+
+    The alarm manager receives :class:`.SensorValues` from the GUI via :meth:`.Alarm_Manager.update` and emits
+    :class:`.Alarm` s to methods given by :meth:`.Alarm_Manager.add_callback` . When alarm limits are
+    updated (ie. the :class:`.Alarm_Rule` has :attr:`~.Alarm_Rule.depends` ), it emits them to methods registered
+    with :meth:`.Alarm_Manager.add_dependency_callback` .
+
+    On initialization, the alarm manager calls :meth:`.Alarm_Manager.load_rules` , which
+    loads all rules defined in :data:`.alarm.ALARM_RULES` .
+
     Attributes:
         active_alarms (dict): {:class:`.AlarmType`: :class:`.Alarm`}
+        logged_alarms (list): A list of deactivated alarms.
+        dependencies (dict): A dictionary mapping :class:`.ValueName` s to the alarm threshold dependencies they update
         pending_clears (list): [:class:`.AlarmType`] list of alarms that have been requested to be cleared
         callbacks (list): list of callables that accept `Alarm` s when they are raised/altered.
         cleared_alarms (list): of :class:`.AlarmType` s, alarms that have been cleared but have not dropped back into the 'off' range to enable re-raising
         snoozed_alarms (dict): of :class:`.AlarmType` s : times, alarms that should not be raised because they have been silenced for a period of time
+        callbacks (list): list of callables to send :class:`.Alarm` objects to
+        depends_callbacks (list): When we :meth:`.update_dependencies`, we send back a :class:`.ControlSetting` with the new min/max
+        rules (dict): A dict mapping :class:`.AlarmType` to :class:`.Alarm_Rule` .
     """
     _instance = None
 
@@ -36,10 +51,7 @@ class Alarm_Manager(object):
     snoozed_alarms = {}
     callbacks = []
     depends_callbacks = []
-    """
-    When we :meth:`.update_dependencies`, we send back a :class:`.ControlSetting` with the new min/max
-    """
-    rules = {}
+    rules = {} # type: typing.Dict[AlarmType, Alarm_Rule]
 
     logger = init_logger(__name__)
 
@@ -61,6 +73,9 @@ class Alarm_Manager(object):
             self.load_rules()
 
     def load_rules(self):
+        """
+        Copy alarms from :data:`.alarm.ALARM_RULES` and call :meth:`.Alarm_Manager.load_rule` for each
+        """
         from pvp.alarm import ALARM_RULES
         rules = copy.deepcopy(ALARM_RULES)
 
@@ -70,13 +85,19 @@ class Alarm_Manager(object):
 
 
     def load_rule(self, alarm_rule: Alarm_Rule):
+        """
+        Add the Alarm Rule to :attr:`.Alarm_Manager.rules` and register any dependencies they have with :meth:`.Alarm_Manager.register_dependency`
+
+        Args:
+            alarm_rule ( :class:`.Alarm_Rule` ): Alarm rule to be loaded
+        """
         self.rules[alarm_rule.name] = alarm_rule
 
         for severity, condition in alarm_rule.conditions:
 
             if isinstance(condition.depends, dict):
                 self.register_dependency(condition, condition.depends, severity)
-            elif isinstance(condition.depends, list) or isinstance(condition.depends, tuple):
+            elif isinstance(condition.depends, list) or isinstance(condition.depends, tuple): # pragma: no cover -- same operation as the single dependency
                 for depend in condition.depends:
                     self.register_dependency(condition, depend, severity)
 
@@ -85,12 +106,32 @@ class Alarm_Manager(object):
 
 
     def update(self, sensor_values: SensorValues):
+        """
+        Call :meth:`.Alarm_Manager.check_rule` for all rules in :attr:`.Alarm_Manager.rules`
+
+        Args:
+            sensor_values ( :class:`.SensorValues` ): New sensor values from the GUI
+        """
         for alarm_name, rule in self.rules.items():
             self.check_rule(rule, sensor_values)
             # don't want to do alarm emission here because any _check_,
             # not any full update should trigger an alarm
 
     def check_rule(self, rule: Alarm_Rule, sensor_values: SensorValues):
+        """
+        :meth:`~.Alarm_Rule.check` the alarm rule, handle logic of raising, emitting, or lowering an alarm.
+
+        When alarms are dismissed, an :class:`.alarm.Alarm` is emitted with ``AlarmSeverity.OFF`` .
+
+        * If the alarm severity has increased, emit a new alarm.
+        * If the alarm severity has decreased and the alarm is not latched, emit a new alarm
+        * If the alarm severity has decreased and the alarm is latched, check if the alarm has been manually dismissed, if it has emit a new alarm.
+        * If a latched alarm has been manually dismissed previously and the alarm condition is now no longer met, dismiss the alarm.
+
+        Args:
+            rule ( :class:`.Alarm_Rule` ): Alarm rule to check
+            sensor_values ( :class:`.SensorValues` ): sent by the GUI to check against alarm rule
+        """
         current_severity = rule.check(sensor_values)
 
         ##################
@@ -149,8 +190,8 @@ class Alarm_Manager(object):
             This method emits *and* clears alarms -- a cleared alarm is emitted with :attr:`AlarmSeverity.OFF`
 
         Args:
-            alarm_type (:class:`.AlarmType`):
-            severity (:class:`.AlarmSeverity`):
+            alarm_type ( :class:`.AlarmType` ):
+            severity ( :class:`.AlarmSeverity` ):
         """
         if alarm_type in self.rules.keys():
             # if another alarm is currently active, deactivate it
@@ -163,7 +204,6 @@ class Alarm_Manager(object):
                 severity   = severity,
                 start_time = time.time(),
                 latch      = self.rules[alarm_type].latch,
-                persistent = self.rules[alarm_type].persistent,
                 cause = self.rules[alarm_type].value_names
             )
 
@@ -176,12 +216,14 @@ class Alarm_Manager(object):
 
             self.logger.info('Alarm Raised:\n    '+str(new_alarm))
 
-        else:
+        else: # pragma: no cover
             raise ValueError('No  rule found for alarm type {}'.format(alarm_type))
 
     def deactivate_alarm(self, alarm: (AlarmType, Alarm)):
         """
         Mark an alarm's internal active flags and remove from :attr:`.active_alarms`
+
+        Typically called internally when an alarm is being replaced by one of the same type but a different severity.
 
         .. note::
 
@@ -189,10 +231,7 @@ class Alarm_Manager(object):
             for that emit an alarm with AlarmSeverity.OFF
 
         Args:
-            alarm:
-
-        Returns:
-
+            alarm ( :class:`.AlarmType` , :class:`.Alarm` ): Alarm to deactivate
         """
 
         if isinstance(alarm, Alarm):
@@ -201,11 +240,11 @@ class Alarm_Manager(object):
         elif isinstance(alarm, AlarmType):
             alarm_type = alarm
 
-        else:
+        else: # pragma: no cover
             raise ValueError(f'alarm must be AlarmType or Alarm, got {alarm}')
 
         if alarm_type in self.active_alarms.keys():
-            if isinstance(alarm, Alarm):
+            if isinstance(alarm, Alarm):  # pragma: no cover
                 if alarm is not self.active_alarms[alarm_type]:
                     # if we were passed an Alarm and
                     # if this alarm isn't the one that's active, don't deactivate
@@ -214,7 +253,7 @@ class Alarm_Manager(object):
             got_alarm.deactivate()
             self.logged_alarms.append(got_alarm)
             self.logger.info('Deactivated Alarm:\n    ' + str(got_alarm))
-        else:
+        else: # pragma: no cover
             return
 
     def dismiss_alarm(self,
@@ -259,6 +298,15 @@ class Alarm_Manager(object):
             self.emit_alarm(alarm_type, AlarmSeverity.OFF)
 
     def get_alarm_severity(self, alarm_type: AlarmType):
+        """
+        Get the severity of an Alarm
+
+        Args:
+            alarm_type ( :class:`.AlarmType` ): Alarm type to check
+
+        Returns:
+            :class:`.AlarmSeverity`
+        """
         if alarm_type in self.active_alarms.keys():
             return self.active_alarms[alarm_type].severity
         else:
@@ -267,27 +315,33 @@ class Alarm_Manager(object):
 
     def register_alarm(self, alarm: Alarm):
         """
-        Add alarm to registry.
+        Be given an already created alarm and emit to callbacks.
+
+        Mostly used during testing for programmatically created alarms. Creating alarms outside of the Alarm_Manager is generally discouraged.
 
         Args:
             alarm (:class:`.Alarm`)
         """
 
         if alarm.alarm_type in self.active_alarms.keys():
-            if alarm is self.active_alarms[alarm.alarm_type]:
+            if alarm is self.active_alarms[alarm.alarm_type]: # pragma: no cover
                 return
             # if another alarm is already active,
             # check if this is a higher severity
             if alarm.severity > self.active_alarms[alarm.alarm_type].severity:
                 self.deactivate_alarm(alarm.alarm_type)
                 self.active_alarms[alarm.alarm_type] = alarm
-            else:
+                for callback in self.callbacks: # pragma: no cover - this is a testing method
+                    callback(alarm)
+            else: # pragma: no cover - this is a testing method
                 return
                 # TODO: currently just bouncing redundant alarms, is that what we want?
         else:
-            self.active_alarms[alarm.alarm_type] = alarm
+            if alarm.severity > AlarmSeverity.OFF:
+                self.active_alarms[alarm.alarm_type] = alarm
+                for callback in self.callbacks: # pragma: no cover - this is a testing method
+                    callback(alarm)
 
-        # TODO: Emit evidence of this new alarm
 
     def register_dependency(self, condition: Condition,
                             dependency: dict,
@@ -296,7 +350,7 @@ class Alarm_Manager(object):
         Add dependency in a Condition object to be updated when values are changed
 
         Args:
-            condition:
+            condition (dict): Condition as defined in an :class:`.Alarm_Rule`
             dependency (dict): either a (ValueName, attribute_name) or optionally also + transformation callable
             severity (:class:`.AlarmSeverity`): severity of dependency
         """
@@ -315,11 +369,12 @@ class Alarm_Manager(object):
         """
         Update Condition objects that update their value according to some control parameter
 
+        Call any ``transform`` functions on the attribute of the control setting specified in the depencency.
+
+        Emit another :class:`.ControlSetting` describing the new max or min or the value.
+
         Args:
-            control_setting (:class:`.ControlSetting`):
-
-        Returns:
-
+            control_setting (:class:`.ControlSetting`): Control setting that was changed
         """
         if control_setting.name in self.dependencies.keys():
             # dependencies have
@@ -359,14 +414,32 @@ class Alarm_Manager(object):
 
 
     def add_callback(self, callback: typing.Callable):
+        """
+        Assert we're being given a callable and add it to our list of callbacks.
+
+        Args:
+            callback (typing.Callable): Callback that accepts a single argument of an :class:`.Alarm`
+        """
         assert callable(callback)
         self.callbacks.append(callback)
 
     def add_dependency_callback(self, callback: typing.Callable):
+        """
+        Assert we're being given a callable and add it to our list of dependency_callbacks
+
+        Args:
+            callback (typing.Callable): Callback that accepts a :class:`.ControlSetting`
+
+        Returns:
+
+        """
         assert callable(callback)
         self.depends_callbacks.append(callback)
 
     def clear_all_alarms(self):
+        """
+        call :meth:`.Alarm_Manager.deactivate_alarm` for all active alarms.
+        """
         # make separate list because dict will be cleared during iteration
         alarm_keys = list(self.active_alarms.keys())
         for alarm_type in alarm_keys:
@@ -374,7 +447,7 @@ class Alarm_Manager(object):
 
     def reset(self):
         """
-        reset all conditions, callbacks, and other stateful attributes and clear alarms
+        Reset all conditions, callbacks, and other stateful attributes and clear alarms
         """
 
         self.pending_clears = []

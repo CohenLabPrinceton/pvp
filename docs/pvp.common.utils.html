@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>utils &mdash; PVP 0.0.0 documentation</title>
+  <title>utils &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="_static/pvp_logo_favicon.png"/>
   
   
   
@@ -38,7 +41,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="fashion" href="pvp.common.fashion.html" />
-    <link rel="prev" title="unit conversion" href="pvp.common.unit_conversion.html" /> 
+    <link rel="prev" title="Unit Conversion" href="pvp.common.unit_conversion.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -56,13 +59,16 @@
           
 
           
+            
+            <img src="_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -89,29 +95,34 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="common.html">common</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">values</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">loggers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">message</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.prefs.html">prefs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">unit conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_overview.html">Software Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">Controller</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="common.html">Common</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.loggers.html">Loggers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.prefs.html">Prefs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">Unit Conversion</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pvp.common.fashion.html">fashion</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -122,8 +133,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meta_index.html">Index</a></li>
 </ul>
 
             
@@ -259,7 +272,7 @@ def foo(sleeptime):</p>
         <a href="pvp.common.fashion.html" class="btn btn-neutral float-right" title="fashion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="pvp.common.unit_conversion.html" class="btn btn-neutral float-left" title="unit conversion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pvp.common.unit_conversion.html" class="btn btn-neutral float-left" title="Unit Conversion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

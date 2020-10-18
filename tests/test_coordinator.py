@@ -141,6 +141,7 @@ def test_process_manager():
         assert False
 
     coordinator.process_manager.start_process()
+    coordinator.process_manager.start_process() # Nothing should happen if called twice
 
     #time.sleep(1)
     assert coordinator.process_manager.child_pid is not None
@@ -152,12 +153,17 @@ def test_process_manager():
     assert coordinator.process_manager.child_pid is not None
     assert coordinator.is_running() == False
 
+    coordinator.process_manager.__del__() #And test the destructor
 
 def test_local_sensors():
     coordinator = get_coordinator(single_process=True, sim_mode=True)
     coordinator.start()
     #while not coordinator.is_running():
     #    pass
+
+    alarms = coordinator.get_alarms()
+    coordinator.set_breath_detection(True)
+    assert coordinator.get_breath_detection()
 
     sensor_values = coordinator.get_sensors()
     assert isinstance(sensor_values, SensorValues)
@@ -169,6 +175,9 @@ def test_local_sensors():
     for k, v in values_dict.items():
         assert isinstance(k, ValueName) or (k in sensor_values.additional_values)
         assert isinstance(v, int) or isinstance(v, float) or v is None
+
+    assert coordinator.is_running()
+    coordinator.stop()
 
 @pytest.mark.timeout(10)
 def test_remote_sensors():
@@ -191,42 +200,3 @@ def test_remote_sensors():
     for k, v in sensor_values.to_dict().items():
         assert isinstance(k, ValueName) or (k in sensor_values.additional_values)
         assert isinstance(v, int) or isinstance(v, float) or v is None
-
-
-# def test_local_alarms():
-#     coordinator = get_coordinator(single_process=True, sim_mode=True)
-#     coordinator.start()
-#     #while not coordinator.is_running():
-#     #    pass
-#
-#     alarms = coordinator.get_active_alarms()
-#     assert isinstance(alarms, dict)
-#     for k, v in alarms.items():
-#         assert isinstance(v, Alarm)
-#
-#     alarms = coordinator.get_logged_alarms()
-#     assert isinstance(alarms, list)
-#     for a in alarms:
-#         assert isinstance(a, Alarm)
-
-# @pytest.mark.timeout(10)
-# def test_remote_alarms():
-#     # wait before
-#     #while not is_port_in_use(rpc.default_port):
-#     #    time.sleep(1)
-#     coordinator = get_coordinator(single_process=False, sim_mode=True)
-#     # TODO need to wait for rpc client start?
-#     #time.sleep(1)
-#     coordinator.start()
-#     #while not coordinator.is_running():
-#     #    pass
-#
-#     alarms = coordinator.get_active_alarms()
-#     assert isinstance(alarms, dict)
-#     for k, v in alarms.items():
-#         assert isinstance(v, Alarm)
-#
-#     alarms = coordinator.get_logged_alarms()
-#     assert isinstance(alarms, list)
-#     for a in alarms:
-#         assert isinstance(a, Alarm)

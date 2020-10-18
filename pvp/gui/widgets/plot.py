@@ -1,3 +1,14 @@
+"""
+Widgets to plot waveforms of sensor values
+
+The :class:`.PVP_Gui` creates a :class:`.Plot_Container` that allows the user to select
+
+* which plots (of those in :data:`.values.PLOT` ) are displayed
+* the timescale (x range) of the displayed waveforms
+
+Plots display alarm limits as red horizontal bars
+"""
+
 import time
 from collections import deque
 import pdb
@@ -8,9 +19,6 @@ from PySide2 import QtCore, QtWidgets, QtGui
 import PySide2 # import so pyqtgraph recognizes as what we're using
 import pyqtgraph as pg
 # pg.setConfigOptions(antialias=True)
-
-
-
 
 from pvp.gui import styles
 from pvp.gui import mono_font
@@ -31,52 +39,38 @@ PLOT_FREQ = 5
 Update frequency of :class:`.Plot` s in Hz
 """
 
-# TODO: add NamedLine back in order to label limit lines in plots with ValueNames
-
-# class NamedLine(pg.InfiniteLine):
-#     value_changed = QtCore.Signal(tuple)
-#
-#     def __init__(self, name: ValueName, *args, **kwargs):
-#         super(NamedLine, self).__init__(*args, **kwargs)
-#         self.name = name
-#         self.sigPositionChanged.connect(self._value_changed)
-#
-#         self.setHoverPen(color=styles.SUBWAY_COLORS['lime'],
-#                          width=self.pen.width())
-#
-#     def _value_changed(self):
-#         self.value_changed.emit((self.name, self.value()))
-#
-#     def setSpan(self, mn, mx):
-#         if self.span != (mn, mx):
-#             self.span = (mn, mx)
-#             self._invalidateCache()
-#             self.update()
-
 
 class Plot(pg.PlotWidget):
+    """
+    Waveform plot of single sensor value.
+
+    Plots values continuously, wrapping at zero rather than shifting x axis.
+
+    Args:
+        name (str): String version of :class:`.ValueName` used to set title
+        buffer_size (int): number of samples to store
+        plot_duration (float): default x-axis range
+        plot_limits (tuple): tuple of (ValueName)s for which to make pairs of min and max range lines
+        color (None, str): color of lines
+        units (str): Unit label to display along title
+        **kwargs:
+
+    Attributes:
+        timestamps (:class:`collections.deque`): deque of timestamps
+        history (:class:`collections.deque`): deque of sensor values
+        cycles (:class:`collections.deque`): deque of breath cycles
+
+    """
 
     limits_changed = QtCore.Signal(tuple)
 
-    def __init__(self, name, buffer_size = 4092,
-                 plot_duration = 10,
-                 abs_range = None,
+    def __init__(self, name: str, buffer_size: int = 4092,
+                 plot_duration: float = 10,
                  plot_limits: tuple = None,
                  color=None,
                  units='',
                  **kwargs):
-        """
 
-        Args:
-            name:
-            buffer_size:
-            plot_duration:
-            abs_range:
-            plot_limits (tuple): tuple of (ValueName)s for which to make pairs of min and max range lines
-            color:
-            units:
-            **kwargs:
-        """
         #super(Plot, self).__init__(axisItems={'bottom':TimeAxis(orientation='bottom')})
         # construct title html string
         titlestr = "{title_text} ({units})".format(
@@ -96,6 +90,8 @@ class Plot(pg.PlotWidget):
 
         self.name = name
 
+        self.logger = init_logger(__name__)
+
         # pdb.set_trace()
 
         # self.setViewportMargins(0,0,styles.BOX_MARGINS,0)
@@ -114,11 +110,6 @@ class Plot(pg.PlotWidget):
         self._start_time = time.time()
         self._last_time = time.time()
         self._last_relative_time = 0
-
-        self.abs_range = None
-        if abs_range:
-            self.abs_range = abs_range
-            #self.setYRange(self.abs_range[0], self.abs_range[1])
 
         #self.enableAutoRange(y=True)
 
@@ -162,14 +153,23 @@ class Plot(pg.PlotWidget):
             self.late_curve.setPen(color=color, width=3)
 
 
-    def set_duration(self, dur):
+    def set_duration(self, dur: float):
+        """
+        Set duration, or span of x axis.
+
+        Args:
+            dur (float): span of x axis (in seconds)
+        """
         self.plot_duration = int(round(dur))
         self.setXRange(0, self.plot_duration)
 
 
     def update_value(self, new_value: tuple):
         """
-        new_value (tuple): (timestamp from time.time(), breath_cycle, value)
+        Update with new sensor value
+
+        Args:
+            new_value (tuple): (timestamp from time.time(), breath_cycle, value)
         """
         try:
             this_time = time.time()
@@ -206,45 +206,54 @@ class Plot(pg.PlotWidget):
             except IndexError:
                 self.early_curve.setData(plot_timestamps, plot_values)
                 self.late_curve.clear()
-        except:
-            # FIXME: Log this lol
-            print('error plotting value: {}, timestamp: {}'.format(new_value[1], new_value[0]))
-
-        #self._last_time = this_time
-
-    def _safe_limits_changed(self, val):
-        # ignore input val, just emit the current value of the lines
-        self.limits_changed.emit((self.min_safe.value(),
-                                       self.max_safe.value()))
+        except Exception as e:  # pragma: no cover
+            self.logger.exception('{}: error plotting value: {}, {}'.format(self.name, new_value[1], e))
 
     # @QtCore.Slot(tuple)
     def set_safe_limits(self, limits: ControlSetting):
-        if self._plot_limits is None:
+        """
+        Set the position of the max and min lines for a given value
+
+        Args:
+            limits ( :class:`.ControlSetting` ): Controlsetting that has either a ``min_value`` or ``max_value`` defined
+        """
+        if self._plot_limits is None: # pragma: no cover
             return
 
         if limits.name in self._plot_limits.keys():
 
             if limits.min_value:
-                if self._convert_out:
-                    self._plot_limits[limits.name][0].setPos(self._convert_out(limits.min_value))
+                if self._convert_in:
+                    self._plot_limits[limits.name][0].setPos(self._convert_in(limits.min_value))
                 else:
                     self._plot_limits[limits.name][0].setPos(limits.min_value)
             if limits.max_value:
-                if self._convert_out:
-                    self._plot_limits[limits.name][1].setPos(self._convert_out(limits.max_value))
+                if self._convert_in:
+                    self._plot_limits[limits.name][1].setPos(self._convert_in(limits.max_value))
                 else:
                     self._plot_limits[limits.name][1].setPos(limits.max_value)
 
 
     def reset_start_time(self):
+        """
+        Reset start time -- return the scrolling time bar to position 0
+        """
         self._start_time = time.time()
         self._last_time = time.time()
         self._last_relative_time = 0
 
     def set_units(self, units):
+        """
+        Set displayed units
+
+        Currently only implemented for Pressure, display either in cmH2O or hPa
+
+        Args:
+            units ('cmH2O', 'hPa'): unit to display pressure as
+        """
         if self.name in ('Pressure',):
             if units == 'cmH2O':
-                self.decimals = 1
+                #self.decimals = 1
                 self.units = units
                 self._convert_in = None
                 self._convert_out = None
@@ -254,7 +263,7 @@ class Plot(pg.PlotWidget):
                         a_line.setPos(unit_conversion.hPa_to_cmH2O(a_line.getPos()[1]))
 
             elif units == 'hPa':
-                self.decimals = 0
+                #self.decimals = 0
                 self.units = units
                 self._convert_in = unit_conversion.cmH2O_to_hPa
                 self._convert_out = unit_conversion.hPa_to_cmH2O
@@ -271,6 +280,29 @@ class Plot(pg.PlotWidget):
             )
 
 class Plot_Container(QtWidgets.QGroupBox):
+    """
+    Container for multiple :class;`.Plot` objects
+
+    Allows user to show/hide different plots and adjust x-span (time zoom)
+
+    .. note::
+
+        Currently, the only unfortunately hardcoded parameter in the whole GUI is the instruction
+        to initially hide FIO2, there should be an additional parameter in ``Value`` that says whether a plot should initialize as hidden or not
+
+    .. todo::
+
+        Currently, colors are set to alternate between orange and light blue on initialization, but they don't
+        update when plots are shown/hidden, so the alternating can be lost and colors can look random depending on what's selcted.
+
+    Args:
+        plot_descriptors (typing.Dict[ValueName, Value]): dict of :class:`.Value` items to plot
+
+    Attributes:
+        plots (dict): Dict mapping :class:`.ValueName` s to :class:`.Plot` s
+        slider (:class:`PySide2.QtWidgets.QSlider`): slider used to set x span
+
+    """
 
     def __init__(self, plot_descriptors: typing.Dict[ValueName, Value],
                  *args, **kwargs):
@@ -279,7 +311,6 @@ class Plot_Container(QtWidgets.QGroupBox):
 
         self.plot_descriptors = plot_descriptors
         self.plots = {}
-        self.visible = list(plot_descriptors.keys())
 
         self.setStyleSheet(styles.PLOT_BOX)
         self.setContentsMargins(0,0,0,0)
@@ -372,14 +403,31 @@ class Plot_Container(QtWidgets.QGroupBox):
         self.setLayout(self.layout)
 
     def update_value(self, vals: SensorValues):
+        """
+        Try to update all plots who have new sensorvalues
+
+        Args:
+            vals (:class:`.SensorValues`): Sensor Values to update plots with
+
+        """
+
         for plot_key, plot in self.plots.items():
             if hasattr(vals, plot_key):
                 try:
                     plot.update_value((time.time(), getattr(vals, 'breath_count'), getattr(vals, plot_key)))
-                except Exception as e:
+                except Exception as e: # pragma: no cover
                     self.logger.exception(f'Couldnt update plot with {plot_key}, got error {e}')
 
     def toggle_plot(self, state: bool):
+        """
+        Toggle the visibility of a plot.
+
+        get the name of the plot from the ``sender``'s ``objectName``
+
+        Args:
+            state (bool): Whether the plot should be visible (True) or not (False)
+
+        """
 
         sender_name = self.sender().objectName()
         if sender_name in self.plots.keys():
@@ -389,11 +437,31 @@ class Plot_Container(QtWidgets.QGroupBox):
                 self.plots[sender_name].setVisible(False)
 
     def set_safe_limits(self, control: ControlSetting):
+        """
+        Try to set horizontal alarm limits on all relevant plots
+
+        Args:
+            control (:class:`.ControlSetting` ): with either ``min_value`` or ``max_value`` set
+
+        Returns:
+
+        """
         for plot in self.plots.values():
             plot.set_safe_limits(control)
 
     def set_duration(self, duration: float):
-        if isinstance(duration, str):
+        """
+        Set the current duration (span of the x axis) of all plots
+
+        Also make sure that the text box and slider reflect this duration
+
+        Args:
+            duration (float): new duration to set
+
+        Returns:
+
+        """
+        if isinstance(duration, str): # pragma: no cover
             duration = float(duration)
 
         self.time_box.setText(str(duration))
@@ -403,10 +471,26 @@ class Plot_Container(QtWidgets.QGroupBox):
             plot.set_duration(duration)
 
     def reset_start_time(self):
+        """
+        Call :meth:`.Plot.reset_start_time` on all plots
+        """
         for plot in self.plots.values():
             plot.reset_start_time()
 
+    def set_units(self, units: str):
+        """
+        Call :meth:`.Plot.set_units` for all contained plots
+        """
+        for plot in self.plots.values():
+            plot.set_units(units)
+
+
     def set_plot_mode(self):
+        """
+        .. todo::
+
+            switch between longitudinal timeseries and overlaid by breath cycle!!!
+        """
         raise NotImplementedError('PVP 2!!!')
 
 

@@ -1,0 +1,466 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Alarm Rule &mdash; PVP 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/pvp_logo_favicon.png"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Alarm Condition" href="alarm.condition.html" />
+    <link rel="prev" title="Alarm Objects" href="alarm.alarm.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PVP
+          
+
+          
+            
+            <img src="_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_enclosure.html">Enclosure</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Software:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="software_overview.html">Software Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="alarm.html">Alarm</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="alarm.html#alarm-system-overview">Alarm System Overview</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="alarm.html#alarm-modules">Alarm Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="alarm.alarm_manager.html">Alarm Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="alarm.alarm.html">Alarm</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Alarm Rule</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-pvp.alarm.rule">Module Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="alarm.condition.html">Alarm Condition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alarm.html#module-pvp.alarm">Main Alarm Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">Coordinator</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Ventilator Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasheets.html">Datasheets &amp; Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specs.html">Specifications</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meta_index.html">Index</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PVP</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="alarm.html">Alarm</a> &raquo;</li>
+        
+      <li>Alarm Rule</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/alarm.alarm_rule.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="alarm-rule">
+<h1>Alarm Rule<a class="headerlink" href="#alarm-rule" title="Permalink to this headline">¶</a></h1>
+<p>One <a class="reference internal" href="#pvp.alarm.rule.Alarm_Rule" title="pvp.alarm.rule.Alarm_Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alarm_Rule</span></code></a> is defined for each <a class="reference internal" href="alarm.html#pvp.alarm.AlarmType" title="pvp.alarm.AlarmType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmType</span></code></a> in <a class="reference internal" href="alarm.html#pvp.alarm.ALARM_RULES" title="pvp.alarm.ALARM_RULES"><code class="xref py py-data docutils literal notranslate"><span class="pre">ALARM_RULES</span></code></a>.</p>
+<p>An alarm rule defines:</p>
+<ul class="simple">
+<li><p>The conditions for raising different severities of an alarm</p></li>
+<li><p>The dependencies between set values and alarm thresholds</p></li>
+<li><p>The behavior of the alarm, specifically whether it is <code class="xref py py-attr docutils literal notranslate"><span class="pre">latch</span></code> ed.</p></li>
+</ul>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>As an example, we’ll define a <code class="docutils literal notranslate"><span class="pre">LOW_PRESSURE</span></code> alarm with escalating severity. A <code class="docutils literal notranslate"><span class="pre">LOW</span></code> severity alarm
+will be raised when measured <code class="docutils literal notranslate"><span class="pre">PIP</span></code> falls 10% below set <code class="docutils literal notranslate"><span class="pre">PIP</span></code>, which will escalate to a
+<code class="docutils literal notranslate"><span class="pre">MEDIUM</span></code> severity alarm if measured <code class="docutils literal notranslate"><span class="pre">PIP</span></code> falls 15% below set <code class="docutils literal notranslate"><span class="pre">PIP</span></code> <strong>and</strong> the <code class="docutils literal notranslate"><span class="pre">LOW</span></code> severity
+alarm has been active for at least two breath cycles.</p>
+<p>First we define the name and behavior of the alarm:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Alarm_Rule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">AlarmType</span><span class="o">.</span><span class="n">LOW_PRESSURE</span><span class="p">,</span>
+    <span class="n">latch</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>In this case, <code class="docutils literal notranslate"><span class="pre">latch</span> <span class="pre">==</span> <span class="pre">False</span></code> means that the alarm will disappear (or be downgraded in severity)
+whenever the conditions for that alarm are no longer met. If <code class="docutils literal notranslate"><span class="pre">latch</span> <span class="pre">==</span> <span class="pre">True</span></code>, an alarm requires manual dismissal before
+it is downgraded or disappears.</p>
+<p>Next we’ll define a tuple of <a class="reference internal" href="alarm.condition.html#pvp.alarm.condition.Condition" title="pvp.alarm.condition.Condition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Condition</span></code></a> objects for <code class="docutils literal notranslate"><span class="pre">LOW</span></code> and <code class="docutils literal notranslate"><span class="pre">MEDIUM</span></code> severity objects.</p>
+<p>Starting with the <code class="docutils literal notranslate"><span class="pre">LOW</span></code> severity alarm:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conditions</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span>
+    <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">LOW</span><span class="p">,</span>
+    <span class="n">condition</span><span class="o">.</span><span class="n">ValueCondition</span><span class="p">(</span>
+        <span class="n">value_name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="n">VALUES</span><span class="p">[</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">][</span><span class="s1">&#39;safe_range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
+        <span class="n">depends</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;value_name&#39;</span><span class="p">:</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span>
+            <span class="s1">&#39;value_attr&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;condition_attr&#39;</span><span class="p">:</span> <span class="s1">&#39;limit&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;transform&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="mf">0.10</span><span class="p">)</span>
+        <span class="p">})</span>
+    <span class="p">),</span>
+    <span class="c1"># ... continued in next block</span>
+</pre></div>
+</div>
+<p>Each condition is a tuple of an (<a class="reference internal" href="alarm.html#pvp.alarm.AlarmSeverity" title="pvp.alarm.AlarmSeverity"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmSeverity</span></code></a>, <a class="reference internal" href="alarm.condition.html#pvp.alarm.condition.Condition" title="pvp.alarm.condition.Condition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Condition</span></code></a>). In this case,
+we use a <a class="reference internal" href="alarm.condition.html#pvp.alarm.condition.ValueCondition" title="pvp.alarm.condition.ValueCondition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueCondition</span></code></a> which tests whether a value is above or below a set <code class="docutils literal notranslate"><span class="pre">'max'</span></code> or <code class="docutils literal notranslate"><span class="pre">'min'</span></code>, respectively.
+For the low severity <code class="docutils literal notranslate"><span class="pre">LOW_PRESSURE</span></code> alarm, we test if <code class="docutils literal notranslate"><span class="pre">ValueName.PIP</span></code> is below (<code class="docutils literal notranslate"><span class="pre">mode='min'</span></code>) some <code class="docutils literal notranslate"><span class="pre">limit</span></code>, which
+is initialized as the low-end of <code class="docutils literal notranslate"><span class="pre">PIP</span></code>’s safe range.</p>
+<p>We also define a condition for updating the <code class="docutils literal notranslate"><span class="pre">'limit'</span></code> of the condition (<code class="docutils literal notranslate"><span class="pre">'condition_attr'</span> <span class="pre">:</span> <span class="pre">'limit'</span></code>), from the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">ControlSetting.value`</span></code> field whenever <code class="docutils literal notranslate"><span class="pre">PIP</span></code> is updated. Specifically, we set the <code class="docutils literal notranslate"><span class="pre">limit</span></code> to be 10% less than the
+set <code class="docutils literal notranslate"><span class="pre">PIP</span></code> value by 10% with a lambda function (<code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">x</span> <span class="pre">:</span> <span class="pre">x-(x*0.10)</span></code>).</p>
+<p>Next, we define the <code class="docutils literal notranslate"><span class="pre">MEDIUM</span></code> severity alarm condition:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span>
+<span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MEDIUM</span><span class="p">,</span>
+<span class="n">condition</span><span class="o">.</span><span class="n">ValueCondition</span><span class="p">(</span>
+    <span class="n">value_name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span>
+    <span class="n">limit</span><span class="o">=</span><span class="n">VALUES</span><span class="p">[</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">][</span><span class="s1">&#39;safe_range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span>
+    <span class="n">depends</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;value_name&#39;</span><span class="p">:</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span>
+        <span class="s1">&#39;value_attr&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;condition_attr&#39;</span><span class="p">:</span> <span class="s1">&#39;limit&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;transform&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">-</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="mf">0.15</span><span class="p">)</span>
+    <span class="p">},</span>
+<span class="p">)</span> <span class="o">+</span> \
+<span class="n">condition</span><span class="o">.</span><span class="n">CycleAlarmSeverityCondition</span><span class="p">(</span>
+    <span class="n">alarm_type</span> <span class="o">=</span> <span class="n">AlarmType</span><span class="o">.</span><span class="n">LOW_PRESSURE</span><span class="p">,</span>
+    <span class="n">severity</span>   <span class="o">=</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">LOW</span><span class="p">,</span>
+    <span class="n">n_cycles</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="p">))</span>
+</pre></div>
+</div>
+<p>The first <code class="docutils literal notranslate"><span class="pre">ValueCondition</span></code> is the same as in the <code class="docutils literal notranslate"><span class="pre">LOW</span></code> alarm severity condition, except that it is
+set 15% below <code class="docutils literal notranslate"><span class="pre">PIP</span></code>.</p>
+<p>A second <a class="reference internal" href="alarm.condition.html#pvp.alarm.condition.CycleAlarmSeverityCondition" title="pvp.alarm.condition.CycleAlarmSeverityCondition"><code class="xref py py-class docutils literal notranslate"><span class="pre">CycleAlarmSeverityCondition</span></code></a> has been added (with <code class="docutils literal notranslate"><span class="pre">+</span></code>) to the <a class="reference internal" href="alarm.condition.html#pvp.alarm.condition.ValueCondition" title="pvp.alarm.condition.ValueCondition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueCondition</span></code></a>
+When conditions are added together, they will only return <code class="docutils literal notranslate"><span class="pre">True</span></code> (ie. trigger an alarm) if all of the conditions are met.
+This condition checks that the <code class="docutils literal notranslate"><span class="pre">LOW_PRESSURE</span></code> alarm has been active at a <code class="docutils literal notranslate"><span class="pre">LOW</span></code> severity for at least two cycles.</p>
+<p>Full source for this example and all alarm rules can be found <a class="reference external" href="_modules/pvp/alarm.html">here</a></p>
+</div>
+<div class="section" id="module-pvp.alarm.rule">
+<span id="module-documentation"></span><h2>Module Documentation<a class="headerlink" href="#module-pvp.alarm.rule" title="Permalink to this headline">¶</a></h2>
+<p>Class to declare alarm rules</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.alarm.rule.Alarm_Rule" title="pvp.alarm.rule.Alarm_Rule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Alarm_Rule</span></code></a>(name, conditions[, latch, technical])</p></td>
+<td><p><ul class="simple">
+<li><p>name of rule</p></li>
+</ul>
+</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt id="pvp.alarm.rule.Alarm_Rule">
+<em class="property">class </em><code class="sig-prename descclassname">pvp.alarm.rule.</code><code class="sig-name descname">Alarm_Rule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n"><a class="reference internal" href="alarm.html#pvp.alarm.AlarmType" title="pvp.alarm.AlarmType">pvp.alarm.AlarmType</a></span></em>, <em class="sig-param"><span class="n">conditions</span></em>, <em class="sig-param"><span class="n">latch</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">technical</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/alarm/rule.html#Alarm_Rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.alarm.rule.Alarm_Rule" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>name of rule</p></li>
+<li><p>conditions: ((alarm_type, (condition_1, condition_2)), …)</p></li>
+<li><p>latch (bool): if True, alarm severity cannot be decremented until user manually dismisses</p></li>
+<li><p>silencing/overriding rules</p></li>
+</ul>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.alarm.rule.Alarm_Rule.check" title="pvp.alarm.rule.Alarm_Rule.check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check</span></code></a>(sensor_values)</p></td>
+<td><p>Check all of our <code class="xref py py-attr docutils literal notranslate"><span class="pre">conditions</span></code> .</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.alarm.rule.Alarm_Rule.reset" title="pvp.alarm.rule.Alarm_Rule.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.alarm.rule.Alarm_Rule.depends" title="pvp.alarm.rule.Alarm_Rule.depends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">depends</span></code></a></p></td>
+<td><p>Get all ValueNames whose alarm limits depend on this alarm rule</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.alarm.rule.Alarm_Rule.severity" title="pvp.alarm.rule.Alarm_Rule.severity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">severity</span></code></a></p></td>
+<td><p>Last Alarm Severity from <code class="docutils literal notranslate"><span class="pre">.check()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.alarm.rule.Alarm_Rule.value_names" title="pvp.alarm.rule.Alarm_Rule.value_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_names</span></code></a></p></td>
+<td><p>Get all ValueNames specified as value_names in alarm conditions</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="pvp.alarm.rule.Alarm_Rule.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sensor_values</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/alarm/rule.html#Alarm_Rule.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.alarm.rule.Alarm_Rule.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check all of our <code class="xref py py-attr docutils literal notranslate"><span class="pre">conditions</span></code> .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sensor_values</strong> – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pvp.alarm.rule.Alarm_Rule.severity">
+<em class="property">property </em><code class="sig-name descname">severity</code><a class="headerlink" href="#pvp.alarm.rule.Alarm_Rule.severity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Last Alarm Severity from <code class="docutils literal notranslate"><span class="pre">.check()</span></code>
+:returns: <a class="reference internal" href="alarm.html#pvp.alarm.AlarmSeverity" title="pvp.alarm.AlarmSeverity"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlarmSeverity</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pvp.alarm.rule.Alarm_Rule.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/alarm/rule.html#Alarm_Rule.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.alarm.rule.Alarm_Rule.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pvp.alarm.rule.Alarm_Rule.depends">
+<em class="property">property </em><code class="sig-name descname">depends</code><a class="headerlink" href="#pvp.alarm.rule.Alarm_Rule.depends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all ValueNames whose alarm limits depend on this alarm rule
+:returns: list[ValueName]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pvp.alarm.rule.Alarm_Rule.value_names">
+<em class="property">property </em><code class="sig-name descname">value_names</code><a class="headerlink" href="#pvp.alarm.rule.Alarm_Rule.value_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all ValueNames specified as value_names in alarm conditions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list[ValueName]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="alarm.condition.html" class="btn btn-neutral float-right" title="Alarm Condition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="alarm.alarm.html" class="btn btn-neutral float-left" title="Alarm Objects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, jonny saunders et al
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

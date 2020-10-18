@@ -150,32 +150,32 @@ class AnalogSensor(Sensor):
         kwargs = {key: kwargs[key] for key in kwargs.keys() - ('pig',)}
         self._check_and_set_attr(**kwargs)
 
-    def calibrate(self, **kwargs):
-        """ Sets the calibration of the sensor, either to the values contained in the passed tuple or by some routine;
-        the current routine is pretty rudimentary and only calibrates offset voltage.
+    # def calibrate(self, **kwargs):
+    #     """ Sets the calibration of the sensor, either to the values contained in the passed tuple or by some routine;
+    #     the current routine is pretty rudimentary and only calibrates offset voltage.
 
-        Args:
-            **kwargs: calibration_field=value, where calibration field is one of the following: 'offset_voltage',
-                output_span' or 'conversion_factor'
-        """
-        # FIXME
-        if kwargs:
-            for fld, val in kwargs.items():
-                if fld in self._DEFAULT_CALIBRATION.keys():
-                    setattr(self, fld, val)
-        else:
-            for _ in range(50):
-                self.update()
-                # PRINT FOR DEBUG / HARDWARE TESTING
-                print(
-                    "Analog Sensor Calibration @ {:6.4f}".format(self.data[self.data.shape[0] - 1]),
-                    end='\r'
-                )
-                time.sleep(.1)
-            self.offset_voltage = np.min(self.data[-50:])
-            # PRINT FOR DEBUG / HARDWARE TESTING
-            print("Calibrated low-end of AnalogSensor @",
-                  ' %6.4f V' % self.offset_voltage)
+    #     Args:
+    #         **kwargs: calibration_field=value, where calibration field is one of the following: 'offset_voltage',
+    #             output_span' or 'conversion_factor'
+    #     """
+    #     # FIXME
+    #     if kwargs:
+    #         for fld, val in kwargs.items():
+    #             if fld in self._DEFAULT_CALIBRATION.keys():
+    #                 setattr(self, fld, val)
+    #     else:
+    #         for _ in range(50):
+    #             self.update()
+    #             # PRINT FOR DEBUG / HARDWARE TESTING
+    #             print(
+    #                 "Analog Sensor Calibration @ {:6.4f}".format(self.data[self.data.shape[0] - 1]),
+    #                 end='\r'
+    #             )
+    #             time.sleep(.1)
+    #         self.offset_voltage = np.min(self.data[-50:])
+    #         # PRINT FOR DEBUG / HARDWARE TESTING
+    #         print("Calibrated low-end of AnalogSensor @",
+    #               ' %6.4f V' % self.offset_voltage)
 
     def _read(self) -> float:
         """ Returns a value in the range of 0 - 1 corresponding to a fraction of the full input range of the sensor."""
@@ -282,7 +282,6 @@ class DLiteSensor(AnalogSensor):
             raw (float): The raw sensor reading to convert.
         """
         raw = super()._convert(raw)
-        fit_param = 2.5837e-05
         if(raw >= 0):
             #converted_flow = (-1.0*np.sqrt(raw)/np.sqrt(fit_param))
             converted_flow = 192.6426*(raw)**(1/1.9128)

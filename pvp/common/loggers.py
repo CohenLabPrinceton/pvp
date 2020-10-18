@@ -1,8 +1,10 @@
 """
 Logging functionality
 
-There are two types of loggers: a standard :class:`logging.Logger` -based logging system for debugging and recording system events,
-and a :mod:`tables` - based :class:`.DataLogger` class to store continuously measured sensor values.
+There are two types of loggers:
+
+* :func:`.loggers.init_logger` creates a standard :class:`logging.Logger` -based logging system for debugging and recording system events, and a
+* :class:`.loggers.DataLogger` - a :mod:`tables` - based class to store continuously measured sensor values.
 
 """
 import typing
@@ -19,13 +21,11 @@ import scipy.io as sio
 import numpy as np
 import tables as pytb
 
-if typing.TYPE_CHECKING:
+if typing.TYPE_CHECKING:         # pragma: no cover
+    # only import when type checking to avoid cyclical imports
     # from pvp.common.message import SensorValues, ControlValues, ControlSetting
     from pvp.common.message import SensorValues, ControlValues, DerivedValues, ControlSetting
 
-
-# some global stack param
-MAX_STACK_DEPTH = 20
 
 from pvp.common import prefs
 
@@ -41,7 +41,17 @@ def init_logger(module_name: str,
     """
     Initialize a logger for logging events.
 
-    If a logger has already been initialized, return that.
+    To keep logs sensible, you should usually initialize the logger with the name of the module that's using it, eg::
+
+        logger = init_logger(__name__)
+
+    If a logger has already been initialized (ie. its name is in :data:`.loggers._LOGGERS`, return that.
+
+    otherwise configure and return the logger such that
+
+    * its ``LOGLEVEL`` is set to ``prefs.LOGLEVEL``
+    * It formats logging messages with logger name, time, and logging level
+    * if a file handler is specified (default), create a :class:`logging.RotatingFileHandler` according to params set in ``prefs``
 
     Args:
         module_name (str): module name used to generate filename and name logger
@@ -80,7 +90,7 @@ def init_logger(module_name: str,
 
     # handler to log to disk
     # max = 8 file x 16 MB = 128 MB
-    if file_handler and 'pytest' not in sys.modules:
+    if file_handler and 'pytest' not in sys.modules: # pragma: no cover - doing this breaks travis for some reason but it works locally
         log_filename = os.path.join(prefs.get_pref('LOG_DIR'),
                                     module_name + '.log')
         fh = logging.handlers.RotatingFileHandler(
@@ -108,23 +118,8 @@ def update_logger_sizes():
     for logger_name in globals()['_LOGGERS']:
         logger = logging.getLogger(logger_name)
         for handler in logger.handlers:
-            if isinstance(handler, logging.handlers.RotatingFileHandler):
+            if isinstance(handler, logging.handlers.RotatingFileHandler): # pragma: no cover - same reason as above
                 handler.maxBytes = new_max_bytes
-
-
-
-
-def log_exception(e, tb):
-    """  # TODO: Stub exception logger. Prints exception type & traceback
-
-    Args:
-        e: Exception to log
-        tb: TraceBack associated with Exception e
-
-    """
-    print("Caught the following exception:", e, " but I don't know what to do with it.")
-    # print(traceback.print_tb(tb, limit=MAX_STACK_DEPTH))
-    raise
 
 
 class ContinuousData(pytb.IsDescription):
@@ -139,12 +134,11 @@ class ContinuousData(pytb.IsDescription):
     oxygen       = pytb.Float64Col()
     cycle_number = pytb.UInt32Col()     # Max is 2147483647 Breath Cycles (~78 years)
 
-
 class ControlCommand(pytb.IsDescription):
     """
     Structure for the hdf5-table to store control commands. Appended whenever a control command is received.
     """
-    name      = pytb.StringCol(16)   # Control setting name
+    name      = pytb.StringCol(32)   # Control setting name
     value     = pytb.Float64Col()    # double (double-precision)
     min_value = pytb.Float64Col()    # double (double-precision)
     max_value = pytb.Float64Col()    # double (double-precision)
@@ -201,6 +195,12 @@ class DataLogger:
 
         # general parameters for logging
         self._MAX_FILE_SIZE = 1e8          # Maximum allowed file size for circular logging
+        self._MAX_NUMBER_FILES = 1000      # Maximum number of logfiles
+
+        #Check file system
+        total_space_hd, used, free = shutil.disk_usage('/')
+        self._MAX_FILE_DRIVE = np.min([total_space_hd*0.2, 1e10])      # Maximum size of all files. Limit to whatever is smaller, 20% of the file system or 10 GB
+
         self._MAX_NUM_LOGFILES = 10        # Maximum allowed file number for circular logging
         self._data_save_allowed = True     # Data is allowed to be saved. If exceeds limits above, the flag is set to False, and logging stops.
 
@@ -253,8 +253,8 @@ class DataLogger:
             self.control_table = self.h5file.create_table(group, 'readout', ControlCommand, "Control Commands",
                                                           filters = pytb.Filters(
                                                               complevel=self.compression_level,
-                                                              complib='zlib')
-                                                          )
+                                                              complib='zlib'),
+                                                          expectedrows=1000000)
         else:
             self.control_table = self.h5file.root.controls.readout
 
@@ -264,8 +264,8 @@ class DataLogger:
             self.derived_table = self.h5file.create_table(group, 'readout', CycleData, "Derived Values",
                                                           filters = pytb.Filters(
                                                               complevel=self.compression_level,
-                                                              complib='zlib')
-                                                          )
+                                                              complib='zlib'),
+                                                          expectedrows=1000000)
         else:
             self.derived_table = self.h5file.root.derived_quantities.readout
 
@@ -273,7 +273,7 @@ class DataLogger:
         """
         Flushes & closes the open hdf file.
         """
-        print("Saving in..." + self.file)
+        self.logger.info("Logger terminated; in..." + self.file)
         self.h5file.close() # Also flushes the remaining buffers
 
     def store_waveform_data(self, sensor_values: 'SensorValues', control_values: 'ControlValues'):
@@ -341,6 +341,7 @@ class DataLogger:
         To be executed every other second, e.g. at the end of breath cycle.
         """
         if self._data_save_allowed:
+            self._open_logfile()
             self.data_table.flush()
             self.control_table.flush()
 
@@ -355,17 +356,13 @@ class DataLogger:
             if (not os.path.islink(fp)) and fp.endswith('.h5'):
                 total_size += os.path.getsize(fp)
 
-        #Check file system
-        total_space_hd, used, free = shutil.disk_usage('/')
-        max_size = np.min([total_space_hd*0.2, 1e10])      # Limit to whatever is smaller, 20% of the file system or 10 GB
-
-        if len(os.listdir(self.log_dir)) > 1000:
-            message = f'Too many logfiles in {self.log_dir} (>1000 files). There are ' + str(len(os.listdir(self.log_dir))) + ' files. Delete some.'
+        if len(os.listdir(self.log_dir)) > self._MAX_NUMBER_FILES:
+            message = f'Too many logfiles in {self.log_dir}. There are ' + str(len(os.listdir(self.log_dir))) + ' files. Delete some.'
             print(message)
-            # self.logger.exception(message)  # Log a warning
+            self.logger.exception(message)  # Log a warning
             self._data_save_allowed = False # Stop data saving
-        elif total_size>max_size:
-            message = f'Logfiles in {self.log_dir} are too large. Max allowed is ' + '{0:.2f}'.format(max_size*1e-9) + 'GB, used is ' + '{0:.2f}'.format(total_size*1e-9) +  'GB. Free disk space.'
+        elif total_size>self._MAX_FILE_DRIVE:
+            message = f'Logfiles in {self.log_dir} are too large. Max allowed is ' + '{0:.2f}'.format(self._MAX_FILE_DRIVE*1e-9) + 'GB, used is ' + '{0:.2f}'.format(total_size*1e-9) +  'GB. Free disk space.'
             print(message)
             self.logger.exception(message)  # Log a warning
             self._data_save_allowed = False # Stop data saving
@@ -439,19 +436,18 @@ class DataLogger:
         """
         if filename == None:
             filename = self.file
-
-        new_file = filename.split('h5')
-        new_filename = new_file[0] + '.mat'
-        # try:
-        dff = self.load_file(filename)
-        ls_wv = dff['waveform_data']
-        ls_dv = dff['derived_data']
-        ls_ct = dff['control_data']
-        matlab_data = {'waveforms': ls_wv, 'derived_quantities': ls_dv, 'control_commands': ls_ct}
-        sio.savemat(new_filename, matlab_data)
-        # except:
-            # print(filename + " not found.")
-
+        try:
+            new_file = filename.split('h5')
+            new_filename = new_file[0] + '.mat'
+            # try:
+            dff = self.load_file(filename)
+            ls_wv = dff['waveform_data']
+            ls_dv = dff['derived_data']
+            ls_ct = dff['control_data']
+            matlab_data = {'waveforms': ls_wv, 'derived_quantities': ls_dv, 'control_commands': ls_ct}
+            sio.savemat(new_filename, matlab_data)
+        except:
+            print(filename + " not found.")
 
     def log2csv(self, filename = None):
         """

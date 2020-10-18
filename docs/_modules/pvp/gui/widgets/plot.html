@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.gui.widgets.plot &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.gui.widgets.plot &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -161,8 +174,6 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-          <li><a href="../../gui.html">pvp.gui</a> &raquo;</li>
-        
       <li>pvp.gui.widgets.plot</li>
     
     
@@ -179,28 +190,36 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pvp.gui.widgets.plot</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Widgets to plot waveforms of sensor values</span>
+
+<span class="sd">The :class:`.PVP_Gui` creates a :class:`.Plot_Container` that allows the user to select</span>
+
+<span class="sd">* which plots (of those in :data:`.values.PLOT` ) are displayed</span>
+<span class="sd">* the timescale (x range) of the displayed waveforms</span>
+
+<span class="sd">Plots display alarm limits as red horizontal bars</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
 <span class="kn">import</span> <span class="nn">pdb</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="k">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtGui</span>
 <span class="kn">import</span> <span class="nn">PySide2</span> <span class="c1"># import so pyqtgraph recognizes as what we&#39;re using</span>
 <span class="kn">import</span> <span class="nn">pyqtgraph</span> <span class="k">as</span> <span class="nn">pg</span>
 <span class="c1"># pg.setConfigOptions(antialias=True)</span>
 
-
-
-
-<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">styles</span>
-<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">mono_font</span>
-<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="kn">import</span> <span class="n">get_gui_instance</span>
-<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="kn">import</span> <span class="n">unit_conversion</span>
-<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="kn">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
-<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="kn">import</span> <span class="n">ValueName</span><span class="p">,</span> <span class="n">Value</span>
-<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="kn">import</span> <span class="n">init_logger</span>
-<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="k">import</span> <span class="n">styles</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="k">import</span> <span class="n">mono_font</span>
+<span class="kn">from</span> <span class="nn">pvp.gui</span> <span class="k">import</span> <span class="n">get_gui_instance</span>
+<span class="kn">from</span> <span class="nn">pvp.common</span> <span class="k">import</span> <span class="n">unit_conversion</span>
+<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="k">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlSetting</span>
+<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="k">import</span> <span class="n">ValueName</span><span class="p">,</span> <span class="n">Value</span>
+<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="k">import</span> <span class="n">init_logger</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="k">import</span> <span class="n">AlarmSeverity</span>
 
 <span class="n">PLOT_TIMER</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -212,654 +231,38 @@
 <span class="sd">Update frequency of :class:`.Plot` s in Hz</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Pressure_Waveform"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform">[docs]</a><span class="k">class</span> <span class="nc">Pressure_Waveform</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotWidget</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Plot"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot">[docs]</a><span class="k">class</span> <span class="nc">Plot</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Display the ideal piecewise function parameterized by the controls and a history of traces</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">control_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-
-    <span class="n">controlling_plot</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-
-    <span class="n">PARAMETERIZING_VALUES</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">ValueName</span><span class="o">.</span><span class="n">PIP_TIME</span><span class="p">,</span>
-        <span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span>
-        <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP_TIME</span><span class="p">,</span>
-        <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">,</span>
-        <span class="n">ValueName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span><span class="p">,</span>
-        <span class="n">ValueName</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span>
-    <span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_waveforms</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Pressure_Waveform</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_BACKGROUND</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">setHtml</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;span style=&#39;</span><span class="si">{</span><span class="n">styles</span><span class="o">.</span><span class="n">PRESSURE_PLOT_TITLE_STYLE</span><span class="si">}</span><span class="s2">&#39;&gt;Pressure Control Waveform&lt;/span&gt;&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="s1">&#39;justify&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">)</span>
-
-        <span class="c1"># create a dq of plot items to hold waveforms</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_waveforms</span> <span class="o">=</span> <span class="n">n_waveforms</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">waveforms</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_waveforms</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_waveforms</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">waveforms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_waveforms</span><span class="p">)</span>
-
-        <span class="c1"># store last values, see param_changed</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pip</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pip_min</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pip_max</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_peep</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_peep_min</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_peep_max</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_rr</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;cmH2O&#39;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="kc">False</span>
-
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_cycle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_cycle_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_current_timestamps</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_current_values</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__controlling_plot</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">enableAutoRange</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_plot</span><span class="p">()</span>
-
-<div class="viewcode-block" id="Pressure_Waveform.init_plot"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform.init_plot">[docs]</a>    <span class="k">def</span> <span class="nf">init_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="c1"># self.getViewBox().setMouseEnabled(False, False)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">PRESSURE_PLOT_BOX</span><span class="p">)</span>
-
-        <span class="c1"># draw regions showing error tolerances</span>
-        <span class="c1"># draw these first so they are underneath</span>
-        <span class="n">region_pen_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">],</span>
-                             <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">region_pip</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">LinearRegionItem</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                              <span class="n">pen</span><span class="o">=</span><span class="n">region_pen_kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">region_peep</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">LinearRegionItem</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                               <span class="n">pen</span><span class="o">=</span><span class="n">region_pen_kwargs</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region_pip</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region_peep</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">region_pip</span><span class="o">.</span><span class="n">setBrush</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">region_peep</span><span class="o">.</span><span class="n">setBrush</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">))</span>
-
-        <span class="c1"># draw lines</span>
-        <span class="c1"># upward line</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_inhale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">symbolPen</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span>
-                                        <span class="n">symbolBrush</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;lime&#39;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span> <span class="o">=</span> <span class="n">NamedLine</span><span class="p">(</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                     <span class="n">pen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span>
-                                          <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
-                                     <span class="n">label</span><span class="o">=</span><span class="s2">&quot;PIP&quot;</span><span class="p">,</span> <span class="n">labelOpts</span><span class="o">=</span><span class="p">{</span>
-                                        <span class="s1">&#39;position&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span>
-                                        <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">TEXT_COLOR</span><span class="p">,</span>
-                                        <span class="s1">&#39;movable&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                                        <span class="s1">&#39;fill&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span>
-                                     <span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_exhale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">symbolPen</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span> <span class="o">=</span> <span class="n">NamedLine</span><span class="p">(</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                      <span class="n">pen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span><span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span>
-                                           <span class="s1">&#39;width&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">},</span>
-                                     <span class="n">label</span><span class="o">=</span><span class="s2">&quot;PEEP&quot;</span><span class="p">,</span> <span class="n">labelOpts</span><span class="o">=</span><span class="p">{</span>
-                                        <span class="s1">&#39;position&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span>
-                                        <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">TEXT_COLOR</span><span class="p">,</span>
-                                        <span class="s1">&#39;movable&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                                        <span class="s1">&#39;fill&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span>
-                                     <span class="p">})</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_inhale</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_exhale</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-
-        <span class="c1"># draw points</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">point_pipt</span> <span class="o">=</span> <span class="n">ScatterDrag</span><span class="p">(</span><span class="n">value_name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP_TIME</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                                      <span class="n">brush</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;lime&#39;</span><span class="p">],</span>
-                                      <span class="n">pen</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">point_inspt</span> <span class="o">=</span> <span class="n">ScatterDrag</span><span class="p">(</span><span class="n">value_name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                                       <span class="n">brush</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;lime&#39;</span><span class="p">],</span>
-                                       <span class="n">pen</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">point_peept</span> <span class="o">=</span> <span class="n">ScatterDrag</span><span class="p">(</span><span class="n">value_name</span><span class="o">=</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP_TIME</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                                       <span class="n">brush</span><span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;lime&#39;</span><span class="p">],</span>
-                                       <span class="n">pen</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">)</span>
-
-
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_pipt</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_inspt</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_peept</span><span class="p">)</span>
-
-
-
-        <span class="c1"># connect signals to a general update method</span>
-        <span class="c1">#self.segment_pip.sigPositionChanged.connect(self.param_changed)</span>
-        <span class="c1">#self.segment_peep.sigPositionChanged.connect(self.param_changed)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="o">.</span><span class="n">value_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_changed</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="o">.</span><span class="n">value_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_changed</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">point_pipt</span><span class="o">.</span><span class="n">value_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_changed</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">point_inspt</span><span class="o">.</span><span class="n">value_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_changed</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">point_peept</span><span class="o">.</span><span class="n">value_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_changed</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">point_pipt</span><span class="o">.</span><span class="n">controlling_plot</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_controlling_plot</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">point_peept</span><span class="o">.</span><span class="n">controlling_plot</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_controlling_plot</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">point_inspt</span><span class="o">.</span><span class="n">controlling_plot</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_controlling_plot</span><span class="p">)</span>
-        <span class="c1">#self.target = self.plot(width=3, symbolBrush=(255,0,0), symbolPen=&#39;w&#39;)</span>
-        <span class="c1">#self.target.setPen(color=styles.SUBWAY_COLORS[&#39;yellow&#39;], width=3)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">setMouseEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span><span class="kc">False</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Pressure_Waveform._controlling_plot"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform._controlling_plot">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">_controlling_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controlling_plot</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__controlling_plot</span> <span class="o">!=</span> <span class="n">controlling_plot</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__controlling_plot</span> <span class="o">=</span> <span class="n">controlling_plot</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">controlling_plot</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">controlling_plot</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">controlling_plot</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="Pressure_Waveform.param_changed"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform.param_changed">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">param_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">ValueName</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Emit parameter that is changed by the plot</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            param:</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># fuck it just going to hardcode</span>
-        <span class="n">value_name</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">new_val</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">,</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">):</span>
-            <span class="c1"># convert back to cmH2O if needed</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span><span class="p">:</span>
-                <span class="n">new_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ValueName</span><span class="o">.</span><span class="n">PIP_TIME</span><span class="p">,</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span><span class="p">,</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP_TIME</span><span class="p">):</span>
-            <span class="c1"># points</span>
-            <span class="c1"># these need to be subtracted back inta shape</span>
-            <span class="c1">#pdb.set_trace()</span>
-            <span class="n">new_val</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">new_val</span>
-            <span class="k">if</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP_TIME</span><span class="p">:</span>
-                <span class="n">new_val</span> <span class="o">=</span> <span class="n">new_val</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;parameter sent from waveform plot not understood: </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pip</span> <span class="o">=</span> <span class="n">new_val</span>
-        <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_peep</span> <span class="o">=</span> <span class="n">new_val</span>
-        <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PIP_TIME</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span> <span class="o">=</span> <span class="n">new_val</span>
-        <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP_TIME</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span> <span class="o">=</span> <span class="n">new_val</span>
-        <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="o">=</span> <span class="n">new_val</span>
-
-        <span class="n">control</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">value_name</span><span class="p">,</span>
-            <span class="n">value</span><span class="o">=</span><span class="n">new_val</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">control_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">([</span><span class="n">control</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">draw_target</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="Pressure_Waveform.update_target"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform.update_target">[docs]</a>    <span class="k">def</span> <span class="nf">update_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Receive an update the target waveform as a :class:`.ControlSetting`</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            control_setting (:class:`.ControlSetting`): one of :attr:`.PARAMETERIZING_VALUES`</span>
-
-<span class="sd">        Returns:</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">value_name</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">value</span>
-
-        <span class="c1"># if value is none, may be setting limits.</span>
-        <span class="k">if</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">min_value</span> <span class="ow">and</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">range_severity</span> <span class="o">==</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">LOW</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pip_min</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">min_value</span>
-            <span class="k">if</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">max_value</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pip_max</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">max_value</span>
-        <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">min_value</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_peep_min</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">min_value</span>
-            <span class="k">if</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">max_value</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_peep_max</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">max_value</span>
-
-        <span class="k">if</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
-            <span class="k">if</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PIP_TIME</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PIP</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pip</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP_TIME</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_peep</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">INSPIRATION_TIME_SEC</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="n">value_name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_rr</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">init_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Tried to set waveform plot with </span><span class="si">{</span><span class="n">value_name</span><span class="si">}</span><span class="s1">, but no plot element corresponds&#39;</span><span class="p">)</span>
-                <span class="k">return</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">draw_target</span><span class="p">()</span></div>
-
-
-
-<div class="viewcode-block" id="Pressure_Waveform.update_target_array"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform.update_target_array">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the target waveform with an array from the ``controller``</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            target:</span>
-
-<span class="sd">        Returns:</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># pdb.set_trace()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_target</span><span class="p">):</span>
-            <span class="c1"># calculate values from array</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pip</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">target</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_peep</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">target</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_rr</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">target</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span><span class="o">/</span><span class="mi">60</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_last_target</span> <span class="o">=</span> <span class="n">target</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">draw_target</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Pressure_Waveform.draw_target"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform.draw_target">[docs]</a>    <span class="k">def</span> <span class="nf">draw_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#     view_range = np.min(target[:, 0]), np.max(target[:, 0])</span>
-
-
-        <span class="c1"># find the x range and set first!!</span>
-        <span class="c1"># if no values are populated, set to 0 and 1</span>
-        <span class="n">x_points</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span><span class="p">:</span>
-            <span class="n">x_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span><span class="p">:</span>
-                <span class="n">x_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span><span class="p">:</span>
-                    <span class="n">x_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_peept</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rr</span><span class="p">:</span>
-            <span class="n">x_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr</span><span class="o">/</span><span class="mi">60</span><span class="p">))</span>
-
-        <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x_points</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x_points</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
-
-        <span class="c1">############</span>
-        <span class="c1"># get new view range and use to calc lines</span>
-        <span class="n">view_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getViewBox</span><span class="p">()</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;viewRange&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">x_range</span> <span class="o">=</span> <span class="n">view_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">view_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="c1"># try to draw each segment depending on which values are set</span>
-        <span class="c1">### pipt line and pipt point</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pip</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_inhale</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span><span class="p">]),</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">)])</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">point_pipt</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">)])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_inhale</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span><span class="p">]),</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">])</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">point_pipt</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">])</span>
-
-
-        <span class="c1">### pip line and inspt</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pip</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">point_inspt</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">)])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">point_inspt</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">])</span>
-            <span class="c1"># if self._pipt and self._inspt:</span>
-            <span class="c1">#</span>
-            <span class="n">pip_bounds</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_pipt</span><span class="o">-</span><span class="n">view_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span> <span class="n">x_range</span><span class="p">,</span>
-                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span><span class="o">-</span><span class="n">view_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span> <span class="n">x_range</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="o">.</span><span class="n">setSpan</span><span class="p">(</span><span class="n">mn</span><span class="o">=</span><span class="n">pip_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mx</span><span class="o">=</span><span class="n">pip_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">region_pip</span><span class="o">.</span><span class="n">setSpan</span><span class="p">(</span><span class="n">mn</span><span class="o">=</span><span class="n">pip_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mx</span><span class="o">=</span><span class="n">pip_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="c1">#</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pip_min</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pip_max</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">region_pip</span><span class="o">.</span><span class="n">setRegion</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip_min</span><span class="p">),</span>
-                                           <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip_max</span><span class="p">)))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">region_pip</span><span class="o">.</span><span class="n">setRegion</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pip_max</span><span class="p">))</span>
-
-
-        <span class="c1">### exhale slope</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pip</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_exhale</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span><span class="p">,</span>
-                              <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span><span class="p">]),</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">),</span>
-                              <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">)])</span>
-                <span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">point_peept</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span><span class="p">],</span>
-                                         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">)])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_exhale</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span><span class="p">,</span>
-                              <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span><span class="p">]),</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_pip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">])</span>
-                <span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">point_peept</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span><span class="p">],</span>
-                                         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">])</span>
-
-
-
-        <span class="c1">### peep line</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peep</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rr</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep</span><span class="p">)</span>
-
-            <span class="c1"># peep_bounds = (0,1)</span>
-            <span class="c1"># if self._pipt and self._inspt and self._peept and self._rr:</span>
-            <span class="n">peep_bounds</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspt</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peept</span><span class="o">-</span><span class="n">view_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">x_range</span><span class="p">,</span>
-                           <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr</span><span class="o">/</span><span class="mi">60</span><span class="p">)</span><span class="o">-</span><span class="n">view_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">x_range</span><span class="p">)</span>
-
-            <span class="c1">#</span>
-            <span class="c1"># elif self._pipt and self._inspt and self._peept:</span>
-            <span class="c1">#     peep_bounds = ((self._pipt + self._inspt + self._peept)/x_range,</span>
-            <span class="c1">#                    1)</span>
-            <span class="c1">#     x_points.append(self._pipt + self._inspt + self._peept)</span>
-            <span class="c1"># elif self._rr:</span>
-            <span class="c1">#     peep_bounds = (0, 1/(self._rr/60)/x_range)</span>
-            <span class="c1">#     x_points.append(1/(self._rr/60))</span>
-            <span class="c1">#</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="o">.</span><span class="n">setSpan</span><span class="p">(</span><span class="n">peep_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">peep_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">region_peep</span><span class="o">.</span><span class="n">setSpan</span><span class="p">(</span><span class="o">*</span><span class="n">peep_bounds</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peep_min</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peep_max</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">region_peep</span><span class="o">.</span><span class="n">setRegion</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep_min</span><span class="p">),</span>
-                                            <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep_max</span><span class="p">)))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">region_peep</span><span class="o">.</span><span class="n">setRegion</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_peep_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peep_max</span><span class="p">))</span></div>
-
-
-
-<div class="viewcode-block" id="Pressure_Waveform.update_waveform"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform.update_waveform">[docs]</a>    <span class="k">def</span> <span class="nf">update_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensors</span><span class="p">:</span> <span class="n">SensorValues</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_cycle</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sensors</span><span class="o">.</span><span class="n">breath_count</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_cycle</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_last_cycle</span> <span class="o">=</span> <span class="n">sensors</span><span class="o">.</span><span class="n">breath_count</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_last_cycle_timestamp</span> <span class="o">=</span> <span class="n">sensors</span><span class="o">.</span><span class="n">timestamp</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">waveforms</span><span class="o">.</span><span class="n">rotate</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wave</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waveforms</span><span class="p">):</span>
-                <span class="n">wave</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">_current_timestamps</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_current_values</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_current_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sensors</span><span class="o">.</span><span class="n">PRESSURE</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">:</span>
-            <span class="n">current_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_values</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">current_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_values</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_current_timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sensors</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_cycle_timestamp</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">waveforms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_timestamps</span><span class="p">),</span>
-                                  <span class="n">current_values</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Pressure_Waveform.set_units"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform.set_units">[docs]</a>    <span class="k">def</span> <span class="nf">set_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;cmH2O&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
-                <span class="c1"># self.units_label.setText(units)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;hPa&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
-                <span class="c1"># self.units_label.setText(units)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_convert_in</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="o">.</span><span class="n">cmH2O_to_hPa</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_convert_out</span> <span class="o">=</span> <span class="n">unit_conversion</span><span class="o">.</span><span class="n">hPa_to_cmH2O</span>
-
-            <span class="k">for</span> <span class="n">wave</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">waveforms</span><span class="p">:</span>
-                <span class="n">wave</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">draw_target</span><span class="p">()</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Pressure_Waveform.set_locked"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Pressure_Waveform.set_locked">[docs]</a>    <span class="k">def</span> <span class="nf">set_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="n">init_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Pressure waveform lock set to </span><span class="si">{</span><span class="n">locked</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">locked</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">point_pipt</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">point_peept</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">point_inspt</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setBackground</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_BACKGROUND_LOCKED</span><span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">segment_peep</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">segment_pip</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">point_pipt</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">point_peept</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">point_inspt</span><span class="o">.</span><span class="n">setMovable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setBackground</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_BACKGROUND</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="NamedLine"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.NamedLine">[docs]</a><span class="k">class</span> <span class="nc">NamedLine</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">):</span>
-    <span class="n">value_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">ValueName</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">NamedLine</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sigPositionChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value_changed</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">setHoverPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;lime&#39;</span><span class="p">],</span>
-                         <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">width</span><span class="p">())</span>
-
-<div class="viewcode-block" id="NamedLine._value_changed"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.NamedLine._value_changed">[docs]</a>    <span class="k">def</span> <span class="nf">_value_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">()))</span></div>
-
-<div class="viewcode-block" id="NamedLine.setSpan"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.NamedLine.setSpan">[docs]</a>    <span class="k">def</span> <span class="nf">setSpan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">mx</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">span</span> <span class="o">!=</span> <span class="p">(</span><span class="n">mn</span><span class="p">,</span> <span class="n">mx</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">span</span> <span class="o">=</span> <span class="p">(</span><span class="n">mn</span><span class="p">,</span> <span class="n">mx</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_invalidateCache</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div></div>
-
-<div class="viewcode-block" id="ScatterDrag"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.ScatterDrag">[docs]</a><span class="k">class</span> <span class="nc">ScatterDrag</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">ScatterPlotItem</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A scatterplot but u can drag the points horizontally and they uh tell u.</span>
+<span class="sd">    Waveform plot of single sensor value.</span>
+
+<span class="sd">    Plots values continuously, wrapping at zero rather than shifting x axis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): String version of :class:`.ValueName` used to set title</span>
+<span class="sd">        buffer_size (int): number of samples to store</span>
+<span class="sd">        plot_duration (float): default x-axis range</span>
+<span class="sd">        plot_limits (tuple): tuple of (ValueName)s for which to make pairs of min and max range lines</span>
+<span class="sd">        color (None, str): color of lines</span>
+<span class="sd">        units (str): Unit label to display along title</span>
+<span class="sd">        **kwargs:</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        timestamps (:class:`collections.deque`): deque of timestamps</span>
+<span class="sd">        history (:class:`collections.deque`): deque of sensor values</span>
+<span class="sd">        cycles (:class:`collections.deque`): deque of breath cycles</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">value_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
-    <span class="n">controlling_plot</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_name</span><span class="p">:</span> <span class="n">ValueName</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">brush</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mouseHovering</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mouseDragging</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ScatterDrag</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setSize</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">value_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">=</span> <span class="n">pos</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_movable</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">brush</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">brush</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">mkBrush</span><span class="p">(</span><span class="o">*</span><span class="n">brush</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">mkBrush</span><span class="p">(</span><span class="n">brush</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">pen</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pen</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="o">*</span><span class="n">pen</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">pen</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">symbol</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setSymbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">setAcceptHoverEvents</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-        <span class="c1"># self.normal_brush = self.opts[&#39;brush&#39;]</span>
-        <span class="c1"># self.hover_brush = pg.mkBrush(#)</span>
-
-<div class="viewcode-block" id="ScatterDrag.mouseDragEvent"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.ScatterDrag.mouseDragEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseDragEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        from the CustomGraphItem example</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            ev:</span>
-
-<span class="sd">        Returns:</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">!=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">:</span>
-            <span class="n">ev</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span>
-            <span class="k">return</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_movable</span><span class="p">:</span>
-            <span class="n">ev</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span>
-            <span class="k">return</span>
-
-        <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">isStart</span><span class="p">():</span>
-            <span class="c1"># We are already one step into the drag.</span>
-            <span class="c1"># Find the point(s) at the mouse cursor when the button was first</span>
-            <span class="c1"># pressed:</span>
-            <span class="n">pos</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">buttonDownPos</span><span class="p">()</span>
-            <span class="c1">#pts = self.pointsAt(pos)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mouseHovering</span><span class="p">:</span>
-                <span class="n">ev</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span>
-                <span class="k">return</span>
-            <span class="c1"># if len(pts) == 0:</span>
-
-            <span class="n">pts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">()</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">mouseDragging</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dragPoint</span> <span class="o">=</span> <span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="c1">#self.drag_offset_x = self.dragPoint.pos().x() - pos.x()</span>
-            <span class="c1">#pdb.set_trace()</span>
-            <span class="c1">#ind = pts[0].data()[0]</span>
-            <span class="c1">#self.dragOffset = self.dragPoint.pos() - pos</span>
-        <span class="k">elif</span> <span class="n">ev</span><span class="o">.</span><span class="n">isFinish</span><span class="p">():</span>
-            <span class="c1">#self.value_changed.emit((self._name, (drag_pos_x, self.dragPoint.pos().y())))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dragPoint</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mouseDragging</span> <span class="o">=</span> <span class="kc">False</span>
-
-            <span class="k">return</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragPoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ev</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span>
-                <span class="k">return</span>
-
-        <span class="c1">#self.drag_pos_x -= ev.pos().x()</span>
-
-        <span class="c1">#ind = self.dragPoint.data()[0]</span>
-        <span class="c1">#self.data[&#39;pos&#39;][ind] = ev.pos() + self.dragOffset</span>
-        <span class="c1">#self.updateGraph()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setData</span><span class="p">([</span><span class="n">ev</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">()],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dragPoint</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragPoint</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">())))</span>
-
-        <span class="n">ev</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="ScatterDrag.hoverEvent"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.ScatterDrag.hoverEvent">[docs]</a>    <span class="k">def</span> <span class="nf">hoverEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_movable</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ev</span><span class="o">.</span><span class="n">isExit</span><span class="p">()):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setMouseHover</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1">#if not self.mouseDragging:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setMouseHover</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ScatterDrag.setMouseHover"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.ScatterDrag.setMouseHover">[docs]</a>    <span class="k">def</span> <span class="nf">setMouseHover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hover</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mouseHovering</span> <span class="o">==</span> <span class="n">hover</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mouseHovering</span> <span class="o">=</span> <span class="n">hover</span>
-        <span class="k">if</span> <span class="n">hover</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">controlling_plot</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setSize</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">controlling_plot</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setSize</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="ScatterDrag.setData"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.ScatterDrag.setData">[docs]</a>    <span class="k">def</span> <span class="nf">setData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mouseHovering</span><span class="p">:</span>
-            <span class="nb">super</span><span class="p">(</span><span class="n">ScatterDrag</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ScatterDrag.setMovable"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.ScatterDrag.setMovable">[docs]</a>    <span class="k">def</span> <span class="nf">setMovable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">movable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">movable</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_movable</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setAcceptHoverEvents</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_movable</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setAcceptHoverEvents</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div></div>
-
-
-
-
-
-
-
-<div class="viewcode-block" id="Plot"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot">[docs]</a><span class="k">class</span> <span class="nc">Plot</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotWidget</span><span class="p">):</span>
 
     <span class="n">limits_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Plot.__init__"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="mi">4092</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">buffer_size</span> <span class="o">=</span> <span class="mi">4092</span><span class="p">,</span>
                  <span class="n">plot_duration</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-                 <span class="n">abs_range</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">plot_limits</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">units</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            name:</span>
-<span class="sd">            buffer_size:</span>
-<span class="sd">            plot_duration:</span>
-<span class="sd">            abs_range:</span>
-<span class="sd">            plot_limits (tuple): tuple of (ValueName)s for which to make pairs of min and max range lines</span>
-<span class="sd">            color:</span>
-<span class="sd">            units:</span>
-<span class="sd">            **kwargs:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#super(Plot, self).__init__(axisItems={&#39;bottom&#39;:TimeAxis(orientation=&#39;bottom&#39;)})</span>
         <span class="c1"># construct title html string</span>
         <span class="n">titlestr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{title_text}</span><span class="s2"> (</span><span class="si">{units}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -873,7 +276,7 @@
                                    <span class="n">title</span><span class="o">=</span><span class="n">titlestr</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">setHtml</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;span style=&#39;</span><span class="si">{</span><span class="n">styles</span><span class="o">.</span><span class="n">PLOT_TITLE_STYLE</span><span class="si">}</span><span class="s2">&#39;&gt;</span><span class="si">{</span><span class="n">titlestr</span><span class="si">}</span><span class="s2">&lt;/span&gt;&quot;</span>
+            <span class="n">f</span><span class="s2">&quot;&lt;span style=&#39;</span><span class="si">{styles.PLOT_TITLE_STYLE}</span><span class="s2">&#39;&gt;</span><span class="si">{titlestr}</span><span class="s2">&lt;/span&gt;&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="s1">&#39;justify&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">)</span>
 
@@ -898,52 +301,65 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_relative_time</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">abs_range</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">abs_range</span> <span class="o">=</span> <span class="n">abs_range</span>
-            <span class="c1">#self.setYRange(self.abs_range[0], self.abs_range[1])</span>
-
         <span class="c1">#self.enableAutoRange(y=True)</span>
+
+        <span class="c1"># split plot curve into two so that the endpoint doesn&#39;t get connected to the start point</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">early_curve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">late_curve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_limits</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">plot_limits</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">plot_limits</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_plot_limits</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">]),</span>
-                    <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">])</span>
+                    <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">],</span>
+                                    <span class="n">label</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{value.name}</span><span class="s1">:{{value:0.1f}}&#39;</span><span class="p">,</span>
+                                    <span class="n">labelOpts</span><span class="o">=</span><span class="p">{</span>
+                                        <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">TEXT_COLOR</span><span class="p">,</span>
+                                        <span class="s1">&#39;fill&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">],</span>
+                                        <span class="s1">&#39;position&#39;</span><span class="p">:</span> <span class="mf">0.1</span>
+                                    <span class="p">}),</span>
+                    <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">],</span>
+                                    <span class="n">label</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{value.name}</span><span class="s1">:{{value:0.1f}}&#39;</span><span class="p">,</span>
+                                    <span class="n">labelOpts</span><span class="o">=</span><span class="p">{</span>
+                                        <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">TEXT_COLOR</span><span class="p">,</span>
+                                        <span class="s1">&#39;fill&#39;</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">],</span>
+                                        <span class="s1">&#39;position&#39;</span><span class="p">:</span> <span class="mf">0.9</span>
+                                    <span class="p">})</span>
                 <span class="p">)</span>
                 <span class="c1"># self.min_safe.sigPositionChanged.connect(self._safe_limits_changed)</span>
                 <span class="c1"># self.max_safe.sigPositionChanged.connect(self._safe_limits_changed)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plot_limits</span><span class="p">[</span><span class="n">value</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plot_limits</span><span class="p">[</span><span class="n">value</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
 
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot_duration</span><span class="p">)</span>
-
-        <span class="c1"># split plot curve into two so that the endpoint doesn&#39;t get connected to the start point</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">early_curve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">late_curve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="c1"># vline to indicate current time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_marker</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_marker</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;#FFFFFF&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_marker</span><span class="p">)</span>
 
-
-
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot_duration</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">color</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">early_curve</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">late_curve</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">late_curve</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Plot.set_duration"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot.set_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dur</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot.set_duration"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot.set_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dur</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set duration, or span of x axis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dur (float): span of x axis (in seconds)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dur</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_duration</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Plot.update_value"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot.update_value"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        new_value (tuple): (timestamp from time.time(), breath_cycle, value)</span>
+<span class="sd">        Update with new sensor value</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_value (tuple): (timestamp from time.time(), breath_cycle, value)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">this_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -986,13 +402,14 @@
 
         <span class="c1">#self._last_time = this_time</span>
 
-<div class="viewcode-block" id="Plot._safe_limits_changed"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot._safe_limits_changed">[docs]</a>    <span class="k">def</span> <span class="nf">_safe_limits_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-        <span class="c1"># ignore input val, just emit the current value of the lines</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">limits_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">min_safe</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span>
-                                       <span class="bp">self</span><span class="o">.</span><span class="n">max_safe</span><span class="o">.</span><span class="n">value</span><span class="p">()))</span></div>
-
     <span class="c1"># @QtCore.Slot(tuple)</span>
-<div class="viewcode-block" id="Plot.set_safe_limits"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot.set_safe_limits">[docs]</a>    <span class="k">def</span> <span class="nf">set_safe_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot.set_safe_limits"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot.set_safe_limits">[docs]</a>    <span class="k">def</span> <span class="nf">set_safe_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the position of the max and min lines for a given value</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            limits ( :class:`.ControlSetting` ): Controlsetting that has either a ``min_value`` or ``max_value`` defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_limits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -1010,12 +427,23 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_plot_limits</span><span class="p">[</span><span class="n">limits</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">limits</span><span class="o">.</span><span class="n">max_value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Plot.reset_start_time"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot.reset_start_time">[docs]</a>    <span class="k">def</span> <span class="nf">reset_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot.reset_start_time"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot.reset_start_time">[docs]</a>    <span class="k">def</span> <span class="nf">reset_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset start time -- return the scrolling time bar to position 0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_relative_time</span> <span class="o">=</span> <span class="mi">0</span></div>
 
-<div class="viewcode-block" id="Plot.set_units"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot.set_units">[docs]</a>    <span class="k">def</span> <span class="nf">set_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot.set_units"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot.set_units">[docs]</a>    <span class="k">def</span> <span class="nf">set_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set displayed units</span>
+
+<span class="sd">        Currently only implemented for Pressure, display either in cmH2O or hPa</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            units (&#39;cmH2O&#39;, &#39;hPa&#39;): unit to display pressure as</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;Pressure&#39;</span><span class="p">,):</span>
             <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;cmH2O&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">decimals</span> <span class="o">=</span> <span class="mi">1</span>
@@ -1041,19 +469,41 @@
                 <span class="n">title_text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">units</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">setHtml</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;&lt;span style=&#39;</span><span class="si">{</span><span class="n">styles</span><span class="o">.</span><span class="n">PLOT_TITLE_STYLE</span><span class="si">}</span><span class="s2">&#39;&gt;</span><span class="si">{</span><span class="n">titlestr</span><span class="si">}</span><span class="s2">&lt;/span&gt;&quot;</span>
+                <span class="n">f</span><span class="s2">&quot;&lt;span style=&#39;</span><span class="si">{styles.PLOT_TITLE_STYLE}</span><span class="s2">&#39;&gt;</span><span class="si">{titlestr}</span><span class="s2">&lt;/span&gt;&quot;</span>
             <span class="p">)</span></div></div>
 
-<div class="viewcode-block" id="Plot_Container"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot_Container">[docs]</a><span class="k">class</span> <span class="nc">Plot_Container</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot_Container"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot_Container">[docs]</a><span class="k">class</span> <span class="nc">Plot_Container</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Container for multiple :class;`.Plot` objects</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot_descriptors</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="n">ValueName</span><span class="p">,</span> <span class="n">Value</span><span class="p">],</span>
+<span class="sd">    Allows user to show/hide different plots and adjust x-span (time zoom)</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Currently, the only unfortunately hardcoded parameter in the whole GUI is the instruction</span>
+<span class="sd">        to initially hide FIO2, there should be an additional parameter in ``Value`` that says whether a plot should initialize as hidden or not</span>
+
+<span class="sd">    .. todo::</span>
+
+<span class="sd">        Currently, colors are set to alternate between orange and light blue on initialization, but they don&#39;t</span>
+<span class="sd">        update when plots are shown/hidden, so the alternating can be lost and colors can look random depending on what&#39;s selcted.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        plot_descriptors (typing.Dict[ValueName, Value]): dict of :class:`.Value` items to plot</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        plots (dict): Dict mapping :class:`.ValueName` s to :class:`.Plot` s</span>
+<span class="sd">        slider (:class:`PySide2.QtWidgets.QSlider`): slider used to set x span</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot_descriptors</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="n">ValueName</span><span class="p">,</span> <span class="n">Value</span><span class="p">],</span>
                  <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">Plot_Container</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;Monitored Waveforms&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_descriptors</span> <span class="o">=</span> <span class="n">plot_descriptors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">plot_descriptors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">PLOT_BOX</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
@@ -1063,7 +513,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Plot_Container.init_ui"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot_Container.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot_Container.init_ui"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot_Container.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span>
                            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
@@ -1083,11 +533,34 @@
             <span class="n">new_button</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_plot</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">new_button</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selection_buttons</span><span class="p">[</span><span class="n">plot_key</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_button</span>
+            <span class="k">if</span> <span class="n">plot_key</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">FIO2</span><span class="p">:</span>
+                <span class="n">new_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">button_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">button_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># # select display mode</span>
+        <span class="c1"># self.plot_mode_buttons = [</span>
+        <span class="c1">#     QtWidgets.QPushButton(&#39;Waveform&#39;),</span>
+        <span class="c1">#     QtWidgets.QPushButton(&#39;Cycle&#39;)</span>
+        <span class="c1"># ]</span>
+        <span class="c1">#</span>
+        <span class="c1"># self.plot_mode_button_group = QtWidgets.QButtonGroup()</span>
+        <span class="c1"># self.plot_mode_button_group.setExclusive(True)</span>
+        <span class="c1"># self.plot_mode_layout = QtWidgets.QHBoxLayout()</span>
+        <span class="c1">#</span>
+        <span class="c1"># for button in self.plot_mode_buttons:</span>
+        <span class="c1">#     button.setObjectName(button.text())</span>
+        <span class="c1">#     button.setCheckable(True)</span>
+        <span class="c1">#     self.plot_mode_button_group.addButton(button)</span>
+        <span class="c1">#     button.setStyleSheet(styles.TOGGLE_BUTTON)</span>
+        <span class="c1">#     self.plot_mode_layout.addWidget(button)</span>
+        <span class="c1">#</span>
+        <span class="c1"># self.plot_mode_buttons[0].setChecked(True)</span>
+        <span class="c1"># self.plot_mode_button_group.buttonClicked.connect(self.set_plot_mode)</span>
+        <span class="c1">#</span>
+        <span class="c1"># self.button_layout.addLayout(self.plot_mode_layout)</span>
 
         <span class="c1"># time box and slider</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;Plot Zoom&#39;</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">time_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_box</span><span class="o">.</span><span class="n">setValidator</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QIntValidator</span><span class="p">())</span>
@@ -1099,7 +572,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setOrientation</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setTickPosition</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSlider</span><span class="o">.</span><span class="n">TickPosition</span><span class="o">.</span><span class="n">TicksBelow</span><span class="p">)</span>
+        <span class="c1"># self.slider.setTickPosition(QtWidgets.QSlider.TickPosition.TicksBelow)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_duration</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">button_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
@@ -1117,18 +590,37 @@
                 <span class="n">plot_color</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">SUBWAY_COLORS</span><span class="p">[</span><span class="s1">&#39;ltblue&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_key</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">plot_color</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_params</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_key</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">plot_key</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">FIO2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">plot_key</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Plot_Container.update_value"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot_Container.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vals</span><span class="p">:</span> <span class="n">SensorValues</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot_Container.update_value"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot_Container.update_value">[docs]</a>    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vals</span><span class="p">:</span> <span class="n">SensorValues</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to update all plots who have new sensorvalues</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vals (:class:`.SensorValues`): Sensor Values to update plots with</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">for</span> <span class="n">plot_key</span><span class="p">,</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">plot_key</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">plot</span><span class="o">.</span><span class="n">update_value</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="s1">&#39;breath_count&#39;</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">plot_key</span><span class="p">)))</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldnt update plot with </span><span class="si">{</span><span class="n">plot_key</span><span class="si">}</span><span class="s1">, got error </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Couldnt update plot with </span><span class="si">{plot_key}</span><span class="s1">, got error </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Plot_Container.toggle_plot"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot_Container.toggle_plot">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot_Container.toggle_plot"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot_Container.toggle_plot">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Toggle the visibility of a plot.</span>
+
+<span class="sd">        get the name of the plot from the ``sender``&#39;s ``objectName``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state (bool): Whether the plot should be visible (True) or not (False)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">sender_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">()</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">sender_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -1137,11 +629,31 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">sender_name</span><span class="p">]</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Plot_Container.set_safe_limits"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot_Container.set_safe_limits">[docs]</a>    <span class="k">def</span> <span class="nf">set_safe_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot_Container.set_safe_limits"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot_Container.set_safe_limits">[docs]</a>    <span class="k">def</span> <span class="nf">set_safe_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to set horizontal alarm limits on all relevant plots</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            control (:class:`.ControlSetting` ): with either ``min_value`` or ``max_value`` set</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">plot</span><span class="o">.</span><span class="n">set_safe_limits</span><span class="p">(</span><span class="n">control</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Plot_Container.set_duration"><a class="viewcode-back" href="../../../../pvp.gui.widgets.html#pvp.gui.widgets.plot.Plot_Container.set_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot_Container.set_duration"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot_Container.set_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the current duration (span of the x axis) of all plots</span>
+
+<span class="sd">        Also make sure that the text box and slider reflect this duration</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            duration (float): new duration to set</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
 
@@ -1149,7 +661,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">plot</span><span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span></div></div>
+            <span class="n">plot</span><span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plot_Container.reset_start_time"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot_Container.reset_start_time">[docs]</a>    <span class="k">def</span> <span class="nf">reset_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call :meth:`.Plot.reset_start_time` on all plots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">reset_start_time</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot_Container.set_plot_mode"><a class="viewcode-back" href="../../../../gui.widgets.plot.html#pvp.gui.widgets.plot.Plot_Container.set_plot_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_plot_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. todo::</span>
+
+<span class="sd">            switch between longitudinal timeseries and overlaid by breath cycle!!!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;PVP 2!!!&#39;</span><span class="p">)</span></div></div>
 
 
 

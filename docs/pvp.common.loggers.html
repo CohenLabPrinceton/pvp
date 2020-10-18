@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>loggers &mdash; PVP 0.0.0 documentation</title>
+  <title>Loggers &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="_static/pvp_logo_favicon.png"/>
   
   
   
@@ -37,8 +40,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="message" href="pvp.common.message.html" />
-    <link rel="prev" title="values" href="pvp.common.values.html" /> 
+    <link rel="next" title="Prefs" href="pvp.common.prefs.html" />
+    <link rel="prev" title="Message" href="pvp.common.message.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -56,13 +59,16 @@
           
 
           
+            
+            <img src="_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -89,29 +95,34 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="common.html">common</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">values</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">loggers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">message</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.prefs.html">prefs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">unit conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_overview.html">Software Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="controller.html">Controller</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="common.html">Common</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.values.html">Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.message.html">Message</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Loggers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.prefs.html">Prefs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pvp.common.unit_conversion.html">Unit Conversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pvp.common.utils.html">utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pvp.common.fashion.html">fashion</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coordinator.html">coordinator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -122,8 +133,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meta_index.html">Index</a></li>
 </ul>
 
             
@@ -172,7 +185,7 @@
         
           <li><a href="common.html">common module</a> &raquo;</li>
         
-      <li>loggers</li>
+      <li>Loggers</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -192,10 +205,13 @@
            <div itemprop="articleBody">
             
   <div class="section" id="module-pvp.common.loggers">
-<span id="loggers"></span><h1>loggers<a class="headerlink" href="#module-pvp.common.loggers" title="Permalink to this headline">¶</a></h1>
+<span id="loggers"></span><h1>Loggers<a class="headerlink" href="#module-pvp.common.loggers" title="Permalink to this headline">¶</a></h1>
 <p>Logging functionality</p>
-<p>There are two types of loggers: a standard <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a> -based logging system for debugging and recording system events,
-and a <code class="xref py py-mod docutils literal notranslate"><span class="pre">tables</span></code> - based <a class="reference internal" href="#pvp.common.loggers.DataLogger" title="pvp.common.loggers.DataLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLogger</span></code></a> class to store continuously measured sensor values.</p>
+<p>There are two types of loggers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pvp.common.loggers.init_logger" title="pvp.common.loggers.init_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">loggers.init_logger()</span></code></a> creates a standard <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a> -based logging system for debugging and recording system events, and a</p></li>
+<li><p><a class="reference internal" href="#pvp.common.loggers.DataLogger" title="pvp.common.loggers.DataLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">loggers.DataLogger</span></code></a> - a <code class="xref py py-mod docutils literal notranslate"><span class="pre">tables</span></code> - based class to store continuously measured sensor values.</p></li>
+</ul>
 <p><strong>Classes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -230,10 +246,7 @@ and a <code class="xref py py-mod docutils literal notranslate"><span class="pre
 <tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.loggers.init_logger" title="pvp.common.loggers.init_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_logger</span></code></a>(module_name, log_level, file_handler)</p></td>
 <td><p>Initialize a logger for logging events.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.loggers.log_exception" title="pvp.common.loggers.log_exception"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_exception</span></code></a>(e, tb)</p></td>
-<td><p># TODO: Stub exception logger. Prints exception type &amp; traceback</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pvp.common.loggers.update_logger_sizes" title="pvp.common.loggers.update_logger_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_logger_sizes</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pvp.common.loggers.update_logger_sizes" title="pvp.common.loggers.update_logger_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_logger_sizes</span></code></a>()</p></td>
 <td><p>Adjust each logger’s <code class="docutils literal notranslate"><span class="pre">maxBytes</span></code> attribute so that the total across all loggers is <code class="docutils literal notranslate"><span class="pre">prefs.LOGGING_MAX_BYTES</span></code></p></td>
 </tr>
 </tbody>
@@ -248,7 +261,17 @@ and a <code class="xref py py-mod docutils literal notranslate"><span class="pre
 <dt id="pvp.common.loggers.init_logger">
 <code class="sig-prename descclassname">pvp.common.loggers.</code><code class="sig-name descname">init_logger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">log_level</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">file_handler</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)">logging.Logger</a><a class="reference internal" href="_modules/pvp/common/loggers.html#init_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.loggers.init_logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize a logger for logging events.</p>
-<p>If a logger has already been initialized, return that.</p>
+<p>To keep logs sensible, you should usually initialize the logger with the name of the module that’s using it, eg:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If a logger has already been initialized (ie. its name is in <a class="reference internal" href="#pvp.common.loggers._LOGGERS" title="pvp.common.loggers._LOGGERS"><code class="xref py py-data docutils literal notranslate"><span class="pre">loggers._LOGGERS</span></code></a>, return that.</p>
+<p>otherwise configure and return the logger such that</p>
+<ul class="simple">
+<li><p>its <code class="docutils literal notranslate"><span class="pre">LOGLEVEL</span></code> is set to <code class="docutils literal notranslate"><span class="pre">prefs.LOGLEVEL</span></code></p></li>
+<li><p>It formats logging messages with logger name, time, and logging level</p></li>
+<li><p>if a file handler is specified (default), create a <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.RotatingFileHandler</span></code> according to params set in <code class="docutils literal notranslate"><span class="pre">prefs</span></code></p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -271,20 +294,6 @@ if <code class="docutils literal notranslate"><span class="pre">False</span></co
 <dt id="pvp.common.loggers.update_logger_sizes">
 <code class="sig-prename descclassname">pvp.common.loggers.</code><code class="sig-name descname">update_logger_sizes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/loggers.html#update_logger_sizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.loggers.update_logger_sizes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjust each logger’s <code class="docutils literal notranslate"><span class="pre">maxBytes</span></code> attribute so that the total across all loggers is <code class="docutils literal notranslate"><span class="pre">prefs.LOGGING_MAX_BYTES</span></code></p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="pvp.common.loggers.log_exception">
-<code class="sig-prename descclassname">pvp.common.loggers.</code><code class="sig-name descname">log_exception</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e</span></em>, <em class="sig-param"><span class="n">tb</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pvp/common/loggers.html#log_exception"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pvp.common.loggers.log_exception" title="Permalink to this definition">¶</a></dt>
-<dd><p># TODO: Stub exception logger. Prints exception type &amp; traceback</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>e</strong> – Exception to log</p></li>
-<li><p><strong>tb</strong> – TraceBack associated with Exception e</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py class">
@@ -513,10 +522,10 @@ dl.log2csv(filename)</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pvp.common.message.html" class="btn btn-neutral float-right" title="message" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pvp.common.prefs.html" class="btn btn-neutral float-right" title="Prefs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="pvp.common.values.html" class="btn btn-neutral float-left" title="values" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pvp.common.message.html" class="btn btn-neutral float-left" title="Message" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

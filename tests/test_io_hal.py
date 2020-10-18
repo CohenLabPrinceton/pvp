@@ -1,7 +1,8 @@
 from .pigpio_mocks import patch_pigpio_base
 from pvp.io import Hal
 from random import randint, getrandbits
-
+import pytest
+import pvp.io.devices.valves as valves
 
 def test_functions(patch_pigpio_base):
     """__________________________________________________________________________________________________________TEST #1
@@ -30,3 +31,6 @@ def test_functions(patch_pigpio_base):
             assert not hal._expiratory_valve.is_open
         else:
             assert hal._expiratory_valve.is_open
+
+        with pytest.raises( ValueError ):
+            hal.setpoint_ex = -2

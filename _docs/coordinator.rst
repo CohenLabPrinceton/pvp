@@ -1,5 +1,9 @@
+.. _coordinator_overview:
+
 coordinator module
 ========================
+
+The coordinator provides an interface between the process threads, and facilitates inter-process communication. It is a wrapper around xml-rpc, which allowed us to use defined data-structures such as :class:`.SensorValues`.
 
 Submodules
 ----------

@@ -10,7 +10,7 @@ from pvp.alarm import condition, ALARM_RULES, AlarmType, AlarmSeverity, Alarm, A
 from pvp.alarm.rule import Alarm_Rule
 
 from pvp.common.values import ValueName, SENSOR
-from pvp.common.message import SensorValues
+from pvp.common.message import SensorValues, ControlSetting
 
 ##########
 # conditions
@@ -43,8 +43,8 @@ def fake_sensors():
 def fake_rule():
     def _fake_rule(alarm_type = AlarmType.HIGH_PRESSURE,
                    latch = False,
-                   persistent = False,
-                   conditions = None):
+                   conditions = None,
+                   mode="max"):
 
         if not conditions:
             conditions = (
@@ -53,7 +53,13 @@ def fake_rule():
                     condition.ValueCondition(
                         value_name=ValueName.PRESSURE,
                         limit=1,
-                        mode='max',
+                        mode=mode,
+                        depends={
+                            'value_name': ValueName.PIP,
+                            'value_attr': 'value',
+                            'condition_attr': 'limit',
+                            'transform': lambda x: x + 1
+                        }
                     )
                 ),
                 (
@@ -61,7 +67,13 @@ def fake_rule():
                     condition.ValueCondition(
                         value_name=ValueName.PRESSURE,
                         limit=2,
-                        mode='max'
+                        mode=mode,
+                        depends={
+                        'value_name': ValueName.PIP,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x: x + 2
+                    }
                     )
                 ),
                 (
@@ -69,14 +81,19 @@ def fake_rule():
                     condition.ValueCondition(
                         value_name=ValueName.PRESSURE,
                         limit=3,
-                        mode='max'
+                        mode=mode,
+                        depends={
+                            'value_name': ValueName.PIP,
+                            'value_attr': 'value',
+                            'condition_attr': 'limit',
+                            'transform': lambda x: x + 3
+                        }
                     )
                 )
             )
         rule = Alarm_Rule(
             name=alarm_type,
             latch=latch,
-            persistent=persistent,
             conditions=conditions
         )
 
@@ -165,6 +182,8 @@ def test_cyclevalue_condition(fake_sensors, test_value):
             else:
                 assert cond.check(sensors) == True
 
+
+
         # test that going under the limit resets the cycle count check
         sensors[test_value] = 0
         sensors.breath_count += 1
@@ -188,6 +207,10 @@ def test_cyclevalue_condition(fake_sensors, test_value):
     sensors.breath_count = 11
     assert cond.check(sensors) == True
 
+    # en passant check resets
+    cond.reset()
+    assert cond.check(sensors) == False
+
     # but that discontinuous checks with conflicting info dont trigger
     cond = condition.CycleValueCondition(
         value_name=test_value,
@@ -206,21 +229,153 @@ def test_cyclevalue_condition(fake_sensors, test_value):
     sensors[test_value] = 2
     assert cond.check(sensors) == False
 
-def test_alarmseverity_condition():
-    # FIXME
-    pass
+def test_alarmseverity_condition(fake_rule, fake_sensors):
+    manager = Alarm_Manager()
+    manager.reset()
+    manager.rules = {}
+    manager.dependencies = {}
+
+    rule = fake_rule()
+    manager.load_rule(rule)
+
+    cond_1 = condition.AlarmSeverityCondition(
+        AlarmType.HIGH_PRESSURE, AlarmSeverity.LOW, mode='min')
+    cond_2 = condition.AlarmSeverityCondition(
+        AlarmType.HIGH_PRESSURE, AlarmSeverity.MEDIUM, mode='max')
+    cond_3 = condition.AlarmSeverityCondition(
+        AlarmType.HIGH_PRESSURE, AlarmSeverity.HIGH, mode='eq')
+
+    assert cond_1.check() == False
+    assert cond_2.check() == True
+    assert cond_3.check() == False
+
+    # raise low alarm
+    sensor = fake_sensors({ValueName.PRESSURE: 1.5})
+    manager.update(sensor)
+
+    assert cond_1.check() == True
+    assert cond_2.check() == True
+    assert cond_3.check() == False
+
+    # raise med alarm
+    sensor = fake_sensors({ValueName.PRESSURE: 2.5})
+    manager.update(sensor)
+
+    assert cond_1.check() == True
+    assert cond_2.check() == True
+    assert cond_3.check() == False
+
+    # raise high alarm
+    sensor = fake_sensors({ValueName.PRESSURE: 3.5})
+    manager.update(sensor)
+
+    assert cond_1.check() == True
+    assert cond_2.check() == False
+    assert cond_3.check() == True
+
+    manager.rules = {}
+    manager.load_rules()
+
+
 
 def test_cyclealarmseverity_condition():
     # FIXME
     pass
 
-def test_condition_addition():
-    # FIXME
-    pass
+def test_condition_addition(fake_sensors):
+    no_alarm = fake_sensors({ValueName.PIP: 0})
+    yes_alarm = fake_sensors({ValueName.PIP: 5})
 
-def test_condition_dependency():
-    # FIXME
-    pass
+    cond_1 = condition.ValueCondition(ValueName.PIP, 3, 'max')
+    assert cond_1.check(no_alarm) == False
+    assert cond_1.check(yes_alarm) == True
+
+    cond_2 = condition.ValueCondition(ValueName.PEEP, 1, 'min')
+    no_alarm_2 = fake_sensors({ValueName.PEEP: 2})
+    yes_alarm_2 = fake_sensors({ValueName.PEEP: 0})
+    assert cond_2.check(no_alarm_2) == False
+    assert cond_2.check(yes_alarm_2) == True
+
+    cond_3 = cond_1 + cond_2
+    cond_4 = cond_2 + cond_1
+
+    yes_alarm_3_1 = fake_sensors({ValueName.PIP: 4, ValueName.PEEP:0})
+    no_alarm_3_1 = fake_sensors({ValueName.PIP: 2, ValueName.PEEP:2})
+    no_alarm_3_2 = fake_sensors({ValueName.PIP: 4, ValueName.PEEP:2})
+    assert cond_3.check(yes_alarm_3_1) == True
+    assert cond_3.check(no_alarm_3_2) == False
+    assert cond_3.check(no_alarm_3_1) == False
+    assert cond_4.check(yes_alarm_3_1) == True
+    assert cond_4.check(no_alarm_3_2) == False
+    assert cond_4.check(no_alarm_3_1) == False
+
+    # test another level of addition
+    cond_5 = cond_3 + condition.ValueCondition(ValueName.FIO2, 5, 'min')
+    yes_alarm_4_1 = fake_sensors({ValueName.PIP: 4, ValueName.PEEP: 0, ValueName.FIO2 : 0})
+    no_alarm_4_2 = fake_sensors({ValueName.PIP: 2, ValueName.PEEP: 0, ValueName.FIO2 : 0})
+    no_alarm_4_3 = fake_sensors({ValueName.PIP: 4, ValueName.PEEP: 6, ValueName.FIO2 : 0})
+    no_alarm_4_1 = fake_sensors({ValueName.PIP: 4, ValueName.PEEP: 0, ValueName.FIO2 : 6})
+    assert cond_5.check(yes_alarm_4_1) == True
+    assert cond_5.check(no_alarm_4_2) == False
+    assert cond_5.check(no_alarm_4_3) == False
+    assert cond_5.check(no_alarm_4_1) == False
+
+
+@pytest.mark.parametrize('test_mode', ['max', 'min'])
+def test_condition_dependency(fake_rule, test_mode):
+    rule = fake_rule(mode=test_mode)
+
+    manager = Alarm_Manager()
+    manager.reset()
+    manager.rules = {}
+    manager.dependencies = {}
+    manager.depends_callbacks = []
+    manager.load_rule(rule)
+
+    # create callback to catch limit changes
+    global limits_changed
+    limits_changed = []
+
+    def depends_cb(control_message):
+        global limits_changed
+        limits_changed.append(control_message)
+
+    manager.add_dependency_callback(depends_cb)
+
+    assert manager.rules[rule.name].conditions[0][1].limit == 1
+    assert manager.rules[rule.name].conditions[1][1].limit == 2
+    assert manager.rules[rule.name].conditions[2][1].limit == 3
+
+    # test with blank ControlSetting
+    blank_message = ControlSetting(ValueName.PIP, min_value=1)
+    manager.update_dependencies(blank_message)
+    assert len(limits_changed) == 0
+
+    control_message = ControlSetting(ValueName.PIP, value=5)
+    manager.update_dependencies(control_message)
+    assert manager.rules[rule.name].conditions[0][1].limit == 6
+    assert manager.rules[rule.name].conditions[1][1].limit == 7
+    assert manager.rules[rule.name].conditions[2][1].limit == 8
+
+    assert len(limits_changed) == 3
+    if test_mode == "max":
+        assert limits_changed[0].max_value == 6
+        assert limits_changed[1].max_value == 7
+        assert limits_changed[2].max_value == 8
+    elif test_mode == "min":
+        assert limits_changed[0].min_value == 6
+        assert limits_changed[1].min_value == 7
+        assert limits_changed[2].min_value == 8
+
+    manager.rules = {}
+    manager.dependencies = {}
+    manager.depends_callbacks = []
+    manager.load_rules()
+
+
+
+
+
 
 
 ###############################
@@ -237,7 +392,6 @@ def test_alarm_rule(fake_sensors):
     rule = Alarm_Rule(
         name=AlarmType.HIGH_PRESSURE,
         latch=False,
-        persistent=False,
         conditions=(
             (
                 AlarmSeverity.LOW,
@@ -245,6 +399,12 @@ def test_alarm_rule(fake_sensors):
                     value_name=ValueName.PRESSURE,
                     limit=1,
                     mode='max',
+                    depends={
+                        'value_name': ValueName.PIP,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x: x + (x * 0.05)
+                    }
                 )
             ),
             (
@@ -252,7 +412,13 @@ def test_alarm_rule(fake_sensors):
                 condition.ValueCondition(
                     value_name=ValueName.PRESSURE,
                     limit=2,
-                    mode='max'
+                    mode='max',
+                    depends={
+                        'value_name': ValueName.PIP,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x: x + (x * 0.10)
+                    }
                 ) + \
                 condition.CycleAlarmSeverityCondition(
                     alarm_type = AlarmType.HIGH_PRESSURE,
@@ -265,7 +431,13 @@ def test_alarm_rule(fake_sensors):
                 condition.ValueCondition(
                     value_name=ValueName.PRESSURE,
                     limit=3,
-                    mode='max'
+                    mode='max',
+                    depends={
+                        'value_name': ValueName.PIP,
+                        'value_attr': 'value',
+                        'condition_attr': 'limit',
+                        'transform': lambda x: x + (x * 0.15)
+                    },
                 ) + \
                 condition.CycleAlarmSeverityCondition(
                     alarm_type = AlarmType.HIGH_PRESSURE,
@@ -276,16 +448,21 @@ def test_alarm_rule(fake_sensors):
         )
     )
 
+    # check that depends property works
+    assert rule.depends == [ValueName.PIP]
+
     sensors = fake_sensors()
 
     # test that initial check is off
     assert rule.check(sensors) == AlarmSeverity.OFF
+    assert rule.severity == AlarmSeverity.OFF
 
     # test low severity alarm
     sensors.PRESSURE = 1.5
     sensors.breath_count += 1
 
     assert rule.check(sensors) == AlarmSeverity.LOW
+    assert rule.severity == AlarmSeverity.LOW
 
     # register alarm manually
     # (alarm should call register_alarm)
@@ -301,11 +478,17 @@ def test_alarm_rule(fake_sensors):
     sensors.breath_count += 1
 
     assert rule.check(sensors) == AlarmSeverity.LOW
+    assert rule.severity == AlarmSeverity.LOW
+
+    # do another check to make sure we dont increment just by calling again
+    assert rule.check(sensors) == AlarmSeverity.LOW
+    assert rule.severity == AlarmSeverity.LOW
 
     # now check that we go to medium
     sensors.breath_count += 2
 
     assert rule.check(sensors) == AlarmSeverity.MEDIUM
+    assert rule.severity == AlarmSeverity.MEDIUM
 
     med_alarm = Alarm(
         AlarmType.HIGH_PRESSURE,
@@ -319,10 +502,21 @@ def test_alarm_rule(fake_sensors):
     sensors.breath_count += 1
 
     assert rule.check(sensors) == AlarmSeverity.MEDIUM
+    assert rule.severity == AlarmSeverity.MEDIUM
 
     sensors.breath_count += 2
 
     assert rule.check(sensors) == AlarmSeverity.HIGH
+    assert rule.severity == AlarmSeverity.HIGH
+
+    # test resets
+    rule.reset()
+    assert rule.check(sensors) == AlarmSeverity.LOW
+    assert rule.severity == AlarmSeverity.LOW
+
+    # test alarm deactivate while we're at it
+    Alarm_Manager().deactivate_alarm(med_alarm)
+    assert med_alarm not in Alarm_Manager().active_alarms.values()
 
 def test_rules_individual():
     # test that each individual rule does what we think it does
@@ -389,7 +583,7 @@ def test_alarm_manager_escalation(fake_sensors, fake_rule):
 
     #
     # create alarm rule for testing
-    rule = fake_rule(latch=False, persistent=False)
+    rule = fake_rule(latch=False)
     manager.load_rule(rule)
 
     assert manager.rules[rule.name] is rule
@@ -465,7 +659,7 @@ def test_alarm_manager_latch(fake_sensors, fake_rule):
     assert len(manager.active_alarms) == 0
 
     # create alarm rule for testing
-    rule = fake_rule(latch=True, persistent=False)
+    rule = fake_rule(latch=True)
     manager.load_rule(rule)
     assert manager.rules[rule.name] is rule
 
@@ -549,7 +743,7 @@ def test_alarm_manager_dismiss(fake_sensors, fake_rule):
     assert len(manager.active_alarms) == 0
 
     # create alarm rule for testing
-    rule = fake_rule(latch=False, persistent=False)
+    rule = fake_rule(latch=False)
     manager.load_rule(rule)
     assert manager.rules[rule.name] is rule
 
@@ -645,7 +839,7 @@ def test_alarm_manager_logged_alarms(fake_sensors, fake_rule):
     assert len(manager.active_alarms) == 0
 
     # create alarm rule for testing
-    rule = fake_rule(latch=False, persistent=False)
+    rule = fake_rule(latch=False)
     manager.load_rule(rule)
     assert manager.rules[rule.name] is rule
 

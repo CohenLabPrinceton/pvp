@@ -7,15 +7,18 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pvp.controller.control_module &mdash; PVP 0.0.0 documentation</title>
+  <title>pvp.controller.control_module &mdash; PVP 0.2.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../_static/pvp_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/_static/pvp_theme.css" type="text/css" />
 
   
+  
+    <link rel="shortcut icon" href="../../../_static/pvp_logo_favicon.png"/>
   
   
   
@@ -54,13 +57,16 @@
           
 
           
+            
+            <img src="../../../_static/pvp_logo_only.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
             
             
               <div class="version">
-                0.0
+                0.2
               </div>
             
           
@@ -87,20 +93,25 @@
             
               <p class="caption"><span class="caption-text">Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../control_overview.html">Control Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">System Overview</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Hardware:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../hardware.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_overview.html">Hardware Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_electronics.html">Electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hardware_enclosure.html">Enclosure</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Software:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../common.html">common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">coordinator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../software_overview.html">Software Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../gui.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../controller.html">Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../alarm.html">Alarm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coordinator.html">Coordinator</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources:</span></p>
 <ul>
@@ -111,8 +122,10 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../buildthedocs.html">Building the Docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../example_markdown.html">Markdown Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../meta_index.html">Index</a></li>
 </ul>
 
             
@@ -179,26 +192,26 @@
   <h1>Source code for pvp.controller.control_module</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
 <span class="kn">import</span> <span class="nn">pdb</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">count</span>
 <span class="kn">import</span> <span class="nn">signal</span>
 
 <span class="kn">import</span> <span class="nn">pvp.io</span> <span class="k">as</span> <span class="nn">io</span>
 
-<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="kn">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlValues</span><span class="p">,</span> <span class="n">ControlSetting</span><span class="p">,</span> <span class="n">DerivedValues</span>
-<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="kn">import</span> <span class="n">init_logger</span><span class="p">,</span> <span class="n">DataLogger</span>
-<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="kn">import</span> <span class="n">CONTROL</span><span class="p">,</span> <span class="n">ValueName</span>
-<span class="kn">from</span> <span class="nn">pvp.common.utils</span> <span class="kn">import</span> <span class="n">timeout</span>
-<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="kn">import</span> <span class="n">ALARM_RULES</span><span class="p">,</span> <span class="n">AlarmType</span><span class="p">,</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span>
-<span class="kn">from</span> <span class="nn">pvp</span> <span class="kn">import</span> <span class="n">prefs</span>
+<span class="kn">from</span> <span class="nn">pvp.common.message</span> <span class="k">import</span> <span class="n">SensorValues</span><span class="p">,</span> <span class="n">ControlValues</span><span class="p">,</span> <span class="n">ControlSetting</span><span class="p">,</span> <span class="n">DerivedValues</span>
+<span class="kn">from</span> <span class="nn">pvp.common.loggers</span> <span class="k">import</span> <span class="n">init_logger</span><span class="p">,</span> <span class="n">DataLogger</span>
+<span class="kn">from</span> <span class="nn">pvp.common.values</span> <span class="k">import</span> <span class="n">CONTROL</span><span class="p">,</span> <span class="n">ValueName</span>
+<span class="kn">from</span> <span class="nn">pvp.common.utils</span> <span class="k">import</span> <span class="n">timeout</span>
+<span class="kn">from</span> <span class="nn">pvp.alarm</span> <span class="k">import</span> <span class="n">ALARM_RULES</span><span class="p">,</span> <span class="n">AlarmType</span><span class="p">,</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">Alarm</span>
+<span class="kn">from</span> <span class="nn">pvp</span> <span class="k">import</span> <span class="n">prefs</span>
 
 
-<div class="viewcode-block" id="ControlModuleBase"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase">[docs]</a><span class="k">class</span> <span class="nc">ControlModuleBase</span><span class="p">:</span>
+<div class="viewcode-block" id="ControlModuleBase"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase">[docs]</a><span class="k">class</span> <span class="nc">ControlModuleBase</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Abstract controller class for simulation/hardware.</span>
@@ -229,7 +242,7 @@
 <span class="sd">        - `get_heartbeat()`:                   Returns a heartbeat, more specifically, the continuously increasing iteration-number of the main control loop.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ControlModuleBase.__init__"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_logs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">flush_every</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase.__init__"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_logs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">flush_every</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the ControlModuleBase class.</span>
 
@@ -273,7 +286,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__SET_CYCLE_DURATION</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">__SET_BPM</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># TODO: raise alert</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldnt set cycle duration, setting to 20. __SET_BPM: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__SET_BPM</span><span class="si">}</span><span class="se">\n</span><span class="s1">Got exception:</span><span class="se">\n</span><span class="s1">    </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Couldnt set cycle duration, setting to 20. __SET_BPM: </span><span class="si">{self.__SET_BPM}</span><span class="se">\n</span><span class="s1">Got exception:</span><span class="se">\n</span><span class="s1">    </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__SET_CYCLE_DURATION</span> <span class="o">=</span> <span class="mi">20</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__SET_E_PHASE</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__SET_CYCLE_DURATION</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__SET_I_PHASE</span>
@@ -362,21 +375,21 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">dl</span> <span class="o">=</span> <span class="n">DataLogger</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="c1"># raised if not enough space</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;couldnt start data logger, not saving logs. Got exception</span><span class="se">\n</span><span class="s1">    </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;couldnt start data logger, not saving logs. Got exception</span><span class="se">\n</span><span class="s1">    </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_save_logs</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1">####################### Internal health checks ###########################</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_last_contact</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_critical_time</span>     <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">get_pref</span><span class="p">(</span><span class="s1">&#39;HEARTBEAT_TIMEOUT&#39;</span><span class="p">)</span>           <span class="c1">#If Controller has not received set/get within the last 200 ms, it gets nervous.</span></div>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Destruction of the ControlModuleBase Class; closes the log-file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_logs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dl</span><span class="o">.</span><span class="n">close_logfile</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ControlModuleBase._initialize_set_to_COPY"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase._initialize_set_to_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_initialize_set_to_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase._initialize_set_to_COPY"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase._initialize_set_to_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_initialize_set_to_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes a copy of internal variables. This is used to facilitate threading</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -389,14 +402,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">COPY_SET_BPM</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__SET_BPM</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">COPY_SET_I_PHASE</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__SET_I_PHASE</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase._sensor_to_COPY"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase._sensor_to_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_sensor_to_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase._sensor_to_COPY"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase._sensor_to_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_sensor_to_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># These variables have to come from the hardware</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
         <span class="c1"># Make sure you have acquire and release!</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase._controls_from_COPY"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase._controls_from_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_controls_from_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase._controls_from_COPY"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase._controls_from_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_controls_from_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Update SET variables</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="c1">#Update values</span>
@@ -453,7 +466,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_DATA_BPM</span> <span class="o">=</span> <span class="mf">60.</span> <span class="o">/</span> <span class="n">phase</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># 60 sec divided by the duration of last waveform, exception if this was 0.</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldnt calculate BPM, phase was </span><span class="si">{</span><span class="n">phase</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">. setting as nan&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Couldnt calculate BPM, phase was </span><span class="si">{phase[-1]}</span><span class="s1">. setting as nan&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_DATA_BPM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_logs</span><span class="p">:</span>
@@ -472,7 +485,7 @@
                 <span class="c1">#And save both</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dl</span><span class="o">.</span><span class="n">store_derived_data</span><span class="p">(</span><span class="n">derived_values</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ControlModuleBase.get_sensors"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.get_sensors">[docs]</a>    <span class="k">def</span> <span class="nf">get_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SensorValues</span><span class="p">:</span>
+<div class="viewcode-block" id="ControlModuleBase.get_sensors"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.get_sensors">[docs]</a>    <span class="k">def</span> <span class="nf">get_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SensorValues</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A method callable from the outside to get a copy of sensorValues</span>
 
@@ -485,7 +498,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_last_contact</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">cp</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase.get_alarms"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.get_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">get_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Alarm</span><span class="p">]]:</span>
+<div class="viewcode-block" id="ControlModuleBase.get_alarms"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.get_alarms">[docs]</a>    <span class="k">def</span> <span class="nf">get_alarms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Alarm</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A method callable from the outside to get a copy of the alarms, that the controller checks:</span>
 <span class="sd">        High airway pressure, and technical alarms.</span>
@@ -508,11 +521,11 @@
             <span class="n">ret</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Returning alarms </span><span class="si">{</span><span class="n">ret</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Returning alarms </span><span class="si">{ret}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ret</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase.set_control"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.set_control">[docs]</a>    <span class="k">def</span> <span class="nf">set_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase.set_control"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.set_control">[docs]</a>    <span class="k">def</span> <span class="nf">set_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting</span><span class="p">:</span> <span class="n">ControlSetting</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A method callable from the outside to set alarms.</span>
 <span class="sd">        This updates the entries of COPY with new control values.</span>
@@ -535,7 +548,7 @@
                 <span class="k">elif</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">ValueName</span><span class="o">.</span><span class="n">PEEP_TIME</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">COPY_SET_PEEP_TIME</span> <span class="o">=</span> <span class="n">control_setting</span><span class="o">.</span><span class="n">value</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not set control </span><span class="si">{</span><span class="n">control_setting</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">, no corresponding variable in controller&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Could not set control </span><span class="si">{control_setting.name}</span><span class="s1">, no corresponding variable in controller&#39;</span><span class="p">)</span>
                     <span class="k">return</span>
 
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_logs</span><span class="p">:</span>
@@ -550,7 +563,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_last_contact</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase.get_control"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.get_control">[docs]</a>    <span class="k">def</span> <span class="nf">get_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting_name</span><span class="p">:</span> <span class="n">ValueName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlSetting</span><span class="p">:</span>
+<div class="viewcode-block" id="ControlModuleBase.get_control"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.get_control">[docs]</a>    <span class="k">def</span> <span class="nf">get_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_setting_name</span><span class="p">:</span> <span class="n">ValueName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlSetting</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A method callable from the outside to get current control settings.</span>
 <span class="sd">        This returns values of COPY to the outside world.</span>
@@ -576,19 +589,19 @@
                 <span class="n">return_value</span> <span class="o">=</span> <span class="n">ControlSetting</span><span class="p">(</span><span class="n">control_setting_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">COPY_SET_PEEP_TIME</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Could not get control </span><span class="si">{</span><span class="n">control_setting_name</span><span class="si">}</span><span class="s1">, no corresponding variable in controller&#39;</span><span class="p">)</span>
+                    <span class="n">f</span><span class="s1">&#39;Could not get control </span><span class="si">{control_setting_name}</span><span class="s1">, no corresponding variable in controller&#39;</span><span class="p">)</span>
                 <span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_last_contact</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">return_value</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase.set_breath_detection"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.set_breath_detection">[docs]</a>    <span class="k">def</span> <span class="nf">set_breath_detection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">breath_detection</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase.set_breath_detection"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.set_breath_detection">[docs]</a>    <span class="k">def</span> <span class="nf">set_breath_detection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">breath_detection</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">breath_detection</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">breath_detection</span> <span class="o">!=</span> <span class="n">breath_detection</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Setting breath detection mode to </span><span class="si">{</span><span class="n">breath_detection</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Setting breath detection mode to </span><span class="si">{breath_detection}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">breath_detection</span> <span class="o">=</span> <span class="n">breath_detection</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dont know how to set breath detection mode </span><span class="si">{</span><span class="n">breath_detection</span><span class="si">}</span><span class="s2">, must be bool&quot;</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Dont know how to set breath detection mode </span><span class="si">{breath_detection}</span><span class="s2">, must be bool&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__get_PID_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ytarget</span><span class="p">,</span> <span class="n">yis</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">RC</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -616,7 +629,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            dt (float): timestep</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">new_value</span>  <span class="o">=</span> <span class="mi">0</span>
         <span class="n">new_value</span> <span class="o">+=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">__KP</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATA_P</span>
         <span class="n">new_value</span> <span class="o">+=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">__KI</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATA_I</span>
@@ -627,7 +640,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_helpers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_helpers</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ControlModuleBase._get_control_signal_in"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase._get_control_signal_in">[docs]</a>    <span class="k">def</span> <span class="nf">_get_control_signal_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase._get_control_signal_in"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase._get_control_signal_in">[docs]</a>    <span class="k">def</span> <span class="nf">_get_control_signal_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produces the INSPIRATORY control-signal that has been calculated in `__calculate_control_signal_in(dt)`</span>
 
@@ -636,7 +649,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_in</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase._get_control_signal_out"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase._get_control_signal_out">[docs]</a>    <span class="k">def</span> <span class="nf">_get_control_signal_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase._get_control_signal_out"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase._get_control_signal_out">[docs]</a>    <span class="k">def</span> <span class="nf">_get_control_signal_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produces the EXPIRATORY control-signal for the different states, i.e. open/close</span>
 
@@ -645,7 +658,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_out</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase._control_reset"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase._control_reset">[docs]</a>    <span class="k">def</span> <span class="nf">_control_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase._control_reset"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase._control_reset">[docs]</a>    <span class="k">def</span> <span class="nf">_control_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets the internal controller cycle to zero, i.e. restarts the breath cycle.</span>
 <span class="sd">        Used for autonomous breath detection.</span>
@@ -677,6 +690,7 @@
             <span class="c1"># check if time elapsed is greater than cough duration.</span>
             <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">hapa_crossing_time</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cough_duration</span><span class="p">:</span>       <span class="c1"># 100 ms active to avoid being triggered by coughs</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__SET_PIP</span> <span class="o">=</span> <span class="mi">30</span>                 <span class="c1"># Default: PIP to 30</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">COPY_SET_PIP</span> <span class="o">=</span> <span class="mi">30</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_in</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_out</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_out</span> <span class="o">=</span> <span class="mi">1</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_in</span>  <span class="o">=</span> <span class="mi">0</span>
@@ -688,10 +702,11 @@
                                       <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
                                       <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATA_PRESSURE</span><span class="p">)</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Triggered HAPA at &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATA_PRESSURE</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Transient high pressure; probably a cough.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Triggered HAPA at &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATA_PRESSURE</span><span class="p">))</span>
+
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hapa_crossing_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">HAPA</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Transient high pressure that did not trigger HAPA, probably a cough&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">HAPA</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">hapa_crossing_time</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -741,7 +756,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">TECHA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Alarm</span><span class="p">(</span>
                     <span class="n">AlarmType</span><span class="o">.</span><span class="n">MISSED_HEARTBEAT</span><span class="p">,</span>
                     <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">TECHNICAL</span><span class="p">,</span>
-                    <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Controller has not heard from coordinator in </span><span class="si">{</span><span class="n">last_contact</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">message</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;Controller has not heard from coordinator in </span><span class="si">{last_contact}</span><span class="s2">&quot;</span>
                 <span class="p">))</span>
 
         <span class="c1">#self.TECHA = time.time()  # Technical alert, but continue running hoping for the best</span>
@@ -765,7 +780,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dl</span><span class="o">.</span><span class="n">flush_logfile</span><span class="p">()</span>        <span class="c1"># If we kept records, flush the data from the previous breath cycle</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dl</span><span class="o">.</span><span class="n">rotation_newfile</span><span class="p">()</span>     <span class="c1"># And Check whether we run out of space for the logger</span>
 
-<div class="viewcode-block" id="ControlModuleBase._PID_update"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase._PID_update">[docs]</a>    <span class="k">def</span> <span class="nf">_PID_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase._PID_update"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase._PID_update">[docs]</a>    <span class="k">def</span> <span class="nf">_PID_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This instantiates the PID control algorithms.</span>
 <span class="sd">        During the breathing cycle, it goes through the four states:</span>
@@ -797,7 +812,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">__get_PID_error</span><span class="p">(</span><span class="n">yis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DATA_PRESSURE</span><span class="p">,</span> <span class="n">ytarget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__SET_PIP</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="p">,</span> <span class="n">RC</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__calculate_control_signal_in</span><span class="p">(</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_out</span> <span class="o">=</span> <span class="mi">0</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">__control_signal_out</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">elif</span> <span class="n">cycle_phase</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__SET_PEEP_TIME</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__SET_I_PHASE</span><span class="p">:</span>                                     <span class="c1"># then, we drop pressure to PEEP</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_flow_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATA_Qout</span> <span class="p">)</span>                                                      <span class="c1"># Keep a list of the flow out of the lung; for baseline e stimation</span>
@@ -860,7 +875,7 @@
         <span class="c1">#And save both</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dl</span><span class="o">.</span><span class="n">store_waveform_data</span><span class="p">(</span><span class="n">sensor_values</span><span class="p">,</span> <span class="n">control_values</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ControlModuleBase.get_past_waveforms"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.get_past_waveforms">[docs]</a>    <span class="k">def</span> <span class="nf">get_past_waveforms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase.get_past_waveforms"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.get_past_waveforms">[docs]</a>    <span class="k">def</span> <span class="nf">get_past_waveforms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Public method to return a list of past waveforms from `__cycle_waveform_archive`.</span>
 <span class="sd">        Note: After calling this function, archive is emptied! The format is</span>
@@ -878,13 +893,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_last_contact</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">archive</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase._start_mainloop"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase._start_mainloop">[docs]</a>    <span class="k">def</span> <span class="nf">_start_mainloop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase._start_mainloop"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase._start_mainloop">[docs]</a>    <span class="k">def</span> <span class="nf">_start_mainloop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prototype method to start main PID loop. Will depend on simulation or device, specified below.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>   </div>
 
-<div class="viewcode-block" id="ControlModuleBase.start"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase.start"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to start `_start_mainloop` as a thread.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -896,7 +911,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Main Loop already running.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase.stop"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase.stop"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to stop the main loop thread, and close the logfile.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -909,7 +924,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_logs</span><span class="p">:</span>               <span class="c1"># If we kept records, flush the data</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dl</span><span class="o">.</span><span class="n">close_logfile</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase.interrupt"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.interrupt">[docs]</a>    <span class="k">def</span> <span class="nf">interrupt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase.interrupt"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.interrupt">[docs]</a>    <span class="k">def</span> <span class="nf">interrupt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If the controller seems stuck, this generates a new thread, and starts the main loop.</span>
 <span class="sd">        No parameters have changed.</span>
@@ -936,7 +951,7 @@
             <span class="k">pass</span></div>
             <span class="c1">#TODO RAISE ALERT FOR UI</span>
 
-<div class="viewcode-block" id="ControlModuleBase.is_running"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.is_running">[docs]</a>    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase.is_running"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.is_running">[docs]</a>    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Public Method to assess whether the main loop thread is running.</span>
 
@@ -947,7 +962,7 @@
         <span class="c1"># TODO: this should be better thread-safe variable</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ControlModuleBase.get_heartbeat"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleBase.get_heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">get_heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleBase.get_heartbeat"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleBase.get_heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">get_heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an independent heart-beat of the controller, i.e. the internal loop counter incremented in `_start_mainloop`.</span>
 
@@ -957,12 +972,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_last_contact</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop_counter</span></div></div>
 
-<div class="viewcode-block" id="ControlModuleDevice"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleDevice">[docs]</a><span class="k">class</span> <span class="nc">ControlModuleDevice</span><span class="p">(</span><span class="n">ControlModuleBase</span><span class="p">):</span> 
+<div class="viewcode-block" id="ControlModuleDevice"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleDevice">[docs]</a><span class="k">class</span> <span class="nc">ControlModuleDevice</span><span class="p">(</span><span class="n">ControlModuleBase</span><span class="p">):</span> 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses ControlModuleBase to control the hardware.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Implement ControlModuleBase functions</span>
-<div class="viewcode-block" id="ControlModuleDevice.__init__"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_logs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">flush_every</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">config_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleDevice.__init__"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_logs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">flush_every</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">config_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the ControlModule for the physical system. Inherits methods from ControlModuleBase</span>
 
@@ -979,14 +994,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">current_setting_ex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">HAL</span><span class="o">.</span><span class="n">setpoint_ex</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_setting_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">HAL</span><span class="o">.</span><span class="n">setpoint_in</span></div>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Destructor for the ControlModuleDevice class. Resets valves to standby, and closes log-files (via `ControlModuleBase`)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_valves_standby</span><span class="p">()</span>           <span class="c1"># First set valves to default</span>
         <span class="n">ControlModuleBase</span><span class="o">.</span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>     <span class="c1"># and del the base</span>
 
-<div class="viewcode-block" id="ControlModuleDevice._sensor_to_COPY"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleDevice._sensor_to_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_sensor_to_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleDevice._sensor_to_COPY"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleDevice._sensor_to_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_sensor_to_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Copies the current measurements to`COPY_sensor_values`, so that it can be queried</span>
 <span class="sd">        from the outside.</span>
@@ -1009,7 +1024,7 @@
           <span class="p">})</span></div>
             
     <span class="c1"># @timeout  #TODO: find a save setting for timeout, as the hardware is kinda slow. &gt;10ms?</span>
-<div class="viewcode-block" id="ControlModuleDevice._set_HAL"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleDevice._set_HAL">[docs]</a>    <span class="k">def</span> <span class="nf">_set_HAL</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valve_open_in</span><span class="p">,</span> <span class="n">valve_open_out</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleDevice._set_HAL"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleDevice._set_HAL">[docs]</a>    <span class="k">def</span> <span class="nf">_set_HAL</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valve_open_in</span><span class="p">,</span> <span class="n">valve_open_out</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set Controls with HAL, decorated with a timeout.</span>
 
@@ -1028,7 +1043,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">HAL</span><span class="o">.</span><span class="n">setpoint_ex</span> <span class="o">=</span>  <span class="n">valve_open_out</span></div>
 
     <span class="c1"># @timeout</span>
-<div class="viewcode-block" id="ControlModuleDevice._get_HAL"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleDevice._get_HAL">[docs]</a>    <span class="k">def</span> <span class="nf">_get_HAL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleDevice._get_HAL"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleDevice._get_HAL">[docs]</a>    <span class="k">def</span> <span class="nf">_get_HAL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get sensor values from HAL, decorated with timeout.</span>
 <span class="sd">        As hardware communication is the speed bottleneck. this code is slightly optimized in so far as some sensors are</span>
@@ -1042,7 +1057,7 @@
         <span class="n">inspiration_phase</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_start</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">COPY_SET_I_PHASE</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_DATA_PRESSURE_LIST</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">HAL</span><span class="o">.</span><span class="n">pressure</span> <span class="p">)</span>             <span class="c1"># Append pressure to list -&gt; is averaged over a couple values</span>
-                
+
         <span class="k">if</span> <span class="n">inspiration_phase</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_DATA_Qout</span>         <span class="o">=</span> <span class="mi">0</span>                                  <span class="c1"># Flow out and oxygen are not measured</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">COPY_DATA_OXYGEN</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DATA_OXYGEN</span>
@@ -1054,7 +1069,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_DATA_Qout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">HAL</span><span class="o">.</span><span class="n">flow_ex</span><span class="o">/</span><span class="mi">60</span>                        <span class="c1"># Get a flow reading in l/sec</span></div>
 
 
-<div class="viewcode-block" id="ControlModuleDevice.set_valves_standby"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleDevice.set_valves_standby">[docs]</a>    <span class="k">def</span> <span class="nf">set_valves_standby</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleDevice.set_valves_standby"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleDevice.set_valves_standby">[docs]</a>    <span class="k">def</span> <span class="nf">set_valves_standby</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This returns valves back to normal setting (in: closed, out: open)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1062,55 +1077,58 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valve settings back to stand-by.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_HAL</span><span class="p">(</span><span class="n">valve_open_in</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">valve_open_out</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Defined state to make sure that it does not pop up.</span></div>
 
-<div class="viewcode-block" id="ControlModuleDevice._start_mainloop"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleDevice._start_mainloop">[docs]</a>    <span class="k">def</span> <span class="nf">_start_mainloop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleDevice._start_mainloop"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleDevice._start_mainloop">[docs]</a>    <span class="k">def</span> <span class="nf">_start_mainloop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the main loop. This method should be run as a thread (see the `start()` method in `ControlModuleBase`)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;MainLoop: start&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_update</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
         <span class="n">update_copies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE</span>
 
-        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_loop_counter</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-            <span class="n">dt</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_update</span>                            <span class="c1"># Time sincle last cycle of main-loop</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_loop_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_update</span>                            <span class="c1"># Time sincle last cycle of main-loop</span>
 
-            <span class="k">if</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="n">CONTROL</span><span class="p">[</span><span class="n">ValueName</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span><span class="p">]</span><span class="o">.</span><span class="n">default</span> <span class="o">/</span> <span class="mi">4</span><span class="p">:</span>                                                      <span class="c1"># TODO: RAISE HARDWARE ALARM, no update should be so long</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;MainLoop: Update too long: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="p">))</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restarted cycle.&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_control_reset</span><span class="p">()</span>
-                <span class="c1"># dt = self._LOOP_UPDATE_TIME</span>
-            
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_HAL</span><span class="p">()</span>                                          <span class="c1"># Update pressure and flow measurement</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_PID_update</span><span class="p">(</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="p">)</span>                                <span class="c1"># With that, calculate controls</span>
-            <span class="n">valve_open_in</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_control_signal_in</span><span class="p">()</span>           <span class="c1">#    -&gt; Inspiratory side: get control signal for PropValve</span>
-            <span class="n">valve_open_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_control_signal_out</span><span class="p">()</span>          <span class="c1">#    -&gt; Expiratory side: get control signal for Solenoid</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_HAL</span><span class="p">(</span><span class="n">valve_open_in</span><span class="p">,</span> <span class="n">valve_open_out</span><span class="p">)</span>             <span class="c1"># And set values.</span>
+                <span class="k">if</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="n">CONTROL</span><span class="p">[</span><span class="n">ValueName</span><span class="o">.</span><span class="n">BREATHS_PER_MINUTE</span><span class="p">]</span><span class="o">.</span><span class="n">default</span> <span class="o">/</span> <span class="mi">4</span><span class="p">:</span>                                                      <span class="c1"># TODO: RAISE HARDWARE ALARM, no update should be so long</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;MainLoop: Update too long: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restarted cycle.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_control_reset</span><span class="p">()</span>
+                    <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LOOP_UPDATE_TIME</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_last_update</span> <span class="o">=</span> <span class="n">now</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_HAL</span><span class="p">()</span>                                          <span class="c1"># Update pressure and flow measurement</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_PID_update</span><span class="p">(</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="p">)</span>                            <span class="c1"># With that, calculate controls</span>
+                <span class="n">valve_open_in</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_control_signal_in</span><span class="p">()</span>           <span class="c1">#    -&gt; Inspiratory side: get control signal for PropValve</span>
+                <span class="n">valve_open_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_control_signal_out</span><span class="p">()</span>          <span class="c1">#    -&gt; Expiratory side: get control signal for Solenoid</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_HAL</span><span class="p">(</span><span class="n">valve_open_in</span><span class="p">,</span> <span class="n">valve_open_out</span><span class="p">)</span>             <span class="c1"># And set values.</span>
 
-            <span class="k">if</span> <span class="n">update_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_controls_from_COPY</span><span class="p">()</span>     <span class="c1"># Update controls from possibly updated values as a chunk</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_sensor_to_COPY</span><span class="p">()</span>         <span class="c1"># Copy sensor values to COPY</span>
-                <span class="n">update_copies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">update_copies</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_last_update</span> <span class="o">=</span> <span class="n">now</span>
 
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_LOOP_UPDATE_TIME</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">update_copies</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_controls_from_COPY</span><span class="p">()</span>     <span class="c1"># Update controls from possibly updated values as a chunk</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_sensor_to_COPY</span><span class="p">()</span>         <span class="c1"># Copy sensor values to COPY</span>
+                    <span class="n">update_copies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">update_copies</span> <span class="o">-=</span> <span class="mi">1</span>
 
-        <span class="c1"># get final values on stop</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_controls_from_COPY</span><span class="p">()</span>  <span class="c1"># Update controls from possibly updated values as a chunk</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sensor_to_COPY</span><span class="p">()</span>  <span class="c1"># Copy sensor values to COPY</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_valves_standby</span><span class="p">()</span></div></div>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_LOOP_UPDATE_TIME</span><span class="p">)</span>
+
+        <span class="c1"># # get final values on stop</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_controls_from_COPY</span><span class="p">()</span>  <span class="c1"># Update controls from possibly updated values as a chunk</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sensor_to_COPY</span><span class="p">()</span>  <span class="c1"># Copy sensor values to COPY</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_valves_standby</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="Balloon_Simulator"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.Balloon_Simulator">[docs]</a><span class="k">class</span> <span class="nc">Balloon_Simulator</span><span class="p">:</span>
+<div class="viewcode-block" id="Balloon_Simulator"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.Balloon_Simulator">[docs]</a><span class="k">class</span> <span class="nc">Balloon_Simulator</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Physics simulator for inflating a balloon with an attached PEEP valve.</span>
 <span class="sd">    For math, see https://en.wikipedia.org/wiki/Two-balloon_experiment</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peep_valve</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peep_valve</span><span class="p">):</span>
         <span class="c1"># Hard parameters for the simulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_volume</span> <span class="o">=</span> <span class="mi">6</span>    <span class="c1"># Liters  - 6?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_volume</span> <span class="o">=</span> <span class="mf">1.5</span>  <span class="c1"># Liters - baloon starts slightly inflated.</span>
@@ -1134,20 +1152,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_volume</span>                         <span class="c1"># in unit  liters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">peep_valve</span> <span class="o">=</span> <span class="n">peep_valve</span>
 
-<div class="viewcode-block" id="Balloon_Simulator.get_pressure"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.Balloon_Simulator.get_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">get_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Balloon_Simulator.get_pressure"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.Balloon_Simulator.get_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">get_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_pressure</span></div>
 
-<div class="viewcode-block" id="Balloon_Simulator.get_volume"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.Balloon_Simulator.get_volume">[docs]</a>    <span class="k">def</span> <span class="nf">get_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Balloon_Simulator.get_volume"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.Balloon_Simulator.get_volume">[docs]</a>    <span class="k">def</span> <span class="nf">get_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span></div>
 
-<div class="viewcode-block" id="Balloon_Simulator.set_flow_in"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.Balloon_Simulator.set_flow_in">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Qin</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<div class="viewcode-block" id="Balloon_Simulator.set_flow_in"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.Balloon_Simulator.set_flow_in">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Qin</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_Qin</span> <span class="o">=</span> <span class="n">Qin</span>
 
         <span class="n">Qin_clip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">Qin</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>                <span class="c1"># Flows have to be positive, and reasonable. Nothing here is faster that 2 l/s</span>
         <span class="n">Qin_clip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">Qin_clip</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span>     <span class="o">=</span> <span class="n">Qin_clip</span>                    <span class="c1"># Assume the set-value is also the true value for prop</span></div>
 
-<div class="viewcode-block" id="Balloon_Simulator.set_flow_out"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.Balloon_Simulator.set_flow_out">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Qout</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<div class="viewcode-block" id="Balloon_Simulator.set_flow_out"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.Balloon_Simulator.set_flow_out">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Qout</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_Qout</span> <span class="o">=</span> <span class="n">Qout</span>
 
         <span class="n">Qout_clip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">Qout</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>                    <span class="c1"># Flows have to be positive, and reasonable. Nothing here is faster that 2 l/s</span>
@@ -1159,7 +1177,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span> <span class="o">=</span> <span class="mi">0</span></div>
 
-<div class="viewcode-block" id="Balloon_Simulator.update"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.Balloon_Simulator.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>  <span class="c1"># Performs an update of duration dt [seconds]</span>
+<div class="viewcode-block" id="Balloon_Simulator.update"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.Balloon_Simulator.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>  <span class="c1"># Performs an update of duration dt [seconds]</span>
 
         <span class="k">if</span> <span class="n">dt</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>                                         <span class="c1"># This is the simulation, so not quite so important, but no update should take longer than that</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_flow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Qin</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">Qout</span>     <span class="c1"># Flow into the balloon is the difference between flow-in and flow-out of the system</span>
@@ -1179,7 +1197,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_pressure</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Balloon_Simulator.OUupdate"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.Balloon_Simulator.OUupdate">[docs]</a>    <span class="k">def</span> <span class="nf">OUupdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
+<div class="viewcode-block" id="Balloon_Simulator.OUupdate"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.Balloon_Simulator.OUupdate">[docs]</a>    <span class="k">def</span> <span class="nf">OUupdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a simple function to produce an OU process on `variable`.</span>
 <span class="sd">        It is used as model for fluctuations in measurement variables.</span>
@@ -1200,7 +1218,7 @@
         <span class="n">new_variable</span> <span class="o">=</span> <span class="n">variable</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">variable</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span> <span class="o">+</span> <span class="n">sigma_bis</span> <span class="o">*</span> <span class="n">sqrtdt</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">new_variable</span></div>
 
-<div class="viewcode-block" id="Balloon_Simulator._reset"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.Balloon_Simulator._reset">[docs]</a>    <span class="k">def</span> <span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Balloon_Simulator._reset"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.Balloon_Simulator._reset">[docs]</a>    <span class="k">def</span> <span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets Balloon to default settings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1212,12 +1230,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">r_real</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_volume</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_volume</span></div></div>
 
-<div class="viewcode-block" id="ControlModuleSimulator"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleSimulator">[docs]</a><span class="k">class</span> <span class="nc">ControlModuleSimulator</span><span class="p">(</span><span class="n">ControlModuleBase</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleSimulator"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleSimulator">[docs]</a><span class="k">class</span> <span class="nc">ControlModuleSimulator</span><span class="p">(</span><span class="n">ControlModuleBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Controlling Simulation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Implement ControlModuleBase functions</span>
-<div class="viewcode-block" id="ControlModuleSimulator.__init__"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleSimulator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator_dt</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">peep_valve_setting</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleSimulator.__init__"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleSimulator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator_dt</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">peep_valve_setting</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the ControlModuleBase with the simple simulation (for testing/dev).</span>
 
@@ -1232,7 +1250,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">simulator_dt</span> <span class="o">=</span> <span class="n">simulator_dt</span></div>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ControlModuleBase</span><span class="o">.</span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__SimulatedPropValve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
@@ -1266,7 +1284,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="mf">0.</span>
 
-<div class="viewcode-block" id="ControlModuleSimulator._sensor_to_COPY"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleSimulator._sensor_to_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_sensor_to_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleSimulator._sensor_to_COPY"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleSimulator._sensor_to_COPY">[docs]</a>    <span class="k">def</span> <span class="nf">_sensor_to_COPY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make the sensor value object from current (simulated) measurements</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1285,7 +1303,7 @@
               <span class="s1">&#39;breath_count&#39;</span>                      <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DATA_BREATH_COUNT</span>
             <span class="p">})</span></div>
 
-<div class="viewcode-block" id="ControlModuleSimulator._start_mainloop"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.ControlModuleSimulator._start_mainloop">[docs]</a>    <span class="k">def</span> <span class="nf">_start_mainloop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ControlModuleSimulator._start_mainloop"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.ControlModuleSimulator._start_mainloop">[docs]</a>    <span class="k">def</span> <span class="nf">_start_mainloop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the main loop. This method should be run as a thread (see the `start()` method in `ControlModuleBase`)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1338,7 +1356,7 @@
 
 
 
-<div class="viewcode-block" id="get_control_module"><a class="viewcode-back" href="../../../pvp.controller.html#pvp.controller.control_module.get_control_module">[docs]</a><span class="k">def</span> <span class="nf">get_control_module</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">simulator_dt</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_control_module"><a class="viewcode-back" href="../../../controller.html#pvp.controller.control_module.get_control_module">[docs]</a><span class="k">def</span> <span class="nf">get_control_module</span><span class="p">(</span><span class="n">sim_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">simulator_dt</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates control module.</span>
 

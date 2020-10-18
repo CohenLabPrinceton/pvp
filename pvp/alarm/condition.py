@@ -1,6 +1,8 @@
 import operator
 import types
 import importlib
+import copy
+
 
 from pvp.alarm import AlarmType, AlarmSeverity
 from pvp.common.message import SensorValues
@@ -19,14 +21,11 @@ class Condition(object):
     """
     Base class for specifying alarm test conditions
 
-    Need to be able to condition alarms based on
-    * value ranges
-    * value ranges & durations
-    * levels of other alarms
+    Subclasses must define :meth:`.Condition.check` and :meth:`.Conditino.reset`
 
+    Condition objects can be added together to create compound conditions.
 
     Attributes:
-        manager (:class:`pvp.alarm.alarm_manager.Alarm_Manager`): alarm manager, used to get status of alarms
         _child (:class:`Condition`): if another condition is added to this one, store a reference to it
         """
 
@@ -52,11 +51,26 @@ class Condition(object):
 
     @property
     def manager(self):
+        """
+        The active alarm manager, used to get status of alarms
+
+        Returns:
+            :class:`pvp.alarm.alarm_manager.Alarm_Manager`
+        """
         if self._manager is None:
             self._manager = get_alarm_manager()
         return self._manager
 
-    def check(self, sensor_values):
+    def check(self, sensor_values) -> bool:
+        """
+        Every Condition subclass needs to define this method that accepts :class:`.SensorValues` and returns a boolean
+
+        Args:
+            sensor_values ( :class:`.SensorValues` ): SensorValues used to compute alarm status
+
+        Returns:
+            bool
+        """
         raise NotImplementedError("Every condition needs to override check!!")
 
     def reset(self):
@@ -65,7 +79,7 @@ class Condition(object):
         """
         raise NotImplementedError("every condition needs to override reset!")
 
-    def __add__(self, other):
+    def __add__(self, other: 'Condition'):
         """
         Add another :class:`Condition` object to check in series.
 
@@ -77,14 +91,17 @@ class Condition(object):
         # can't just add any ole apples n oranges
         assert(issubclass(type(other), Condition))
 
-        if self._child is None:
+        _self = copy.deepcopy(self)
+
+        if _self._child is None:
             # if something hasn't been added to us yet...
             # claim our child
-            self._child = other
+            _self._child = other
 
             # override our check method so we check recursively
             # make a quick backup first tho yno
-            self._check = self.check
+            _self._check = _self.check
+            _self._reset = _self.reset
 
             def new_check(self, sensor_values):
                 if not self._check(sensor_values):
@@ -96,19 +113,25 @@ class Condition(object):
                     return self._child.check(sensor_values)
 
             # use python types to programmatically reassign method
-            self.check = types.MethodType(new_check, self)
+            _self.check = types.MethodType(new_check, _self)
+
+            def new_reset(self):
+                self._reset()
+                self._child.reset()
+
+            _self.reset = types.MethodType(new_reset, _self)
 
         else:
             # if we have already had something added to us,
             # add it to our child instead, (also potentially recursively)
-            self._child = self._child + other
+            _self._child = _self._child + other
 
-        return self
+        return _self
 
 
 class ValueCondition(Condition):
     """
-    value is greater or lesser than some max/min
+    Value is greater or lesser than some max/min
     """
 
     def __init__(self,
@@ -124,6 +147,9 @@ class ValueCondition(Condition):
             mode ('min', 'max'): whether the limit is a minimum or maximum
             *args:
             **kwargs:
+
+        Attributes:
+            operator (callable): Either the less than or greater than operators, depending on whether mode is ``'min'`` or ``'max'``
         """
         super(ValueCondition, self).__init__(*args, **kwargs)
 
@@ -137,6 +163,12 @@ class ValueCondition(Condition):
 
     @property
     def mode(self):
+        """
+        One of 'min' or 'max', defines how the incoming sensor values are compared to the set value
+
+        Returns:
+
+        """
         return self._mode
 
     @mode.setter
@@ -147,15 +179,24 @@ class ValueCondition(Condition):
             self.operator = operator.lt
         elif mode == 'max':
             self.operator = operator.gt
-        else:
+        else: # pragma: no cover
             raise ValueError('needs to be max or min')
         self._mode = mode
 
     def check(self, sensor_values):
+        """
+        Check that the relevant value in SensorValues is either greater or lesser than the limit
+
+        Args:
+            sensor_values ( :class:`.SensorValues` ):
+
+        Returns:
+            bool
+        """
         assert(isinstance(sensor_values, SensorValues))
         return self.operator(sensor_values[self.value_name], self.limit)
 
-    def reset(self):
+    def reset(self): # pragma: no cover
         """
         not stateful, do nothing.
         """
@@ -164,14 +205,17 @@ class ValueCondition(Condition):
 
 class CycleValueCondition(ValueCondition):
     """
-    value goes out of range for a specific number of breath cycles
+    Value goes out of range for a specific number of breath cycles
+
+    Args:
+        n_cycles (int): number of cycles required
 
     Attributes:
         _start_cycle (int): The breath cycle where the
         _mid_check (bool): whether a value has left the acceptable range and we are counting consecutive breath cycles
     """
 
-    def __init__(self, n_cycles, *args, **kwargs):
+    def __init__(self, n_cycles: int, *args, **kwargs):
         super(CycleValueCondition, self).__init__(*args, **kwargs)
         self._n_cycles = None
         self.n_cycles = n_cycles
@@ -180,17 +224,27 @@ class CycleValueCondition(ValueCondition):
         self._mid_check = False
 
     @property
-    def n_cycles(self):
+    def n_cycles(self) -> int:
+        """Number of cycles required"""
         return self._n_cycles
 
     @n_cycles.setter
-    def n_cycles(self, n_cycles):
-        if not isinstance(n_cycles, int):
+    def n_cycles(self, n_cycles: int):
+        if not isinstance(n_cycles, int): # pragma: no cover
             n_cycles = int(round(n_cycles))
         assert(n_cycles>0)
         self._n_cycles = n_cycles
 
-    def check(self, sensor_values):
+    def check(self, sensor_values) -> bool:
+        """
+        Check if outside of range, and then check if number of breath cycles have elapsed
+
+        Args:
+            sensor_values ():
+
+        Returns:
+            bool
+        """
         # first check if we are outside of the range
         if super(CycleValueCondition, self).check(sensor_values):
 
@@ -220,13 +274,20 @@ class CycleValueCondition(ValueCondition):
             return False
 
     def reset(self):
+        """
+        Reset check status and start cycle
+        """
         self._mid_check = False
         self._start_cycle = 0
 
 
-class TimeValueCondition(ValueCondition):
+class TimeValueCondition(ValueCondition): # pragma: no cover
     """
     value goes out of range for specific amount of time
+
+    .. warning::
+
+        Not implemented!
     """
 
     def __init__(self, time, *args, **kwargs):
@@ -238,9 +299,9 @@ class TimeValueCondition(ValueCondition):
             **kwargs:
         """
         super(TimeValueCondition, self).__init__(*args, **kwargs)
-
-
         self.time = time
+
+        raise NotImplementedError('Time condition has not been implemented!')
 
     def check(self, sensor_values):
         pass
@@ -256,10 +317,13 @@ class AlarmSeverityCondition(Condition):
                  mode: str = 'min',
                  *args, **kwargs):
         """
+        Alarm is above or below a certain severity.
+
+        Get alarm severity status from :meth:`.Alarm_Manager.get_alarm_severity` .
 
         Args:
-            alarm_type:
-            severity:
+            alarm_type ( :class:`.AlarmType` ): Alarm type to check
+            severity ( :class:`.AlarmSeverity` ): Alarm severity to check against
             mode (str): one of 'min', 'equals',  or 'max'.
                 'min' returns true if the alarm is at least this value
                 (note the difference from ValueCondition which returns true if the alarm is less than..)
@@ -283,11 +347,23 @@ class AlarmSeverityCondition(Condition):
         self.mode = mode
 
     @property
-    def mode(self):
+    def mode(self) -> str: # pragma: no cover
+        """
+        'min' returns true if the alarm is at least this value
+        (note the difference from ValueCondition which returns true if the alarm is less than..)
+        and vice versa for 'max'.
+
+        .. note::
+
+            'min' and 'max' use >= and <= rather than > and <
+
+        Returns:
+            str: one of 'min', 'equals',  or 'max'.
+        """
         return self._mode
 
     @mode.setter
-    def mode(self, mode):
+    def mode(self, mode: str):
         assert(mode in ('min', 'eq', 'max'))
         if mode == 'min':
             # if we're a minimum, True (raise alarm) if value is less than limit
@@ -296,15 +372,15 @@ class AlarmSeverityCondition(Condition):
             self.operator = operator.eq
         elif mode == 'max':
             self.operator = operator.le
-        else:
+        else: # pragma: no cover
             raise ValueError(f'needs to be max or min, got {mode}')
         self._mode = mode
 
-    def check(self, sensor_values):
+    def check(self, sensor_values=None):
         alarm_severity = self.manager.get_alarm_severity(self.alarm_type)
         return self.operator(alarm_severity, self.severity)
 
-    def reset(self):
+    def reset(self): # pragma: no cover
         pass
 
 
@@ -335,7 +411,7 @@ class CycleAlarmSeverityCondition(AlarmSeverityCondition):
 
     @n_cycles.setter
     def n_cycles(self, n_cycles):
-        if not isinstance(n_cycles, int):
+        if not isinstance(n_cycles, int): # pragma: no cover
             n_cycles = int(round(n_cycles))
         assert(n_cycles>0)
         self._n_cycles = n_cycles
@@ -363,7 +439,7 @@ class CycleAlarmSeverityCondition(AlarmSeverityCondition):
                 # don't check yet, n_cycles must > 0
                 return False
 
-        else:
+        else: # pragma: no cover - usually this comes after a check for this that should return false, so we never reach here.
             # if we're not outside the range, false.
             # reset the flag that says we're inside a check
             self._mid_check = False

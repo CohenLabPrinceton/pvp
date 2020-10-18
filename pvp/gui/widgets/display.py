@@ -1,7 +1,9 @@
 """
-Unified monitor & control widgets
+Unified monitor & control widget
 
-Display sensor values, control control values, turns out it's all the same
+Displays sensor values, and can optionally control system settings.
+
+The :class:`.PVP_Gui` instantiates display widgets according to the contents of :data:`.values.DISPLAY_CONTROL` and :data:`.values.DISPLAY_MONITOR`
 """
 
 import numpy as np
@@ -24,8 +26,47 @@ from pvp.gui.widgets.dialog import pop_dialog
 from pvp.alarm import AlarmSeverity
 
 class Display(QtWidgets.QWidget):
-    limits_changed = QtCore.Signal(tuple)
+    """
+    Unified widget for display of sensor values and control of ventilation parameters
+
+    Displayed values are updated according to :meth:`.Dispaly.timed_update`
+
+
+    Args:
+        value (:class:`.Value`): Value object to represent
+        update_period (float): Amount of time between updates of the textual display of values
+        enum_name ( :class:`.ValueName` ): Value name of object to represent
+        button_orientation ('left', 'right'): whether the controls are drawn on the ``'left'`` or ``'right'``
+        control_type (None, 'slider', 'record'): type of control - either ``None`` (no control), ``slider`` (a slider can be opened to set a value),
+            or ``record`` where recent sensor values are averaged and used to set the control value.
+            Both types of control allow values to be input from the keyboard by clicking on the editable label
+        style ('light', 'dark'): whether the widget is ``'dark'`` (light text on dark background) or ``'light'`` (dark text on light background
+        *args, **kwargs: passed on to :class:`PySide2.QtWidgets.QWidget`
+
+    Attributes:
+        self.name: Unpacked from ``value``
+        self.units: Unpacked from ``value``
+        self.abs_range: Unpacked from ``value``
+        self.safe_range: Unpacked from ``value``
+        self.alarm_range: initialized from ``value``, but updated by alarm manager
+        self.decimals: Unpacked from ``value``
+        self.update_period (float): Amount of time between updates of the textual display of values
+        self.enum_name ( :class:`.ValueName` ): Value name of object to represent
+        self.orientation ('left', 'right'): whether the controls are drawn on the ``'left'`` or ``'right'``
+        self.control (None, 'slider', 'record'): type of control - either ``None`` (no control), ``slider`` (a slider can be opened to set a value),
+            or ``record`` where recent sensor values are averaged and used to set the control value.
+        self._style ('light', 'dark'): whether the widget is ``'dark'`` (light text on dark background) or ``'light'`` (dark text on light background)
+        self.set_value (float): current set value of controlled value, if any
+        self.sensor_value (float): current value of displayed sensor value, if any.
+
+    """
+
     value_changed = QtCore.Signal(float)
+    """
+    Signal emitted when controlled value of display object has changed.
+    
+    Contains new value (float)
+    """
 
     def __init__(self,
                  value: Value,
@@ -35,31 +76,7 @@ class Display(QtWidgets.QWidget):
                  control_type: typing.Union[None, str] = None,
                  style: str="dark",
                  *args, **kwargs):
-        """
 
-        Args:
-            value (:class:`.Value`): Value Object to display
-            update_period (float): time to wait in between updating displayed value
-            enum_name (:class:`.ValueName`): Value name (not in Value objects)
-            button_orientation (str: 'left' or 'right'): whether the button should be on the left or right
-            control_type (None, str: 'slider', 'record'): whether a slider, a button to record recent values, or ``None`` control should be used with this object
-            style (str: 'light', 'dark', or a QtStylesheet string): _style for the display
-            *args, **kwargs: passed to :class:`PySide2.QtWidgets.QWidget`
-
-        Attributes:
-            self.name:
-            self.units:
-            self.abs_range:
-            self.safe_range:
-            self.decimals:
-            self.update_period:
-            self.enum_name:
-            self.orientation:
-            self.control:
-            self._style:
-            self.set_value:
-            self.sensor_value:
-        """
 
         super(Display, self).__init__(*args, **kwargs)
 
@@ -67,7 +84,7 @@ class Display(QtWidgets.QWidget):
         self.name = value.name
         self.units = value.units
         self.abs_range = value.abs_range
-        if not value.safe_range:
+        if not value.safe_range: # pragma: no cover
             self.safe_range = (0, 0)
         else:
             self.safe_range = value.safe_range
@@ -115,6 +132,17 @@ class Display(QtWidgets.QWidget):
         self.timed_update()
 
     def init_ui(self):
+        """
+        UI is initialized in several stages
+
+        * 0: this method, get stylesheets based on ``self._style`` and call remaining initialization methods
+        * 1: :meth:`.Display.init_ui_labels` - create generic labels shared by all display objects
+        * 2: :meth:`.Display.init_ui_toggle_button` - create the toggle or record button used by controls
+        * 3: :meth:`.Display.init_ui_limits` - create a plot that displays the sensor value graphically relative to the alarm limits
+        * 4: :meth:`.Display.init_ui_slider` or :meth:`.Display.ini_ui_record` - depending on what type of control this is
+        * 5: :meth:`.Display.init_ui_layout` since the results of the previous steps varies, do all layout at the end depending on orientation
+        * 6: :meth:`.Display.init_ui_signals` connect slots and signals
+        """
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
         self.setLayout(self.layout)
@@ -255,7 +283,6 @@ class Display(QtWidgets.QWidget):
             self.sensor_plot.setSizePolicy(plot_size_policy)
             self.sensor_plot.setHidden(True)
 
-
     def init_ui_slider(self):
         # -------
         # create toggle button
@@ -358,8 +385,6 @@ class Display(QtWidgets.QWidget):
 
         self.layout.addLayout(self.main_layout)
 
-
-
     def init_ui_signals(self):
 
         if self.control:
@@ -373,7 +398,13 @@ class Display(QtWidgets.QWidget):
 
     @QtCore.Slot(bool)
     def toggle_control(self, state):
-        if self.control != 'slider':
+        """
+        Toggle the appearance of the slider, if a slider
+
+        Args:
+            state (bool): Whether to show or hide the slider
+        """
+        if self.control != 'slider': # pragma: no cover
             return
         if state == True:
             self.toggle_button.setArrowType(QtCore.Qt.DownArrow)
@@ -388,7 +419,15 @@ class Display(QtWidgets.QWidget):
             self.adjustSize()
 
     def toggle_record(self, state):
-        if self.control != 'record':
+        """
+        Toggle the recording state, if a recording control
+
+        Args:
+            state (bool): Whether recording should be started or stopped.
+                when started, start storing new sensor values in a list.
+                when stopped, average thgem and emit new value.
+        """
+        if self.control != 'record': # pragma: no cover
             return
         if state:
             self._log_values = True
@@ -418,10 +457,12 @@ class Display(QtWidgets.QWidget):
 
     def _value_changed(self, new_value: float):
         """
-        "outward-directed" Control value changed by components
+        "outward-directed" method to emit new changed control value when changed by this widget
+
+        Pop a confirmation dialog if values are set outside the safe range.
 
         Args:
-            new_value (float):
+            new_value (float): new value!
             emit (bool): whether to emit the `value_changed` signal (default True) -- in the case that our value is being changed by someone other than us
         """
         # pdb.set_trace()
@@ -452,7 +493,7 @@ class Display(QtWidgets.QWidget):
 
                 dialog = pop_dialog(
                     message = f'Confirm setting potentially unsafe {self.name} value',
-                    sub_message= f'Values of {self.name} outside of {self.safe_range[0]}-{self.safe_range[1]} {self.units} are usually unsafe.\n\nAre you sure you want to set {self.name} to {orig_value} {self.units}',
+                    sub_message= f'Values of {self.name} outside of {safe_range[0]}-{safe_range[1]} {self.units} are usually unsafe.\n\nAre you sure you want to set {self.name} to {orig_value} {self.units}',
                     buttons =  QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok,
                     default_button =  QtWidgets.QMessageBox.Cancel
                 )
@@ -467,7 +508,7 @@ class Display(QtWidgets.QWidget):
 
         else:
             # reset _confirmed_unsafe if back in range
-            if self._confirmed_unsafe:
+            if self._confirmed_unsafe: # pragma: no cover -- dont to confirmations in travis
                 self._confirmed_unsafe = False
 
             # set firstset flag if we're going in safe range for the first time
@@ -479,9 +520,14 @@ class Display(QtWidgets.QWidget):
             self.value_changed.emit(self.set_value)
 
     def update_set_value(self, new_value: float):
-        """inward value setting (set from elsewhere)"""
+        """
+        Update to reflect new control value set from elsewhere (inwardly directed setter)
 
-        if isinstance(new_value, str):
+        Args:
+            new_value (float): new value to set!
+        """
+
+        if isinstance(new_value, str): # pragma: no cover
             new_value = float(new_value)
 
         # don't convert value here,
@@ -501,6 +547,12 @@ class Display(QtWidgets.QWidget):
         return changed
 
     def update_sensor_value(self, new_value: float):
+        """
+        Receive new sensor value and update display widgets
+
+        Args:
+            new_value (float): new sensor value!
+        """
         if new_value is None:
             return
 
@@ -525,7 +577,7 @@ class Display(QtWidgets.QWidget):
         Args:
             control (:class:`~.ControlSetting`): control setting with min_value or max_value
         """
-        if self.control is None:
+        if self.control is None: # pragma: no cover
             return
 
         if control.min_value:
@@ -545,11 +597,13 @@ class Display(QtWidgets.QWidget):
     def redraw(self):
         """
         Redraw all graphical elements to ensure internal model matches view
+
+        Typically used when changing units
         """
         # convert some guaranteed values
         abs_range = self.abs_range
         if self._convert_in:
-            abs_range = (self._convert_in(x) for x in abs_range)
+            abs_range = [self._convert_in(x) for x in abs_range]
 
         # sensor value
         if self.sensor_value:
@@ -578,12 +632,15 @@ class Display(QtWidgets.QWidget):
                 if self.control == "slider":
                     try:
                         self.slider.blockSignals(True)
-                        self.slider.setValue(set_value)
                         self.slider.setMinimum(abs_range[0])
                         self.slider.setMaximum(abs_range[1])
                         self.slider.setDecimals(self.decimals)
+                        self.slider.setValue(set_value)
+                        self.slider.update()
                         self.slider_min.setText(unit_conversion.rounded_string(abs_range[0], self.decimals))
                         self.slider_max.setText(unit_conversion.rounded_string(abs_range[1], self.decimals))
+                    except Exception as e: # pragma: no cover
+                        self.logger.exception(e)
                     finally:
                         self.slider.blockSignals(False)
 
@@ -591,11 +648,14 @@ class Display(QtWidgets.QWidget):
         if self.alarm_range:
             alarm_range = self.alarm_range
             if self._convert_in:
-                alarm_range = (self._convert_in(x) for x in alarm_range)
+                alarm_range = [self._convert_in(x) for x in alarm_range]
             self.sensor_plot.update_value(min=alarm_range[0], max=alarm_range[1])
 
 
     def timed_update(self):
+        """
+        Refresh textual sensor values only periodically to prevent them from being totally unreadable from being changed too fast.
+        """
         # format value based on decimals
         try:
             if self.sensor_value:
@@ -605,36 +665,45 @@ class Display(QtWidgets.QWidget):
                     sensor_value = self.sensor_value
                 value_str = unit_conversion.rounded_string(sensor_value, self.decimals)
                 self.sensor_label.setText(value_str)
-        except Exception as e:
+        except Exception as e: # pragma: no cover
             self.logger.exception(f"{self.name} - error in timed update - {e}")
         finally:
             QtCore.QTimer.singleShot(round(self.update_period*1000), self.timed_update)
 
-
-
     def set_units(self, units: str):
         """
-        Set pressure units to display as cmH2O or hPa
+        Set pressure units to display as cmH2O or hPa.
+
+        Uses functions from :mod:`pvp.common.unit_conversion` such that
+
+        * ``self._convert_in`` converts internal, canonical units to displayed units
+          (eg. ``cmH2O`` is used by all other modules, so we convert it to ``hPa``
+        * ``self._convert_out`` converts displayed units to send to other parts of the system
+
+        .. note::
+
+            currently unit conversion is only supported for Pressure.
 
         Args:
-            units ('cmH2O', 'hPa'):
+            units ('cmH2O', 'hPa'): new units to display
         """
-        if self.name in (ValueName.PIP.name, ValueName.PEEP.name):
+        if self.name in (ValueName.PIP.name, ValueName.PEEP.name, "Pressure") or \
+                self.enum_name in (ValueName.PIP, ValueName.PEEP, ValueName.PRESSURE):
             if units == 'cmH2O':
-                self.decimals = 1
+                #self.decimals = 1
                 self._convert_in = None
                 self._convert_out = None
                 self.sensor_plot._convert_in = None
                 self.sensor_plot._convert_out = None
 
             elif units == 'hPa':
-                self.decimals = 0
+                #self.decimals = 0
                 self._convert_in = unit_conversion.cmH2O_to_hPa
                 self._convert_out = unit_conversion.hPa_to_cmH2O
                 self.sensor_plot._convert_in = unit_conversion.cmH2O_to_hPa
                 self.sensor_plot._convert_out = unit_conversion.hPa_to_cmH2O
 
-            else:
+            else: # pragma: no cover
                 self.logger.exception(f'couldnt set units {units}')
                 return
 
@@ -647,6 +716,12 @@ class Display(QtWidgets.QWidget):
 
 
     def set_locked(self, locked: bool):
+        """
+        Set locked status of control
+
+        Args:
+            locked (bool): If True, disable all controlling widgets, if False, re-enable.
+        """
         if locked:
             self.locked = True
             if self.control:
@@ -665,6 +740,14 @@ class Display(QtWidgets.QWidget):
     # ---------------------------------
     @property
     def is_set(self):
+        """
+        Check if value has been set for this control.
+
+        Used to check if all settings have been set preflight by :class:`.PVP_Gui`
+
+        Returns:
+            bool: whether we have an :attr:`.Display.set_value`
+        """
         if self.set_value is None:
             return False
         else:
@@ -672,6 +755,16 @@ class Display(QtWidgets.QWidget):
 
     @property
     def alarm_state(self) -> AlarmSeverity:
+        """
+        Current visual display of alarm severity
+
+        Change sensor value color to reflect the alarm state of that set parameter --
+
+        eg. if we have a HAPA alarm, set the PIP control to display as red.
+
+        Returns:
+            :class:`.AlarmSeverity`
+        """
         return self._alarm_state
 
     @alarm_state.setter
@@ -689,6 +782,14 @@ class Display(QtWidgets.QWidget):
 class Limits_Plot(pg.PlotWidget):
     """
     Widget to display current value in a bar graph along with alarm limits
+
+    Args:
+        style ('light', 'dark'): Whether we are being displayed in a light or dark styled :class:`.Display` widget
+
+    Attributes:
+        set_value (float): Set value of control, displayed as horizontal black line always set at center of bar
+        sensor_value (float): Sensor value to compare against control, displayed as bar
+
     """
 
     def __init__(self, style:str="light", *args, **kwargs):
@@ -711,6 +812,14 @@ class Limits_Plot(pg.PlotWidget):
         self.init_ui()
 
     def init_ui(self):
+        """
+        Create bar chart and horizontal lines to reflect
+
+        * Sensor Value
+        * Set Value
+        * High alarm limit
+        * Low alarm limit
+        """
         # bar graph that's an indicator of current value
 
         self.getPlotItem().hideAxis('bottom')
@@ -772,7 +881,9 @@ class Limits_Plot(pg.PlotWidget):
                      sensor_value: float = None,
                      set_value: float = None):
         """
-        Move the lines! Pass any of the represented values
+        Move the lines! Pass any of the represented values.
+
+        Also updates yrange to ensure that the control value is always centered in the plot
 
         Args:
             min (float): new alarm minimum
@@ -801,6 +912,9 @@ class Limits_Plot(pg.PlotWidget):
         self.update_yrange()
 
     def update_yrange(self):
+        """
+        Set yrange to ensure that the set value is always in the center of the plot and that all the values are in range.
+        """
         if self.set_value:
             # put set_value in the middle, add space above and below to fit alarms
             min_dist = 0

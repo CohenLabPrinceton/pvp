@@ -13,6 +13,8 @@ class SensorValues:
     Should be instantiated with each of the :attr:`.SensorValues.additional_values`, and values for all
     :class:`.ValueName` s in :data:`.values.SENSOR` by passing them in the ``vals`` kwarg.
 
+    An ``AssertionError`` if an incomplete set of values is given.
+    
     Values can be accessed either via attribute name (``SensorValues.PIP``) or like a dictionary (``SensorValues['PIP']``)
 
     """
@@ -149,7 +151,6 @@ class ControlSetting:
                 logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
                 raise KeyError
         elif isinstance(name, values.ValueName):
-            raise KeyError
             assert name in values.CONTROL.keys() or name in (values.ValueName.VTE, values.ValueName.FIO2)
             
         self.name = name # type: values.ValueName

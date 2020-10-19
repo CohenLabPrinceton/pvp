@@ -789,8 +789,6 @@ class ControlModuleDevice(ControlModuleBase):
         """
         ControlModuleBase.__init__(self, save_logs, flush_every)
 
-        # Handler for HAL timeout handler for the timeout
-
         try: 
             self.__get_hal(config_file)
         except TimeoutException:
@@ -809,7 +807,10 @@ class ControlModuleDevice(ControlModuleBase):
         """
         Get Hal, decorated with a timeout
         """
-        self.HAL = io.Hal(config_file)
+        try:
+            self.HAL = io.Hal(config_file)
+        except RuntimeError:
+            self.HAL = io.HALMock()
 
     def __del__(self):
         """

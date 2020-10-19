@@ -1,6 +1,5 @@
 import time
 import typing
-import pytest
 
 from pvp.common import values
 from copy import copy
@@ -64,8 +63,10 @@ class SensorValues:
                         # otherwise just make one
                         self.timestamp = time.time()
                     else:
-                        with pytest.raises( Exception ):
-                            raise e
+                        raise e
+
+        # insist that we have all the rest of the vals
+        assert(all([value.name in kwargs.keys() for value in values.SENSOR.keys()]))
 
         # assign kwargs as attributes,
         # don't allow any non-ValueName keys
@@ -102,8 +103,7 @@ class SensorValues:
         elif item.lower() in self.additional_values:
             return getattr(self, item.lower())
         else:
-            with pytest.raises( Exception ):
-                raise KeyError(f'No such value as {item}')
+            raise KeyError(f'No such value as {item}')
 
     def __setitem__(self, key, value):
         if key in values.ValueName:
@@ -113,8 +113,7 @@ class SensorValues:
         elif key.lower() in self.additional_values:
             return setattr(self, key.lower(), value)
         else:
-            with pytest.raises( Exception ):
-                raise KeyError(f'No such value as {key}')
+            raise KeyError(f'No such value as {key}')
 
 class ControlSetting:
     def __init__(self,
@@ -148,17 +147,18 @@ class ControlSetting:
             else:
                 logger = init_logger(__name__)
                 logger.exception(f'Couldnt create ControlSetting with name {name}, not in values.CONTROL')
-                with pytest.raises( Exception ):
-                    raise KeyError
-
+                raise KeyError
+        elif isinstance(name, values.ValueName):
+            raise KeyError
+            assert name in values.CONTROL.keys() or name in (values.ValueName.VTE, values.ValueName.FIO2)
+            
         self.name = name # type: values.ValueName
 
         if (value is None) and (min_value is None) and (max_value is None):
             logger = init_logger(__name__)
             ex_string = 'at least one of value, min_value, or max_value must be set in a ControlSetting'
             logger.exception(ex_string)
-            with pytest.raises( Exception ):
-                raise ValueError(ex_string)
+            raise ValueError(ex_string)
 
         self.value = value
         self.min_value = min_value

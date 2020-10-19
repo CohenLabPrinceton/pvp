@@ -789,16 +789,10 @@ class ControlModuleDevice(ControlModuleBase):
         """
         ControlModuleBase.__init__(self, save_logs, flush_every)
 
-        try: 
-            self.__get_hal(config_file)
-        except TimeoutException:
-            print("TIMEOUT - HAL not initialized")
-            self.logger.warning("TIMEOUT - HAL not initialized. Using MockHAL")
-            self.HAL = io.HALMock()
-
+        self.__get_hal(config_file)
         self._sensor_to_COPY()
 
-        # Current settings of the valves to avoid unneccesary hardware queries
+        # Current settings of the valves to avoid unnecessary hardware queries
         self.current_setting_ex = self.HAL.setpoint_ex
         self.current_setting_in = self.HAL.setpoint_in
 

@@ -5,7 +5,6 @@ Assembly Instructions
 ------------------------
 
 The current build instructions, including both hardware and electronics assembly, can be found here: 
-
 https://docs.google.com/document/d/12_rMrmG7NDBnR3S7hENq-rUHp8FnTqRoOEeFMkXnlS4/edit?usp=sharing
 
 
@@ -13,10 +12,9 @@ SolidWorks Assembly
 ------------------------
 
 The entire Solidworks Assembly, with associated part files, can be found in this Google Drive: 
-
 https://drive.google.com/drive/folders/1YrJEOmOMZtXcHABYO0hEu0etJ7LAC9Lf?usp=sharing
 
-he current assembly is named "TLA_VENTILATOR_ASSY_V2.SLDASM".
+The current assembly is named "TLA_VENTILATOR_ASSY_V2.SLDASM".
 
 3D Printed Parts
 ------------------------

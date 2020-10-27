@@ -45,5 +45,18 @@ For PRUSA users, we provide an example project, demonstrating part orientation:
 Enclosure
 ------------------------
 
-The side, top, and bottom panels are made out of 1/16" HPDE sheeting. 
+The side, top, and bottom panels are made out of 1/16" HPDE sheeting. Laser cut, or cut by hand, two of the "SIDE_IP_PANEL", and one of each of the rest! We use a perforated HPDE for the bottom panel only; the rest are solid HPDE. 
+
+* :download:`Bottom panel (perforated) - [.dxf] <../assets/DXFs/BOTTOM_PERFORATED_PANEL.DXF>`
+* :download:`Front panel - [.dxf] <../assets/DXFs/FRONT_IP_PANEL_V1.DXF>`
+* :download:`Rear panel - [.dxf] <../assets/DXFs/REAR_IP_PANEL_V1.DXF>`
+* :download:`Side panel (x2) - [.dxf] <../assets/DXFs/SIDE_IP_PANEL.DXF>`
+* :download:`Top panel - [.dxf] <../assets/DXFs/TOP_IP_PANEL.DXF>`
+
+Download all files together: 
+
+* :download:`Top panel - [.zip] <../assets/DXFs/All_DXFs.zip>`
+
+
+
 

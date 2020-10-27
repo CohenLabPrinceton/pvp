@@ -43,7 +43,7 @@ Individual 3D printed parts may be downloaded here:
 
 Optional RPi DIN rail mount alternative, if your printer cannot handle the feature resolution on the original DIN rail mount: 
 
-* :download:`ALTERNATIVE Raspberry Pi DIN rail mount - [.stl] <../assets/STLs/Alternative_Raspberry_Pi_DIN_Rail_Clip.stl>`
+* :download:`ALTERNATIVE Raspberry Pi DIN rail mount (x2) - [.stl] <../assets/STLs/Alternative_Raspberry_Pi_DIN_Rail_Clip.stl>`
 
 
 Download all parts:

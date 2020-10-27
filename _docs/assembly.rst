@@ -25,12 +25,14 @@ Individual 3D printed parts may be downloaded here:
 * :download:`22mm to 0.75 NPTM adapter (x2) - [.stl] <../assets/STLs/22MM_OD_TO_0.75_NPTM_ADAPTER.STL>`
 * :download:`Expiratory outlet bracket to PEEP - [.stl] <../assets/STLs/EXPIRATORY_OUTLET_BRACKET_TO_PEEP_DVC.STL>`
 * :download:`Luer lock filter mount - [.stl] <../assets/STLs/LUER_LOCK_FILTER_MOUNT_V1.STL>`
-* :download:`Raspberry Pi DIN rail mount (x2) - [.stl] <../assets/STLs/RASP_PI_DIN_RAIL_MOUNT_v2.STL>`
+* :download:`Raspberry Pi DIN rail mount (x2) - [.stl] <../assets/STLs/RASP_PI_DIN_RAIL_MOUNT_v3.STL>`
 * :download:`Rear panel vent (x2) - [.stl] <../assets/STLs/IP_PANEL_VENT.STL>`
-
-Optional: 
-
 * :download:`22mm to commercial PEEP adapter - [.stl] <../assets/STLs/22MM_OD_TO_COMMERCIAL_PEEP_ADAPTER.STL>`
+
+Optional RPi DIN rail mount alternative, if your printer cannot handle the feature resolution on the original DIN rail mount: 
+
+* :download:`ALTERNATIVE Raspberry Pi DIN rail mount - [.stl] <../assets/STLs/Alternative_Raspberry_Pi_DIN_Rail_Clip.stl>`
+
 
 Download all parts:
 
@@ -53,9 +55,9 @@ The side, top, and bottom panels are made out of 1/16" HPDE sheeting. Laser cut,
 * :download:`Side panel (x2) - [.dxf] <../assets/DXFs/SIDE_IP_PANEL.DXF>`
 * :download:`Top panel - [.dxf] <../assets/DXFs/TOP_IP_PANEL.DXF>`
 
-Download all files together: 
+Download all .DXF files: 
 
-* :download:`Top panel - [.zip] <../assets/DXFs/All_DXFs.zip>`
+* :download:`All DXF files - [.zip] <../assets/DXFs/All_DXFs.zip>`
 
 
 

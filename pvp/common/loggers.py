@@ -28,6 +28,7 @@ if typing.TYPE_CHECKING:         # pragma: no cover
 
 
 from pvp.common import prefs
+from pvp.common.utils import get_version
 
 _LOGGERS = []
 """
@@ -158,6 +159,12 @@ class CycleData(pytb.IsDescription):
     peep             =  pytb.Float64Col()    # estimated peep pressure
     vte              =  pytb.Float64Col()    # estimated End-Tidal Volume
 
+class ProgramData(pytb.IsDescription):
+    """
+    Structure for the hdf5-table to store program data, like githash and version.
+    """
+    version          =  pytb.StringCol(32)    # Version and githash string
+
 class DataLogger:
     """
     Class for logging numerical respiration data and control settings.
@@ -172,7 +179,8 @@ class DataLogger:
         |--- derived_quantities (group)
         |    |--- (time, Cycle No, I_PHASE_DURATION, PIP_TIME, PEEP_time, PIP, PIP_PLATEAU, PEEP, VTE )
         |
-        |
+        |--- program_information (group)
+        |    |--- (version & githash)
 
     Public Methods:
         close_logfile():                      Flushes, and closes the logfile.
@@ -225,6 +233,9 @@ class DataLogger:
         self.h5file = pytb.open_file(self.file, mode = "a")      # Open logfile
         self.compression_level = compression_level # From 1 to 9, see tables documentation
 
+        self._open_logfile()
+        self.store_program_data() # Store githash, version et al. once after init
+
     def __del__(self):
         self.close_logfile()
 
@@ -269,12 +280,32 @@ class DataLogger:
         else:
             self.derived_table = self.h5file.root.derived_quantities.readout
 
+        if "/program_information" not in self.h5file:
+            self.logger.info('Generating /program_information table in: ' + self.file )
+            group = self.h5file.create_group("/", 'program_information', 'General information about PVP-1')
+            self.program_table = self.h5file.create_table(group, 'readout', ProgramData, "Program information",
+                                                          filters = pytb.Filters(
+                                                              complevel=self.compression_level,
+                                                              complib='zlib'),
+                                                          expectedrows=1000000)
+        else:
+            self.program_table = self.h5file.root.program_information.readout
+
     def close_logfile(self):
         """
         Flushes & closes the open hdf file.
         """
         self.logger.info("Logger terminated; in..." + self.file)
         self.h5file.close() # Also flushes the remaining buffers
+
+    def store_program_data(self):
+        """Appends program metadata to the logfile: githash and version
+        """
+        if self._data_save_allowed:
+            self._open_logfile()
+            datapoint                     = self.program_table.row
+            datapoint['version']          = get_version()
+            datapoint.append()
 
     def store_waveform_data(self, sensor_values: 'SensorValues', control_values: 'ControlValues'):
         """
@@ -400,7 +431,7 @@ class DataLogger:
             filename (str, optional): Path to a hdf5-file. If none is given, uses currently open file. Defaults to None.
 
         Returns:
-            dictionary: Containing the data arranged as ` {"waveform_data": waveform_data, "control_data": control_data, "derived_data": derived_data}`
+            dictionary: Containing the data arranged as ` {"waveform_data": waveform_data, "control_data": control_data, "derived_data": derived_data, "program_information": program_data}`
         """
         self.close_logfile()
 
@@ -420,7 +451,10 @@ class DataLogger:
             table = file.root.derived_quantities.readout
             derived_data = table.read()
 
-        data_dict = {"waveform_data": waveform_data, "control_data": control_data, "derived_data": derived_data}
+            table = file.root.program_information.readout
+            program_data = table.read()
+
+        data_dict = {"waveform_data": waveform_data, "control_data": control_data, "derived_data": derived_data, "program_information": program_data}
         return data_dict
 
     def log2mat(self, filename = None):
@@ -444,7 +478,8 @@ class DataLogger:
             ls_wv = dff['waveform_data']
             ls_dv = dff['derived_data']
             ls_ct = dff['control_data']
-            matlab_data = {'waveforms': ls_wv, 'derived_quantities': ls_dv, 'control_commands': ls_ct}
+            ls_pr = dff['program_information']
+            matlab_data = {'waveforms': ls_wv, 'derived_quantities': ls_dv, 'control_commands': ls_ct, 'program_information': ls_pr}
             sio.savemat(new_filename, matlab_data)
         except:
             print(filename + " not found.")

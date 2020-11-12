@@ -4,6 +4,9 @@ System Overview
 The **People's Ventilator Project (PVP)** is an open-source, low-cost pressure-control ventilator designed for minimal reliance on specialized medical parts to better adapt to supply chain shortages.
 
 .. raw:: html
+    :file: /images/main_ventilator.jpg
+
+.. raw:: html
 
     <video width="100%" autoplay loop>
       <source src="images/ventilator_rotate.mp4" type="video/mp4">

@@ -48,7 +48,7 @@ Download all parts:
 
 * :download:`All components - [.zip] <../assets/STLs/All_STLs.zip>`
 
-Printing tips: Be sure to keep any airway components as close to 100% infill as possible. Most of our test prints were performed using ABS, and without any supports or rafts, since these are challenging to remove later. Supports should not be necessary provided the parts are oriented mindfully on the build plate. Also, try to keep cylindrical components oriented vertically (so that the circle is traced on the build plate); this will improve circularity of the chamber. 
+Printing tips: Be sure to maintain high infill for airway components: ideally, use 4 wall-layers (vertical layers), minimum 40% infill, and 4 layers on both the top and bottom. Parts should be leak-tested prior to installation, for instance, with a stopper and water bath. Most of our test prints were performed using PLA, and without any supports or rafts, since these are challenging to remove later. Supports should not be necessary provided the parts are oriented mindfully on the build plate. Also, try to keep cylindrical components oriented vertically (so that the circle is traced on the build plate); this will improve circularity of the chamber. 
 
 For PRUSA users, we provide an example project, demonstrating part orientation:
 

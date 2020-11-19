@@ -9,6 +9,7 @@ from pvp.common.loggers import DataLogger
 from pvp.common.message import SensorValues, ControlValues, DerivedValues, ControlSetting
 from pvp.common.values import ValueName
 from pvp.common import values
+from pvp.common.utils import get_version
 
 from pvp import prefs
 prefs.init()
@@ -43,6 +44,12 @@ def test_control_storage(control_setting_name):
     assert control_setting.min_value == tt['control_data']['min_value'][0]
     assert control_setting.max_value == tt['control_data']['max_value'][0]
     assert control_setting.timestamp == tt['control_data']['timestamp'][0]
+
+    version_string = tt["program_information"][0][0]
+    version_from_file = version_string.decode()  # for correct unicode vs. byte string comparison
+    real_version = get_version()
+
+    assert version_from_file == real_version
 
 def test_sensor_storage():
 

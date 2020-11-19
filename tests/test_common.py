@@ -13,8 +13,10 @@ def test_control_settings(control_setting_name):
     print(name)
 
     assert ControlSetting(name=name, value=np.random.random(), min_value = np.random.random(), max_value = np.random.random())
-    assert ControlSetting(name=name, value=None, min_value = None, max_value = None)
-    assert ControlSetting(name="doesnotexist", value=np.random.random(), min_value = np.random.random(), max_value = np.random.random())
+    with pytest.raises( Exception ):
+        assert ControlSetting(name=name, value=None, min_value = None, max_value = None)  # At least one has to be given
+    with pytest.raises( Exception ):
+        assert ControlSetting(name="doesnotexist", value=np.random.random(), min_value = np.random.random(), max_value = np.random.random()) # Name must exist
 
 
 
@@ -44,8 +46,10 @@ def test_sensor_values():
     sv.__setitem__('loop_counter', new_val)
     assert sv.__getitem__('loop_counter') == new_val
 
-    sv.__setitem__('bla', 12)
-    sv.__getitem__('bla')
+    with pytest.raises( Exception ):
+        sv.__setitem__('bla', 12) # SensorValue must exist
+    with pytest.raises( Exception ):
+        sv.__getitem__('bla')     # Same here, SensorValue must exists
 
 
     vals  = {   ValueName.PIP.name                  : 0,
@@ -56,7 +60,7 @@ def test_sensor_values():
                 ValueName.BREATHS_PER_MINUTE.name   : 0,
                 ValueName.INSPIRATION_TIME_SEC.name : 0,
                 ValueName.FLOWOUT.name              : 0}
-
-    sv = SensorValues(vals=vals)
+    with pytest.raises( Exception ):
+        sv = SensorValues(vals=vals)
     sv = SensorValues(timestamp=None, loop_counter=0, breath_count=0, vals=vals)
     assert sv.timestamp > 0

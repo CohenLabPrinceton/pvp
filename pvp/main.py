@@ -49,8 +49,8 @@ def main(arg):
         coordinator = get_coordinator(single_process=args.single_process, sim_mode=args.simulation)
         app, gui = launch_gui(coordinator, args.default_controls, screenshot=args.screenshot)
         sys.exit(app.exec_())
-    finally:
-        set_valves_save_position(args)
+    finally: #Only in cases of errors; tested above
+        set_valves_save_position(args)  # pragma: no cover
 
 
     # TODO: gui.main(ui_control_module)

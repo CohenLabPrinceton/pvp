@@ -8,7 +8,6 @@ from collections import deque
 import pdb
 from itertools import count
 import signal
-import pytest
 
 import pvp.io as io
 
@@ -17,6 +16,8 @@ from pvp.common.loggers import init_logger, DataLogger
 from pvp.common.values import CONTROL, ValueName
 from pvp.common.utils import timeout
 from pvp.alarm import ALARM_RULES, AlarmType, AlarmSeverity, Alarm
+from pvp.common.utils import timeout, TimeoutException
+
 from pvp import prefs
 
 
@@ -788,27 +789,22 @@ class ControlModuleDevice(ControlModuleBase):
         """
         ControlModuleBase.__init__(self, save_logs, flush_every)
 
-        # Handler for HAL timeout handler for the timeout
-        def handler(signum, frame):
-            print("TIMEOUT - HAL not initialized")
-            self.logger.warning("TIMEOUT - HAL not initialized. Using MockHAL")
-            with pytest.raises( Exception ):
-                raise Exception("HAL timeout")
-
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(5)
-
-        try:
-            self.HAL = io.Hal(config_file)
-        except Exception: 
-            self.HAL = io.HALMock()
-            #TODO: Raise technical alert
-
+        self.__get_hal(config_file)
         self._sensor_to_COPY()
 
-        # Current settings of the valves to avoid unneccesary hardware queries
+        # Current settings of the valves to avoid unnecessary hardware queries
         self.current_setting_ex = self.HAL.setpoint_ex
         self.current_setting_in = self.HAL.setpoint_in
+
+    @timeout
+    def __get_hal(self, config_file):
+        """
+        Get Hal, decorated with a timeout
+        """
+        try:
+            self.HAL = io.Hal(config_file)
+        except RuntimeError:
+            self.HAL = io.HALMock()
 
     def __del__(self):
         """

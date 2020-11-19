@@ -1,7 +1,6 @@
 import time
 import os
 from collections import OrderedDict as odict
-import subprocess
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
@@ -10,6 +9,8 @@ from pvp.gui import get_gui_instance
 from pvp.gui.widgets.components import QHLine, OnOffButton
 from pvp.alarm import Alarm, AlarmType
 from pvp.common import prefs, values
+from pvp.common.utils import get_version
+
 import pvp
 
 class Control_Panel(QtWidgets.QGroupBox):
@@ -98,15 +99,7 @@ class Control_Panel(QtWidgets.QGroupBox):
         # version indicator
         self.status_layout.addWidget(QtWidgets.QLabel('PVP Version'),
                                      2,0,alignment=QtCore.Qt.AlignLeft)
-        version = pvp.__version__
-        try:
-            # get git version
-            git_version = subprocess.check_output(['git', 'describe', '--always'],
-                                                  cwd=os.path.dirname(__file__)).strip().decode('utf-8')
-            version = " - ".join([version, git_version])
-        except Exception: # pragma: no cover
-            # no problem, just use package version
-            pass
+        version = get_version()
 
         self.status_layout.addWidget(QtWidgets.QLabel(version),
                                      2,1,alignment=QtCore.Qt.AlignRight)

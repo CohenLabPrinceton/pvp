@@ -7,9 +7,9 @@ GUI
    :hidden:
    :maxdepth: 4
 
-   PVP GUI <gui.main>
-   Widgets <gui.widgets>
-   Stylesheets <gui.styles>
+   PVP GUI <main>
+   Widgets <widgets/index>
+   Stylesheets <styles>
 
 
 .. raw:: html

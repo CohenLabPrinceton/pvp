@@ -17,10 +17,10 @@ Alarm Modules
 .. toctree::
     :hidden:
 
-    Alarm Manager <alarm.alarm_manager>
-    Alarm <alarm.alarm>
-    Alarm Rule <alarm.alarm_rule>
-    Alarm Condition <alarm.condition>
+    Alarm Manager <alarm_manager>
+    Alarm <alarm>
+    Alarm Rule <alarm_rule>
+    Alarm Condition <condition>
 
 .. raw:: html
 

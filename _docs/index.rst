@@ -91,35 +91,34 @@ PVP Modules
    :maxdepth: 4
    :caption: Overview
 
-   System Overview <overview>
-   Performance <performance>
-   Medical Disclaimer <disclaimer>
-   Funding and Support <funding>
+   System Overview <overview/overview>
+   Performance <overview/performance>
+   Medical Disclaimer <overview/disclaimer>
+   Funding and Support <overview/funding>
 
 .. toctree::
    :hidden:
    :maxdepth: 4
    :caption: Hardware:
 
-   Hardware Overview <hardware_overview>
-   Components <components>
-   Assembly <assembly>
-   Electronics <electronics>
-   Bill of Materials <bom>
+   Hardware Overview <hardware/hardware_overview>
+   Components <hardware/components>
+   Assembly <hardware/assembly>
+   Electronics <hardware/electronics>
+   Bill of Materials <hardware/bom>
 
 .. toctree::
    :hidden:
    :maxdepth: 4
    :caption: Software:
 
-   Software Overview <software_overview>
-   Main <main>
-   GUI <gui>
-   Controller <controller>
-   Common <common>
-   I/O <io>
-   Alarm <alarm>
-   Coordinator <coordinator>
+   Software Overview <software/software_overview>
+   GUI <software/gui/index>
+   Controller <software/controller>
+   Common <software/common/index>
+   I/O <software/io>
+   Alarm <software/alarm/index>
+   Coordinator <software/coordinator>
 
 .. toctree::
    :hidden:

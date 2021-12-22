@@ -8,5 +8,5 @@ sphinxcontrib-napoleon
 recommonmark
 autodocsumm
 tables
-git+https://github.com/mwibrow/sphinx-sass.git
+git+https://github.com/sneakers-the-rat/sphinx-sass.git
 mock

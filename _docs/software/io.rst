@@ -1,16 +1,11 @@
 pvp.io package
 ===============
 
-Subpackages
------------
+.. automodule:: pvp.io
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-.. toctree::
-   :maxdepth: 4
-
-   pvp.io.devices
-
-Submodules
-----------
 
 pvp.io.hal module
 ------------------
@@ -20,11 +15,10 @@ pvp.io.hal module
    :undoc-members:
    :show-inheritance:
 
+devices
+---------
 
-Module contents
----------------
-
-.. automodule:: pvp.io
+.. automodule:: pvp.io.devices
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,20 +1,13 @@
 Components
 ==================
 
-.. figure:: /images/Schematic_v2.svg
+.. figure:: /assets/images/Schematic_v2.svg
     :align: center
     :figwidth: 100%
     :width: 100%
     
     PVP hardware schematic
-	
-.. toctree::
-   :maxdepth: 4
-   :caption: Hardware:
 
-   Hardware Design <components.design>
-   Actuator Selection <components.actuators>
-   Sensor Selection <components.sensors>
 
 Hardware Design
 -------------------

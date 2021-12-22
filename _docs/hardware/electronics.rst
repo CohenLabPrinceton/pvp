@@ -13,15 +13,7 @@ The core electrical system consists of two modular PCB 'hats', a sensor PCB and 
 The modularity of this system enables individual boards to be revised or modified to adapt to component substitutions if required.
 
 We outsourced our PCB fabrication to Advanced Circuits, based out of Aurora, CO (for $33 each): https://www.4pcb.com/pcb-prototype-2-4-layer-boards-specials.html
-If you would like to do the same, you can send them the Gerber .zip files we have provided directly. 
-
-.. toctree::
-   :maxdepth: 4
-   :caption: Hardware:
-
-   Power and I/O <electronics.powerio>
-   Sensor PCB <electronics.sensorpcb>
-   Actuator PCB <hardware.actuatorpcb>
+If you would like to do the same, you can send them the Gerber .zip files we have provided directly.
 
 Power and I/O
 ----------------

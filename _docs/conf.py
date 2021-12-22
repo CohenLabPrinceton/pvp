@@ -22,8 +22,6 @@ sys.path.insert(0, os.path.abspath('.'))
 # copy hardware assets at build time
 root_assets = Path('../assets').resolve()
 docs_assets = Path('./assets').resolve()
-print('root', root_assets)
-print('docs', docs_assets)
 for asset_file in root_assets.glob('**/*'):
     if asset_file.is_dir():
         continue
@@ -65,7 +63,7 @@ extensions = [
     # 'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon', # parse google style docstrings
     'autodocsumm',
-    'recommonmark',   # support markdown
+    'myst_perser',   # support markdown
     'sphinx_sass' # support sass/scss
 ]
 

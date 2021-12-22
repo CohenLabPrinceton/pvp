@@ -4,7 +4,7 @@ Software Overview
 ==================
 
 .. raw:: html
-   :file: ../../assets/images/pvp_software_overview_clickable.svg
+   :file: ../assets/images/pvp_software_overview_clickable.svg
 
 
 PVP is modularly designed to facilitate future adaptation to new hardware configurations and ventilation modes. APIs were designed for each of the modules to a) make them easily inspected and configured and b) make it clear to future developers how to adapt the system to their needs. 

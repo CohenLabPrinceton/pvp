@@ -107,6 +107,7 @@ PVP Modules
    Assembly <hardware/assembly>
    Electronics <hardware/electronics>
    Bill of Materials <hardware/bom>
+   CAD <hardware/cad>
 
 .. toctree::
    :hidden:

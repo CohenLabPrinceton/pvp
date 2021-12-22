@@ -45,7 +45,6 @@ def get_version(rel_path):
     else:
         raise RuntimeError("Unable to find version string.")
 
-
 setup(
     name="pvp",
     author="pvp team",

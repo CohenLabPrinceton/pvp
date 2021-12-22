@@ -1,7 +1,7 @@
 Electronics
 =============
 
-.. figure:: /images/electronics_diagram.png
+.. figure:: /assets/images/electronics_diagram.png
     :align: center
     :figwidth: 75%
     :width: 75%
@@ -21,7 +21,7 @@ The main power to the systems is supplied by a DIN rail-mounted 150W 24V supply,
 This power is transmitted across the PCBs through the stacked headers when required.
 
 .. csv-table:: Power and I/O bill of materials
-   :file: assets/csv/powerio_bom.csv
+   :file: /assets/csv/powerio_bom.csv
    :widths: 40,60
    :header-rows: 1
 
@@ -38,7 +38,7 @@ A set of additional header pins allows for digital output sensors (such as the S
 
 * :download:`Sensor PCB - [KiCad project .zip] <../assets/pcbs/pressure-rev2.zip>`
 
-.. figure:: /images/pressure_rev2_schematic_image.png
+.. figure:: /assets/images/pressure_rev2_schematic_image.png
     :align: center
     :figwidth: 100%
     :width: 100%
@@ -46,7 +46,7 @@ A set of additional header pins allows for digital output sensors (such as the S
     Sensor PCB schematic
 	
 .. csv-table:: Sensor PCB bill of materials
-   :file: assets/csv/sensor_pcb_bom.csv
+   :file: /assets/csv/sensor_pcb_bom.csv
    :widths: 10,30,60
    :header-rows: 1
 
@@ -59,7 +59,7 @@ The purpose of the actuator board is twofold:
 
 * :download:`Actuator PCB - [KiCad project .zip] <../assets/pcbs/actuators-rev2.zip>`
 
-.. figure:: /images/actuators_rev2_schematic_image.png
+.. figure:: /assets/images/actuators_rev2_schematic_image.png
     :align: center
     :figwidth: 100%
     :width: 100%
@@ -67,7 +67,7 @@ The purpose of the actuator board is twofold:
     Actuator PCB schematic
 
 .. csv-table:: Actuator PCB bill of materials
-   :file: assets/csv/actuator_pcb_bom.csv
+   :file: /assets/csv/actuator_pcb_bom.csv
    :widths: 10,30,60
    :header-rows: 1
   

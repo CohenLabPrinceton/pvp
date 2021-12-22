@@ -6,7 +6,7 @@ The **People's Ventilator Project (PVP)** is an open-source, low-cost pressure-c
 .. raw:: html
 
     <video width="100%" autoplay loop>
-      <source src="images/ventilator_rotate.mp4" type="video/mp4">
+      <source src="/images/ventilator_rotate.mp4" type="video/mp4">
     Video of a rotating ventilator
     </video>
 
@@ -14,7 +14,7 @@ Hardware
 --------
 
 .. raw:: html
-    :file: /images/schematic_v2.svg
+    :file: /assets/images/Schematic_v2.svg
 
 The device components were selected to enable a **minimalistic and relatively low-cost ventilator design, 
 to avoid supply chain limitations, and to facilitate rapid and easy assembly**. 
@@ -30,17 +30,17 @@ _____________
 .. raw:: html
 
     <div class="software-summary">
-	    <a href="components.html"><h2>Components</h2></a> <p>Justifcation behind the components actuators and sensors selected for the PVP.</p>
-		<a href="assembly.html"><h2>Assembly</h2></a> <p>Solidworks model of the system assembly, description of enclosure, and models for 3D printed components.</p>
-        <a href="electronics.html"><h2>Electronics</h2></a> <p>Modular PCBs that interface the PVP actuators and sensors with the Raspberry Pi.</p>
-		<a href="bom.html"><h2>Bill of Materials</h2></a> <p>Itemized PVP parts list.</p>
+	    <a href="../hardware/components.html"><h2>Components</h2></a> <p>Justifcation behind the components actuators and sensors selected for the PVP.</p>
+		<a href="../hardware/assembly.html"><h2>Assembly</h2></a> <p>Solidworks model of the system assembly, description of enclosure, and models for 3D printed components.</p>
+        <a href="../hardware/electronics.html"><h2>Electronics</h2></a> <p>Modular PCBs that interface the PVP actuators and sensors with the Raspberry Pi.</p>
+		<a href="../hardware/bom.html"><h2>Bill of Materials</h2></a> <p>Itemized PVP parts list.</p>
 	</div>
 
 
 Software
 --------
 
-.. image:: /images/gui_overview_v1_1920px.png
+.. image:: /assets/images/gui_overview_v1_1920px.png
    :width: 100%
    :alt: Gui Overview - modular design, alarm cards, multiple modalities of input, alarm limits represented consistently across ui
 
@@ -65,9 +65,9 @@ ____________
 .. raw:: html
 
     <div class="software-summary">
-        <a href="gui.html"><h2>GUI</h2></a> <p>A modular GUI with intuitive controls and a clear alarm system that can be configured to control any parameter or display values from any sensor.</p>
-        <a href="controller.html"><h2>Controller</h2></a> <p>A PID Controller to produce a pressure-controlled waveform, while monitoring for possible alarm states.</p>
-        <a href="io.html"><h2>IO</h2></a> <p>A hardware abstraction layer powered by <a href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> that can read/write at [x Hz]</p>
-        <a href="alarm.html"><h2>Alarm</h2></a> <p>Define complex and responsive alarm triggering criteria with human-readable Alarm Rules</p>
-        <a href="common.html"><h2>Common</h2><a> <p>Modules that provide the API between the GUI and controller, user preferences, and other utilities</p>
+        <a href="../software/gui/index.html"><h2>GUI</h2></a> <p>A modular GUI with intuitive controls and a clear alarm system that can be configured to control any parameter or display values from any sensor.</p>
+        <a href="../software/controller.html"><h2>Controller</h2></a> <p>A PID Controller to produce a pressure-controlled waveform, while monitoring for possible alarm states.</p>
+        <a href="../software/io.html"><h2>IO</h2></a> <p>A hardware abstraction layer powered by <a href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> that can read/write at [x Hz]</p>
+        <a href="../software/alarm.html"><h2>Alarm</h2></a> <p>Define complex and responsive alarm triggering criteria with human-readable Alarm Rules</p>
+        <a href="../software/common.html"><h2>Common</h2><a> <p>Modules that provide the API between the GUI and controller, user preferences, and other utilities</p>
     </div>

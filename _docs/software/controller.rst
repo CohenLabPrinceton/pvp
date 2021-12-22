@@ -5,9 +5,9 @@ Controller
 
 
 Purpose of the Controller
-----------
+---------------------------
 
-.. image:: /images/single_waveform.png
+.. image:: /assets/images/single_waveform.png
    :width: 100%
    :alt: Raw data for a single breath; blue is pressure and orange is flow-out.
 
@@ -24,7 +24,7 @@ In addition to this core function, the controller module continuously monitors f
 The final functionality of the control module is the estimation of VTE (VTE stands for exhaled tidal volume), which is thee volume of air that made it in- and out of the lung. We estimate this number by integrating the expiratory flow during expiration, and subtracting the baseline flow used to sustain PEEP (details in the accompanying manuscript):
 
 Architecture of the Controller
-----------
+--------------------------------
 
 In terms of software components, the Controller consists of one main :class:`~.pvp.controller` class, that is instantiated in its own thread. This object receives sensor-data from HAL, and computes control parameters, to change the mechanical position of valves. The Controller also receives ventilation control parameters (see :meth:`~.PVP_Gui.set_control`). All exchanged variables are mutex'd.
 

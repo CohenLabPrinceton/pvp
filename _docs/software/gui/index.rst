@@ -13,7 +13,7 @@ GUI
 
 
 .. raw:: html
-   :file: assets/images/pvp_gui_overview_clickable.svg
+   :file: ../../assets/images/pvp_gui_overview_clickable.svg
 
 The GUI is written using `PySide2 <https://wiki.qt.io/Qt_for_Python>`_ and consists of one main :class:`~.gui.main.PVP_Gui`
 object that instantiates a series of :ref:`gui_widgets`. The GUI is responsible for setting ventilation control parameters
@@ -43,15 +43,15 @@ Module Overview
 .. raw:: html
 
     <div class="software-summary">
-        <a href="gui.main.html"><h2>PVP_Gui</h2></a> <p>Main GUI Object that controls all the others!</p>
-        <a href="gui.widgets.html"><h2>Widgets</h2></a> <p>Widgets used by main GUI</p>
-        <a href="gui.styles.html"><h2>IO</h2></a> <p>Stylesheets used by the GUI</p>
+        <a href="main.html"><h2>PVP_Gui</h2></a> <p>Main GUI Object that controls all the others!</p>
+        <a href="widgets/index.html"><h2>Widgets</h2></a> <p>Widgets used by main GUI</p>
+        <a href="styles.html"><h2>IO</h2></a> <p>Stylesheets used by the GUI</p>
     </div>
 
 Screenshot
 ----------
 
-.. image:: /images/gui_overview_v1_1920px.png
+.. image:: /assets/images/gui_overview_v1_1920px.png
    :width: 100%
    :alt: Gui Overview - modular design, alarm cards, multiple modalities of input, alarm limits represented consistently across ui
 

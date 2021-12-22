@@ -63,7 +63,7 @@ extensions = [
     # 'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon', # parse google style docstrings
     'autodocsumm',
-    'myst_perser',   # support markdown
+    'myst_parser',   # support markdown
     'sphinx_sass' # support sass/scss
 ]
 

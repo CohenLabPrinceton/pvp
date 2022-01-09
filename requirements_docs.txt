@@ -5,8 +5,8 @@ sphinx>=3.0.0
 sphinx_rtd_theme
 sphinx-automodapi
 sphinxcontrib-napoleon
-recommonmark
+myst-parser
 autodocsumm
 tables
-git+https://github.com/mwibrow/sphinx-sass.git
+git+https://github.com/sneakers-the-rat/sphinx-sass.git
 mock

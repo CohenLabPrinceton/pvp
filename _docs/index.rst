@@ -41,6 +41,7 @@ An inexpensive proportional valve controls inspiratory flow, and a relay valve c
 A gauge pressure sensor monitors airway pressure, and an inexpensive D-lite spirometer used in conjunction with a differential pressure sensor monitors expiratory flow.
 
 .. raw:: html
+
     <object type="image/svg+xml" data="assets/images/Schematic_v2.svg">
     Hardware schematic for People's Ventilator Project
     </object>
@@ -52,7 +53,7 @@ The modularity of this system enables individual boards to be revised or modifie
 Software
 ========
 
-.. image:: /images/gui_overview_v1_1920px.png
+.. image:: /assets/images/gui_overview_v1_1920px.png
    :width: 100%
    :alt: Gui Overview - modular design, alarm cards, multiple modalities of input, alarm limits represented consistently across ui
 
@@ -91,35 +92,35 @@ PVP Modules
    :maxdepth: 4
    :caption: Overview
 
-   System Overview <overview>
-   Performance <performance>
-   Medical Disclaimer <disclaimer>
-   Funding and Support <funding>
+   System Overview <overview/overview>
+   Performance <overview/performance>
+   Medical Disclaimer <overview/disclaimer>
+   Funding and Support <overview/funding>
 
 .. toctree::
    :hidden:
    :maxdepth: 4
    :caption: Hardware:
 
-   Hardware Overview <hardware_overview>
-   Components <components>
-   Assembly <assembly>
-   Electronics <electronics>
-   Bill of Materials <bom>
+   Hardware Overview <hardware/hardware_overview>
+   Components <hardware/components>
+   Assembly <hardware/assembly>
+   Electronics <hardware/electronics>
+   Bill of Materials <hardware/bom>
+   CAD <hardware/cad>
 
 .. toctree::
    :hidden:
    :maxdepth: 4
    :caption: Software:
 
-   Software Overview <software_overview>
-   Main <main>
-   GUI <gui>
-   Controller <controller>
-   Common <common>
-   I/O <io>
-   Alarm <alarm>
-   Coordinator <coordinator>
+   Software Overview <software/software_overview>
+   GUI <software/gui/index>
+   Controller <software/controller>
+   Common <software/common/index>
+   I/O <software/io>
+   Alarm <software/alarm/index>
+   Coordinator <software/coordinator>
 
 .. toctree::
    :hidden:
@@ -129,7 +130,7 @@ PVP Modules
    Index <meta_index>
    
 Medical Disclaimer
-========
+===================
 PVP1 is not a regulated or clinically validated medical device. We have not yet performed testing for safety or efficacy on living organisms. All material described herein should be used at your own risk and do not represent a medical recommendation. PVP1 is currently recommended only for research purposes.
 
 This website is not connected to, endorsed by, or representative of the view of Princeton University. Neither the authors nor Princeton University assume any liability or responsibility for any consequences, damages, or loss caused or alleged to be caused directly or indirectly for any action or inaction taken based on or made in reliance on the information or material discussed herein or linked to from this website.

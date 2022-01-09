@@ -1,0 +1,7 @@
+pytest~=5.4.1
+pytest-qt==3.3.0
+pytest-timeout
+coveralls
+pytest-cov
+pylint
+coveralls

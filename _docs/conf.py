@@ -13,9 +13,22 @@
 import os
 import sys
 import mock
+from pathlib import Path
+import shutil
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../pvp'))
 sys.path.insert(0, os.path.abspath('.'))
+
+# copy hardware assets at build time
+root_assets = Path('../assets').resolve()
+docs_assets = Path('./assets').resolve()
+for asset_file in root_assets.glob('**/*'):
+    if asset_file.is_dir():
+        continue
+    new_file = docs_assets / asset_file.relative_to(root_assets)
+    new_file.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(str(asset_file), str(new_file))
+
 
 sys.modules['Shiboken'] = mock.Mock()
 sys.modules['PySide2.QtMultimedia'] = mock.Mock()
@@ -50,7 +63,7 @@ extensions = [
     # 'sphinx_automodapi.automodapi',
     'sphinxcontrib.napoleon', # parse google style docstrings
     'autodocsumm',
-    'recommonmark',   # support markdown
+    'myst_parser',   # support markdown
     'sphinx_sass' # support sass/scss
 ]
 

@@ -22,3 +22,14 @@ dist
 *.svg
 
 sandbox/Untitled.ipynb
+/_docs/assets/cad/PEEP-expiratory-valve/
+/_docs/assets/DXFs/
+/_docs/assets/pcbs/
+/_docs/assets/solidworks/
+/_docs/assets/STLs/
+/_docs/assets/README.md
+/docs/cad/PEEP-expiratory-valve/
+/docs/DXFs/
+/docs/pcbs/
+/docs/solidworks/
+/docs/STLs/

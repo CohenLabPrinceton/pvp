@@ -45,7 +45,6 @@ def get_version(rel_path):
     else:
         raise RuntimeError("Unable to find version string.")
 
-
 setup(
     name="pvp",
     author="pvp team",
@@ -72,5 +71,5 @@ setup(
                 "io/config/*"]
     },
     dependency_links=depend_links,
-    python_requires='==3.7.*'
+    python_requires='>=3.7.*,<3.10'
 )

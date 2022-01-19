@@ -10,10 +10,9 @@ in the **Bill of Materials**:
 We'll first show you how to assemble the hardware, then the electronics,
 and finally put the two together.
 
-The entire Solidworks Assembly, with associated part files, can be found in this Google Drive: 
-https://drive.google.com/drive/folders/1YrJEOmOMZtXcHABYO0hEu0etJ7LAC9Lf?usp=sharing
+The entire Solidworks Assembly, with associated part files, can be found [here](/assets/solidworks/PVP1_Mk3.SLDASM), together with two earlier versions of the device, [Mk1](/assets/solidworks/PVP1_Mk1.SLDASM) and [Mk2](/assets/solidworks/PVP1_Mk2.SLDASM). All associated parts are collected [here](/assets/solidworks/Parts).
 
-The current assembly is named `TLA_VENTILATOR_ASSY_V2.SLDASM`.
+The current assembly is named `PVP1_Mk3.SLDASM`. We also provide more detailed build instructions in this [pdf file](/assets/PVP1 Assembly Instructions.pdf).
 
 ## Part 1. 3D Printed Components and Enclosure
 

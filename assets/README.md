@@ -1,5 +1,7 @@
 # Content of assets
-This folder contains all the CAD files for the current hardware design. To aid discoverability, we have also generated a standardized Open Know How Manifest (OKH-manifest), `okh-manifest.yml`. This follows the Open Know-How Manifest Specification Version 1.0
+This folder contains all technical drawings for PVP1, the drawings for parts to be 3D-printed, and printed circuit boards.
+In addition, to aid discoverability, we have generated a standardized Open Know How Manifest (OKH-manifest): `okh-manifest.yml`. This follows the Open Know-How Manifest Specification Version 1.0. Finally, the file `PVP1 Assembly Instructions.pdf` contains detailed step-by-step assembly instructions.
+The following folders exist:
 
 # cad
 Contains a 3D-printable PEEP valve, as single-use PEEP valves can be subject to supply chain limitations. 
@@ -11,14 +13,10 @@ Contains drawings for laser cutting of the chassis.
 This folder contains all of the electrical design files for our custom PCBs. 
 
 # SOLIDWORKS
-This folder contains our CAD assembly with nearly all parts modeled and assembled. 
-1. Technical drawings of the PVP1 Mk3, in Solidworks. This is the device documented in the article, and featured in the detailed assembly instructions.
-1. The final version of PVP1, removing non-critcal components, such as the humidifier and Gauges, and introducing more standardized parts.
-1. The next version of the device, Mk2, using more standardized components, and featuring a humidifier. Notice the CPAP_BIPAP_HEATER_HUMIDIFIER_ASSY
-1. The first Mk 1 version of the device. This was the first iteration of a ventilator and served as an early sketch about what to include in the design
-1. Detailed assembly instructions.
-
-Simplified, got rid of humidifier.
+This folder contains CAD drawings of PVP1, more specifically:
+1. Technical drawings of the PVP1 Mk3, in Solidworks. This is the device documented in the article, and featured in the detailed assembly instructions. This final version of PVP1 removed non-critical components, such as the humidifier and Gauges, and introduced more standardized parts.
+1. The previous version of the device, Mk2, using few standardized components, and featuring a humidifier. Notice the `CPAP_BIPAP_HEATER_HUMIDIFIER_ASSY`.
+1. Mk1, the first version of PVP1. This served as an early sketch about what to include in the design
 
 # STLs
 This folder contains all of our 3D printed components/fixtures that are not included in our Bill-of-Materials. 

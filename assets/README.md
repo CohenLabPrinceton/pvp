@@ -1,5 +1,5 @@
 # Content of assets
-This folder contains all the CAD files for the current hardware design. 
+This folder contains all the CAD files for the current hardware design. To aid discoverability, we have also generated a standardized Open Know How Manifest (OKH-manifest), `okh-manifest.yml`. This follows the Open Know-How Manifest Specification Version 1.0
 
 # cad
 Contains a 3D-printable PEEP valve, as single-use PEEP valves can be subject to supply chain limitations. 

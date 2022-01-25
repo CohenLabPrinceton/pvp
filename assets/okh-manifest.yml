@@ -1,0 +1,85 @@
+title: The People’s Ventilator Project (PVP)
+description: The People’s Ventilator Project (PVP) is an open-source, low-cost
+  pressure-control ventilator designed for minimal reliance on specialized
+  medical parts to better adapt to supply chain shortages. The PVP largely
+  follows established design conventions, most importantly active and
+  computer-controlled inhalation, together with passive exhalation. PVP is a
+  pressure-controlled ventilator that uses a minimal set of inexpensive,
+  off-the-self hardware components. An inexpensive proportional valve controls
+  inspiratory flow, and a relay valve controls expiratory flow. A gauge pressure
+  sensor monitors airway pressure, and an inexpensive D-lite spirometer used in
+  conjunction with a differential pressure sensor monitors expiratory flow.
+  PVP’s components are coordinated by a Raspberry Pi 4 board, which runs the
+  graphical user interface, administers the alarm system, monitors sensor
+  values, and sends actuation commands to the valves. The core electrical system
+  consists of two modular board ‘hats’, a sensor board and an actuator board,
+  that stack onto the Raspberry Pi via 40-pin stackable headers. The modularity
+  of this system enables individual boards to be revised or modified to
+  substitute components in the case of part scarcity.
+intended-use: >
+  PVP1 supports pressure-controlled ventilation, combined with standard-features
+  like autonomous breath detection, and the suite of FDA required alarms.
+keywords:
+  - mechanical ventilator
+  - COVID-19
+  - 3D printing
+  - research design
+  - closed-loop System
+project-link: https://www.peoplesvent.org/en/latest/
+image: https://github.com/CohenLabPrinceton/pvp/raw/master/_docs/assets/images/pvp_logo_fulltext.png
+made: true
+made-independently: true
+license:
+  hardware: CC-BY-4.0
+  documentation: CC-BY-4.0
+  software: CC-BY-4.0
+licensor:
+  name: Manuel Schottdorf
+  affiliation: Princeton University
+  email: ms81@princeton.edu
+okh-manifest-version: 1.0.0
+date-created: 2022-01-25
+date-updated: 2022-01-25
+manifest-author:
+  name: Manuel Schottdorf
+  affiliation: Princeton University
+  email: ms81@princeton.edu
+manifest-language: en-US
+contributors:
+  - name: Julienne LaChance
+    affiliation: Department of Mechanical and Aerospace Engineering, Princeton University,
+      Princeton, NJ 08544, USA
+    email: jl40@princeton.edu
+  - name: Tom J. Zajdel
+    affiliation: Department of Mechanical and Aerospace Engineering, Princeton University,
+      Princeton, NJ 08544, USA
+    email: tzajdel@andrew.cmu.edu
+  - name: Jonny L. Saunders
+    affiliation: Department of Psychology and Institute of Neuroscience, University of
+      Oregon, Eugene, OR 97403
+    email: jlsaunders987@gmail.com
+  - name: Sophie Dvali
+    affiliation: Department of Physics, Princeton University, Princeton, NJ 08544, USA
+  - name: Chase Marshall
+    affiliation: RailPod, Inc., Boston, MA 02127, USA
+  - name: Lorenzo Seirup
+    affiliation: New York ISO, Rensselaer, NY 12144, USA
+  - name: Daniel A. Notterman
+    affiliation: Department of Molecular Biology, Princeton University, Princeton, NJ
+      08544, USA
+  - name: Daniel J. Cohen
+    affiliation: Department of Mechanical and Aerospace Engineering, Princeton University,
+      Princeton, NJ 08544, USA
+    email: danielcohen@princeton.edu
+version: "1.0"
+development-stage: product
+documentation-home: https://www.peoplesvent.org/en/latest/
+design-files:
+  - path: https://github.com/CohenLabPrinceton/pvp/
+documentation-language: en-US
+bom: https://github.com/CohenLabPrinceton/pvp/
+making-instructions:
+  - path: https://github.com/CohenLabPrinceton/pvp/
+    title: PVP1 Assembly Instructions.pdf
+software:
+  - path: https://github.com/CohenLabPrinceton/pvp/

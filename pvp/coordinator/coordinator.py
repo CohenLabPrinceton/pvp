@@ -173,7 +173,7 @@ class CoordinatorRemote(CoordinatorBase):
         """
         try:
             self.rpc_client.stop()
-        except ConnectionRefusedError:
+        except ConnectionRefusedError:  # pragma: no cover
             pass
 
     def kill(self):

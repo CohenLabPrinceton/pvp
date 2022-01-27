@@ -21,6 +21,7 @@ Airway
 
 .. csv-table:: PVP bill of materials
    :file: /assets/csv/10_27_2020_bom_airway.csv
+   :widths: 35, 25, 40
    :header-rows: 1
 
 Framing & Structural

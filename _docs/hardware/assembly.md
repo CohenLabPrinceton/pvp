@@ -2,15 +2,22 @@
 
 **PVP1 Assembly Instructions**
 
+- {download}`PDF Version </assets/PVP1 Assembly Instructions.pdf>`
+
 This guide should help you assemble the ventilator from the parts found
 in the [**Bill of Materials**](bom.rst):
 
 We'll first show you how to assemble the hardware, then the electronics,
 and finally put the two together.
 
-The entire Solidworks Assembly, with associated part files, can be found [here](/assets/solidworks/PVP1_Mk3.SLDASM), together with two earlier versions of the device, [Mk1](/assets/solidworks/PVP1_Mk1.SLDASM) and [Mk2](/assets/solidworks/PVP1_Mk2.SLDASM). All associated parts are collected [here](/assets/solidworks/Parts).
+Current Solidworks Assembly file:
+- {download}`PVP1_Mk3.SLDASM </assets/solidworks/PVP1_Mk3.SLDASM>`
 
-The current assembly is named `PVP1_Mk3.SLDASM`. We also provide more detailed build instructions in this [pdf file](/assets/PVP1 Assembly Instructions.pdf).
+Prior Versions
+- {download}`PVP1_Mk2.SLDASM </assets/solidworks/PVP1_Mk2.SLDASM>`
+- {download}`PVP1_Mk1.SLDASM </assets/solidworks/PVP1_Mk1.SLDASM>`
+
+All associated parts are available in the [solidworks/Parts](https://github.com/CohenLabPrinceton/pvp/tree/master/assets/solidworks/Parts) folder in the repository.
 
 ## Part 1. 3D Printed Components and Enclosure
 

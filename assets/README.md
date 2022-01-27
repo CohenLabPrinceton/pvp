@@ -1,6 +1,6 @@
 # Content of assets
 This folder contains all technical drawings for PVP1, the drawings for parts to be 3D-printed, and printed circuit boards.
-In addition, to aid discoverability, we have generated a standardized Open Know How Manifest (OKH-manifest): `okh-manifest.yml`. This follows the Open Know-How Manifest Specification Version 1.0. Finally, the file `PVP1 Assembly Instructions.pdf` contains detailed step-by-step assembly instructions.
+In addition, to aid discoverability, we have generated a standardized Open Know How Manifest (OKH-manifest): [`okh-manifest.yml`](okh-manifest.yml). This follows the Open Know-How Manifest Specification Version 1.0. Finally, the file `PVP1 Assembly Instructions.pdf` contains detailed step-by-step assembly instructions.
 The following folders exist:
 
 # cad

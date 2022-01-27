@@ -23,32 +23,33 @@ from pvp import prefs
 
 class ControlModuleBase:
     """
-
     Abstract controller class for simulation/hardware.
 
     1. General notes:
     All internal variables fall in three classes, denoted by the beginning of the variable:
-        - `COPY_varname`: These are copies (for safe threading purposes) that are regularly sync'ed with internal variables.
-        - `__varname`:    These are variables only used in the ControlModuleBase-Class
-        - `_varname`:     These are variables used in derived classes.
+
+    * `COPY_varname`: These are copies (for safe threading purposes) that are regularly sync'ed with internal variables.
+    * `__varname`:    These are variables only used in the ControlModuleBase-Class
+    * `_varname`:     These are variables used in derived classes.
 
     2. Set and get values.
     Internal variables should only to be accessed though the set_ and get_ functions.
-        These functions act on COPIES of internal variables (`__` and `_`), that are sync'd every few
-        iterations. How often this is done is adjusted by the variable
-        `self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE`. To avoid multiple threads manipulating the same
-        variables at the same time, every manipulation of `COPY_` is surrounded by a thread lock.
+    These functions act on COPIES of internal variables (`__` and `_`), that are sync'd every few
+    iterations. How often this is done is adjusted by the variable
+    `self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE`. To avoid multiple threads manipulating the same
+    variables at the same time, every manipulation of `COPY_` is surrounded by a thread lock.
 
     Public Methods:
-        - `get_sensors()`:                     Returns a copy of the current sensor values.
-        - `get_alarms()`:                      Returns a List of all alarms, active and logged
-        - `get_control(ControlSetting)`:       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
-        - `get_past_waveforms()`:              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self. _RINGBUFFER_SIZE, AND clears this archive.
-        - `start()`:                           Starts the main-loop of the controller
-        - `stop()`:                            Stops the main-loop of the controller
-        - `set_control()`:                     Set the control
-        - `is_running()`:                      Returns a bool whether the main-thread is running
-        - `get_heartbeat()`:                   Returns a heartbeat, more specifically, the continuously increasing iteration-number of the main control loop.
+
+    * `get_sensors()`:                     Returns a copy of the current sensor values.
+    * `get_alarms()`:                      Returns a List of all alarms, active and logged
+    * `get_control(ControlSetting)`:       Sets a controll-setting. Is updated at latest within self._NUMBER_CONTROLL_LOOPS_UNTIL_UPDATE
+    * `get_past_waveforms()`:              Returns a List of waveforms of pressure and volume during at the last N breath cycles, N<self. _RINGBUFFER_SIZE, AND clears this archive.
+    * `start()`:                           Starts the main-loop of the controller
+    * `stop()`:                            Stops the main-loop of the controller
+    * `set_control()`:                     Set the control
+    * `is_running()`:                      Returns a bool whether the main-thread is running
+    * `get_heartbeat()`:                   Returns a heartbeat, more specifically, the continuously increasing iteration-number of the main control loop.
     """
 
     def __init__(self, save_logs: bool = False, flush_every: int = 10):

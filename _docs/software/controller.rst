@@ -38,7 +38,6 @@ The Controller can be launched alone, but was not intended to be launched alone.
 
 .. automodule:: pvp.controller.control_module
    :members:
-   :undoc-members:
    :show-inheritance:
 
 

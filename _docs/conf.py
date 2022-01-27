@@ -28,6 +28,7 @@ for asset_file in root_assets.glob('**/*'):
     new_file = docs_assets / asset_file.relative_to(root_assets)
     new_file.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(str(asset_file), str(new_file))
+    print(f'moved {str(asset_file)} to {str(new_file)}')
 
 
 sys.modules['Shiboken'] = mock.Mock()

@@ -3,9 +3,7 @@
 **PVP1 Assembly Instructions**
 
 This guide should help you assemble the ventilator from the parts found
-in the **Bill of Materials**:
-
-[[https://www.peoplesvent.org/en/latest/bom.html]{.underline}](https://www.peoplesvent.org/en/latest/bom.html)
+in the [**Bill of Materials**](bom.rst):
 
 We'll first show you how to assemble the hardware, then the electronics,
 and finally put the two together.

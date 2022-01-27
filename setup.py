@@ -57,7 +57,7 @@ setup(
     install_requires=[
         'numpy',
         'PySide2==5.11.*',
-        'pyqtgraph>=0.11.0rc0',
+        'pyqtgraph~=0.11.0rc0',
         'pytest-qt',
         'pytest-timeout',
         'pigpio',

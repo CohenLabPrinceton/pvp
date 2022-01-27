@@ -1,7 +1,0 @@
-controls module
-=================
-
-.. automodule:: pvp.controls
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,9 +1,0 @@
-.. _changelog_v001:
-
-v0.0.1 (April 12th, 2020)
--------------------------
-
-* Added changelog
-* Moved requirements for building docs to `requirements_docs.txt` so regular program reqs are a bit lighter.
-* added autosummaries
-* added additional resources & documentation files, with examples for adding external files like pdfs

@@ -4,7 +4,7 @@
 
 # The People's Ventilator Project
 
-![PVP Logo](_docs/assets/images/pvp_logo_fulltext.png)
+![PVP Logo](docs/assets/images/pvp_logo_fulltext.png)
 
 All information is in the documentation:
 https://pvp.readthedocs.io/

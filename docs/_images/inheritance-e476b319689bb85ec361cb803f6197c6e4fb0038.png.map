@@ -1,8 +1,0 @@
-<map id="inheritance14800c5c76" name="inheritance14800c5c76">
-<area shape="rect" id="node1" href="#pvp.alarm.condition.AlarmSeverityCondition" target="_top" title="pvp.alarm.condition.AlarmSeverityCondition" alt="" coords="214,5,453,27"/>
-<area shape="rect" id="node3" href="#pvp.alarm.condition.CycleAlarmSeverityCondition" target="_top" title="alarm goes out of range for a specific number of breath cycles" alt="" coords="495,5,763,27"/>
-<area shape="rect" id="node2" href="#pvp.alarm.condition.Condition" target="_top" title="Base class for specifying alarm test conditions" alt="" coords="5,27,173,48"/>
-<area shape="rect" id="node5" href="#pvp.alarm.condition.ValueCondition" target="_top" title="Value is greater or lesser than some max/min" alt="" coords="236,47,432,69"/>
-<area shape="rect" id="node4" href="#pvp.alarm.condition.CycleValueCondition" target="_top" title="Value goes out of range for a specific number of breath cycles" alt="" coords="517,47,741,69"/>
-<area shape="rect" id="node6" href="#pvp.alarm.condition.TimeValueCondition" target="_top" title="value goes out of range for specific amount of time" alt="" coords="519,90,739,112"/>
-</map>

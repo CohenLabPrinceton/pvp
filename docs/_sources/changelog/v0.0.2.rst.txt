@@ -1,6 +1,0 @@
-.. _changelog_v002:
-
-v0.0.2 (April xxth, 2020)
--------------------------
-
-* Refactored gui into a module, splitting ``widgets``, ``styles``, and ``defaults``.

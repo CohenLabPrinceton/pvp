@@ -71,5 +71,5 @@ setup(
                 "io/config/*"]
     },
     dependency_links=depend_links,
-    python_requires='>=3.7.*,<3.10'
+    python_requires='>=3.7,<3.8'
 )

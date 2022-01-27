@@ -1,33 +1,32 @@
-Component,Subtotal,Example Sourcing Link,
-,$10.00 ,www.mcmaster.com/2633N11/,
-"Oxygen DISS to 3/8"" NPT Adapter",,,
-Inlet manifold ,$24.56 ,https://www.mcmaster.com/1023N15/,
-"1/4"" NPT Connector (male/male)",$3.89 ,https://www.mcmaster.com/1455N133/,
-Teflon tape ,$2.62 ,https://www.mcmaster.com/6802K12/,
-"Manifold plug 1/4"" NPT",$4.50 ,https://www.mcmaster.com/1725K13/,
-Hex nuts,$3.77 ,https://www.mcmaster.com/91841A195/,
-Manifold washers,$10.16 ,https://www.mcmaster.com/92217A440/,
-Fixed pressure regulator,$47.94 ,https://www.mcmaster.com/1777K2,
-"Push-to-connect: 1/4"" NPT",$10.96 ,https://www.mcmaster.com/5225K715/,
-Pneumatic Tubing ,$2.13 ,https://www.mcmaster.com/50315K71,
-"Push-to-connect: 1/8"" BSPT",$10.76 ,https://www.mcmaster.com/5225K305/,
-Insp proportional valve,$107.10 ,https://www.ocpneumatics.com/smc-pvq31-5g-23-01n-h-valve-proportional-pvq-proportional-valve/,
-"Push-to-connect: Inline T-adapter to 1/4"" NPT",$7.58 ,https://www.mcmaster.com/5225K806/,
-"1/4"" NPT Connector (female/female)",$9.84 ,https://www.mcmaster.com/4589K58/,
-Pressure release valve,$19.89 ,https://www.mcmaster.com/4277T52,
-Oxygen sensor,$59.00 ,https://www.sensoronics.com/products/ss-12a-replaces-teledyne-r22-msa-472062,
-Emergency breathing (check) valve,$1.05 ,https://serfinitymedical.com/products/teleflex-medical-one-way-valve-teleflex-medical-1665,
-DAR filters,$3.44 ,https://www.bettymills.com/dar-electrostatic-filter-large-350u5865?utm_source=cpc-strat&utm_medium=cpc&utm_campaign=parts&utm_keyword=MON58653900&utm_content=Medical&gclid=Cj0KCQjwsYb0BRCOARIsAHbLPhFDvasl2T-pp983Gj755_cJPpx-yW1j-qtVVfjvdeKrHvaog9WXQzAaAtrJEALw_wcB,
-Adult Respiratory Circuit w Humidifier Limb,$13.00 ,Circuit: https://orsupply.com/product/1505,
-Gas sampling line,$5.01 ,https://heymedsupply.com/gas-sampling-line-mckesson-16-gsl-each-1/?gclid=CjwKCAjw95D0BRBFEiwAcO1KDNKq_RaPem1c2NjJTQ1T2bLXusnNQXshtMCSO_h0_i7tSfO_Mrw1NRoCkB8QAvD_BwE,
-Luer lock connector,$20.50 ,https://www.grainger.com/product/36T564?gclid=EAIaIQobChMI59a98omX6wIVgwiICR3BlQrHEAQYCiABEgJ5WPD_BwE&cm_mmc=PPC:+Google+PLA&ef_id=EAIaIQobChMI59a98omX6wIVgwiICR3BlQrHEAQYCiABEgJ5WPD_BwE:G:s&s_kwcid=AL!2966!3!281698275999!!!g!470577457359!,
-Luer lock filter,,https://catalog.promepla.com/promepla-component/ecb15992 / https://catalog.promepla.com/uploads/medias/plan-ecb15992.pdf,
-Pressure sensor (for Paw),$32.00 ,https://www.mouser.com/ProductDetail/Amphenol-All-Sensors/1-PSI-D1-4V-MINI?qs=BhOZL0NmoSxcjJYCCg1Awg%3D%3D,
-Tubing connectors,$14.00 ,https://www.rcmedical.com/viewProduct.cfm?productID=591,
-Flow sensor,$4.76 ,https://jakenmedical.com/supplies-accessories/disposable-d-lite-sensor-50-box-896952/,
-Luer plug,$2.60 ,https://www.mcmaster.com/51525K311,
-Luer lock connector for D-Lite,$22.68 ,https://www.mcmaster.com/5194K32/,
-Differential pressure sensor for flow,$52.70 ,https://www.mouser.com/ProductDetail/Amphenol-All-Sensors/5-INCH-D2-P4V-MINI?qs=%2Fha2pyFaduhsP4sNEBOe%2FQFZkD803XhnXMJBb3vmG3Pgxr%2F1EbJo8%252BLI9cfIY1%2Fz,
-"3/4"" NPT Connector (male/male) ",$3.06 ,https://www.mcmaster.com/46825K31/,
-Exp solenoid valve,$115.10 ,https://www.smcpneumatics.com/VXZ250HGB.html,
-Exp solenoid brackets,$22.44 ,https://www.mcmaster.com/3136N157/,
+Component,Subtotal,Example Sourcing Link
+"Oxygen DISS to 3/8"" NPT Adapter",$10.00,www.mcmaster.com/2633N11/
+Inlet manifold ,$24.56 ,https://www.mcmaster.com/1023N15/
+"1/4"" NPT Connector (male/male)",$3.89 ,https://www.mcmaster.com/1455N133/
+Teflon tape ,$2.62 ,https://www.mcmaster.com/6802K12/
+"Manifold plug 1/4"" NPT",$4.50 ,https://www.mcmaster.com/1725K13/
+Hex nuts,$3.77 ,https://www.mcmaster.com/91841A195/
+Manifold washers,$10.16 ,https://www.mcmaster.com/92217A440/
+Fixed pressure regulator,$47.94 ,https://www.mcmaster.com/1777K2
+"Push-to-connect: 1/4"" NPT",$10.96 ,https://www.mcmaster.com/5225K715/
+Pneumatic Tubing ,$2.13 ,https://www.mcmaster.com/50315K71
+"Push-to-connect: 1/8"" BSPT",$10.76 ,https://www.mcmaster.com/5225K305/
+Insp proportional valve,$107.10 ,https://www.ocpneumatics.com/smc-pvq31-5g-23-01n-h-valve-proportional-pvq-proportional-valve/
+"Push-to-connect: Inline T-adapter to 1/4"" NPT",$7.58 ,https://www.mcmaster.com/5225K806/
+"1/4"" NPT Connector (female/female)",$9.84 ,https://www.mcmaster.com/4589K58/
+Pressure release valve,$19.89 ,https://www.mcmaster.com/4277T52
+Oxygen sensor,$59.00 ,https://www.sensoronics.com/products/ss-12a-replaces-teledyne-r22-msa-472062
+Emergency breathing (check) valve,$1.05 ,https://serfinitymedical.com/products/teleflex-medical-one-way-valve-teleflex-medical-1665
+DAR filters,$3.44 ,https://www.bettymills.com/dar-electrostatic-filter-large-350u5865?utm_source=cpc-strat&utm_medium=cpc&utm_campaign=parts&utm_keyword=MON58653900&utm_content=Medical&gclid=Cj0KCQjwsYb0BRCOARIsAHbLPhFDvasl2T-pp983Gj755_cJPpx-yW1j-qtVVfjvdeKrHvaog9WXQzAaAtrJEALw_wcB
+Adult Respiratory Circuit w Humidifier Limb,$13.00 ,Circuit: https://orsupply.com/product/1505
+Gas sampling line,$5.01 ,https://heymedsupply.com/gas-sampling-line-mckesson-16-gsl-each-1/?gclid=CjwKCAjw95D0BRBFEiwAcO1KDNKq_RaPem1c2NjJTQ1T2bLXusnNQXshtMCSO_h0_i7tSfO_Mrw1NRoCkB8QAvD_BwE
+Luer lock connector,$20.50 ,https://www.grainger.com/product/36T564?gclid=EAIaIQobChMI59a98omX6wIVgwiICR3BlQrHEAQYCiABEgJ5WPD_BwE&cm_mmc=PPC:+Google+PLA&ef_id=EAIaIQobChMI59a98omX6wIVgwiICR3BlQrHEAQYCiABEgJ5WPD_BwE:G:s&s_kwcid=AL!2966!3!281698275999!!!g!470577457359!
+Luer lock filter,,https://catalog.promepla.com/promepla-component/ecb15992 / https://catalog.promepla.com/uploads/medias/plan-ecb15992.pdf
+Pressure sensor (for Paw),$32.00 ,https://www.mouser.com/ProductDetail/Amphenol-All-Sensors/1-PSI-D1-4V-MINI?qs=BhOZL0NmoSxcjJYCCg1Awg%3D%3D
+Tubing connectors,$14.00 ,https://www.rcmedical.com/viewProduct.cfm?productID=591
+Flow sensor,$4.76 ,https://jakenmedical.com/supplies-accessories/disposable-d-lite-sensor-50-box-896952/
+Luer plug,$2.60 ,https://www.mcmaster.com/51525K311
+Luer lock connector for D-Lite,$22.68 ,https://www.mcmaster.com/5194K32/
+Differential pressure sensor for flow,$52.70 ,https://www.mouser.com/ProductDetail/Amphenol-All-Sensors/5-INCH-D2-P4V-MINI?qs=%2Fha2pyFaduhsP4sNEBOe%2FQFZkD803XhnXMJBb3vmG3Pgxr%2F1EbJo8%252BLI9cfIY1%2Fz
+"3/4"" NPT Connector (male/male) ",$3.06 ,https://www.mcmaster.com/46825K31/
+Exp solenoid valve,$115.10 ,https://www.smcpneumatics.com/VXZ250HGB.html
+Exp solenoid brackets,$22.44 ,https://www.mcmaster.com/3136N157/

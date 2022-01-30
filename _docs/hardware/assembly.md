@@ -2,18 +2,22 @@
 
 **PVP1 Assembly Instructions**
 
-This guide should help you assemble the ventilator from the parts found
-in the **Bill of Materials**:
+- {download}`PDF Version </assets/PVP1 Assembly Instructions.pdf>`
 
-[[https://www.peoplesvent.org/en/latest/bom.html]{.underline}](https://www.peoplesvent.org/en/latest/bom.html)
+This guide should help you assemble the ventilator from the parts found
+in the [**Bill of Materials**](bom.rst):
 
 We'll first show you how to assemble the hardware, then the electronics,
 and finally put the two together.
 
-The entire Solidworks Assembly, with associated part files, can be found in this Google Drive: 
-https://drive.google.com/drive/folders/1YrJEOmOMZtXcHABYO0hEu0etJ7LAC9Lf?usp=sharing
+Current Solidworks Assembly file:
+- {download}`PVP1_Mk3.SLDASM </assets/solidworks/PVP1_Mk3.SLDASM>`
 
-The current assembly is named `TLA_VENTILATOR_ASSY_V2.SLDASM`.
+Prior Versions
+- {download}`PVP1_Mk2.SLDASM </assets/solidworks/PVP1_Mk2.SLDASM>`
+- {download}`PVP1_Mk1.SLDASM </assets/solidworks/PVP1_Mk1.SLDASM>`
+
+All associated parts are available in the [solidworks/Parts](https://github.com/CohenLabPrinceton/pvp/tree/master/assets/solidworks/Parts) folder in the repository.
 
 ## Part 1. 3D Printed Components and Enclosure
 
@@ -26,8 +30,7 @@ Before we can get started with assembly, you'll need to print a few
 parts using a standard 3D printer. (We ran our test prints on Prusa,
 MakerBot, FlashForge, and Creality3D printers.)
 
-**You can download all the STL files here for printing**:
-[[https://www.peoplesvent.org/en/latest/assembly.html#d-printed-parts]{.underline}](https://www.peoplesvent.org/en/latest/assembly.html#d-printed-parts)
+[**You can download all the STL files from the CAD Page**](cad.rst)
 
 Be sure to print airway components at as close to 100% infill as
 possible, and be mindful of printing orientation. An example printing
@@ -47,10 +50,8 @@ If you are using a Prusa i3, **we also provide this print setup here**.
 Several of the 3D printed parts will need to be tapped to enable
 connection with other parts in the device- such as push-to-connect
 adapters. You will be able to tap all of these parts by hand (since the
-plastic cuts easily), and the **Bill of Material** contains the list of
-taps you will need, including specialized taps such as the M16:
-
-[https://www.peoplesvent.org/en/latest/bom.html](https://www.peoplesvent.org/en/latest/bom.html)
+plastic cuts easily), and the [**Bill of Materials**](bom.rst) contains the list of
+taps you will need, including specialized taps such as the M16.
 
 All required taps are shown below:
 
@@ -98,16 +99,12 @@ adapters to the gas sampling lines for monitoring pressure.
 **Step 1. Laser cut, or cut out by hand, the six HPDE side panels.**
 
 Cut all panels out of the 1/16" HPDE sheets. If you wish to cut these
-pieces using a laser cutter, we provide DXF files here, under
-"Enclosure":
-[[https://www.peoplesvent.org/en/latest/assembly.html]{.underline}](https://www.peoplesvent.org/en/latest/assembly.html)
+pieces using a laser cutter, we provide DXF files in the [CAD Page](cad.rst), under
+"Enclosure".
 
 Cuts can also be made by hand using a sharp pair of scissors and a
 razor-cutter. Pieces are 17 ⅞" by 7 ⅞" (45.4025 cm by 20.0025 cm), or 7
-⅞" by 7 ⅞" (20.0025 cm by 20.0025 cm) along the outer dimensions. Inner
-hole placement can be determined from the documentation, also at:
-
-[[https://www.peoplesvent.org/en/latest/assembly.html]{.underline}](https://www.peoplesvent.org/en/latest/assembly.html)
+⅞" by 7 ⅞" (20.0025 cm by 20.0025 cm) along the outer dimensions.
 
 (We cut our side panels for the demo out of acrylic for ease of
 visibility.)
@@ -260,9 +257,11 @@ printed part called the "Expiratory DAR filter bracket", which will
 mirror the "Expiratory outlet bracket to PEEP" part on the opposing
 frame leg. Also, attach three gusset (corner) brackets, as shown.
 
-\***Note:** if you intend to attach the side panels, leave off the
+```{admonition} Note:
+if you intend to attach the side panels, leave off the
 corner bracket on the same side as the 3D printed piece. If you're not
 using the side panels, keep the bracket here for additional support!
+```
 
 ![](/assets/images/assembly/image121.jpg)
 
@@ -407,12 +406,15 @@ Affix button head screws/nuts to the sensor atrium, with hex nuts facing
 towards one another, as shown. Slide the hex nuts along T-slots on
 either side of a short (5 ⅞") 80/20 piece; then insert this vertically
 into the device as shown. Tighten into place via the hex screws on the
-lower gusset (corner) brackets.\
-**\*Note:** If you are attaching the side panels, be sure to use a SHORT
+lower gusset (corner) brackets.
+
+```{admonition} Note:
+If you are attaching the side panels, be sure to use a SHORT
 nut on the sensor atrium (the nut on the side with two, farther from the
 oxygen sensor), and keep the short side facing down when inserting. This
 will allow the sensor atrium to drop lower and align with the holes in
 the front panel.
+```
 
 ![](/assets/images/assembly/image113.jpg)
 
@@ -431,9 +433,12 @@ then tighten the hex screws.
 
 **Step 7. Attach the luer lock filter bracket to the newly inserted
 80/20 leg.\
-\*Note:** If you're attaching the side panels, use another SHORT 80/20
+
+```{admonition} Note:
+If you're attaching the side panels, use another SHORT 80/20
 nut in the uppermost spot on the bracket. We'll want this part to be as
 high as possible to match up with the holes on the front panel.
+```
 
 ![](/assets/images/assembly/image33.jpg)
 
@@ -454,9 +459,11 @@ push-to-connect on the sensor atrium.
 **Step 9. Attach the final two vertical 80/20 pieces in the remaining
 corners.**
 
-**\*Note:** If you're attaching the side panels, now is the time to
+```{admonition} Note:
+If you're attaching the side panels, now is the time to
 insert 80/20 nuts on the vertical 80/20 pieces as well as the long 80/20
 pieces on the lower frame.
+```
 
 ![](/assets/images/assembly/image95.jpg)
 
@@ -869,11 +876,13 @@ position of this DIN rail to ensure that the power supply is not
 touching the expiratory solenoid or inlet manifold/pressure regulator.
 Feel free to reposition as needed!
 
-**\*Note:** if you wish to attach a rear HPDE panel, we recommend
+```{admonition} Note:
+if you wish to attach a rear HPDE panel, we recommend
 inserting the power cable to the power supply through the grommet of the
 rear panel before insertion of the power supply into the device. Do this
 now! You can also attach the "Rear Panel Vent"s to the rear panel; they
 will snap right in.
+```
 
 ![](/assets/images/assembly/image31.jpg)
 

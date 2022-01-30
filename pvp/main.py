@@ -44,7 +44,7 @@ def set_valves_save_position(args, config_file = 'pvp/io/config/devices.ini'):
         print("Terminating simulation.")
 
 def main(arg):
-    args = parse_cmd_args(arg)
+    args = parse_cmd_args(arg)         # pragma: no cover
     try:
         coordinator = get_coordinator(single_process=args.single_process, sim_mode=args.simulation)
         app, gui = launch_gui(coordinator, args.default_controls, screenshot=args.screenshot)

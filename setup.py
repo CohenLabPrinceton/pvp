@@ -57,7 +57,7 @@ setup(
     install_requires=[
         'numpy',
         'PySide2==5.11.*',
-        'pyqtgraph>=0.11.0rc0',
+        'pyqtgraph~=0.11.0rc0',
         'pytest-qt',
         'pytest-timeout',
         'pigpio',
@@ -71,5 +71,5 @@ setup(
                 "io/config/*"]
     },
     dependency_links=depend_links,
-    python_requires='>=3.7.*,<3.10'
+    python_requires='>=3.7,<3.8'
 )
